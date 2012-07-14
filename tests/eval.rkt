@@ -10,8 +10,6 @@
      (check-match (eval e)
                   (cons v σ))]))
 
-(define-values/invoke-unit/infer eval@)
-
 (check-eval (num 5) 5)
 (check-eval (op1 'add1 (num 5)) 6)
 (check-eval (op2 '+ (num 5) (num 11)) 16)

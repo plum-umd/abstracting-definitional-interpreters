@@ -1,12 +1,12 @@
 #lang racket
-(provide eval@)
+(provide eval eval@)
 (require "ev-sig.rkt"
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
          "ev-unit.rkt"
          "syntax.rkt")
 
-(define-unit eval$@
+(define-unit eval@
   (import ev^)
   (export eval^ ev-monad^)
   
@@ -60,8 +60,5 @@
       [('+ (list n (? symbolic? m))) (cons `(+ ,n ,m) s)]
       [('+ (list n1 n2)) (cons (+ n1 n2) s)])))
 
-(define-compound-unit/infer eval@
-  (import)
-  (export EVAL)
-  (link [((EVAL : eval^) (EVM : ev-monad^)) eval$@ EV]
-        [((EV : ev^)) ev@ EVM]))
+(define-values/invoke-unit/infer  
+  (link eval@ ev@))

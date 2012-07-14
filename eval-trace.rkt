@@ -1,5 +1,5 @@
 #lang racket
-(provide eval-trace@)
+(provide eval eval-trace@)
 (require "ev-sig.rkt"
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
@@ -9,7 +9,7 @@
 
 ;; Trace evaluator
 
-(define-unit eval-trace$@
+(define-unit eval-trace@
   (import ev^)
   (export eval^ ev-monad^)
   
@@ -59,8 +59,5 @@
        [('add1 (list n))  (add1 n)]
        [('+ (list n1 n2)) (+ n1 n2)]))))
    
-(define-compound-unit/infer eval-trace@
-  (import)
-  (export EVAL)
-  (link [((EVAL : eval^) (EVM : ev-monad^)) eval-trace$@ EV]
-        [((EV : ev^)) ev@ EVM]))
+(define-values/invoke-unit/infer  
+  (link eval-trace@ ev@))

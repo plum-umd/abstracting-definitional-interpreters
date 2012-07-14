@@ -1,5 +1,5 @@
 #lang racket
-(provide eval-set@)
+(provide eval eval-set@)
 (require "ev-sig.rkt"
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
@@ -9,7 +9,7 @@
 
 ;; Singleton set interpreter 
 
-(define-unit eval-set$@
+(define-unit eval-set@
   (import ev^)
   (export eval^ ev-monad^)
   
@@ -55,8 +55,5 @@
        [('add1 (list n))  (cons (add1 n) s)]
        [('+ (list n1 n2)) (cons (+ n1 n2) s)]))))
 
-(define-compound-unit/infer eval-set@
-  (import)
-  (export EVAL)
-  (link [((EVAL : eval^) (EVM : ev-monad^)) eval-set$@ EV]
-        [((EV : ev^)) ev@ EVM]))
+(define-values/invoke-unit/infer  
+  (link eval-set@ ev@))
