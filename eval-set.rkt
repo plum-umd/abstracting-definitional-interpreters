@@ -5,13 +5,14 @@
          "ev-monad-sig.rkt"
          "ev-unit.rkt"
          "store.rkt"
+         "delta-unit.rkt"
          "syntax.rkt")
 
 ;; Singleton set interpreter 
 
 (define-unit eval-set@
-  (import ev^)
-  (export eval^ ev-monad^)
+  (import ev^ δ^)
+  (export eval^ ev-monad^ return^)
   
   (define (eval e)
     ((ev e (hash)) (hash)))
@@ -47,13 +48,7 @@
   
   (define ((ubox a) s)
     (for/set ((v (lookup-sto s a)))
-             (cons v s)))
-  
-  (define ((δ o . vs) s)
-    (set 
-     (match* (o vs)
-       [('add1 (list n))  (cons (add1 n) s)]
-       [('+ (list n1 n2)) (cons (+ n1 n2) s)]))))
+             (cons v s))))
 
 (define-values/invoke-unit/infer  
-  (link eval-set@ ev@))
+  (link eval-set@ ev@ delta@))

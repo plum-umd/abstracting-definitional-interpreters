@@ -4,11 +4,12 @@
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
          "ev-unit.rkt"
+         "delta-unit.rkt"
          "syntax.rkt")
 
 (define-unit eval@
-  (import ev^)
-  (export eval^ ev-monad^)
+  (import ev^ δ^)
+  (export eval^ return^ ev-monad^)
   
   (define (symbolic? x) (or (symbol? x) (pair? x)))
   
@@ -34,31 +35,23 @@
        ((f v) s)]))   
   
   (define ((lookup-env r x) s)
-    (cons (lookup s r x) s))
+    ((return (lookup s r x)) s))
   
   (define ((alloc f v) s) 
     (match f
       [(cons (lam x e) r)
        (define a (gensym))
-       (cons a (update-sto s a v))]))
+       ((return a) (update-sto s a v))]))
   
   (define ((new v) s)  
     (define a (gensym))
-    (cons a (update-sto s a v)))
+    ((return a) (update-sto s a v)))
   
   (define ((sbox a v) s)
-    (cons a (update-sto s a v)))
+    ((return a) (update-sto s a v)))
   
   (define ((ubox a) s)
-    (cons (lookup-sto s a) s))
-  
-  (define ((δ o . vs) s)
-    (match* (o vs)
-      [('add1 (list (? symbolic? n))) (cons `(add1 ,n) s)]
-      [('add1 (list n))  (cons (add1 n) s)]
-      [('+ (list (? symbolic? n) m)) (cons `(+ ,n ,m) s)]
-      [('+ (list n (? symbolic? m))) (cons `(+ ,n ,m) s)]
-      [('+ (list n1 n2)) (cons (+ n1 n2) s)])))
+    (cons (lookup-sto s a) s)))
 
-(define-values/invoke-unit/infer  
-  (link eval@ ev@))
+(define-values/invoke-unit/infer
+  (link eval@ ev@ delta@))

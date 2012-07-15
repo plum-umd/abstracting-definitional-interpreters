@@ -4,14 +4,15 @@
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
          "ev-unit.rkt"
+         "delta-unit.rkt"
          "store.rkt"
          "syntax.rkt")
 
 ;; Trace evaluator
 
 (define-unit eval-trace@
-  (import ev^)
-  (export eval^ ev-monad^)
+  (import ev^ δ^)
+  (export eval^ ev-monad^ return^)
   
   (define (eval e)
     (define s (hash))
@@ -51,13 +52,8 @@
           (cons `(return ,a) t)))
   
   (define ((ubox a) s t)
-    ((return (lookup-sto s a)) s t))
+    ((return (lookup-sto s a)) s t)))
   
-  (define (δ o . vs) 
-    (return
-     (match* (o vs)
-       [('add1 (list n))  (add1 n)]
-       [('+ (list n1 n2)) (+ n1 n2)]))))
    
 (define-values/invoke-unit/infer  
-  (link eval-trace@ ev@))
+  (link eval-trace@ ev@ delta@))

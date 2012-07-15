@@ -4,7 +4,7 @@
          "syntax.rkt"
          (only-in racket match))
 
-(import ev-monad^)
+(import return^ δ^ ev-monad^)
 (export ev^)
 
 (define-syntax do
