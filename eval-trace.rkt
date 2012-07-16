@@ -29,35 +29,8 @@
     (match ((a s) t)
       [(cons (cons 'fail s) t) (cons (cons 'fail s) t)]
       [(cons (cons v s) t)
-       (((f v) s) t)]))
-  
-  #|
-  (define ((lookup-env r x) s t)
-    (define v (lookup s r x))
-    (cons (cons v s) `(return ,v)))
-  
-  (define ((alloc f v) s t)
-    (cons
-     (match f
-       [(cons (lam x e) r)
-        (define a (gensym))
-        (cons a (update-sto s a v))])
-     t))
-  
-  (define ((new v) s t)  
-    (define a (gensym))
-    (cons (cons a (update-sto s a v))
-          (cons `(return ,a) t)))
-  
-  (define ((sbox a v) s t)
-    (cons (cons a (update-sto s a v)) 
-          (cons `(return ,a) t)))
-  
-  (define ((ubox a) s t)
-    ((return (lookup-sto s a)) s t))
-|#
-  )
-  
-   
+       (((f v) s) t)])))
+
+
 (define-values/invoke-unit/infer  
   (link eval-trace@ ev@ delta@ sto-explicit@))
