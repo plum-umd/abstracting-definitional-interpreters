@@ -10,9 +10,7 @@
 (define-unit eval@
   (import ev^ δ^)
   (export eval^ return^ ev-monad^)
-  
-  (define (symbolic? x) (or (symbol? x) (pair? x)))
-  
+   
   (define (lookup s r x)
     (hash-ref s (hash-ref r x)))
   
