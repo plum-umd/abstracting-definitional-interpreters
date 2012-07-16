@@ -7,8 +7,7 @@
 (define-syntax check-eval
   (syntax-rules ()
     [(check-eval e v)
-     (check-match (eval e)
-                  (cons v σ))]))
+     (check-match (eval e) v)]))
 
 (check-eval (num 5) 5)
 (check-eval (op1 'add1 (num 5)) 6)

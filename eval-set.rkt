@@ -3,16 +3,17 @@
 (require "ev-sig.rkt"
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
-         "ev-unit.rkt"
+         "ev-unit.rkt"         
          "store.rkt"
          "delta-unit.rkt"
+         "sto-set-unit.rkt"
          "syntax.rkt")
 
 ;; Singleton set interpreter 
 
 (define-unit eval-set@
-  (import ev^ δ^)
-  (export eval^ ev-monad^ return^)
+  (import ev^ δ^ sto-monad^)
+  (export eval^ ev-monad^ return^ return-ans^ return-vals^)
   
   (define (eval e)
     ((ev e (hash)) (hash)))
@@ -29,26 +30,14 @@
                    [(cons v s)
                     ((f v) s)]))))
   
-  (define ((lookup-env r x) s)
-    (for/set [(v (lookup s r x))]
-             (cons v s)))
+  (define ((return-vals vs) s)
+    (return-anss (for/set ([v vs])
+                          (cons v s))))
+             
+  (define (return-ans v s)
+    (return-anss (set (cons v s))))
   
-  (define ((alloc f v) s) 
-    (match f
-      [(cons (lam x e) r)
-       (define a (gensym))
-       (set (cons a (join-sto s a v)))]))
+  (define (return-anss anss) anss))
   
-  (define ((new v) s)  
-    (define a (gensym))
-    (set (cons a (update-sto s a (set v)))))
-  
-  (define ((sbox a v) s)
-    (set (cons a (update-sto s a (set v)))))
-  
-  (define ((ubox a) s)
-    (for/set ((v (lookup-sto s a)))
-             (cons v s))))
-
 (define-values/invoke-unit/infer  
-  (link eval-set@ ev@ delta@))
+  (link eval-set@ ev@ delta@ sto-set@))

@@ -6,6 +6,7 @@
          "symbolic-monad-sig.rkt"
          "ev-symbolic-unit.rkt"
          "delta-unit.rkt"
+         "sto-0cfa-unit.rkt"
          "store.rkt"
          "syntax.rkt")
 
@@ -15,8 +16,8 @@
 ;; eval : E ->_total [Setof Ans]
 
 (define-unit pdcfa@
-  (import ev^ δ^)
-  (export eval^ ev-monad^ symbolic-monad^ return^)
+  (import ev^ δ^ sto-monad^)
+  (export eval^ ev-monad^ symbolic-monad^ return^ return-ans^ return-vals^)
 
   (define (eval e)
     (match (((ev e (hash)) (hash)) (hash))
@@ -73,7 +74,7 @@
   
   (define ((fail) s)
     (return-ans 'fail s))      
-  
+  #|
   (define ((lookup-env r x) s)
     ((return-vals (lookup s r x)) s))
   
@@ -91,8 +92,10 @@
     (return-ans a (join-sto s a v)))
   
   (define ((ubox a) s)
-    ((return-vals (lookup-sto s a)) s)))
+    ((return-vals (lookup-sto s a)) s))
+  |#
+  )
   
 
 (define-values/invoke-unit/infer  
-  (link pdcfa@ ev-symbolic@ abs-delta@))
+  (link pdcfa@ ev-symbolic@ abs-delta@ sto-0cfa@))
