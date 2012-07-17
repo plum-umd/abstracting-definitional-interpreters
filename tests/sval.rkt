@@ -48,3 +48,14 @@
             
 (check-eval (op1 'add1 (app (sym 'f) (num '7)))
             '(add1 (f 7)))
+(check-eval (lrc 'f (lam 'x
+                         (ifz (vbl 'x)
+                              (vbl 'x)
+                              (op1 'add1
+                                   (app (vbl 'f)
+                                        (op2 '+ 
+                                             (vbl 'x)
+                                             (num -1))))))
+                 (app (vbl 'f)
+                      (num 5)))
+            5)

@@ -11,6 +11,7 @@
 (define-signature sto-monad^
   (lookup-env
    alloc
+   ralloc
    new
    sbox
    ubox))

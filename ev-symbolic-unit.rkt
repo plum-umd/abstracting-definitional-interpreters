@@ -49,6 +49,9 @@
        (sbox a v))]
     [(lam x e)
      (return (cons (lam x e) r))]
+    [(lrc f (lam x e0) e)
+     (do a ← (ralloc f (cons (lam x e0) r))
+       (rec e (extend-env r f a)))]
     [(app e0 e1)
      (do v0 ← (rec e0 r)
          v1 ← (rec e1 r)

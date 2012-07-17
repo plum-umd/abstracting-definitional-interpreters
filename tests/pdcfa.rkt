@@ -60,3 +60,16 @@
 
 (check-eval (app (sym 'f) (num 5))
             'fail)
+
+;; FIXME: Get (set) -- not good.
+(check-eval (lrc 'f (lam 'x
+                         (ifz (vbl 'x)
+                              (vbl 'x)
+                              (op1 'add1
+                                   (app (vbl 'f)
+                                        (op2 '+ 
+                                             (vbl 'x)
+                                             (num -1))))))
+                 (app (vbl 'f)
+                      (num 5)))
+            'N)

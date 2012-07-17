@@ -20,6 +20,12 @@
      (define a (gensym))
      (return-ans a (join-sto s a v))]))
 
+(define ((ralloc x v) s)
+  (match v
+    [(cons e r)
+     (define a (gensym))
+     (return-ans a (join-sto s a (cons e (hash-set r x a))))]))
+
 (define ((new v) s)   
   (define a (gensym))
   (return-ans a (join-sto s a v)))

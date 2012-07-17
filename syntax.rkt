@@ -12,3 +12,4 @@
 (struct ubx (e)        #:transparent)
 (struct sbx (e0 e1)    #:transparent)
 (struct sym (s)        #:transparent)
+(struct lrc (f x e)    #:transparent)

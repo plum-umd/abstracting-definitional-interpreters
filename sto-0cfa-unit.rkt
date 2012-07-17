@@ -16,6 +16,12 @@
      (define a x) ; 0CFA-like abstraction
      (return-ans a (join-sto s a v))]))
 
+(define ((ralloc x v) s)
+  (match v
+    [(cons e r)
+     (define a x)
+     ((return a) (join-sto s a (cons e (hash-set r x a))))]))
+
 (define ((new v) s)   
   (define a 'box) ; One box per program abstraction
   (return-ans a (join-sto s a v)))

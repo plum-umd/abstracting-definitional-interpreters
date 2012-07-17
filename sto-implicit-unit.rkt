@@ -1,5 +1,6 @@
 #lang racket/unit
-(require "ev-monad-sig.rkt")
+(require (only-in racket shared match)
+         "ev-monad-sig.rkt")
 (import return^)
 (export sto-monad^)
 
@@ -8,6 +9,15 @@
 
 (define (alloc f v)
   (return v))
+
+(define (ralloc x v)
+  (match v
+    [(cons e r)     
+     (let* ([ph (make-placeholder #f)]
+            [f (cons e (hash-set r x ph))])
+       (placeholder-set! ph f)
+       (return
+        (make-reader-graph f)))]))
 
 (define (new v)
   (return (box v)))
