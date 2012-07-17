@@ -62,6 +62,7 @@
             'fail)
 
 ;; FIXME: Get (set) -- not good.
+#;
 (check-eval (lrc 'f (lam 'x
                          (ifz (vbl 'x)
                               (vbl 'x)
@@ -73,3 +74,22 @@
                  (app (vbl 'f)
                       (num 5)))
             'N)
+
+;; Also b0rked
+#;
+(check-eval (lrc 'f (lam 'x
+                         (ifz (vbl 'x)
+                              (vbl 'x)
+                              (app (vbl 'f)
+                                   (op1 'add1
+                                        (app (vbl 'f)
+                                             (vbl 'x))))))
+                 (app (vbl 'f)
+                      (sym 'N)))
+            'N)
+
+;; The essence of the b0rkedness:
+(check-eval (ifz (sym 'N)
+                 (num 5)
+                 Ω)
+            5)
