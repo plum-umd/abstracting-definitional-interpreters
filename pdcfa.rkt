@@ -38,8 +38,12 @@
   (define (symbolic-apply v0 v1)
     (fail))
 
-  (define (both v0 v1)
-    (return-vals (set v0 v1)))
+  (define (((both c0 c1) s) m)
+    (match ((c0 s) m)
+      [(cons anss0 m)
+       (match ((c1 s) m)
+         [(cons anss1 m)
+          (cons (set-union anss0 anss1) m)])]))
   
   (define (((bind a f) s) m)
     (match ((a s) m)

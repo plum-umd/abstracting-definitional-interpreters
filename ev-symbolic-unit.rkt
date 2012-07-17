@@ -27,9 +27,8 @@
          [0           (rec e1 r)]
          [(? number?) (rec e2 r)]
          [(? symbolic?) 
-          (do v0 ← (rec e1 r)
-              v1 ← (rec e2 r)
-            (both v0 v1))]))]
+          (both (rec e1 r)
+                (rec e2 r))]))]
     [(op1 o e0)
      (do v ← (rec e0 r) 
        (δ o v))]

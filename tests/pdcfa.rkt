@@ -15,7 +15,6 @@
 (check-eval (op2 '+ (num 5) (num 11)) 'N)
 (check-eval (lam 'x (vbl 'x))
             (cons (lam 'x (vbl 'x)) ρ))
-
 (check-eval (app (lam 'x (num 7)) (num 5)) 7)
 (check-eval (app (lam 'x (lam '_ (vbl 'x))) (num 5))
             (cons (lam '_ (vbl 'x)) ρ))            
@@ -61,8 +60,6 @@
 (check-eval (app (sym 'f) (num 5))
             'fail)
 
-;; FIXME: Get (set) -- not good.
-#;
 (check-eval (lrc 'f (lam 'x
                          (ifz (vbl 'x)
                               (vbl 'x)
@@ -75,8 +72,6 @@
                       (num 5)))
             'N)
 
-;; Also b0rked
-#;
 (check-eval (lrc 'f (lam 'x
                          (ifz (vbl 'x)
                               (vbl 'x)
@@ -88,7 +83,11 @@
                       (sym 'N)))
             'N)
 
-;; The essence of the b0rkedness:
+(check-eval (ifz (sym 'N)
+                 (num 5)
+                 (num 7))
+            5 7)
+
 (check-eval (ifz (sym 'N)
                  (num 5)
                  Ω)

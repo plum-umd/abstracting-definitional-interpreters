@@ -16,8 +16,8 @@
   
   (define (symbolic? x) (or (symbol? x) (pair? x)))
   
-  (define ((both v1 v2) s)
-    (both-ans (cons v1 s) (cons v2 s)))
+  (define ((both c0 c1) s)
+    (both-ans (c0 s) (c1 s)))
   
   (define (symbolic-apply f v)
     (return `(,f ,v)))
