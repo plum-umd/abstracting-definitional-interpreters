@@ -21,6 +21,7 @@
   (define (δ o . vs)
     (return (match* (o vs)
               [('add1 (list n))  'N]
+              [('sub1 (list n))  'N]              
               [('+ (list n1 n2)) 'N]))))
 
 (define-unit symbolic-delta@

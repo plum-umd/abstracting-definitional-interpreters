@@ -88,10 +88,24 @@
                          (ifz (vbl 'x)
                               (num 0)
                               (app (vbl 'f)
-                                   (sym 'M))))
+                                   (sym 'N))))
                  (app (vbl 'f)
                       (sym 'N)))
             0 0)
+
+;; This is a definite soundness bug.
+;; Get {0}, but concretely produces 7.
+(eval (lrc 'f (lam 'x
+                   (ifz (vbl 'x)
+                        (num 0)
+                        (ifz (app (vbl 'f)
+                                  (op1 'sub1 (sym 'x)))
+                             (num 7)
+                             (app (vbl 'f)
+                                  (sym 'x)))))
+           (app (vbl 'f)
+                (op1 'sub1 (num 2)))))
+                
 
 (check-eval (ifz (sym 'N)
                  (num 5)
