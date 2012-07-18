@@ -9,7 +9,11 @@
   (define (δ o . vs)
     (return (match* (o vs)
               [('add1 (list n))  (add1 n)]
-              [('+ (list n1 n2)) (+ n1 n2)]))))
+              [('sub1 (list n))  (sub1 n)]
+              [('- (list n))     (- n)]
+              [('+ (list n1 n2)) (+ n1 n2)]
+              [('- (list n1 n2)) (- n1 n2)]
+              [('* (list n1 n2)) (* n1 n2)]))))             
 
 (define-unit abs-delta@
   (import return^)
@@ -32,6 +36,7 @@
                (+ n m)]
               [('+ (list s t))
                `(+ ,s ,t)]))))
+              
 
 
 (define-unit identity@
