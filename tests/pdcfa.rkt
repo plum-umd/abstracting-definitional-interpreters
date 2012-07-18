@@ -83,6 +83,16 @@
                       (sym 'N)))
             'N)
 
+;; Is this a soundness bug?
+(check-eval (lrc 'f (lam 'x
+                         (ifz (vbl 'x)
+                              (num 0)
+                              (app (vbl 'f)
+                                   (sym 'M))))
+                 (app (vbl 'f)
+                      (sym 'N)))
+            0 0)
+
 (check-eval (ifz (sym 'N)
                  (num 5)
                  (num 7))
