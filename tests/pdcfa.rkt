@@ -101,8 +101,7 @@
                         (ifz (app (vbl 'f)
                                   (op1 'sub1 (sym 'x)))
                              (num 7)
-                             (app (vbl 'f)
-                                  (sym 'x)))))
+                             (num 9))))
            (app (vbl 'f)
                 (op1 'sub1 (num 2)))))
                 
