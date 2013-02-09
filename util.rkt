@@ -1,5 +1,5 @@
 #lang racket
-(provide set check-match)
+(provide set)
 (require rackunit)
 
 (define-match-expander set
@@ -7,10 +7,3 @@
     [(set p ...)
      (? set? (app set->list (list-no-order p ...)))])
   (make-rename-transformer #'set))
-
-(define-syntax check-match
-  (syntax-rules ()
-    [(check-match e p)
-     (check-true (match e
-                   [p #true]
-                   [_ #false]))]))
