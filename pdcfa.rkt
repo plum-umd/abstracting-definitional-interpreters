@@ -19,6 +19,17 @@
   (import ev^ δ^ sto-monad^)
   (export eval^ ev-monad^ symbolic-monad^ return^ return-ans^ return-vals^)
 
+  ;; iterates ev until reaching a fixed point in the memo-table
+  (define (eval e)
+    (let loop ([m (hash)] [anss (set)])
+      (match (((ev e (hash)) (hash)) m)
+        [(and r (cons anss1 m1))
+	 (if (equal? r (cons anss m))
+             r
+             (loop m1 anss1))])))
+
+  ;; ev just once
+  #;
   (define (eval e)
     (match (((ev e (hash)) (hash)) (hash))
       [(cons anss m) anss]))
