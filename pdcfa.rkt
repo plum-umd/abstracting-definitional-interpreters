@@ -21,11 +21,11 @@
 
   ;; iterates ev until reaching a fixed point in the memo-table
   (define (eval e)
-    (let loop ([m (hash)] [anss (set)])
-      (match (((ev e (hash)) (hash)) m)
+    (let loop ([m* (hash)] [anss (set)])
+      (match ((((ev e (hash)) (hash)) (hash)) m*)
         [(and r (cons anss1 m1))
-	 (if (equal? r (cons anss m))
-             r
+	 (if (equal? r (cons anss m*))
+             anss1
              (loop m1 anss1))])))
 
   ;; ev just once
@@ -34,12 +34,12 @@
     (match (((ev e (hash)) (hash)) (hash))
       [(cons anss m) anss]))
       
-  (define (((rec e r) s) m)
+  (define ((((rec e r) s) m) m*)
     (define ers (list e r s))
     (define anss (hash-ref m ers #false))
     (if anss
         (cons anss m)
-        (match (((ev e r) s) (hash-set m ers (set)))
+        (match ((((ev e r) s) (hash-set m ers (hash-ref m* ers (set)))) m*)
           [(cons anss m)
            (cons anss (hash-set m ers anss))])))
   
@@ -49,15 +49,15 @@
   (define (symbolic-apply v0 v1)
     (fail))
 
-  (define (((both c0 c1) s) m)
-    (match ((c0 s) m)
+  (define ((((both c0 c1) s) m) m*)
+    (match (((c0 s) m) m*)
       [(cons anss0 m)
-       (match ((c1 s) m)
+       (match (((c1 s) m) m*)
          [(cons anss1 m)
           (cons (set-union anss0 anss1) m)])]))
   
-  (define (((bind a f) s) m)
-    (match ((a s) m)
+  (define ((((bind a f) s) m) m*)
+    (match (((a s) m) m*)
       [(cons anss m)
        (let-values 
            ([(anss m)
@@ -68,7 +68,7 @@
                  [(cons 'fail s)
                   (values (set-union rs (set (cons 'fail s))) m)]
                  [(cons v s)
-                  (match (((f v) s) m)
+                  (match ((((f v) s) m) m*)
                     [(cons anss m) (values (set-union rs anss) m)])]))])
          (cons anss m))]))
   
@@ -81,10 +81,10 @@
   (define (return-ans v s)
     (return-anss (set (cons v s))))
   
-  (define ((return-anss anss) m)
+  (define (((return-anss anss) m) m*)
     (cons anss m))
              
-  (define (((return v) s) m)
+  (define ((((return v) s) m) m*)
     (cons (set (cons v s)) m))
   
   (define ((fail) s)

@@ -91,19 +91,20 @@
                                    (sym 'N))))
                  (app (vbl 'f)
                       (sym 'N)))
-            0 0)
+            0)
 
-;; This is a definite soundness bug.
-;; Get {0}, but concretely produces 7.
-(eval (lrc 'f (lam 'x
-                   (ifz (vbl 'x)
-                        (num 0)
-                        (ifz (app (vbl 'f)
-                                  (op1 'sub1 (sym 'x)))
-                             (num 7)
-                             (num 9))))
-           (app (vbl 'f)
-                (op1 'sub1 (num 2)))))
+;; This used to be a soundness bug producing {0} on
+;; first iteration.  Fixed with fixed points!
+(check-eval (lrc 'f (lam 'x
+                         (ifz (vbl 'x)
+                              (num 0)
+                              (ifz (app (vbl 'f)
+                                        (op1 'sub1 (sym 'x)))
+                                   (num 7)
+                                   (num 9))))
+                 (app (vbl 'f)
+                      (op1 'sub1 (num 2))))
+            0 7 9)
                 
 
 (check-eval (ifz (sym 'N)
