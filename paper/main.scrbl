@@ -1,11 +1,13 @@
 #lang scribble/sigplan @nocopyright
-@require[scribble/manual]
+@(require scribble/manual)
 @(require scribble/decode)
 @(require scriblib/figure)
+@(require "bib.rkt")
+
 
 @title{Abstracting Definitional Interpreters}
 @;title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
-@subtitle{Functional Pearl}
+@;subtitle{Functional Pearl}
 
 @authorinfo["David Van Horn" "Northeastern University" "dvanhorn@ccs.neu.edu"]
 
@@ -18,11 +20,51 @@ computable abstract interpreter that arises from the composition of
 simple, independent components.  Remarkably, this interpreter
 implements a form of pushdown control flow analysis (PDCFA) in which
 calls and returns are always properly matched in the abstract
-semantics.  True to the definitional style, the evaluator involves no
-explicit mechanics to achieve this property; it is simply inherited
-from the defining language.}
+semantics.  True to the definitional style of Reynolds, the evaluator
+involves no explicit mechanics to achieve this property; it is simply
+inherited from the defining language.}
+
+@keywords{definitional interpreters, abstract interpretation, pushdown
+control flow analysis}
 
 @section{Introduction}
+
+In his landmark paper, @emph{Definitional interpreters for
+higher-order languages}@~cite[reynolds72], Reynolds first observed
+that when a language is defined by way of an interpreter, it is
+possible for the defined language to inherit semantic characteristics
+of the defining language of the interpreter.  For example, it is easy
+to write a compositional evaluator that defines a call-by-value
+language if the defining language is call-by-value, but defines a
+call-by-name language if the defining language is call-by-name.
+
+In this paper, we make the following two observations:
+
+@itemlist[#:style 'ordered
+
+@item{Definitional interpreters, written in monadic style,
+can simultaneously define a language's semantics as well as
+safe approximations of those semantics.}
+
+@item{These definitional abstract interpreters can inherit
+characteristics of the defining language.  In particular, we show that
+the abstract interpreter inherits the call and return matching
+property of the defining language and therefore realizes an abstract
+intpretation in the pushown style of analyses@~cite[cfa2-diss
+pdcfa-sfp10].}
+
+]
+
+A common problem of past approaches to the control flow analysis of
+functional languages is the inability to properly match a function
+call with its return in the abstract semantics, leading to infeasible
+program (abstract) executions in which a call is made from one point
+in the program text, but control returns to another.  The CFA2
+analysis of Vardoulakis and Shivers@~cite[cfa2-lmcs] was the first
+approach that overcame this shortcoming.  In essence, this kind of
+analysis can be viewed as replacing the traditional finite automata
+abstractions of programs with pushdown automata@~cite[pdcfa-sfp10].
+
 
 @subsection{Notation and terminology}
 
@@ -228,8 +270,16 @@ PLDI 2013: small-step monad.
 
 Danvy, monadic interpreters and abstract machines.
 
+@~cite[steele-popl94 liang-popl95]
+
 CFA2
 
 Big CFA2 in Dimitris' diss.
 
 Acknowledgments: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.
+
+@;==============================================================================
+@; BIBLIOGRAPHY
+
+
+@(generate-bibliography)
