@@ -4,26 +4,23 @@
 @(require scriblib/figure)
 
 @title{Abstracting Definitional Interpreters}
+@;title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
 @subtitle{Functional Pearl}
 
 @authorinfo["David Van Horn" "Northeastern University" "dvanhorn@ccs.neu.edu"]
 
-@abstract{We recast program analysis in terms of compositional
-definitional interpreters written in monadic style and show how to
-instantiate the interpreter to realize a sound and total
-@emph{abstract} interpreter.  The abstract interpreter implements a
-so-called ``pushdown'' abstraction that properly matches calls and
-returns by virtue of the call and return mechanism of the
-meta-language.
-
-We argue that the approach scales up to rich languages by applying the
-technique to yield a modular abstract interpreter for a language with
-higher-order behavioral contracts.  We show how to incorporate
-abstract garbage collection is a straightforward manner.  Finally, we
-make a connection to @emph{recursive state machines} and show how
-model checking techniques can be used to verify nested word temporal
-properties of higher-order programs.}
-
+@abstract{A definitional interpreter written in monadic style can
+express a wide variety of abstract interpretations.  We give a
+rational reconstruction of a definitional abstract interpreter for a
+higher-order language by constructing a series of units implementing
+monadic operations.  The denouement of our story is a sound and
+computable abstract interpreter that arises from the composition of
+simple, independent components.  Remarkably, this interpreter
+implements a form of pushdown control flow analysis (PDCFA) in which
+calls and returns are always properly matched in the abstract
+semantics.  True to the definitional style, the evaluator involves no
+explicit mechanics to achieve this property; it is simply inherited
+from the defining language.}
 
 @section{Introduction}
 
@@ -223,3 +220,16 @@ its symbol, which we take to stand for the value of an arbitrary
 
 
 }|
+
+
+@section{Related work}
+
+PLDI 2013: small-step monad.
+
+Danvy, monadic interpreters and abstract machines.
+
+CFA2
+
+Big CFA2 in Dimitris' diss.
+
+Acknowledgments: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.
