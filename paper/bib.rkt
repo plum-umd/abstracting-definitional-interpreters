@@ -48,3 +48,14 @@
 			      (author-name "David" "Van Horn"))
 	    #:date "2010"
 	    #:location (proceedings-location "Workshop on Scheme and Functional Programming")))
+
+(define ager-tcs05
+  (make-bib #:title "A functional correspondence between monadic evaluators and abstract machines for languages with computational effects"
+	    #:author (authors (author-name "Mads Sig" "Ager")
+			      (author-name "Olivier" "Danvy")
+			      (author-name "Jan" "Midtgaard"))
+	    #:date "2005"
+	    #:location (journal-location "Theoretical Computer Science"
+					 #:volume "342"
+					 #:number "1")))
+
