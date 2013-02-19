@@ -19,7 +19,7 @@ monadic operations.  The denouement of our story is a sound and
 computable abstract interpreter that arises from the composition of
 simple, independent components.  Remarkably, this interpreter
 implements a form of pushdown control flow analysis (PDCFA) in which
-calls and returns are always properly matched in the abstract
+calls and units are always properly matched in the abstract
 semantics.  True to the definitional style of Reynolds, the evaluator
 involves no explicit mechanics to achieve this property; it is simply
 inherited from the defining language.}
@@ -48,7 +48,7 @@ safe approximations of those semantics.}
 
 @item{These definitional abstract interpreters can inherit
 characteristics of the defining language.  In particular, we show that
-the abstract interpreter inherits the call and return matching
+the abstract interpreter inherits the call and unit matching
 property of the defining language and therefore realizes an abstract
 intpretation in the pushown style of analyses@~cite[cfa2-diss
 pdcfa-sfp10].}
@@ -57,125 +57,133 @@ pdcfa-sfp10].}
 
 A common problem of past approaches to the control flow analysis of
 functional languages is the inability to properly match a function
-call with its return in the abstract semantics, leading to infeasible
+call with its unit in the abstract semantics, leading to infeasible
 program (abstract) executions in which a call is made from one point
-in the program text, but control returns to another.  The CFA2
+in the program text, but control units to another.  The CFA2
 analysis of Vardoulakis and Shivers@~cite[cfa2-lmcs] was the first
 approach that overcame this shortcoming.  In essence, this kind of
 analysis can be viewed as replacing the traditional finite automata
 abstractions of programs with pushdown automata@~cite[pdcfa-sfp10].
 
 
+@;{
 @subsection{Notation and terminology}
 
 Our technical development is carried out in Racket [Racket TR], a Lisp
 dialect.  We assume a basic familiarity with definitional interpreters
 in the style of Landin [Landin].
+}
 
 @section{A Definitional Interpreter}
 
-We begin by giving a definitional interpreter for a prototypical
-higher order language.
+We begin by giving a definitional interpreter for an archetypal
+applicative higher order language.
+
+@subsection{Applicative higher-order language}
 
 The following grammar defines the abstract syntax:
 @codeblock[#:keep-lang-line? #f]|{
   #lang racket
-  ;;  E  = (vbl X)       Variable
-  ;;    |  (num Number)  Number
-  ;;    |  (lam X E)     Lambda
-  ;;    |  (app E E)     Application
-  ;;    |  (op1 O E)     Unary primitive
-  ;;    |  (op2 O E E)   Binary primitive
-  ;;    |  (ifz E E E)   Conditional
-  ;;  X = Symbol         Variable name
-  ;; O1 = 'add1 | ...    Unary operator
-  ;; O2 = '+ | '- | ...  Binary operator
+  ;; E  | (vbl X)       Variable
+  ;;    | (num Number)  Number
+  ;;    | (lam X E)     Lambda
+  ;;    | (ifz E E E)   Conditional
+  ;;    | (op1 O1 E)    Unary primitive
+  ;;    | (op2 O2 E E)  Binary primitive
+  ;;    | (app E E)     Application
+  ;;    | (lrc X E E)   Letrec
+  ;;  X = Symbol        Variable name
+  ;; O1 = 'add1 | ...   Unary operator
+  ;; O2 = '+ | '- | ... Binary operator
 }|
-The result of evaluation is called an @emph{answer} and consists of a
-value and a store (a heap).  Values in this language include numbers
-and functions, represented as closures; heaps are maps from addresses
-to values:
+
+The result of evaluation is a value computation.  Values in this
+language include numbers and functions, represented as closures; heaps
+are maps from addresses to values:
+
 @codeblock[#:keep-lang-line? #f]|{
   #lang racket
-  ;; Ans = (cons V H)          Answers
-  ;;   V = Number              Values
-  ;;     | (cons (lam X E) R)
-  ;;   R = (X ↦ A)            Environments
-  ;;   A = Symbol              Addresses
-  ;;   H = (A ↦ V)            Heaps
+  ;; V = Number              Values
+  ;;   | (cons (lam X E) R)
+  ;; R = (X ↦ A)            Environments
 }|
 
 
 We define the meaning of a program (a closed expression) by way of an
 evaluation function that compositionally interprets expressions.  The
-evaluator, given in @figure-ref{pcf-eval}, is written in the usual
-definitional interpreter style [Landin, Friedman & Wand], with some
-minor exceptions: (1) it is written in monadic style, (2) it uses a
-store and binds variables to values via the store, and (3) it is
-implicitly parameterized by a few metafunctions, indicated with
-italics.  Each of these choices facilitate the subsequent abstraction.
+evaluator, given in @figure-ref{pcf-eval}.
 
 
 @figure["pcf-eval" "Definitional interpreter"]{
-@codeblock[#:keep-lang-line? #f]|{
-#lang racket
-(define (ev e r s) ;; E R S -> Ans
+@codeblock[#:keep-lang-line? #t]|{
+(define (ev e r) ;; E R -> [M V]
   (match e
-    [(vbl x)
-     (do (lookup s r x)
-       [v (_return (cons v s))])]
-    [(num n) (_return (cons n s))]
+    [(vbl x) (_lookup-env r x)]
+    [(num n) (_unit n)]
+    [(lam x e) (_unit (cons (lam x e) r))]
     [(ifz e0 e1 e2)
-     (do (ev e0 r s)
-       [(cons 0 s) (ev e1 r s)]
-       [(cons n s) (ev e2 r s)])]
-     [(op1 o e0)
-      (do (ev e0 r s)
-        [(cons v s)
-         (_return (_δ o v s))])]
-     [(op2 o e0 e1)
-      (do (ev e0 r s)
-        [(cons v0 s)
-         (do (ev e1 r s)
-           [(cons v1 s)
-            (_return (_δ o v0 v1 s))])])]
-     [(lam x e)
-      (_return (cons (cons (lam x e) r) s))]
-     [(app e0 e1)
-      (do (ev e0 r s)
-        [(cons v0 s)
-         (do (ev e1 r s)
-           [(cons v1 s) (ap v0 v1 s)])])]))
+     (do v ← (_ev e0 r)
+       (match v
+         [0 (_ev e1 r)]
+         [(? number?) (_ev e2 r)]))]
+    [(op1 o e0)
+     (do v ← (_ev e0 r)
+       (_δ o v))]
+    [(op2 o e0 e1)
+     (do v0 ← (_ev e0 r)
+         v1 ← (_ev e1 r)
+       (_δ o v0 v1))]
+    [(app e0 e1)
+     (do v0 ← (_ev e0 r)
+         v1 ← (_ev e1 r)
+       (match v0
+         [(cons (lam x e) r0)
+          (do a ← (_alloc v0 v1)
+            (_ev e (ext-env r0 x a)))]))]
+    [(lrc f (lam x e0) e)
+     (do a ← (_ralloc f (cons (lam x e0) r))
+       (_ev e (ext-env r f a)))]))
 
-(define (av v0 v1 s) ;; V V S -> Ans
-  (match v0
-    [(cons (lam x e) r0)
-     (define a (alloc v0 v1 s))
-     (ev e
-         (extend-env r0 x a)
-         (update-sto s a v1))]))
 }|
 }
 
-The evaluator is written in monadic style using
-@racket[do] and @racket[_return].  The @racket[do] syntax is simple
-syntactic sugar for
-@racket[_bind]:
-@codeblock[#:keep-lang-line? #f]|{
-#lang racket
-   (do e c ...)
-     ≡ (_bind e (λ (r) (match r c ...)))
-}|
-The @racket[_bind] and @racket[_return] functions should, for the moment,
-be thought of as implementing the identity monad:
-@codeblock[#:keep-lang-line? #f]|{
-#lang racket
-      _return ≡ (λ (x) x)
-        _bind ≡ (λ (r f) (f r))
-}|
-By writing the interpreter in monadic style, we can, simply through
-alternate definition of @racket[_bind] and @racket[_return], express
-computations producing a @emph{set} or @emph{tree} of values.
+The evaluator is written in monadic style using @racket[do] notation,
+which is syntactic sugar for @racket[_bind]:
+
+@racketblock[
+(do b) ≡ b
+(do x ← e . r) ≡ (_bind e (λ (x) (do . r)))
+]
+
+The evaluator is implicity parameterized over a set of names written
+in italic, namely: @racket[_unit], @racket[_bind],
+@racket[_lookup-env], @racket[_alloc], @racket[_ralloc], and even
+@racket[_ev], which should not be confused with @racket[ev].  Compared
+with other monadic evaluators, such as that of @citet[ager-tcs05],
+which use only @racket[_bind] and @racket[_unit], this evaluator makes
+use of several more operations.  We give a brief description and
+motivation of the additional operations:
+
+@itemlist[
+
+@item{@racket[_lookup-env]: this operation produces an answer
+computation from a variable and environment.  By making the
+environment lookup an operation in the monad, our evaluator take a
+number of implementation strategies for implementing binding.  In
+particular, if we would like variables to bound in the heap, we want
+@racket[_lookup-env] to produce a function that dereferences the
+location denoted by the variable in the heap.}
+
+@item{@racket[_alloc]: this operation produces an address to allocate
+for the binding of a variable}
+
+@item{@racket[_ralloc]: ...}
+
+@item{@racket[_ev]: ...}
+]
+
+
+
 
 By using a store-based evaluator, it becomes easy to model imperative
 features, but more importantly, the store becomes a singe point of
@@ -210,6 +218,24 @@ evaluator in monadic style.  As we'll see, turning it into a
 sound and total abstract interpreter is just a matter of plugging in
 the right parameters.  But first, we take a slight detour and extend
 our evaluator to handle @emph{symbolic} data.
+
+@racketblock[
+(import unit^ δ^ ev-monad^ sto-monad^)
+(export ev^)
+]
+
+@racketblock[
+(define-signature unit^ (unit))
+(define-signature δ^ (δ))
+(define-signature ev-monad^ (bind ev))
+(define-signature sto-monad^
+  (lookup-env alloc ralloc))
+]
+
+
+@subsection{Imperative higher-order language}
+
+
 
 @section{Symbolic Evaluation}
 
@@ -257,7 +283,7 @@ its symbol, which we take to stand for the value of an arbitrary
 
 (define (eval e r s)
   (match e
-    [(sym x) (_return (cons x s))]
+    [(sym x) (_unit (cons x s))]
     ...))
 
 
@@ -266,20 +292,23 @@ its symbol, which we take to stand for the value of an arbitrary
 
 @section{Related work}
 
-PLDI 2013: small-step monad.
-
 Danvy, monadic interpreters and abstract machines.
+
+@subsection{Monadic interpreters}
 
 @~cite[steele-popl94 liang-popl95]
 
-CFA2
+@subsection{Monadic abstract interpreters}
 
-Big CFA2 in Dimitris' diss.
+PLDI 2013: small-step monad.
 
-Acknowledgments: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.
+@subsection{Big CFA2}
 
-@;==============================================================================
-@; BIBLIOGRAPHY
+@~cite[cfa2-diss]
 
+
+@section{Conclusion}
+
+@bold{Acknowledgments}: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.
 
 @(generate-bibliography)
