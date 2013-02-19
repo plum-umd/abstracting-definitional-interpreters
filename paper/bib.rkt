@@ -10,14 +10,16 @@
   (make-bib #:title "Definitional interpreters for higher-order programming languages"
             #:author (author-name "John" "Reynolds")
 	    #:date "1972"
-	    #:location "Proceedings of the ACM annual conference"))
+	    #:location (proceedings-location "ACM Annual Conference")))
 
 (define cfa2-lmcs
   (make-bib #:title "CFA2: a Context-Free Approach to Control-Flow Analysis"
             #:author (authors dimvar
 			      (author-name "Olin" "Shivers"))
             #:date "2011"
-            #:location "Logical Methods in Computer Science 7(2:3)"))
+            #:location (journal-location "Logical Methods in Computer Science"
+					 #:number "2:3"
+					 #:volume "7")))
 
 (define cfa2-diss
   (make-bib #:title "CFA2: Pushdown Flow Analysis for Higher-Order Languages"
@@ -29,7 +31,7 @@
   (make-bib #:title "Building interpreters by composing monads"
             #:author (author-name "Guy L." "Steele" #:suffix "Jr.")
             #:date "1994"
-            #:location "Proceedings of the 21st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages"))
+            #:location (proceedings-location "21st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages")))
 
 (define liang-popl95
   (make-bib #:title "Monad transformers and modular interpreters"
@@ -37,7 +39,7 @@
 			      (author-name "Paul" "Hudak")
 			      (author-name "Mark" "Jones"))
             #:date "1995"
-            #:location "Proceedings of the 22nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages"))
+            #:location (proceedings-location "22nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages")))
 
 (define pdcfa-sfp10
   (make-bib #:title "Pushdown Control-Flow Analysis of Higher-Order Programs"
@@ -45,4 +47,4 @@
 			      (author-name "Matthew" "Might")
 			      (author-name "David" "Van Horn"))
 	    #:date "2010"
-	    #:location "Workshop on Scheme and Functional Programming"))
+	    #:location (proceedings-location "Workshop on Scheme and Functional Programming")))
