@@ -21,8 +21,7 @@
 (define (ev e r) ;; E R -> [M Ans]
   (match e
     ['fail (fail)]
-    [(vbl x)
-     (lookup-env r x)]
+    [(vbl x) (get r x)]
     [(sym s) (unit s)]
     [(num n) (unit n)]
     [(ifz e0 e1 e2)

@@ -13,7 +13,7 @@
 (define (lookup s r x)
   (hash-ref s (hash-ref r x)))
   
-(define ((lookup-env r x) s)
+(define ((get r x) s)
   ((unit (lookup s r x)) s))
 
 (define ((alloc f v) s) 

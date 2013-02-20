@@ -1,4 +1,4 @@
 #lang racket/signature
-lookup-env
+get
 alloc
 ralloc

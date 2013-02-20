@@ -14,7 +14,7 @@
 (define (update-sto s a v)
   (hash-set s a (set v)))
 
-(define ((lookup-env r x) s)
+(define ((get r x) s)
   ((unit-vals (lookup s r x)) s))
 
 (define ((alloc f v) s)

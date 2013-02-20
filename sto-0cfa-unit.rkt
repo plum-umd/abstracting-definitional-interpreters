@@ -10,7 +10,7 @@
 (import unit^ unit-vals^ unit-ans^)
 (export env^ sto^)
 
-(define ((lookup-env r x) s)
+(define ((get r x) s)
   ((unit-vals (lookup s r x)) s))
 
 (define ((alloc f v) s)

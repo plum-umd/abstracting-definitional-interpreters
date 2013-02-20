@@ -8,7 +8,7 @@
   (import unit^)
   (export env^)
 
-  (define (lookup-env r x)
+  (define (get r x)
     (unit (hash-ref r x)))
 
   (define (alloc f v)
