@@ -4,6 +4,7 @@
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
          "ev-unit.rkt"
+	 "env-unit.rkt"
 	 "unit-sig.rkt"
          "sto-implicit-unit.rkt"
          "delta-unit.rkt")
@@ -21,4 +22,4 @@
       [v     (f v)])))
 
 (define-values/invoke-unit/infer
-  (link eval@ ev@ delta@ sto-implicit@))
+  (link eval@ ev@ δ@ env@ sto-implicit@))

@@ -34,4 +34,4 @@
 
 
 (define-values/invoke-unit/infer
-  (link eval-trace@ ev@ delta@ sto-explicit@))
+  (link eval-trace@ ev@ δ@ sto-explicit@))

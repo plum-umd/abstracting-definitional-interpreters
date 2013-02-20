@@ -38,4 +38,4 @@
 
 
 (define-values/invoke-unit/infer
-  (link eval@ ev-symbolic@ symbolic-delta@ sto-explicit@))
+  (link eval@ ev-symbolic@ symbolic-δ@ sto-explicit@))

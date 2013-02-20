@@ -2,9 +2,9 @@
 (require "delta-sig.rkt")
 (require "unit-sig.rkt")
 
-(provide delta@ abs-delta@ symbolic-delta@)
+(provide δ@ abs-δ@ symbolic-δ@)
 
-(define-unit delta@
+(define-unit δ@
   (import unit^)
   (export δ^)
   (define (δ o . vs)
@@ -17,7 +17,7 @@
        [('- (list n1 n2)) (- n1 n2)]
        [('* (list n1 n2)) (* n1 n2)]))))
 
-(define-unit abs-delta@
+(define-unit abs-δ@
   (import unit^)
   (export δ^)
   (define (δ o . vs)
@@ -27,7 +27,7 @@
        [('sub1 (list n))  'N]
        [('+ (list n1 n2)) 'N]))))
 
-(define-unit symbolic-delta@
+(define-unit symbolic-δ@
   (import unit^)
   (export δ^)
   (define (δ o . vs)

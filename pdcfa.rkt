@@ -11,7 +11,7 @@
          "store.rkt"
          "syntax.rkt")
 
-;; Bounded store, memoizing abstract set interpreter 
+;; Bounded store, memoizing abstract set interpreter
 ;; aka PDCFA
 
 ;; eval : E ->_total [Setof Ans]
@@ -34,7 +34,7 @@
   (define (eval e)
     (match (((ev e (hash)) (hash)) (hash))
       [(cons anss m) anss]))
-      
+
   (define ((((rec e r) s) m) m*)
     (define ers (list e r s))
     (define anss (hash-ref m ers #false))
@@ -43,10 +43,10 @@
         (match ((((ev e r) s) (hash-set m ers (hash-ref m* ers (set)))) m*)
           [(cons anss m)
            (cons anss (hash-set m ers anss))])))
-  
+
   ;; FO Symbolic values
   (define symbolic? symbol?)
-    
+
   (define (symbolic-apply v0 v1)
     (fail))
 
@@ -56,11 +56,11 @@
        (match (((c1 s) m) m*)
          [(cons anss1 m)
           (cons (set-union anss0 anss1) m)])]))
-  
+
   (define ((((bind a f) s) m) m*)
     (match (((a s) m) m*)
       [(cons anss m)
-       (let-values 
+       (let-values
            ([(anss m)
              (for*/fold ([rs (set)]
                          [m m])
@@ -72,25 +72,23 @@
                   (match ((((f v) s) m) m*)
                     [(cons anss m) (values (set-union rs anss) m)])]))])
          (cons anss m))]))
-  
-  
-  
+
   (define ((unit-vals vs) s)
     (unit-anss (for/set ([v vs])
                           (cons v s))))
-             
+
   (define (unit-ans v s)
     (unit-anss (set (cons v s))))
-  
+
   (define (((unit-anss anss) m) m*)
     (cons anss m))
-             
+
   (define ((((unit v) s) m) m*)
     (cons (set (cons v s)) m))
-  
+
   (define ((fail) s)
     (unit-ans 'fail s)))
-  
 
-(define-values/invoke-unit/infer  
-  (link pdcfa@ ev-symbolic@ abs-delta@ sto-0cfa@))
+
+(define-values/invoke-unit/infer
+  (link pdcfa@ ev-symbolic@ abs-δ@ sto-0cfa@))
