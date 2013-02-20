@@ -22,4 +22,4 @@
       [(cons v s)     ((f v) s)])))
 
 (define-values/invoke-unit/infer
-  (link eval@ ev@ δ@ sto-explicit@))
+  (link eval@ ev!@ δ@ sto-explicit@))
