@@ -12,12 +12,11 @@
 
 (define (ralloc x v)
   (match v
-    [(cons e r)     
-     (let* ([ph (make-placeholder #f)]
-            [f (cons e (hash-set r x ph))])
-       (placeholder-set! ph f)
-       (return
-        (make-reader-graph f)))]))
+    [(cons e r)
+     (define p (make-placeholder #f))
+     (define f (cons e (hash-set r x p)))
+     (placeholder-set! p f)
+     (return (make-reader-graph f))]))
 
 (define (new v)
   (return (box v)))
