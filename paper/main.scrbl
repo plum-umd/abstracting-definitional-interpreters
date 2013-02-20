@@ -84,7 +84,7 @@ applicative higher order language.
 The following grammar defines the abstract syntax:
 @codeblock[#:keep-lang-line? #f]|{
   #lang racket
-  ;; E  | (vbl X)       Variable
+  ;; E  = (vbl X)       Variable
   ;;    | (num Number)  Number
   ;;    | (lam X E)     Lambda
   ;;    | (ifz E E E)   Conditional
@@ -147,6 +147,8 @@ evaluator, given in @figure-ref{pcf-eval}.
 }|
 }
 
+@~cite[flatt-pldi98]
+
 The evaluator is written in monadic style using @racket[do] notation,
 which is syntactic sugar for @racket[_bind]:
 
@@ -166,7 +168,7 @@ motivation of the additional operations:
 
 @itemlist[
 
-@item{@racket[_lookup-env]: this operation produces an answer
+@item{@racket[_lookup-env]: this operation produces a value
 computation from a variable and environment.  By making the
 environment lookup an operation in the monad, our evaluator take a
 number of implementation strategies for implementing binding.  In
@@ -174,13 +176,76 @@ particular, if we would like variables to bound in the heap, we want
 @racket[_lookup-env] to produce a function that dereferences the
 location denoted by the variable in the heap.}
 
-@item{@racket[_alloc]: this operation produces an address to allocate
-for the binding of a variable}
+@item{@racket[_alloc]: this operation produces an ``address'' to
+allocate for the binding of a variable.  The choice of addresses is up
+to the monad implementation, but forms the domain of the environment.}
 
-@item{@racket[_ralloc]: ...}
+@item{@racket[_ralloc]: similar to @racket[_alloc] but for binding a
+recursive function.}
 
-@item{@racket[_ev]: ...}
+@item{@racket[_ev]: this operation invokes a recursive call to the
+evaluator.  It is an operation in the monad in order to allow the
+monad implementation to observe evaluation of subexpressions.}
+
 ]
+
+
+@figure["delta" "Delta"]{
+@racketblock[
+(define-unit delta@
+  (import return^)
+  (export δ^)
+  (define (δ o . vs)
+    (_return
+      (match* (o vs)
+        [('add1 (list n)) (add1 n)]
+        [('sub1 (list n)) (sub1 n)]
+        [('+ (list n1 n2)) (+ n1 n2)]
+        [('- (list n1 n2)) (- n1 n2)]
+        [('* (list n1 n2)) (* n1 n2)]))))
+]}
+
+@figure["implicit-store" "Implicit store"]{
+@racketblock[
+(import return^)
+(export sto-monad^)
+
+(define (lookup-env r x)
+  (return (hash-ref r x)))
+
+(define (alloc f v)
+  (return v))
+
+(define (ralloc x v)
+  (match v
+    [(cons e r)
+     (define p (make-placeholder #f))
+     (define f (cons e (hash-set r x p)))
+     (placeholder-set! p f)
+     (_unit (make-reader-graph f))]))
+
+(define (new v)
+  (return (box v)))
+
+(define (sbox a v)
+  (set-box! a v)
+  (return a))
+
+(define (ubox a)
+  (return (unbox a)))
+]}
+
+
+@figure["eval" "Eval unit"]{
+@racketblock[
+(define-unit eval@
+  (import ev^)
+  (export eval^ return^ ev-monad^)
+  (define (eval e) (_ev e (hash)))
+  (define (ev e r) (_ev e r))
+  (define (unit v) v)
+  (define (bind v f) (f v)))
+]}
 
 
 
