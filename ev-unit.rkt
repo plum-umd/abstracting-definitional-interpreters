@@ -2,11 +2,13 @@
 (require racket/match
          "ev-monad-sig.rkt"
 	 "delta-sig.rkt"
+	 "env-sig.rkt"
+	 "sto-sig.rkt"
 	 "unit-sig.rkt"
          "ev-sig.rkt"
          "syntax.rkt")
 
-(import unit^ δ^ ev-monad^ sto-monad^)
+(import unit^ δ^ env^ sto^ ev-monad^)
 (export ev^)
 
 (define-syntax do

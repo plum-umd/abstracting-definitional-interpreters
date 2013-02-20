@@ -1,10 +1,12 @@
 #lang racket/unit
 (require (only-in racket shared match)
          "ev-monad-sig.rkt"
+	 "env-sig.rkt"
+	 "sto-sig.rkt"
 	 "unit-sig.rkt")
 
 (import unit^)
-(export sto-monad^)
+(export sto^ env^)
 
 (define (lookup-env r x)
   (unit (hash-ref r x)))

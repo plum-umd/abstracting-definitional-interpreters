@@ -3,11 +3,13 @@
          (only-in racket set)
          "ev-monad-sig.rkt"
 	 "unit-sig.rkt"
+	 "env-sig.rkt"
+	 "sto-sig.rkt"
          "store.rkt"
          "syntax.rkt")
 
 (import unit^ unit-vals^ unit-ans^)
-(export sto-monad^)
+(export env^ sto^)
 
 (define (update-sto s a v)
   (hash-set s a (set v)))

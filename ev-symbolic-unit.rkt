@@ -4,10 +4,12 @@
          "ev-sig.rkt"
 	 "unit-sig.rkt"
 	 "delta-sig.rkt"
+	 "env-sig.rkt"
+	 "sto-sig.rkt"
          "syntax.rkt"
          (only-in racket match))
 
-(import ev-monad^ unit^ δ^ symbolic-monad^ sto-monad^)
+(import ev-monad^ unit^ δ^ symbolic-monad^ sto^ env^)
 (export ev^)
 
 (define-syntax do

@@ -2,11 +2,13 @@
 (require racket/match
          "ev-monad-sig.rkt"
 	 "unit-sig.rkt"
+	 "env-sig.rkt"
+	 "sto-sig.rkt"
          "store.rkt"
          "syntax.rkt")
 
 (import unit^)
-(export sto-monad^)
+(export env^ sto^)
 
 (define (lookup s r x)
   (hash-ref s (hash-ref r x)))
