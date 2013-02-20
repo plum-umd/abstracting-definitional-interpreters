@@ -1,13 +1,6 @@
 #lang racket/unit
-(require "bind-sig.rkt"
-         "fail-sig.rkt"
-         "symbolic-monad-sig.rkt"
-         "ev-sig.rkt"
-	 "unit-sig.rkt"
-	 "delta-sig.rkt"
-	 "env-sig.rkt"
-	 "sto-sig.rkt"
-         "syntax.rkt"
+(require "signatures.rkt"
+	 "syntax.rkt"
          (only-in racket match))
 
 (import unit^ bind^ δ^ symbolic-monad^ sto^ env^ fail^)

@@ -1,6 +1,5 @@
 #lang racket
-(require "delta-sig.rkt")
-(require "unit-sig.rkt")
+(require "signatures.rkt")
 
 (provide δ@ abs-δ@ symbolic-δ@)
 

@@ -1,11 +1,6 @@
 #lang racket
 (provide eval eval@ (struct-out both-ans))
-(require "ev-sig.rkt"
-         "eval-sig.rkt"
-	 "bind-sig.rkt"
-	 "fail-sig.rkt"
-         "symbolic-monad-sig.rkt"
-	 "unit-sig.rkt"
+(require "signatures.rkt"
          "ev-symbolic-unit.rkt"
          "sto-explicit-unit.rkt"
          "delta-unit.rkt")

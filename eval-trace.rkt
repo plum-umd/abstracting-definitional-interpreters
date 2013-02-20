@@ -1,11 +1,7 @@
 #lang racket
 (provide eval eval-trace@)
-(require "ev-sig.rkt"
-         "eval-sig.rkt"
-         "bind-sig.rkt"
-         "fail-sig.rkt"
-         "ev-bang-unit.rkt"
-	 "unit-sig.rkt"
+(require "signatures.rkt"
+	 "ev-bang-unit.rkt"
          "delta-unit.rkt"
          "sto-explicit-unit.rkt"
          "store.rkt"

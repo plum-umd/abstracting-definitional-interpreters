@@ -1,10 +1,7 @@
 #lang racket
 (provide eval eval@)
-(require "ev-sig.rkt"
-         "eval-sig.rkt"
-	 "unit-sig.rkt"
-         "bind-sig.rkt"
-         "ev-unit.rkt"
+(require "signatures.rkt"
+	 "ev-unit.rkt"
 	 "env-unit.rkt"
          "delta-unit.rkt")
 

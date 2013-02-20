@@ -1,12 +1,6 @@
 #lang racket
-(require "bind-sig.rkt"
-         "fail-sig.rkt"
-	 "delta-sig.rkt"
-	 "env-sig.rkt"
-	 "sto-sig.rkt"
-	 "unit-sig.rkt"
-         "ev-sig.rkt"
-         "syntax.rkt")
+(require "signatures.rkt"
+	 "syntax.rkt")
 
 (provide ev!@)
 

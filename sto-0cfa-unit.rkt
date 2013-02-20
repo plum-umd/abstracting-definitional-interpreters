@@ -1,10 +1,6 @@
 #lang racket/unit
 (require racket/match
-         "unit-sig.rkt"
-	 "bind-sig.rkt"
-	 "fail-sig.rkt"
-	 "sto-sig.rkt"
-	 "env-sig.rkt"
+         "signatures.rkt"
          "store.rkt"
          "syntax.rkt")
 

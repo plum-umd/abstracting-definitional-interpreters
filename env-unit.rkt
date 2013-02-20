@@ -1,6 +1,5 @@
 #lang racket
-(require "env-sig.rkt"
-	 "unit-sig.rkt")
+(require "signatures.rkt")
 
 (provide env@)
 
