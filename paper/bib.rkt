@@ -59,3 +59,9 @@
 					 #:volume "342"
 					 #:number "1")))
 
+(define flatt-pldi98
+  (make-bib #:title "Units: Cool Modules for HOT Languages"
+            #:author (authors (author-name "Matthew" "Flatt")
+			      (author-name "Matthias" "Felleisen"))
+	    #:date "1998"
+	    #:location (proceedings-location "ACM SIGPLAN 1998 Conference on Programming Language Design and Implementation")))
