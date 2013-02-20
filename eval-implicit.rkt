@@ -4,7 +4,7 @@
          "eval-sig.rkt"
          "bind-sig.rkt"
          "fail-sig.rkt"
-         "ev-unit.rkt"
+         "ev-bang-unit.rkt"
 	 "env-unit.rkt"
 	 "unit-sig.rkt"
          "sto-implicit-unit.rkt"
