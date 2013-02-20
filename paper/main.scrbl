@@ -115,37 +115,39 @@ evaluator, given in @figure-ref{pcf-eval}.
 
 
 @figure["pcf-eval" "Definitional interpreter"]{
-@codeblock[#:keep-lang-line? #t]|{
+@filebox[@racket[ev@]]{
+@racketblock[
+(import unit^ δ^ env^ ev-monad^)
+(export ev^)
+
 (define (ev e r) ;; E R -> [M V]
   (match e
-    [(vbl x) (_lookup-env r x)]
+    [(vbl x) (_get r x)]
     [(num n) (_unit n)]
     [(lam x e) (_unit (cons (lam x e) r))]
     [(ifz e0 e1 e2)
-     (do v ← (_ev e0 r)
+     (do v ← (_rec e0 r)
        (match v
-         [0 (_ev e1 r)]
-         [(? number?) (_ev e2 r)]))]
+         [0 (_rec e1 r)]
+         [(? number?) (_rec e2 r)]))]
     [(op1 o e0)
-     (do v ← (_ev e0 r)
+     (do v ← (_rec e0 r)
        (_δ o v))]
     [(op2 o e0 e1)
-     (do v0 ← (_ev e0 r)
-         v1 ← (_ev e1 r)
+     (do v0 ← (_rec e0 r)
+         v1 ← (_rec e1 r)
        (_δ o v0 v1))]
     [(app e0 e1)
-     (do v0 ← (_ev e0 r)
-         v1 ← (_ev e1 r)
+     (do v0 ← (_rec e0 r)
+         v1 ← (_rec e1 r)
        (match v0
          [(cons (lam x e) r0)
           (do a ← (_alloc v0 v1)
-            (_ev e (ext-env r0 x a)))]))]
+            (_rec e (ext-env r0 x a)))]))]
     [(lrc f (lam x e0) e)
      (do a ← (_ralloc f (cons (lam x e0) r))
-       (_ev e (ext-env r f a)))]))
-
-}|
-}
+       (_rec e (ext-env r f a)))]))
+]}}
 
 @~cite[flatt-pldi98]
 
@@ -159,21 +161,21 @@ which is syntactic sugar for @racket[_bind]:
 
 The evaluator is implicity parameterized over a set of names written
 in italic, namely: @racket[_unit], @racket[_bind],
-@racket[_lookup-env], @racket[_alloc], @racket[_ralloc], and even
-@racket[_ev], which should not be confused with @racket[ev].  Compared
-with other monadic evaluators, such as that of @citet[ager-tcs05],
-which use only @racket[_bind] and @racket[_unit], this evaluator makes
-use of several more operations.  We give a brief description and
-motivation of the additional operations:
+@racket[_get], @racket[_alloc], @racket[_ralloc], and
+@racket[_rec].  Compared with other monadic evaluators, such as that
+of @citet[ager-tcs05], which use only @racket[_bind] and
+@racket[_unit], this evaluator makes use of several more operations.
+We give a brief description and motivation of the additional
+operations:
 
 @itemlist[
 
-@item{@racket[_lookup-env]: this operation produces a value
+@item{@racket[_get]: this operation produces a value
 computation from a variable and environment.  By making the
 environment lookup an operation in the monad, our evaluator take a
 number of implementation strategies for implementing binding.  In
 particular, if we would like variables to bound in the heap, we want
-@racket[_lookup-env] to produce a function that dereferences the
+@racket[_get] to produce a function that dereferences the
 location denoted by the variable in the heap.}
 
 @item{@racket[_alloc]: this operation produces an ``address'' to
@@ -183,7 +185,7 @@ to the monad implementation, but forms the domain of the environment.}
 @item{@racket[_ralloc]: similar to @racket[_alloc] but for binding a
 recursive function.}
 
-@item{@racket[_ev]: this operation invokes a recursive return to the
+@item{@racket[_rec]: this operation invokes a recursive return to the
 evaluator.  It is an operation in the monad in order to allow the
 monad implementation to observe evaluation of subexpressions.}
 
@@ -191,31 +193,29 @@ monad implementation to observe evaluation of subexpressions.}
 
 
 @figure["delta" "Delta"]{
+@filebox[@racket[δ@]]{
 @racketblock[
-(define-unit delta@
-  (import return^)
-  (export δ^)
-  (define (δ o . vs)
-    (_return
-      (match* (o vs)
-        [('add1 (list n)) (add1 n)]
-        [('sub1 (list n)) (sub1 n)]
-        [('+ (list n1 n2)) (+ n1 n2)]
-        [('- (list n1 n2)) (- n1 n2)]
-        [('* (list n1 n2)) (* n1 n2)]))))
-]}
+(import unit^)
+(export δ^)
 
-@figure["implicit-store" "Implicit store"]{
+(define (δ o . vs)
+  (_unit
+    (match* (o vs)
+      [('add1 (list n)) (add1 n)]
+      [('sub1 (list n)) (sub1 n)]
+      [('+ (list n1 n2)) (+ n1 n2)]
+      [('- (list n1 n2)) (- n1 n2)]
+      [('* (list n1 n2)) (* n1 n2)])))
+]}}
+
+@figure["implicit-store" "Environment unit"]{
+@filebox[@racket[env@]]{
 @racketblock[
-(import return^)
-(export sto-monad^)
+(import unit^)
+(export env^)
 
-(define (lookup-env r x)
-  (return (hash-ref r x)))
-
-(define (alloc f v)
-  (return v))
-
+(define (get r x) (_unit (hash-ref r x)))
+(define (alloc f v) (_unit v))
 (define (ralloc x v)
   (match v
     [(cons e r)
@@ -223,29 +223,20 @@ monad implementation to observe evaluation of subexpressions.}
      (define f (cons e (hash-set r x p)))
      (placeholder-set! p f)
      (_unit (make-reader-graph f))]))
-
-(define (new v)
-  (return (box v)))
-
-(define (sbox a v)
-  (set-box! a v)
-  (return a))
-
-(define (ubox a)
-  (return (unbox a)))
-]}
+]}}
 
 
 @figure["eval" "Eval unit"]{
+@filebox[@racket[eval@]]{
 @racketblock[
-(define-unit eval@
-  (import ev^)
-  (export eval^ return^ ev-monad^)
-  (define (eval e) (_ev e (hash)))
-  (define (ev e r) (_ev e r))
-  (define (unit v) v)
-  (define (bind v f) (f v)))
-]}
+(import ev^)
+(export eval^ unit^ ev-monad^)
+
+(define (eval e) (_rec e (hash)))
+(define (ev e r) (_rec e r))
+(define (unit v) v)
+(define (bind v f) (f v))
+]}}
 
 
 
