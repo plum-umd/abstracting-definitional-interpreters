@@ -3,6 +3,7 @@
 (require "ev-sig.rkt"
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
+	 "unit-sig.rkt"
          "symbolic-monad-sig.rkt"
          "ev-symbolic-unit.rkt"
          "delta-unit.rkt"
@@ -17,7 +18,7 @@
 
 (define-unit pdcfa@
   (import ev^)
-  (export eval^ ev-monad^ symbolic-monad^ return^ return-ans^ return-vals^)
+  (export eval^ ev-monad^ symbolic-monad^ unit^ unit-ans^ unit-vals^)
 
   ;; iterates ev until reaching a fixed point in the memo-table
   (define (eval e)
@@ -74,21 +75,21 @@
   
   
   
-  (define ((return-vals vs) s)
-    (return-anss (for/set ([v vs])
+  (define ((unit-vals vs) s)
+    (unit-anss (for/set ([v vs])
                           (cons v s))))
              
-  (define (return-ans v s)
-    (return-anss (set (cons v s))))
+  (define (unit-ans v s)
+    (unit-anss (set (cons v s))))
   
-  (define (((return-anss anss) m) m*)
+  (define (((unit-anss anss) m) m*)
     (cons anss m))
              
-  (define ((((return v) s) m) m*)
+  (define ((((unit v) s) m) m*)
     (cons (set (cons v s)) m))
   
   (define ((fail) s)
-    (return-ans 'fail s)))
+    (unit-ans 'fail s)))
   
 
 (define-values/invoke-unit/infer  

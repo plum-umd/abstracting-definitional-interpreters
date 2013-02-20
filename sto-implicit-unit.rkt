@@ -1,14 +1,16 @@
 #lang racket/unit
 (require (only-in racket shared match)
-         "ev-monad-sig.rkt")
-(import return^)
+         "ev-monad-sig.rkt"
+	 "unit-sig.rkt")
+
+(import unit^)
 (export sto-monad^)
 
 (define (lookup-env r x)
-  (return (hash-ref r x)))
+  (unit (hash-ref r x)))
 
 (define (alloc f v)
-  (return v))
+  (unit v))
 
 (define (ralloc x v)
   (match v
@@ -16,14 +18,14 @@
      (define p (make-placeholder #f))
      (define f (cons e (hash-set r x p)))
      (placeholder-set! p f)
-     (return (make-reader-graph f))]))
+     (unit (make-reader-graph f))]))
 
 (define (new v)
-  (return (box v)))
+  (unit (box v)))
 
 (define (sbox a v)
   (set-box! a v)
-  (return a))
+  (unit a))
 
 (define (ubox a)
-  (return (unbox a)))
+  (unit (unbox a)))

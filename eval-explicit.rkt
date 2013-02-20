@@ -3,16 +3,17 @@
 (require "ev-sig.rkt"
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
-         "ev-unit.rkt"         
+         "ev-unit.rkt"
+	 "unit-sig.rkt"
          "sto-explicit-unit.rkt"
          "delta-unit.rkt")
 
 (define-unit eval@
   (import ev^)
-  (export eval^ return^ ev-monad^)  
-  (define (eval e) ((ev e (hash)) (hash)))  
+  (export eval^ unit^ ev-monad^)
+  (define (eval e) ((ev e (hash)) (hash)))
   (define (rec e r) (ev e r))
-  (define ((return v) s) (cons v s))
+  (define ((unit v) s) (cons v s))
   (define ((fail) s) (cons 'fail s))
   (define ((bind a f) s)
     (match (a s)

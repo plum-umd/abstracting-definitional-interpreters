@@ -4,15 +4,16 @@
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
          "ev-unit.rkt"
+	 "unit-sig.rkt"
          "sto-implicit-unit.rkt"
          "delta-unit.rkt")
 
 (define-unit eval@
   (import ev^)
-  (export eval^ return^ ev-monad^)
+  (export eval^ unit^ ev-monad^)
   (define (eval e) (ev e (hash)))
   (define (rec e r) (ev e r))
-  (define (return v) v)
+  (define (unit v) v)
   (define (fail) 'fail)
   (define (bind a f)
     (match a

@@ -4,6 +4,7 @@
          "eval-sig.rkt"
          "ev-monad-sig.rkt"
          "symbolic-monad-sig.rkt"
+	 "unit-sig.rkt"
          "ev-symbolic-unit.rkt"
          "sto-explicit-unit.rkt"
          "delta-unit.rkt")
@@ -12,26 +13,26 @@
 
 (define-unit eval@
   (import ev^)
-  (export eval^ return^ ev-monad^ symbolic-monad^)
-  
+  (export eval^ unit^ ev-monad^ symbolic-monad^)
+
   (define (symbolic? x) (or (symbol? x) (pair? x)))
-  
+
   (define ((both c0 c1) s)
     (both-ans (c0 s) (c1 s)))
-  
+
   (define (symbolic-apply f v)
-    (return `(,f ,v)))
-  
+    (unit `(,f ,v)))
+
   (define (eval e) ((ev e (hash)) (hash)))
   (define (rec e r) (ev e r))
-  (define ((return v) s) (cons v s))
+  (define ((unit v) s) (cons v s))
   (define ((fail) s) (cons 'fail s))
   (define ((bind a f) s)
     (let loop ([res (a s)])
       (match res
         [(both-ans a1 a2)
          (both-ans (loop a1) (loop a2))]
-        [(cons 'fail s) (cons 'fail s)]     
+        [(cons 'fail s) (cons 'fail s)]
         [(cons v s)
          ((f v) s)]))))
 
