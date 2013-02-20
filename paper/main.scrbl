@@ -19,7 +19,7 @@ monadic operations.  The denouement of our story is a sound and
 computable abstract interpreter that arises from the composition of
 simple, independent components.  Remarkably, this interpreter
 implements a form of pushdown control flow analysis (PDCFA) in which
-calls and units are always properly matched in the abstract
+calls and returns are always properly matched in the abstract
 semantics.  True to the definitional style of Reynolds, the evaluator
 involves no explicit mechanics to achieve this property; it is simply
 inherited from the defining language.}
@@ -48,7 +48,7 @@ safe approximations of those semantics.}
 
 @item{These definitional abstract interpreters can inherit
 characteristics of the defining language.  In particular, we show that
-the abstract interpreter inherits the call and unit matching
+the abstract interpreter inherits the call and return matching
 property of the defining language and therefore realizes an abstract
 intpretation in the pushown style of analyses@~cite[cfa2-diss
 pdcfa-sfp10].}
@@ -57,8 +57,8 @@ pdcfa-sfp10].}
 
 A common problem of past approaches to the control flow analysis of
 functional languages is the inability to properly match a function
-call with its unit in the abstract semantics, leading to infeasible
-program (abstract) executions in which a call is made from one point
+call with its return in the abstract semantics, leading to infeasible
+program (abstract) executions in which a return is made from one point
 in the program text, but control units to another.  The CFA2
 analysis of Vardoulakis and Shivers@~cite[cfa2-lmcs] was the first
 approach that overcame this shortcoming.  In essence, this kind of
@@ -183,7 +183,7 @@ to the monad implementation, but forms the domain of the environment.}
 @item{@racket[_ralloc]: similar to @racket[_alloc] but for binding a
 recursive function.}
 
-@item{@racket[_ev]: this operation invokes a recursive call to the
+@item{@racket[_ev]: this operation invokes a recursive return to the
 evaluator.  It is an operation in the monad in order to allow the
 monad implementation to observe evaluation of subexpressions.}
 
