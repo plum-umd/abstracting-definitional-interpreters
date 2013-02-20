@@ -16,7 +16,7 @@
 ;; eval : E ->_total [Setof Ans]
 
 (define-unit pdcfa@
-  (import ev^ sto-monad^)
+  (import ev^)
   (export eval^ ev-monad^ symbolic-monad^ return^ return-ans^ return-vals^)
 
   ;; iterates ev until reaching a fixed point in the memo-table

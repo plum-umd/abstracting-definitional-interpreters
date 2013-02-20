@@ -12,7 +12,7 @@
 ;; eval : E -> [Setof Ans]
 
 (define-unit aval-set@
-  (import ev^ sto-monad^)
+  (import ev^)
   (export eval^ ev-monad^ return^ return-ans^ return-vals^)
   
   (define (eval e)
