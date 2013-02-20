@@ -2,7 +2,8 @@
 (provide eval eval-trace@)
 (require "ev-sig.rkt"
          "eval-sig.rkt"
-         "ev-monad-sig.rkt"
+         "bind-sig.rkt"
+         "fail-sig.rkt"
          "ev-unit.rkt"
 	 "unit-sig.rkt"
          "delta-unit.rkt"
@@ -14,7 +15,7 @@
 
 (define-unit eval-trace@
   (import ev^)
-  (export eval^ ev-monad^ unit^)
+  (export eval^ unit^ bind^ fail^)
 
   (define (eval e)
     (define s (hash))

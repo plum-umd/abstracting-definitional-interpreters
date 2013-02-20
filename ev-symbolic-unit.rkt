@@ -1,5 +1,6 @@
 #lang racket/unit
-(require "ev-monad-sig.rkt"
+(require "bind-sig.rkt"
+         "fail-sig.rkt"
          "symbolic-monad-sig.rkt"
          "ev-sig.rkt"
 	 "unit-sig.rkt"
@@ -9,7 +10,7 @@
          "syntax.rkt"
          (only-in racket match))
 
-(import ev-monad^ unit^ δ^ symbolic-monad^ sto^ env^)
+(import unit^ bind^ δ^ symbolic-monad^ sto^ env^ fail^)
 (export ev^)
 
 (define-syntax do

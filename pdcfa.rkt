@@ -2,7 +2,8 @@
 (provide eval pdcfa@)
 (require "ev-sig.rkt"
          "eval-sig.rkt"
-         "ev-monad-sig.rkt"
+         "bind-sig.rkt"
+	 "fail-sig.rkt"
 	 "unit-sig.rkt"
          "symbolic-monad-sig.rkt"
          "ev-symbolic-unit.rkt"
@@ -18,7 +19,7 @@
 
 (define-unit pdcfa@
   (import ev^)
-  (export eval^ ev-monad^ symbolic-monad^ unit^ unit-ans^ unit-vals^)
+  (export eval^ symbolic-monad^ unit^ unit-ans^ unit-vals^ bind^ fail^)
 
   ;; iterates ev until reaching a fixed point in the memo-table
   (define (eval e)

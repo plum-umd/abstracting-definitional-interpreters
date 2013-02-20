@@ -1,7 +1,8 @@
 #lang racket/unit
 (require racket/match
          "unit-sig.rkt"
-	 "ev-monad-sig.rkt"
+	 "bind-sig.rkt"
+	 "fail-sig.rkt"
 	 "sto-sig.rkt"
 	 "env-sig.rkt"
          "store.rkt"

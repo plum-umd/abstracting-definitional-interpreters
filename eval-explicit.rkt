@@ -2,7 +2,8 @@
 (provide eval eval@)
 (require "ev-sig.rkt"
          "eval-sig.rkt"
-         "ev-monad-sig.rkt"
+         "bind-sig.rkt"
+         "fail-sig.rkt"
          "ev-unit.rkt"
 	 "unit-sig.rkt"
          "sto-explicit-unit.rkt"
@@ -10,7 +11,7 @@
 
 (define-unit eval@
   (import ev^)
-  (export eval^ unit^ ev-monad^)
+  (export eval^ unit^ bind^ fail^)
   (define (eval e) ((ev e (hash)) (hash)))
   (define (rec e r) (ev e r))
   (define ((unit v) s) (cons v s))

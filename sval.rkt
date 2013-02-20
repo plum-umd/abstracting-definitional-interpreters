@@ -2,7 +2,8 @@
 (provide eval eval@ (struct-out both-ans))
 (require "ev-sig.rkt"
          "eval-sig.rkt"
-         "ev-monad-sig.rkt"
+	 "bind-sig.rkt"
+	 "fail-sig.rkt"
          "symbolic-monad-sig.rkt"
 	 "unit-sig.rkt"
          "ev-symbolic-unit.rkt"
@@ -13,7 +14,7 @@
 
 (define-unit eval@
   (import ev^)
-  (export eval^ unit^ ev-monad^ symbolic-monad^)
+  (export eval^ unit^ bind^ fail^ symbolic-monad^)
 
   (define (symbolic? x) (or (symbol? x) (pair? x)))
 

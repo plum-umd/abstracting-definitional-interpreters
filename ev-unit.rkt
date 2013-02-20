@@ -1,6 +1,7 @@
 #lang racket/unit
 (require racket/match
-         "ev-monad-sig.rkt"
+         "bind-sig.rkt"
+         "fail-sig.rkt"
 	 "delta-sig.rkt"
 	 "env-sig.rkt"
 	 "sto-sig.rkt"
@@ -8,7 +9,7 @@
          "ev-sig.rkt"
          "syntax.rkt")
 
-(import unit^ δ^ env^ sto^ ev-monad^)
+(import unit^ bind^ δ^ env^ sto^ fail^)
 (export ev^)
 
 (define-syntax do
@@ -25,8 +26,8 @@
     [(ifz e0 e1 e2)
      (do v ← (rec e0 r)
        (match v
-         [0           (rec e1 r)]
-         [(? number?) (rec e2 r)]))]
+         [0 (rec e1 r)]
+         [n (rec e2 r)]))]
     [(op1 o e0)
      (do v ← (rec e0 r)
        (δ o v))]

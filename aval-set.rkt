@@ -3,7 +3,8 @@
 (require "ev-sig.rkt"
 	 "unit-sig.rkt"
          "eval-sig.rkt"
-         "ev-monad-sig.rkt"
+         "fail-sig.rkt"
+         "bind-sig.rkt"
          "ev-unit.rkt"
 	 "delta-sig.rkt"
          "delta-unit.rkt"
@@ -15,7 +16,7 @@
 
 (define-unit aval-set@
   (import ev^)
-  (export eval^ ev-monad^ unit^ unit-ans^ unit-vals^)
+  (export eval^ unit^ bind^ fail^ unit-ans^ unit-vals^)
 
   (define (eval e)
     ((ev e (hash)) (hash)))
