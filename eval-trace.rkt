@@ -12,7 +12,7 @@
 ;; Trace evaluator
 
 (define-unit eval-trace@
-  (import ev^ δ^ sto-monad^)
+  (import ev^ sto-monad^)
   (export eval^ ev-monad^ return^)
   
   (define (eval e)

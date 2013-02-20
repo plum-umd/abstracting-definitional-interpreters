@@ -12,7 +12,7 @@
 ;; Singleton set interpreter 
 
 (define-unit eval-set@
-  (import ev^ δ^ sto-monad^)
+  (import ev^ sto-monad^)
   (export eval^ ev-monad^ return^ return-ans^ return-vals^)
   
   (define (eval e)

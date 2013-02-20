@@ -11,7 +11,7 @@
 (struct both-ans (left right) #:transparent)
 
 (define-unit eval@
-  (import ev^ δ^ sto-monad^)
+  (import ev^ sto-monad^)
   (export eval^ return^ ev-monad^ symbolic-monad^)
   
   (define (symbolic? x) (or (symbol? x) (pair? x)))

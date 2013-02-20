@@ -8,7 +8,7 @@
          "delta-unit.rkt")
 
 (define-unit eval@
-  (import ev^ δ^ sto-monad^)
+  (import ev^ sto-monad^)
   (export eval^ return^ ev-monad^)
   (define (eval e) (ev e (hash)))
   (define (rec e r) (ev e r))
