@@ -9,7 +9,8 @@
   [eval^ : eval]
   [ev^   : ev]
   [unit^ : unit]
-  [bind^ : bind rec]
+  [bind^ : bind]
+  [rec^  : rec]
   [env^  : get alloc ralloc]
   [δ^    : δ])
 
