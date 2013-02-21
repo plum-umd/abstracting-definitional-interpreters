@@ -117,7 +117,7 @@ evaluator, given in @figure-ref{pcf-eval}.
 @figure["pcf-eval" "Definitional interpreter"]{
 @filebox[@racket[ev@]]{
 @racketblock[
-(import unit^ δ^ env^ ev-monad^)
+(import unit^ bind^ δ^ env^)
 (export ev^)
 
 (define (ev e r) ;; E R -> [M V]
@@ -129,7 +129,7 @@ evaluator, given in @figure-ref{pcf-eval}.
      (do v ← (_rec e0 r)
        (match v
          [0 (_rec e1 r)]
-         [(? number?) (_rec e2 r)]))]
+         [n (_rec e2 r)]))]
     [(op1 o e0)
      (do v ← (_rec e0 r)
        (_δ o v))]
@@ -160,15 +160,18 @@ which is syntactic sugar for @racket[_bind]:
 ]
 
 The evaluator is implicity parameterized over a set of names written
-in italic, namely: @racket[_unit], @racket[_bind],
-@racket[_get], @racket[_alloc], @racket[_ralloc], and
-@racket[_rec].  Compared with other monadic evaluators, such as that
-of @citet[ager-tcs05], which use only @racket[_bind] and
-@racket[_unit], this evaluator makes use of several more operations.
-We give a brief description and motivation of the additional
-operations:
+in italics, namely: @racket[_unit], @racket[_bind], @racket[_δ],
+@racket[_get], @racket[_alloc], @racket[_ralloc], and @racket[_rec].
+Compared with other monadic evaluators, such as that of
+@citet[ager-tcs05], which use only @racket[_bind] and @racket[_unit],
+this evaluator makes use of several more operations.  We give a brief
+description and motivation of the additional operations:
 
 @itemlist[
+
+@item{@racket[_δ]: this function interprets primitive operations.
+By making primitive interpretation an operation in the monad, we
+can provide non-standard intpretations of primitives.}
 
 @item{@racket[_get]: this operation produces a value
 computation from a variable and environment.  By making the
@@ -191,8 +194,55 @@ monad implementation to observe evaluation of subexpressions.}
 
 ]
 
+At this point, we have established the skeleton of a fairly run of the
+mill definitional interpreter in monadic style.  We use Racket's unit
+system to organize components and define the following signatures:
+@racketblock[
+   (define-signatures
+     [eval^ : eval]
+     [ev^   : ev]
+     [unit^ : unit]
+     [bind^ : bind]
+     [rec^  : rec]
+     [δ^    : δ]
+     [env^  : get alloc ralloc])
+]
 
-@figure["delta" "Delta"]{
+[A quick primer on units.]
+
+@subsection{Implementation 1: Circular immutable closures}
+
+@Figure-ref{eval-units} implements a set of units that enable the
+construction of a first evaluator.  The implementation strategy uses
+the identity monad and constructs recursive functions by way of
+circular closures.  The implementation of @racket[ralloc] in
+@racket[env@] makes use of @racket[make-placeholder], which is
+Racket's mechanism for constructing immutable circular data.
+
+The evaluation function is obtained with the following linkage:
+@centered{
+@racket[(link eval@ ev@ id-monad@ δ@ env@)]
+}
+
+@figure["eval-units" "Units for concrete evaluator"]{
+@filebox[@racket[eval@]]{
+@racketblock[
+(import rec^)
+(export eval^)
+
+(define (eval e) (rec e (hash)))
+]}
+
+@filebox[@racket[id-monad@]]{
+@racketblock[
+(import ev^)
+(export unit^ bind^ rec^)
+
+(define (rec e r) (_ev e r))
+(define (unit v) v)
+(define (bind v f) (f v))
+]}
+
 @filebox[@racket[δ@]]{
 @racketblock[
 (import unit^)
@@ -206,9 +256,8 @@ monad implementation to observe evaluation of subexpressions.}
       [('+ (list n1 n2)) (+ n1 n2)]
       [('- (list n1 n2)) (- n1 n2)]
       [('* (list n1 n2)) (* n1 n2)])))
-]}}
+]}
 
-@figure["implicit-store" "Environment unit"]{
 @filebox[@racket[env@]]{
 @racketblock[
 (import unit^)
@@ -226,71 +275,168 @@ monad implementation to observe evaluation of subexpressions.}
 ]}}
 
 
-@figure["eval" "Eval unit"]{
-@filebox[@racket[eval@]]{
-@racketblock[
-(import ev^)
-(export eval^ unit^ ev-monad^)
+@subsection{Implementation 2: Circular mutable closures}
 
-(define (eval e) (_rec e (hash)))
-(define (ev e r) (_rec e r))
-(define (unit v) v)
-(define (bind v f) (f v))
+@figure["env-box" "Boxing implementation"]{
+@filebox[@racket[env-box@]]{
+@racketblock[
+(import unit^)
+(export env^)
+
+(define (get r x)
+  (_unit (unbox (hash-ref r x))))
+(define (alloc f v) (_unit (box v)))
+(define (ralloc x v)
+  (match v
+    [(cons e r)
+     (define b (box #f))
+     (define f (cons e (hash-set r x b)))
+     (set-box! b f)
+     (_unit b)]))
 ]}}
 
+An alternative implementation strategy for recursive functions is to
+box variable bindings and create a cyclic closure via mutation.  This
+is accomplished with an alternative implementation of the
+@racket[env^] signature, shown in @figure-ref{env-box}.  The
+alternative evaluation function is obtained with:
+@centered{
+@racket[(link eval@ ev@ id-monad@ δ@ env-box@)]
+}
 
+@subsection{Implementation 3: Closures in an explicit store}
 
+A third alternative is to model the store directly rather than rely
+upon the defining language.  Units implementing this approach are
+given in @figure-ref{eval-sto}.  The evalatuator is obtained with:
+@centered{
+@racket[(link eval-sto@ ev@ sto-monad@ δ@ env-sto@)]
+}
 
-By using a store-based evaluator, it becomes easy to model imperative
-features, but more importantly, the store becomes a singe point of
-approximation and, as will be shown, if the store is bounded to some
-finite size, the interpreter becomes total.  This is just following
-the same approach of @emph{Abstracting Abstract Machines} [Van Horn
-and Might], but in the setting of a compositional interpreter.
-
-The environment is managed with @racket[lookup] and @racket[extend]:
-the @racket[lookup] function fetches a value of a variable by looking
-up the variables address in the environment, then dereferencing that
-adress in the store; the @racket[extend] function extends an
-environment to bind a variable to an address.  Both are defined as
-usual:
+@figure["eval-sto" "Eval with store"]{
+@filebox[@racket[eval-sto@]]{
 @racketblock[
-(lookup s r x) ≡ @#,elem{@racket[s](@racket[r](@racket[x]))}
-(extend r x a) ≡ @#,elem{@racket[r]' where @racket[r]'(@racket[x]') @racket[=] @racket[a] if @racket[x] @racket[=] @racket[x]',}
-                     @#,elem{and @racket[r]'(@racket[x]') @racket[=] @racket[r](@racket[x]') otherwise.}
-]
+(import rec^)
+(export eval^)
 
-Finally, the evaluator is parameterized over the metafunctions for
-managing the store.  For the purposes of the definitional interpreter, we
-assume the following definitions:
+(define (eval e) ((_rec e (hash)) (hash)))
+]}
+
+@filebox[@racket[sto-monad@]]{
 @racketblock[
-(_alloc v0 v1 s) ≡ @#,elem{@racket[a] such that @racket[a] is not in @racket[s]}
-(_update s a v)  ≡ @#,elem{@racket[s]' where @racket[s]'(@racket[a]') @racket[=] @racket[v] if @racket[a] @racket[=] @racket[a]',}
-                     @#,elem{and @racket[s]'(@racket[a]') @racket[=] @racket[s](@racket[a]') otherwise.}
-]
+(import ev^)
+(export unit^ bind^ rec^)
 
-At this point, we've established a fairly run of the mill definitional
-evaluator in monadic style.  As we'll see, turning it into a
-sound and total abstract interpreter is just a matter of plugging in
-the right parameters.  But first, we take a slight detour and extend
-our evaluator to handle @emph{symbolic} data.
+(define (rec e r) (_ev e r))
+(define ((unit v) s) (cons v s))
+(define ((bind a f) s)
+  (match (a s)
+    [(cons v s) ((f v) s)]))
+]}
 
+@filebox[@racket[env-sto@]]{
 @racketblock[
-(import unit^ δ^ ev-monad^ sto-monad^)
-(export ev^)
-]
+(import unit^)
+(export env^)
 
-@racketblock[
-(define-signature unit^ (unit))
-(define-signature δ^ (δ))
-(define-signature ev-monad^ (bind ev))
-(define-signature sto-monad^
-  (lookup-env alloc ralloc))
-]
+(define ((get r x) s)
+  ((_unit (hash-ref s (hash-ref r x))) s))
 
+(define ((alloc f v) s)
+  (match f
+    [(cons (lam x e) r)
+     (define a (gensym))
+     ((_unit a)
+      (update-sto s a v))]))
+
+(define ((ralloc x v) s)
+  (match v
+    [(cons e r)
+     (define a (gensym))
+     ((_unit a)
+      (update-sto s a
+        (cons e (hash-set r x a))))]))
+]}
+}
 
 @subsection{Imperative higher-order language}
 
+@codeblock{
+;; E = ...
+;;   | err       ;; Error
+;;   | (ref E)   ;; Reference
+;;   | (drf E)   ;; Dereference
+;;   | (srf E)   ;; Set reference
+}
+
+@racketblock[
+   (define-signatures
+     [fail^ : fail]
+     [sto^  : new sbox ubox])
+]
+
+@figure["eval-sto-units" "Units for an explicit store evaluator"]{
+@filebox[@racket[eval-sto@]]{
+@racketblock[
+(import ev^)
+(export eval^ unit^ bind^)
+
+(define (eval e) ((ev e (hash)) (hash)))
+(define (rec e r) (ev e r))
+(define ((unit v) s) (cons v s))
+(define ((bind a f) s)
+  (match (a s)
+    [(cons 'err s) (cons 'err s)]
+    [(cons v s) ((f v) s)]))
+]}
+
+@filebox[@racket[err@]]{
+@racketblock[
+(import)
+(export err^)
+(define ((err) s) (cons 'err s))
+]}
+
+@filebox[@racket[env-sto@]]{
+@racketblock[
+(import unit^)
+(export env^)
+
+(define ((get r x) s)
+  ((unit (hash-ref s (hash-ref r x))) s))
+
+(define ((alloc f v) s)
+  (match f
+    [(cons (lam x e) r)
+     (define a (gensym))
+     ((unit a) (update-sto s a v))]))
+
+(define ((ralloc x v) s)
+  (match v
+    [(cons e r)
+     (define a (gensym))
+     ((unit a)
+      (update-sto s a
+        (cons e (hash-set r x a))))]))
+]}
+
+@filebox[@racket[sto@]]{
+@racketblock[
+(import unit^)
+(export sto^)
+
+(define ((new v) s)
+  (define a (gensym))
+  ((unit a) (update-sto s a v)))
+
+(define ((sbox a v) s)
+  ((unit a) (update-sto s a v)))
+
+(define ((ubox a) s)
+  ((unit (lookup-sto s a)) s))
+]}
+
+}
 
 
 @section{Symbolic Evaluation}
@@ -364,6 +510,9 @@ PLDI 2013: small-step monad.
 
 
 @section{Conclusion}
+
+@centered{
+@url{https://github.com/dvanhorn/monadic-eval}}
 
 @bold{Acknowledgments}: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.
 
