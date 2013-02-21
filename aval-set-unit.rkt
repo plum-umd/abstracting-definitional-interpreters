@@ -7,7 +7,7 @@
          "sto-0cfa-unit.rkt")
 
 (import ev^)
-(export eval^ unit^ bind^ rec^ fail^ unit-ans^ unit-vals^)
+(export eval^ unit^ bind^ rec^ err^ unit-ans^ unit-vals^)
 
 (define (eval e)
   ((ev e (hash)) (hash)))
@@ -22,7 +22,7 @@
     ([ret (a s)])
     (set-union rs
 	       (match ret
-                 [(cons 'fail s) (set (cons 'fail s))]
+                 [(cons 'err s) (set (cons 'err s))]
 		 [(cons v s)
 		  ((f v) s)]))))
 
@@ -35,6 +35,6 @@
 
 (define (unit-anss anss) anss)
 
-(define ((fail) s)
-  (unit-ans 'fail s))
+(define ((err) s)
+  (unit-ans 'err s))
 

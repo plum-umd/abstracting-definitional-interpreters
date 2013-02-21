@@ -11,7 +11,7 @@
 ;; eval : E ->_total [Setof Ans]
 
 (import ev^)
-(export eval^ symbolic-monad^ rec^ unit^ unit-ans^ unit-vals^ bind^ fail^)
+(export eval^ symbolic-monad^ rec^ unit^ unit-ans^ unit-vals^ bind^ err^)
 
 ;; iterates ev until reaching a fixed point in the memo-table
 (define (eval e)
@@ -41,7 +41,7 @@
 (define symbolic? symbol?)
 
 (define (symbolic-apply v0 v1)
-  (fail))
+  (err))
 
 (define ((((both c0 c1) s) m) m*)
   (match (((c0 s) m) m*)
@@ -59,8 +59,8 @@
                        [m m])
              ([ans anss])
              (match ans
-               [(cons 'fail s)
-                (values (set-union rs (set (cons 'fail s))) m)]
+               [(cons 'err s)
+                (values (set-union rs (set (cons 'err s))) m)]
                [(cons v s)
                 (match ((((f v) s) m) m*)
                   [(cons anss m) (values (set-union rs anss) m)])]))])
@@ -79,5 +79,5 @@
 (define ((((unit v) s) m) m*)
   (cons (set (cons v s)) m))
 
-(define ((fail) s)
-  (unit-ans 'fail s))
+(define ((err) s)
+  (unit-ans 'err s))

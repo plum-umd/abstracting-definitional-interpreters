@@ -29,14 +29,14 @@
 (check-eval (drf (srf (ref (num 5)) (num 7))) 7)
 (check-eval (op1 'add1
                  (ifz (drf (srf (ref (num 0)) (num 1)))
-                      'fail
+                      'err
                       (num 42)))
             43)
 (check-eval (op1 'add1
                  (ifz (drf (srf (ref (num 1)) (num 0)))
-                      'fail
+                      'err
                       (num 42)))
-            'fail)
+            'err)
 
 (check-eval (lrc 'f (lam 'x
                          (ifz (vbl 'x)

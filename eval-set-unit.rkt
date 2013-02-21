@@ -4,20 +4,20 @@
          "signatures.rkt")
 
 (import ev^)
-(export eval^ unit^ rec^ unit-ans^ unit-vals^ bind^ fail^)
+(export eval^ unit^ rec^ unit-ans^ unit-vals^ bind^ err^)
 
 (define (eval e)
   ((ev e (hash)) (hash)))
 
 (define (rec e r) (ev e r))
 (define ((unit v) s) (set (cons v s)))
-(define ((fail) s) (set (cons 'fail s)))
+(define ((err) s) (set (cons 'err s)))
 (define ((bind a f) s)
   (for*/fold ([rs (set)])
     ([ret (a s)])
     (set-union rs
 	       (match ret
-                 [(cons 'fail s) (set (cons 'fail s))]
+                 [(cons 'err s) (set (cons 'err s))]
 		 [(cons v s)
 		  ((f v) s)]))))
 

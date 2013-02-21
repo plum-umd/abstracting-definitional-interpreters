@@ -4,12 +4,12 @@
 
 (define-unit eval!@
   (import ev^)
-  (export eval^ unit^ bind^ rec^ fail^)
+  (export eval^ unit^ bind^ rec^ err^)
   (define (eval e) (ev e (hash)))
   (define (rec e r) (ev e r))
   (define (unit v) v)
-  (define (fail) 'fail)
+  (define (err) 'err)
   (define (bind a f)
     (match a
-      ['fail 'fail]
-      [v     (f v)])))
+      ['err 'err]
+      [v    (f v)])))

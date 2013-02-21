@@ -5,7 +5,7 @@
 (provide ev!@)
 
 (define-unit ev!@
-  (import unit^ bind^ rec^ δ^ env^ sto^ fail^)
+  (import unit^ bind^ rec^ δ^ env^ sto^ err^)
   (export ev^)
 
   (define-syntax do
@@ -16,7 +16,7 @@
 
   (define (ev e r) ;; E R -> [M Ans]
     (match e
-      ['fail (fail)]
+      ['err (err)]
       [(vbl x) (get r x)]
       [(num n) (unit n)]
       [(lam x e) (unit (cons (lam x e) r))]

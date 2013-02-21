@@ -15,8 +15,8 @@
   [δ^    : δ])
 
 (define-signatures
-  [fail^ : fail]
-  [sto^  : new sbox ubox])
+  [err^ : err]
+  [sto^ : new sbox ubox])
 
 (define-signatures
   [symbolic-monad^ : symbolic? both symbolic-apply])

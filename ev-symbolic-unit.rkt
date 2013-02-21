@@ -3,7 +3,7 @@
 	 "syntax.rkt"
          (only-in racket match))
 
-(import unit^ bind^ rec^ δ^ symbolic-monad^ sto^ env^ fail^)
+(import unit^ bind^ rec^ δ^ symbolic-monad^ sto^ env^ err^)
 (export ev^)
 
 (define-syntax do
@@ -14,7 +14,7 @@
 
 (define (ev e r) ;; E R -> [M Ans]
   (match e
-    ['fail (fail)]
+    ['err (err)]
     [(vbl x) (get r x)]
     [(sym s) (unit s)]
     [(num n) (unit n)]

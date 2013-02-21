@@ -4,7 +4,7 @@
 	 "both.rkt")
 
 (import ev^)
-(export eval^ unit^ bind^ rec^ fail^ symbolic-monad^)
+(export eval^ unit^ bind^ rec^ err^ symbolic-monad^)
 
 (define (symbolic? x) (or (symbol? x) (pair? x)))
 
@@ -17,12 +17,12 @@
 (define (eval e) ((ev e (hash)) (hash)))
 (define (rec e r) (ev e r))
 (define ((unit v) s) (cons v s))
-(define ((fail) s) (cons 'fail s))
+(define ((err) s) (cons 'err s))
 (define ((bind a f) s)
   (let loop ([res (a s)])
     (match res
       [(both-ans a1 a2)
        (both-ans (loop a1) (loop a2))]
-      [(cons 'fail s) (cons 'fail s)]
+      [(cons 'err s) (cons 'err s)]
       [(cons v s)
        ((f v) s)])))

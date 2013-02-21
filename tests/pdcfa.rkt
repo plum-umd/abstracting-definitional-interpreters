@@ -28,16 +28,16 @@
 (check-eval (drf (srf (ref (num 5)) (num 7))) 5 7)
 (check-eval (op1 'add1
                  (ifz (drf (srf (ref (num 0)) (num 1)))
-                      'fail
+                      'err
                       (num 42)))
             'N
-            'fail)
+            'err)
 (check-eval (op1 'add1
                  (ifz (drf (srf (ref (num 1)) (num 0)))
-                      'fail
+                      'err
                       (num 42)))
             'N
-            'fail)
+            'err)
 
 (define Ω
   (app (lam 'x (app (vbl 'x) (vbl 'x)))
@@ -58,7 +58,7 @@
             'N)
 
 (check-eval (app (sym 'f) (num 5))
-            'fail)
+            'err)
 
 (check-eval (lrc 'f (lam 'x
                          (ifz (vbl 'x)
