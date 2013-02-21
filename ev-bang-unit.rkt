@@ -35,10 +35,10 @@
       [(ref e)
        (do v ← (rec e r)
          (new v))]
-      [(ubx e)
+      [(drf e)
        (do a ← (rec e r)
 	 (ubox a))]
-      [(sbx e0 e1)
+      [(srf e0 e1)
        (do a ← (rec e0 r)
            v ← (rec e1 r)
          (sbox a v))]

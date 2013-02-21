@@ -29,15 +29,15 @@
 (check-eval (ifz (num 1) (num 7) (num 8)) 8)
 (check-eval (ref (num 5))
             (? symbol?))
-(check-eval (ubx (ref (num 5))) 5)
-(check-eval (ubx (sbx (ref (num 5)) (num 7))) 7)
+(check-eval (drf (ref (num 5))) 5)
+(check-eval (drf (srf (ref (num 5)) (num 7))) 7)
 (check-eval (op1 'add1
-                 (ifz (ubx (sbx (ref (num 0)) (num 1)))
+                 (ifz (drf (srf (ref (num 0)) (num 1)))
                       'fail
                       (num 42)))
             43)
 (check-eval (op1 'add1
-                 (ifz (ubx (sbx (ref (num 1)) (num 0)))
+                 (ifz (drf (srf (ref (num 1)) (num 0)))
                       'fail
                       (num 42)))
             'fail)
