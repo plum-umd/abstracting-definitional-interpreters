@@ -2,6 +2,7 @@
 (require rackunit
          (prefix-in cyc: "../eval-pure.rkt")
          (prefix-in box: "../eval-box.rkt")
+         (prefix-in sto: "../eval-pure-explicit.rkt")
          "../syntax.rkt"
          "util.rkt")
 
@@ -10,7 +11,8 @@
     [(check-eval e v)
      (begin
        (check-match (cyc:eval e) v)
-       (check-match (box:eval e) v))]))
+       (check-match (box:eval e) v)
+       (check-match (sto:eval e) (cons v _)))]))
 
 (check-eval (num 5) 5)
 (check-eval (op1 'add1 (num 5)) 6)

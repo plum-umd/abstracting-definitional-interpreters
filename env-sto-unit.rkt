@@ -22,5 +22,6 @@
     [(cons e r)
      (define a (gensym))
      ((unit a)
-      (update-sto s a (cons e (hash-set r x a))))]))
+      (update-sto s a
+        (cons e (hash-set r x a))))]))
 

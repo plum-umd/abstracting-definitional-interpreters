@@ -1,6 +1,5 @@
 #lang racket/unit
-(require racket/match
-	 "signatures.rkt")
+(require "signatures.rkt")
 
 (import rec^)
 (export eval^)
