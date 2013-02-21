@@ -2,7 +2,7 @@
 (require rackunit
          "../eval-implicit.rkt"
          "../syntax.rkt"
-         "../util.rkt")
+         "util.rkt")
 
 (define-syntax check-eval
   (syntax-rules ()
