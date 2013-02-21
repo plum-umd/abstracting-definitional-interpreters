@@ -1,22 +1,10 @@
 #lang racket
-(provide eval eval!@)
-(require "signatures.rkt"
+(provide eval)
+(require "eval-implicit-unit.rkt"
 	 "ev-bang-unit.rkt"
 	 "env-unit.rkt"
          "sto-implicit-unit.rkt"
          "delta-unit.rkt")
-
-(define-unit eval!@
-  (import ev^)
-  (export eval^ unit^ bind^ fail^)
-  (define (eval e) (ev e (hash)))
-  (define (rec e r) (ev e r))
-  (define (unit v) v)
-  (define (fail) 'fail)
-  (define (bind a f)
-    (match a
-      ['fail 'fail]
-      [v     (f v)])))
 
 (define-values/invoke-unit/infer
   (link eval!@ ev!@ δ@ env@ sto-implicit@))
