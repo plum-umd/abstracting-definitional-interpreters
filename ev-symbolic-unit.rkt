@@ -3,7 +3,7 @@
 	 "syntax.rkt"
          (only-in racket match))
 
-(import unit^ bind^ δ^ symbolic-monad^ sto^ env^ fail^)
+(import unit^ bind^ rec^ δ^ symbolic-monad^ sto^ env^ fail^)
 (export ev^)
 
 (define-syntax do

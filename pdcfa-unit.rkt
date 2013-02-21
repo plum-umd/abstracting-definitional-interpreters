@@ -11,7 +11,7 @@
 ;; eval : E ->_total [Setof Ans]
 
 (import ev^)
-(export eval^ symbolic-monad^ unit^ unit-ans^ unit-vals^ bind^ fail^)
+(export eval^ symbolic-monad^ rec^ unit^ unit-ans^ unit-vals^ bind^ fail^)
 
 ;; iterates ev until reaching a fixed point in the memo-table
 (define (eval e)

@@ -7,7 +7,7 @@
          "sto-0cfa-unit.rkt")
 
 (import ev^)
-(export eval^ unit^ bind^ fail^ unit-ans^ unit-vals^)
+(export eval^ unit^ bind^ rec^ fail^ unit-ans^ unit-vals^)
 
 (define (eval e)
   ((ev e (hash)) (hash)))

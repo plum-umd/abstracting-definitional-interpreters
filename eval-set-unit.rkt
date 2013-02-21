@@ -4,7 +4,7 @@
          "signatures.rkt")
 
 (import ev^)
-(export eval^ unit^ unit-ans^ unit-vals^ bind^ fail^)
+(export eval^ unit^ rec^ unit-ans^ unit-vals^ bind^ fail^)
 
 (define (eval e)
   ((ev e (hash)) (hash)))

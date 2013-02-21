@@ -4,7 +4,7 @@
 
 (define-unit eval!@
   (import ev^)
-  (export eval^ unit^ bind^ fail^)
+  (export eval^ unit^ bind^ rec^ fail^)
   (define (eval e) (ev e (hash)))
   (define (rec e r) (ev e r))
   (define (unit v) v)

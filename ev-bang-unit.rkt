@@ -5,7 +5,7 @@
 (provide ev!@)
 
 (define-unit ev!@
-  (import unit^ bind^ δ^ env^ sto^ fail^)
+  (import unit^ bind^ rec^ δ^ env^ sto^ fail^)
   (export ev^)
 
   (define-syntax do

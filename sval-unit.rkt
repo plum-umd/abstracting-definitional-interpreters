@@ -4,7 +4,7 @@
 	 "both.rkt")
 
 (import ev^)
-(export eval^ unit^ bind^ fail^ symbolic-monad^)
+(export eval^ unit^ bind^ rec^ fail^ symbolic-monad^)
 
 (define (symbolic? x) (or (symbol? x) (pair? x)))
 

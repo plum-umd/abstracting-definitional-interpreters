@@ -1,11 +1,7 @@
 #lang racket/unit
 (require "signatures.rkt")
 
-(import ev^)
-(export eval^ unit^ bind^)
+(import rec^)
+(export eval^)
 
-(define (eval e) (ev e (hash)))
-(define (rec e r) (ev e r))
-(define (unit v) v)
-(define (bind v f) (f v))
-
+(define (eval e) (rec e (hash)))
