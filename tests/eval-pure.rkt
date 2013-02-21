@@ -1,13 +1,16 @@
 #lang racket
 (require rackunit
-         "../eval-pure.rkt"
+         (prefix-in cyc: "../eval-pure.rkt")
+         (prefix-in box: "../eval-box.rkt")
          "../syntax.rkt"
          "util.rkt")
 
 (define-syntax check-eval
   (syntax-rules ()
     [(check-eval e v)
-     (check-match (eval e) v)]))
+     (begin
+       (check-match (cyc:eval e) v)
+       (check-match (box:eval e) v))]))
 
 (check-eval (num 5) 5)
 (check-eval (op1 'add1 (num 5)) 6)
