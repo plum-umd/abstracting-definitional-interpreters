@@ -1,6 +1,6 @@
 #lang racket
 (require rackunit
-         "../eval-explicit.rkt"
+         "../evals/eval-explicit.rkt"
          "../syntax.rkt"
          "util.rkt")
 

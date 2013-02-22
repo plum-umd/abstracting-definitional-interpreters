@@ -1,8 +1,8 @@
 #lang racket
 (require rackunit
-         (prefix-in cyc: "../eval-pure.rkt")
-         (prefix-in box: "../eval-box.rkt")
-         (prefix-in sto: "../eval-pure-explicit.rkt")
+         (prefix-in cyc: "../evals/eval-pure.rkt")
+         (prefix-in box: "../evals/eval-box.rkt")
+         (prefix-in sto: "../evals/eval-pure-explicit.rkt")
          "../syntax.rkt"
          "util.rkt")
 
