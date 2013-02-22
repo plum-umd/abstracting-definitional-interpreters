@@ -4,6 +4,12 @@
 @(require scriblib/figure)
 @(require "bib.rkt")
 
+@(require scribble/eval)
+@(define the-trace-eval
+  (let ([the-eval (make-base-eval)])
+    (the-eval '(require monadic-eval/eval-trace/lang))
+    the-eval))
+
 
 @title{Abstracting Definitional Interpreters}
 @;title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
@@ -459,6 +465,11 @@ the evaluator and therefore we can construct an implementation of
 (link eval-trace@ ev!@ δ@ env-sto@ sto@)
 ]}
 
+@examples[#:eval the-trace-eval
+(add1 7)
+]
+
+
 @figure["trace-eval" "Trace evaluator"]{
 @filebox[@racket[eval-trace@]]{
 @racketblock[
@@ -469,7 +480,7 @@ the evaluator and therefore we can construct an implementation of
   (((rec e (hash)) (hash)) empty))
 
 (define (((rec e r) s) t)
-  (((ev e r) s) (cons (list e r s) t)))
+  (((_ev e r) s) (cons (list e r s) t)))
 
 (define (((unit v) s) t)
   (cons (cons v s) t))
