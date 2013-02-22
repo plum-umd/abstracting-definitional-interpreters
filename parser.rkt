@@ -27,8 +27,8 @@
      (ref (parse e))]
     [(list '! e)
      (drf (parse e))]
-    [(list x ':= e)
-     (srf x (parse e))]
+    [(list e0 ':= e1)
+     (srf (parse e0) (parse e1))]
     [(list 'quote s)
      (sym s)]
     [(list 'rec f e0 e1)
