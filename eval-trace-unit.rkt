@@ -5,10 +5,7 @@
 (import ev^)
 (export eval^ unit^ bind^ rec^ err^)
 
-(define (eval e)
-  (define s (hash))
-  (define r (hash))
-  (((ev e r) s) (list `(ev ,e ,r))))
+(define (eval e) (((rec e (hash)) (hash)) '()))
 
 (define (((rec e r) s) t)
   (((ev e r) s) (cons `(ev ,e ,r) t)))
