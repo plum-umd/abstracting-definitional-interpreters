@@ -371,53 +371,46 @@ given in @figure-ref{eval-sto}.  The evalatuator is obtained with:
 
 @racketblock[
    (define-signatures
-     [fail^ : fail]
-     [sto^  : new sbox ubox])
+     [err^ : err]
+     [sto^ : new sbox ubox])
 ]
 
-@figure["eval-sto-units" "Units for an explicit store evaluator"]{
-@filebox[@racket[eval-sto@]]{
+@codeblock|{
+(define (ev e r)
+  (match e
+     ... ; same as in ev@
+     ['err (err)]
+     [(ref e)
+      (do v ← (rec e r)
+        (new v))]
+     [(drf e)
+      (do a ← (rec e r)
+        (ubox a))]
+     [(srf e0 e1)
+      (do a ← (rec e0 r)
+          v ← (rec e1 r)
+        (sbox a v))]))
+}|
+
+
+@racketblock[
+   (link eval-sto@ err-sto-monad@
+         δ@ env-sto@ sto@)]
+
+
+@figure["eval-sto-units" "Units for an explicit store evaluator for imperative language"]{
+@filebox[@racket[err-sto-monad@]]{
 @racketblock[
 (import ev^)
-(export eval^ unit^ bind^)
+(export unit^ bind^ rec^ err^)
 
-(define (eval e) ((ev e (hash)) (hash)))
-(define (rec e r) (ev e r))
+(define (rec e r) (_ev e r))
+(define ((err) s) (cons 'err s))
 (define ((unit v) s) (cons v s))
 (define ((bind a f) s)
   (match (a s)
     [(cons 'err s) (cons 'err s)]
     [(cons v s) ((f v) s)]))
-]}
-
-@filebox[@racket[err@]]{
-@racketblock[
-(import)
-(export err^)
-(define ((err) s) (cons 'err s))
-]}
-
-@filebox[@racket[env-sto@]]{
-@racketblock[
-(import unit^)
-(export env^)
-
-(define ((get r x) s)
-  ((unit (hash-ref s (hash-ref r x))) s))
-
-(define ((alloc f v) s)
-  (match f
-    [(cons (lam x e) r)
-     (define a (gensym))
-     ((unit a) (update-sto s a v))]))
-
-(define ((ralloc x v) s)
-  (match v
-    [(cons e r)
-     (define a (gensym))
-     ((unit a)
-      (update-sto s a
-        (cons e (hash-set r x a))))]))
 ]}
 
 @filebox[@racket[sto@]]{
@@ -427,16 +420,87 @@ given in @figure-ref{eval-sto}.  The evalatuator is obtained with:
 
 (define ((new v) s)
   (define a (gensym))
-  ((unit a) (update-sto s a v)))
+  ((_unit a) (update-sto s a v)))
 
 (define ((sbox a v) s)
-  ((unit a) (update-sto s a v)))
+  ((_unit a) (update-sto s a v)))
 
 (define ((ubox a) s)
-  ((unit (lookup-sto s a)) s))
+  ((_unit (lookup-sto s a)) s))
 ]}
 
 }
+
+@section{Non-standard Semantics}
+
+It is common in the abstract interpretation literature to consider an
+idealized, non-standard semantics from which to abstract.  Often these
+semantics take the form of a collecting semantics that collect either
+traces or reachable states.
+
+In this section, we demonstrate that such semantics can be realized as
+implementations of the monadic operations for the interpreter given in
+the previous section.
+
+@subsection{Trace semantics}
+
+A trace semantics not only computes the result of a computation but
+also a string of intermediate states that deliver that result starting
+from the initial program.  This is trivial to construct for a
+small-step reduction relation, but less obvious for a compositional
+evaluation function.  Crucially, by parameterizing our evaluator over
+the @racket[rec^] signature, it is possible to observe each call to
+the evaluator and therefore we can construct an implementation of
+@racket[rec^] that records each call.
+
+
+@centered{
+@racket[
+(link eval-trace@ ev!@ δ@ env-sto@ sto@)
+]}
+
+@figure["trace-eval" "Trace evaluator"]{
+@filebox[@racket[eval-trace@]]{
+@racketblock[
+(import ev^)
+(export eval^ unit^ bind^ rec^ err^)
+
+(define (eval e)
+  (((rec e (hash)) (hash)) empty))
+
+(define (((rec e r) s) t)
+  (((ev e r) s) (cons (list e r s) t)))
+
+(define (((unit v) s) t)
+  (cons (cons v s) t))
+
+(define (((err) s) t)
+  (cons (cons 'err s) t))
+
+(define (((bind a f) s) t)
+  (match ((a s) t)
+    [(cons (cons 'err s) t)
+     (cons (cons 'err s) t)]
+    [(cons (cons v s) t)
+     (((f v) s) t)]))
+]
+}}
+
+
+@subsection{Reachable state semantics}
+
+The reachable state semantics is just an abstraction of the trace
+semantics that ignores the ordering on states.  To implement such a
+semantics, we simply collect a set of evaluator calls rather than a
+sequence.
+
+@subsection{Co-inductive semantics}
+
+In this section, we construct an interpreter that detects loops in
+evaluation.  If a program terminates, it produces a singleton set; if
+the evaluator loops, it produces the empty set.  (We choose a set
+intrepretation rather than an option in anticipation of the subsequent
+development of a non-deterministic semantics.)
 
 
 @section{Symbolic Evaluation}
