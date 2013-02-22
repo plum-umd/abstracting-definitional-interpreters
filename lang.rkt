@@ -2,15 +2,27 @@
 (require "syntax.rkt" "parser.rkt" "units.rkt")
 (require (for-syntax racket/syntax))
 
-(provide #%datum #%top-interaction (rename-out [my-module-begin #%module-begin]))
+(require racket/stxparam)
 
-#;(define-syntax #%top-interaction (make-#%top-interaction #'-->v typable?))
+(define-syntax-parameter linkage (syntax-rules ()))
 
-(define-syntax (my-module-begin stx)
+(provide #%datum
+         (rename-out [module-begin #%module-begin]
+                     [top-interaction #%top-interaction]))
+
+(define run (box #f)) ;; holds the evaluator once the module is run.
+
+(define-syntax (top-interaction stx)
+  (syntax-case stx ()
+    [(_ . e)
+     #`(#%top-interaction . ((unbox run) 'e))]))
+
+(define-syntax (module-begin stx)
   (syntax-case stx ()
     [(_ l e ...)
      (begin
       (define linkage (syntax->datum #'l))
        #`(#%module-begin
 	  (define-values/invoke-unit/infer #,linkage)
-          (eval (parse 'e)) ...))]))
+          (set-box! run (λ (x) (eval (parse x))))
+          ((unbox run) 'e) ...))]))
