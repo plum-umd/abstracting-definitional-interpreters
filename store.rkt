@@ -12,3 +12,8 @@
 
 (define (lookup-sto s a)
   (hash-ref s a))
+
+(define (next s)
+  (for/fold ([a 0])
+            ([i (in-hash-keys s)])
+    (max a (add1 i))))
