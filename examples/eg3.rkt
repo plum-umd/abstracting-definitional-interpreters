@@ -1,4 +1,4 @@
-#lang monadic-eval (link eval-symbolic@ ev-symbolic@ δ@ env-sto@ sto@)
+#lang monadic-eval (link eval-symbolic@ ev@ δ@ env-sto@)
 ;; Classical symbolic execution
 ;; Don't interpret test on if, but collect a verification condition
 ;; and evaluate both branches.
@@ -13,7 +13,6 @@
               (* x (sub1 x))))
   (f 0))
 
-;; I'm confused as to why this works without a symbolic-apply.
 ((λ (f) (f 3))
  (if0 5
       (λ (x) (sub1 x))

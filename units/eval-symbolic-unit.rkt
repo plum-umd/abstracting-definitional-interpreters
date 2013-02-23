@@ -4,7 +4,7 @@
 	 "../signatures.rkt")
 
 (import ev^)
-(export eval^ unit^ bind^ rec^ err^ symbolic-monad^)
+(export eval^ unit^ bind^ rec^ err^)
 
 (struct branch (vc t f) #:transparent)
 
@@ -28,10 +28,3 @@
       [(cons 'err s) (cons 'err s)]
       [(cons v s)
        ((f v) s)])))
-
-(define (symbolic? v) (branch? v))
-(define ((both v c1 c2) s)
-  (branch v (c1 s) (c2 s)))
-
-;; I'm confused as to why this wasn't needed.
-(define (symbolic-apply v0 v1) (error 'not-implemented))
