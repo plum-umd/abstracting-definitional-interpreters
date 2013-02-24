@@ -16,7 +16,7 @@
               (subexps e)]
              [(or (op2 _ e0 e1)
                   (srf e0 e1)
-                  (lrc _ e0 e1)
+                  (lrc _ (lam _ e0) e1)
                   (app e0 e1))
               (set-union (subexps e0)
                          (subexps e1))]
