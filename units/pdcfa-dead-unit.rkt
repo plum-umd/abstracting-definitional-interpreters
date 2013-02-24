@@ -10,7 +10,13 @@
 ;; aka PDCFA
 ;; with dead code computation
 
-;; eval : E ->_total [Setof Ans]
+;; eval : E ->_total [Setof Ans] * [Setof Exp]
+
+;; Computes possible results and the set of expressions that are never
+;; touched.
+
+;; NB: you could also compute [Setof (Ans * Exp)] which would compute
+;; context sensitive dead-code.
 
 (import ev^)
 (export eval^ symbolic-monad^ rec^ unit^ unit-ans^ unit-vals^ bind^ err^)
@@ -29,7 +35,8 @@
   (define anss (hash-ref m ers #false))
   (if anss
       (cons (cons anss d) m)
-      (match (((((ev e r) s) (set-remove d e)) (hash-set m ers (hash-ref m* ers (set)))) m*)
+      (match (((((ev e r) s) (set-remove d e))
+	       (hash-set m ers (hash-ref m* ers (set)))) m*)
         [(cons (cons anss d) m)
          (cons (cons anss d) (hash-set m ers anss))])))
 
