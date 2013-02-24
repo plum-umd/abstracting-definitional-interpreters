@@ -16,7 +16,7 @@
 ;; iterates ev until reaching a fixed point in the memo-table
 (define (eval e)
   (let loop ([m* (hash)] [anss (set)])
-    (match ((((ev e (hash)) (hash)) (hash)) m*)
+    (match ((((rec e (hash)) (hash)) (hash)) m*)
       [(and r (cons anss1 m1))
        (if (equal? r (cons anss m*))
 	   anss1
