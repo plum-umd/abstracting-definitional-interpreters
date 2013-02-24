@@ -6,7 +6,10 @@
 (import ev^)
 (export eval^ unit^ bind^ rec^ err^)
 
-(define (eval e) (((rec e (hash)) (hash)) (set)))
+(define (eval e)
+  (match (((rec e (hash)) (hash)) (set))
+    [(cons v reach)
+     (cons v (set->list reach))]))
 
 (define (((rec e r) s) t)
   (((ev e r) s) (set-add t (list e r s))))
