@@ -24,7 +24,8 @@
      (match* (o vs)
        [('add1 (list n))  'N]
        [('sub1 (list n))  'N]
-       [('+ (list n1 n2)) 'N]))))
+       [('+ (list n1 n2)) 'N]
+       [('* (list n1 n2)) 'N]))))
 
 (define-unit symbolic-δ@
   (import unit^)
