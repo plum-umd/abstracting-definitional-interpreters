@@ -5,7 +5,11 @@
 (require racket/set)
 
 (define-match-expander _set
-  (syntax-rules ()
+  (syntax-rules (... ...)
+    [(_set p ... q (... ...))
+     (and (app set->list (list-no-order p ... qs (... ...)))
+          (app (λ (_) (list->set qs)) q))]
+     
     [(_set p ...)
      (app set->list (list-no-order p ...))])
   (syntax-id-rules ()
