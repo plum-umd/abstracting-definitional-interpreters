@@ -1,6 +1,6 @@
-#lang monadic-eval (link pdcfa-dead@ ev-symbolic@ abs-δ@ sto-0cfa@)
+#lang monadic-eval (link pdcfa-dead@ ev-symbolic@ pres-δ@ sto-widen@)
 (if0 7 1 2)        ; The 1 is dead
-(if0 (add1 7) 1 2) ; Nothing is dead
+(if0 (add1 7) 1 2) ; The 1 is still dead since we're using sto-widen and pres-δ
 
 ((λ (f) ((λ (y) (f 5)) (f 6)))
  (λ (x) x)) ; Nat, unlike {5, 6} of sto-0cfa.
@@ -38,11 +38,11 @@
       (+ ((id f) 3)
          ((id g) 4)))))
 
+
 (rec id (λ (x) x)
   (rec left (λ (l) (λ (r) l))
     ((left (id 1)) (id 2)))) ; {1}
 
 (rec id (λ (x) x)
   (rec right (λ (l) (λ (r) r))
-    ((right (id 1)) (id 2)))) ; {1,2}
-    
+    ((right (id 1)) (id 2)))) ; {N}

@@ -27,6 +27,7 @@
 	 "units/sto-monad-unit.rkt"
 	 "units/sto-set-unit.rkt"
 	 "units/sto-unit.rkt"
+         "units/sto-widen-unit.rkt"
 	 "units/sval-unit.rkt")
 
 (provide (all-from-out "units/aval-set-unit.rkt"
@@ -57,4 +58,5 @@
 		       "units/sto-monad-unit.rkt"
 		       "units/sto-set-unit.rkt"
 		       "units/sto-unit.rkt"
-		       "units/sval-unit.rkt"))
+                       "units/sto-widen-unit.rkt"
+                       "units/sval-unit.rkt"))
