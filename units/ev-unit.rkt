@@ -39,7 +39,7 @@
            v1 ← (rec e1 r)
          (match v0
            [(cons (lam x e) r0)
-	    (do a ← (alloc (cons (lam x e) r0) v1)
+	    (do a ← (alloc v0 v1)
 	      (rec e (extend-env r0 x a)))]))])))
 
 
