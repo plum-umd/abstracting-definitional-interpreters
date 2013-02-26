@@ -6,3 +6,10 @@
               1
               (* x (f (sub1 x)))))
   (f 5))
+
+
+(rec f (λ (x)
+         (if0 x
+              (f (add1 x))
+              (f (add1 x))))
+  (f 2))
