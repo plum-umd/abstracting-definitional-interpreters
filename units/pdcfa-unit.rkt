@@ -3,7 +3,8 @@
 	 racket/set
 	 "../signatures.rkt"
          "../store.rkt"
-         "../syntax.rkt")
+         "../syntax.rkt"
+         #;"../gc.rkt")
 
 ;; Bounded store, memoizing abstract set interpreter
 ;; aka PDCFA
