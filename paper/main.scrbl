@@ -5,10 +5,22 @@
 @(require "bib.rkt")
 
 @(require scribble/eval)
+
+@(define the-pure-eval
+  (make-base-eval #:lang 'monadic-eval/lang '(link eval-pure@ ev@ δ@ env@)))´
+
+@(define the-box-eval
+  (make-base-eval #:lang 'monadic-eval/lang '(link eval-pure@ ev@ δ@ env-box@)))
+
+@(define the-explicit-sto-eval
+  (make-base-eval #:lang 'monadic-eval/lang '(link eval-sto@ sto-monad@ ev@ δ@ env-sto@)))
+
 @(define the-trace-eval
-  (let ([the-eval (make-base-eval)])
-    (the-eval '(require monadic-eval/eval-trace/lang))
-    the-eval))
+  (make-base-eval #:lang 'monadic-eval/lang '(link eval-trace@ ev@ δ@ env-sto@)))
+
+@(define the-reachable-eval
+  (make-base-eval #:lang 'monadic-eval/lang '(link eval-reachable@ ev@ δ@ env-sto@)))
+
 
 
 @title{Abstracting Definitional Interpreters}
@@ -230,6 +242,9 @@ The evaluation function is obtained with the following linkage:
 @racket[(link eval@ ev@ id-monad@ δ@ env@)]
 }
 
+@examples[#:eval the-pure-eval
+                 (rec f (λ (x) f) f)]
+
 @figure["eval-units" "Units for concrete evaluator"]{
 @filebox[@racket[eval@]]{
 @racketblock[
@@ -310,6 +325,9 @@ alternative evaluation function is obtained with:
 @racket[(link eval@ ev@ id-monad@ δ@ env-box@)]
 }
 
+@examples[#:eval the-box-eval
+                 (rec f (λ (x) f) f)]
+
 @subsection{Implementation 3: Closures in an explicit store}
 
 A third alternative is to model the store directly rather than rely
@@ -318,6 +336,9 @@ given in @figure-ref{eval-sto}.  The evalatuator is obtained with:
 @centered{
 @racket[(link eval-sto@ ev@ sto-monad@ δ@ env-sto@)]
 }
+
+@examples[#:eval the-explicit-sto-eval
+                 (rec f (λ (x) f) f)]
 
 @figure["eval-sto" "Eval with store"]{
 @filebox[@racket[eval-sto@]]{
@@ -466,7 +487,7 @@ the evaluator and therefore we can construct an implementation of
 ]}
 
 @examples[#:eval the-trace-eval
-(add1 7)
+(* 2 2)
 ]
 
 
@@ -504,6 +525,10 @@ The reachable state semantics is just an abstraction of the trace
 semantics that ignores the ordering on states.  To implement such a
 semantics, we simply collect a set of evaluator calls rather than a
 sequence.
+
+@examples[#:eval the-reachable-eval
+(* 2 2)
+]
 
 @subsection{Co-inductive semantics}
 
