@@ -1,0 +1,30 @@
+name:                monadic-eval
+version:             0.1.0.0
+license:             AllRightsReserved
+license-file:        LICENSE
+author:              David Darais, David Van Horn, Phillip Mates
+maintainer:          david.darais@gmail.com
+category:            Language
+build-type:          Simple
+cabal-version:       >=1.8
+
+library
+  exposed-modules:     Main
+                     , Classes
+                     , Fixpoints
+                     , Lang
+                     , Transformers
+
+  other-modules:       Classes.Addressable
+                     , Classes.MonadEnv
+                     , Classes.MonadStore
+                     , Classes.MonadTime
+                     , Classes.Pointed
+                     , Classes.Promote
+                     , Fixpoints.YEval
+                     , Lang.Lambda
+                     , Transformers.EnvMonadT
+                     , Transformers.StoreMonadT
+                     , Transformers.TimeMonadT
+
+  build-depends:       base ==4.6.*, containers ==0.5.*, mtl ==2.1.*
