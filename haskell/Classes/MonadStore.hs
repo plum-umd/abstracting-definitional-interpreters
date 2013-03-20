@@ -1,10 +1,17 @@
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
-class (Monad m) => MonadStore dom addr m | m -> dom, m -> addr where
-  getStore :: m (Store dom addr)
-  putStore :: Store dom addr -> m ()
+module Classes.MonadStore where
 
-modifyStore :: (MonadStore dom addr m) 
-            => (Store dom addr -> Store dom addr) 
+import Data.Map (Map)
+
+type Store dom addr val = Map addr (dom (val addr))
+
+class (Monad m) => MonadStore dom addr val m | m -> dom, m -> addr, m -> val where
+  getStore :: m (Store dom addr val)
+  putStore :: Store dom addr val -> m ()
+
+modifyStore :: (MonadStore dom addr val m) 
+            => (Store dom addr val -> Store dom addr val)
             -> m ()
 modifyStore f = do
   s <- getStore

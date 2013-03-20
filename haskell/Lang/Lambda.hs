@@ -1,7 +1,8 @@
-{-# LANGUAGE FlexibleContexts, MultiParamTypeClasses, FunctionalDependencies, ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, FlexibleContexts #-}
 
-module Lambda where
+module Lang.Lambda where
 
+import Classes
 import Control.Monad.Identity
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -23,29 +24,16 @@ data Val addr =
     Clo String Expr (Env addr)
   | Num Integer
 
-type Env addr = Map String addr
-type Store dom addr = Map addr (dom (Val addr))
-
--- AAI --
-
 -- Evaluator --
 
 delta :: Op -> [Val addr] -> Val addr
 delta Add1 [Num x] = Num (x + 1)
 delta Sub1 [Num x] = Num (x - 1)
 
-alloc :: (MonadTime time m, TimeLike time, AddrLike time addr) 
-      => String 
-      -> m addr
-alloc x = do
-  t <- getTime
-  putTime (tnext t)
-  return (anext x t)
-
 eval :: forall m dom addr time.
-        ( MonadEnv addr m, MonadStore dom addr m, MonadTime time m
-        , TimeLike time, AddrLike time addr
-        , MonadPromote dom m, Pointed dom
+        ( MonadEnv addr m, MonadStore dom addr Val m, MonadTime time m
+        , Addressable addr time
+        , Promote dom m, Pointed dom
         , Ord addr) 
      => (Expr -> m (Val addr))
      -> Expr 
@@ -74,18 +62,3 @@ eval eval (If c tb fb) = do
 eval eval (Primop op es) = do
   vs <- mapM eval es
   return $ delta op vs
-
-yEval :: ( MonadEnv addr m, MonadStore dom addr m, MonadTime time m
-         , TimeLike time, AddrLike time addr
-         , MonadPromote dom m, Pointed dom
-         , Ord addr) 
-       => Expr 
-       -> m (Val addr)
-yEval = 
-  let f = eval yEval 
-  in f
-
-main :: IO ()
-main = putStrLn "hi"
-
-

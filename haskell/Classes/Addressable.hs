@@ -1,4 +1,8 @@
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
-class AddrLike t a where
-  anext :: String -> t -> a
+module Classes.Addressable where
 
+class Addressable addr time | time -> addr where
+  tzero :: time
+  tadvance :: time -> time
+  talloc :: String -> time -> addr
