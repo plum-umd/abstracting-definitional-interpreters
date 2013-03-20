@@ -1,5 +1,6 @@
 module Classes 
   ( module Classes.Addressable
+  , module Classes.Lattice
   , module Classes.MonadEnv
   , module Classes.MonadStore
   , module Classes.MonadTime
@@ -9,6 +10,7 @@ module Classes
   ) where
 
 import Classes.Addressable
+import Classes.Lattice
 import Classes.MonadEnv
 import Classes.MonadStore
 import Classes.MonadTime
@@ -22,5 +24,3 @@ alloc x = do
   t <- getTime
   putTime (tadvance t)
   return (talloc x t)
-
-

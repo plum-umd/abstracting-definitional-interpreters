@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables, FlexibleContexts #-}
 
-module Lang.Lambda where
+module Lang.SymbolicLambda where
 
 import Classes
 import Control.Monad.Identity
@@ -8,6 +8,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe
 import Control.Monad.State
+import Control.Monad
 
 data Expr =
     Var String
@@ -21,17 +22,21 @@ data Op =
   | Sub1
 
 data Val addr =
-    Num Integer
+    Nat
+  | Num Integer
   | Clo String Expr (Env addr)
 
 -- Evaluator --
 
 delta :: Op -> [Val addr] -> Val addr
-delta Add1 [Num x] = Num (x + 1)
-delta Sub1 [Num x] = Num (x - 1)
+delta Add1 [Num _] = Nat
+delta Add1 [Nat] = Nat
+delta Sub1 [Num _] = Nat
+delta Sub1 [Nat] = Nat
 
 eval :: forall m dom addr time.
         ( MonadEnv addr m, MonadStore dom addr Val m, MonadTime time m
+        , MonadPlus m
         , Addressable addr time
         , Promote dom m, Pointed dom
         , Lattice (dom (Val addr))
@@ -58,8 +63,10 @@ eval eval (App e1 e2) = do
 eval eval (If c tb fb) = do
   cv <- eval c
   case cv of
+    Nat -> eval tb `mplus` eval fb
     Num 0 -> eval tb
     _     -> eval fb
 eval eval (Primop op es) = do
   vs <- mapM eval es
   return $ delta op vs
+

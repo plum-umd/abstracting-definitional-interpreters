@@ -3,6 +3,9 @@
 module Classes.MonadStore where
 
 import Data.Map (Map)
+import qualified Data.Map as Map
+import Classes.Pointed
+import Classes.Lattice
 
 type Store dom addr val = Map addr (dom (val addr))
 
@@ -17,3 +20,10 @@ modifyStore f = do
   s <- getStore
   putStore (f s)
 
+joinStore :: (Pointed dom, Lattice (dom (val addr)), Ord addr) 
+            => addr 
+            -> val addr 
+            -> Store dom addr val 
+            -> Store dom addr val
+joinStore a v s =
+  join (Map.singleton a (unit v)) s

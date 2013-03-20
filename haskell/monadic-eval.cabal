@@ -16,6 +16,7 @@ library
                      , Transformers
 
   other-modules:       Classes.Addressable
+                     , Classes.Lattice
                      , Classes.MonadEnv
                      , Classes.MonadStore
                      , Classes.MonadTime
@@ -23,7 +24,9 @@ library
                      , Classes.Promote
                      , Fixpoints.YEval
                      , Lang.Lambda
+                     , Lang.SymbolicLambda
                      , Transformers.EnvMonadT
+                     , Transformers.NonDetT
                      , Transformers.StoreMonadT
                      , Transformers.TimeMonadT
 
