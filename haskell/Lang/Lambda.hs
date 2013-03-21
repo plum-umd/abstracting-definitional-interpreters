@@ -1,13 +1,14 @@
-{-# LANGUAGE ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Lang.Lambda where
 
-import Classes
-import Control.Monad.Identity
+import AAI
 import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe
-import Control.Monad.State
+import Monads
+import StateSpace
+import Util
+import qualified Data.Map as Map
 
 data Expr =
     Var String
@@ -22,7 +23,7 @@ data Op =
 
 data Val addr =
     Num Integer
-  | Clo String Expr (Env addr)
+  | Clo String Expr (Env String addr)
 
 -- Evaluator --
 
@@ -30,10 +31,12 @@ delta :: Op -> [Val addr] -> Val addr
 delta Add1 [Num x] = Num (x + 1)
 delta Sub1 [Num x] = Num (x - 1)
 
-eval :: forall m dom addr time.
-        ( MonadEnv addr m, MonadStore dom addr Val m, MonadTime time m
-        , Addressable addr time
-        , Promote dom m, Pointed dom
+eval :: ( MonadEnv (Env String addr) m
+        , MonadStore (Store dom addr (Val addr)) m
+        , MonadTime time m
+        , Addressable addr String time
+        , Pointed dom
+        , Promote dom m
         , Lattice (dom (Val addr))
         , Ord addr) 
      => (Expr -> m (Val addr))

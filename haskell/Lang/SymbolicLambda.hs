@@ -1,14 +1,15 @@
-{-# LANGUAGE ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Lang.SymbolicLambda where
 
-import Classes
-import Control.Monad.Identity
+import AAI
 import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe
-import Control.Monad.State
+import Monads
 import Control.Monad
+import StateSpace
+import Util
+import qualified Data.Map as Map
 
 data Expr =
     Var String
@@ -24,7 +25,7 @@ data Op =
 data Val addr =
     Nat
   | Num Integer
-  | Clo String Expr (Env addr)
+  | Clo String Expr (Env String addr)
 
 -- Evaluator --
 
@@ -34,11 +35,13 @@ delta Add1 [Nat] = Nat
 delta Sub1 [Num _] = Nat
 delta Sub1 [Nat] = Nat
 
-eval :: forall m dom addr time.
-        ( MonadEnv addr m, MonadStore dom addr Val m, MonadTime time m
-        , MonadPlus m
-        , Addressable addr time
-        , Promote dom m, Pointed dom
+eval :: ( MonadPlus m
+        , MonadEnv (Env String addr) m
+        , MonadStore (Store dom addr (Val addr)) m
+        , MonadTime time m
+        , Addressable addr String time
+        , Pointed dom
+        , Promote dom m
         , Lattice (dom (Val addr))
         , Ord addr) 
      => (Expr -> m (Val addr))
@@ -69,4 +72,3 @@ eval eval (If c tb fb) = do
 eval eval (Primop op es) = do
   vs <- mapM eval es
   return $ delta op vs
-

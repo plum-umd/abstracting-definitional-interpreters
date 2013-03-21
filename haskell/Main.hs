@@ -1,9 +1,11 @@
 module Main where
 
-import Classes
+import AAI
 import Fixpoints
 import Lang
-import Transformers
+import Util
+import Monads
+import StateSpace
 
 main :: IO ()
 main = putStrLn "compiles"

@@ -1,8 +1,4 @@
-module Lang 
-  (
-  -- ( module Lang.Lambda
-  -- , module Lang.SymbolicLambda
-  ) where
+module Lang where
 
 import Lang.Lambda
 import Lang.SymbolicLambda
