@@ -1,9 +1,11 @@
 module Util.Lattice where
 
+import Data.Function
 import Data.Map (Map)
 import Data.Set (Set)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
+import qualified Data.List as List
 
 class Lattice a where
   lbot :: a
@@ -26,9 +28,16 @@ instance (Lattice a, Lattice b) => Lattice (a, b) where
   (a1, b1) `lmeet` (a2, b2) = (a1 `lmeet` a2, b1 `lmeet` b2)
   (a1, b1) `lrefines` (a2, b2) = (a1 `lrefines` a2) && (b1 `lrefines` b2)
 
-instance (Ord s) => Lattice (Set s) where
+instance (Ord a) => Lattice [a] where
+  lbot = []
+  ltop = error "no representation of top list"
+  ljoin = List.union
+  lmeet = List.intersect
+  lrefines = lrefines `on` Set.fromList
+
+instance (Ord a) => Lattice (Set a) where
   lbot = Set.empty
-  ltop = error "no representation of universal set"
+  ltop = error "no representation of top set"
   ljoin = Set.union
   lmeet = Set.intersection
   lrefines = Set.isSubsetOf

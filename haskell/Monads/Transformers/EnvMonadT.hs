@@ -9,10 +9,14 @@ import Monads.Classes
 newtype EnvMonadT env m a = EnvMonadT { unEnvMonadT :: ReaderT env m a}
   deriving ( Monad
            , MonadTrans
+           , MonadPlus
            , MonadState s
            , MonadStore store
            , MonadTime time
            )
+
+runEnvMonadT :: EnvMonadT env m a -> env -> m a
+runEnvMonadT = runReaderT . unEnvMonadT
 
 instance (MonadReader r m) => MonadReader r (EnvMonadT env m) where
   ask = lift ask

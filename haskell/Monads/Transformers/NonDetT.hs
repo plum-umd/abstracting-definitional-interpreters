@@ -10,6 +10,7 @@ import Control.Monad.List
 newtype NonDetT m a = NonDetT { unNonDetT :: ListT m a}
   deriving ( Monad
            , MonadTrans
+           , MonadPlus
            , MonadReader r
            , MonadState s
            , MonadEnv addr
@@ -17,5 +18,8 @@ newtype NonDetT m a = NonDetT { unNonDetT :: ListT m a}
            , MonadTime time
            )
 
-instance (Monad n, Promote m n) => Promote m (NonDetT n) where
-  promote = lift . promote
+runNonDetT :: NonDetT m a -> m [a]
+runNonDetT = runListT . unNonDetT
+
+instance (Monad m) => Promote [] (NonDetT m) where
+  promote = NonDetT . ListT . return

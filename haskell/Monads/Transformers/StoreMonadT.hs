@@ -9,10 +9,14 @@ import Control.Monad.Reader
 newtype StoreMonadT store m a = StoreMonadT { unStoreMonadT :: StateT store m a}
   deriving ( Monad
            , MonadTrans
+           , MonadPlus
            , MonadReader r
            , MonadEnv env
            , MonadTime time
            )
+
+runStoreMonadT :: StoreMonadT store m a -> store -> m (a,store)
+runStoreMonadT = runStateT . unStoreMonadT
 
 instance (MonadState s m) => MonadState s (StoreMonadT store m) where
   get = lift get

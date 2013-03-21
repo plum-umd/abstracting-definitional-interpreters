@@ -10,12 +10,14 @@ cabal-version:       >=1.8
 library
   exposed-modules:     Main
                      , AAI
+                     , Analyses
                      , Fixpoints
                      , Lang
                      , StateSpace
                      , Util
 
   other-modules:       AAI.Addressable
+                     , Analyses.ZPDCFA
                      , Fixpoints.MemoEval
                      , Fixpoints.YEval
                      , Lang.Lambda
@@ -28,9 +30,10 @@ library
                      , Monads.Transformers.NonDetT
                      , Monads.Transformers.StoreMonadT
                      , Monads.Transformers.TimeMonadT
+                     , StateSpace.CFA
+                     , StateSpace.Concrete
                      , StateSpace.Env
                      , StateSpace.Store
-                     , StateSpace.Time
                      , Util.Lattice
                      , Util.Lens
                      , Util.Pointed

@@ -3,10 +3,11 @@
 module Lang.SymbolicLambda where
 
 import AAI
+import Analyses
+import Control.Monad
 import Data.Map (Map)
 import Data.Maybe
 import Monads
-import Control.Monad
 import StateSpace
 import Util
 import qualified Data.Map as Map
@@ -15,17 +16,21 @@ data Expr =
     Var String
   | Lam String Expr
   | App Expr Expr
-  | If Expr Expr Expr
+  | IfZ Expr Expr Expr
   | Primop Op [Expr]
+  | Lit Integer
+  deriving (Eq, Ord, Show)
 
 data Op =
     Add1
   | Sub1
+  deriving (Eq, Ord, Show)
 
 data Val addr =
     Nat
   | Num Integer
   | Clo String Expr (Env String addr)
+  deriving (Eq, Ord, Show)
 
 -- Evaluator --
 
@@ -63,7 +68,7 @@ eval eval (App e1 e2) = do
   localEnv (const $ Map.insert x a env') $ do
     modifyStore (joinStore a v)
     eval e
-eval eval (If c tb fb) = do
+eval eval (IfZ c tb fb) = do
   cv <- eval c
   case cv of
     Nat -> eval tb `mplus` eval fb
@@ -72,3 +77,20 @@ eval eval (If c tb fb) = do
 eval eval (Primop op es) = do
   vs <- mapM eval es
   return $ delta op vs
+eval eval (Lit n) = return (Num n)
+
+-- ZPDCFA
+
+type CFAAddr_SL = CFAAddr String
+type CFAVal_SL = Val CFAAddr_SL
+
+type ZPDCFA_SL a = ZPDCFA String CFAVal_SL a
+
+zpdcfa_SL :: Expr -> ZPDCFA_SL CFAVal_SL
+zpdcfa_SL = zpdcfa eval
+
+run_zpdcfa_SL :: Expr -> [(CFAVal_SL, Store [] CFAAddr_SL CFAVal_SL, ZCFATime)]
+run_zpdcfa_SL expr = runZPDCFA (zpdcfa_SL expr) Map.empty Map.empty ()
+
+e1 :: Expr
+e1 = IfZ (Primop Add1 [Lit 7]) (Lit 1) (Lit 2)

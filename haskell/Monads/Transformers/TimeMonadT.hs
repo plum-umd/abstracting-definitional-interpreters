@@ -9,10 +9,14 @@ import Control.Monad.Reader
 newtype TimeMonadT time m a = TimeMonadT { unTimeMonadT :: StateT time m a}
   deriving ( Monad
            , MonadTrans
+           , MonadPlus
            , MonadReader r
            , MonadEnv env
            , MonadStore store
            )
+
+runTimeMonadT :: TimeMonadT time m a -> time -> m (a,time)
+runTimeMonadT = runStateT . unTimeMonadT
 
 instance (MonadState s m) => MonadState s (TimeMonadT time m) where
   get = lift get

@@ -12,24 +12,25 @@ import StateSpace
 import Util
 import qualified Data.Map as Map
 
-type MemoMap dom val addr expr env store = 
-  Map (expr,env,store) (dom (val addr))
-type MemoTables dom val addr expr env store = 
-  ( MemoMap dom val addr expr env store
-  , MemoMap dom val addr expr env store
+type MemoMap dom val expr env store = 
+  Map (expr,env,store) (dom val)
+type MemoTables dom val expr env store = 
+  ( MemoMap dom val expr env store
+  , MemoMap dom val expr env store
   )
 
-memoEval :: forall m e s dom val addr expr env store.
+memoEval :: forall m dom val expr env store.
             ( MonadEnv env m
             , MonadStore store m
-            , MonadState (MemoTables dom val addr expr env store) m
+            , MonadState (MemoTables dom val expr env store) m
             , Promote dom m
             , Ord expr
             , Ord env
             , Ord store
-            , Lattice (dom (val addr))) 
-         => ((expr -> m (val addr)) -> (expr -> m (val addr)))
-         -> (expr -> m (val addr))
+            , Ord val
+            , Lattice (dom val)) 
+         => ((expr -> m val) -> (expr -> m val))
+         -> (expr -> m val)
 memoEval eval expr = do
   env <- askEnv
   store <- getStore
@@ -38,22 +39,22 @@ memoEval eval expr = do
   case Map.lookup ss m1 of
     Just vD -> promote vD
     Nothing -> do
-      let f = (first $ Map.insert ss (fromMaybe lbot $ Map.lookup ss mx))
-      modify f
+      modify (first $ Map.insert ss (fromMaybe lbot $ Map.lookup ss mx))
       eval (memoEval eval) expr
 
-drive :: forall m e s dom val addr expr env store.
+drive :: forall m dom val expr env store.
          ( MonadEnv env m
          , MonadStore store m
          , Promote dom m
          , Ord expr
          , Ord env
          , Ord store
-         , Eq (dom (val addr))
-         , Lattice (dom (val addr))) 
-      => ((expr -> StateT (MemoTables dom val addr expr env store) m (val addr)) 
-          -> (expr -> StateT (MemoTables dom val addr expr env store) m (val addr)))
-      -> (expr -> m (val addr))
+         , Ord val
+         , Eq (dom val)
+         , Lattice (dom val)) 
+      => ((expr -> StateT (MemoTables dom val expr env store) m val) 
+          -> (expr -> StateT (MemoTables dom val expr env store) m val))
+      -> (expr -> m val)
 drive eval expr = do
   let loop mx = do
         (v,(m1,mx')) <- runStateT (memoEval eval expr) (lbot,mx)

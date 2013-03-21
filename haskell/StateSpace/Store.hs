@@ -1,9 +1,5 @@
-{-# LANGUAGE FlexibleContexts, GeneralizedNewtypeDeriving #-}
-
 module StateSpace.Store where
 
-import Control.Monad.State
-import Util.Lens
 import Data.Map (Map)
 import Util.Lattice
 import Util.Pointed

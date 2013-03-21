@@ -1,9 +1,11 @@
 module StateSpace 
-  ( module StateSpace.Env
+  ( module StateSpace.CFA
+  , module StateSpace.Concrete
+  , module StateSpace.Env
   , module StateSpace.Store
-  , module StateSpace.Time
   ) where
 
+import StateSpace.CFA
+import StateSpace.Concrete
 import StateSpace.Env
 import StateSpace.Store
-import StateSpace.Time
