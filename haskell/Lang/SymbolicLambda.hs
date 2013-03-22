@@ -19,7 +19,12 @@ data Expr =
   | IfZ Expr Expr Expr
   | Primop Op [Expr]
   | Lit Integer
+  -- | LetRecL f x b e ~ let rec f = \x -> b in e
+  | LetRec String String Expr Expr
   deriving (Eq, Ord, Show)
+
+letE :: String -> Expr -> Expr -> Expr
+letE x e1 e2 = App (Lam x e2) e1
 
 data Op =
     Add1
@@ -78,6 +83,13 @@ eval eval (Primop op es) = do
   vs <- mapM eval es
   return $ delta op vs
 eval eval (Lit n) = return (Num n)
+eval eval (LetRec f x b e) = do
+  a <- alloc f
+  localEnv (Map.insert f a) $ do
+    env <- askEnv
+    let v = Clo x b env
+    modifyStore (joinStore a v)
+    eval e
 
 -- ZPDCFA
 
@@ -89,3 +101,21 @@ run_zpdcfa_SL expr = driveZPDCFA eval expr
 
 e1 :: Expr
 e1 = IfZ (Primop Add1 [Lit 7]) (Lit 1) (Lit 2)
+
+e2 :: Expr
+{-
+e2 = (let* ((id (lambda (x) ((lambda (q) q) x))) 
+            (y (id 0)) 
+            (z (id 1))) 
+       y) 
+-}
+e2 = LetRec "id" "x" ((Lam "q" q) `App` x) $
+     letE "y" (id `App` Lit 0) $
+     letE "z" (id `App` Lit 1) $
+     y
+  where
+    id = Var "id"
+    x = Var "x"
+    q = Var "q"
+    y = Var "y"
+    z = Var "z"

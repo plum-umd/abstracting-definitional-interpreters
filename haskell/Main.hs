@@ -11,4 +11,4 @@ import Util
 import Lang.SymbolicLambda
 
 main :: IO ()
-main = putStrLn $ show $ run_zpdcfa_SL e1
+main = putStrLn $ show $ run_zpdcfa_SL e2
