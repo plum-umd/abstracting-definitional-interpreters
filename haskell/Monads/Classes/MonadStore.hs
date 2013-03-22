@@ -5,6 +5,7 @@ module Monads.Classes.MonadStore where
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.List
+import Util.ListSet
 
 class (Monad m) => MonadStore store m | m -> store where
   getStore :: m store
@@ -17,7 +18,7 @@ modifyStore f = do
 
 -- plumbing
 
-instance (MonadStore store m) => MonadStore store (ListT m) where
+instance (MonadStore store m) => MonadStore store (ListSetT m) where
   getStore = lift getStore
   putStore = lift . putStore
 

@@ -5,6 +5,7 @@ module Monads.Classes.MonadEnv where
 import Control.Monad.State
 import Control.Monad.Reader
 import Control.Monad.List
+import Util.ListSet
 
 class (Monad m) => MonadEnv env m | m -> env where
   askEnv :: m env
@@ -12,9 +13,9 @@ class (Monad m) => MonadEnv env m | m -> env where
 
 -- plumbing
 
-instance (MonadEnv env m) => MonadEnv env (ListT m) where
+instance (MonadEnv env m) => MonadEnv env (ListSetT m) where
   askEnv = lift askEnv
-  localEnv = mapListT . localEnv
+  localEnv = mapListSetT . localEnv
 
 instance (MonadEnv env m) => MonadEnv env (ReaderT r m) where
   askEnv = lift askEnv

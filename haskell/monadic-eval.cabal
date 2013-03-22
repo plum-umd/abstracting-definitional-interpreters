@@ -17,6 +17,7 @@ library
                      , Util
 
   other-modules:       AAI.Addressable
+                     , Analyses.AbstractM
                      , Analyses.ZPDCFA
                      , Fixpoints.MemoEval
                      , Fixpoints.YEval
@@ -36,6 +37,7 @@ library
                      , StateSpace.Store
                      , Util.Lattice
                      , Util.Lens
+                     , Util.ListSet
                      , Util.Pointed
 
   build-depends:       base ==4.6.*

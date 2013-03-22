@@ -84,13 +84,8 @@ eval eval (Lit n) = return (Num n)
 type CFAAddr_SL = CFAAddr String
 type CFAVal_SL = Val CFAAddr_SL
 
-type ZPDCFA_SL a = ZPDCFA String CFAVal_SL a
-
-zpdcfa_SL :: Expr -> ZPDCFA_SL CFAVal_SL
-zpdcfa_SL = zpdcfa eval
-
-run_zpdcfa_SL :: Expr -> [(CFAVal_SL, Store [] CFAAddr_SL CFAVal_SL, ZCFATime)]
-run_zpdcfa_SL expr = runZPDCFA (zpdcfa_SL expr) Map.empty Map.empty ()
+run_zpdcfa_SL :: Expr -> ListSet (CFAVal_SL, Store ListSet CFAAddr_SL CFAVal_SL, ZCFATime)
+run_zpdcfa_SL expr = driveZPDCFA eval expr
 
 e1 :: Expr
 e1 = IfZ (Primop Add1 [Lit 7]) (Lit 1) (Lit 2)

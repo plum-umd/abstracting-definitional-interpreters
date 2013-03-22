@@ -5,6 +5,7 @@ module Monads.Classes.MonadTime where
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.List
+import Util.ListSet
 
 class (Monad m) => MonadTime time m | m -> time where
   getTime :: m time
@@ -17,7 +18,7 @@ modifyTime f = do
 
 -- plumbing
 
-instance (MonadTime time m) => MonadTime time (ListT m) where
+instance (MonadTime time m) => MonadTime time (ListSetT m) where
   getTime = lift getTime
   putTime = lift . putTime
 

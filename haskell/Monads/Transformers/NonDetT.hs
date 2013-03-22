@@ -6,8 +6,9 @@ import Monads.Classes
 import Control.Monad.State
 import Control.Monad.Reader
 import Control.Monad.List
+import Util.ListSet
 
-newtype NonDetT m a = NonDetT { unNonDetT :: ListT m a}
+newtype NonDetT m a = NonDetT { unNonDetT :: ListSetT m a}
   deriving ( Monad
            , MonadTrans
            , MonadPlus
@@ -18,8 +19,8 @@ newtype NonDetT m a = NonDetT { unNonDetT :: ListT m a}
            , MonadTime time
            )
 
-runNonDetT :: NonDetT m a -> m [a]
-runNonDetT = runListT . unNonDetT
+runNonDetT :: NonDetT m a -> m (ListSet a)
+runNonDetT = runListSetT . unNonDetT
 
-instance (Monad m) => Promote [] (NonDetT m) where
-  promote = NonDetT . ListT . return
+instance (Monad m) => Promote ListSet (NonDetT m) where
+  promote = NonDetT . ListSetT . return

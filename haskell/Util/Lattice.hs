@@ -28,13 +28,6 @@ instance (Lattice a, Lattice b) => Lattice (a, b) where
   (a1, b1) `lmeet` (a2, b2) = (a1 `lmeet` a2, b1 `lmeet` b2)
   (a1, b1) `lrefines` (a2, b2) = (a1 `lrefines` a2) && (b1 `lrefines` b2)
 
-instance (Ord a) => Lattice [a] where
-  lbot = []
-  ltop = error "no representation of top list"
-  ljoin = List.union
-  lmeet = List.intersect
-  lrefines = lrefines `on` Set.fromList
-
 instance (Ord a) => Lattice (Set a) where
   lbot = Set.empty
   ltop = error "no representation of top set"

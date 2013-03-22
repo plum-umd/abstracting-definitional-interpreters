@@ -2,6 +2,8 @@
 
 module Fixpoints.MemoEval where
 
+import Debug.Trace
+import Control.Exception
 import Control.Arrow
 import Control.Monad.Reader
 import Control.Monad.State
@@ -29,9 +31,10 @@ memoEval :: forall m dom val expr env store.
             , Ord store
             , Ord val
             , Lattice (dom val)) 
-         => ((expr -> m val) -> (expr -> m val))
+         => dom ()
+         -> ((expr -> m val) -> (expr -> m val))
          -> (expr -> m val)
-memoEval eval expr = do
+memoEval w eval expr = do
   env <- askEnv
   store <- getStore
   let ss = (expr,env,store) 
@@ -39,9 +42,10 @@ memoEval eval expr = do
   case Map.lookup ss m1 of
     Just vD -> promote vD
     Nothing -> do
-      modify (first $ Map.insert ss (fromMaybe lbot $ Map.lookup ss mx))
-      eval (memoEval eval) expr
+      modify (first $ ljoin (Map.singleton ss (fromMaybe lbot $ Map.lookup ss mx)))
+      eval (memoEval w eval) expr
 
+{-
 drive :: forall m dom val expr env store.
          ( MonadEnv env m
          , MonadStore store m
@@ -51,14 +55,48 @@ drive :: forall m dom val expr env store.
          , Ord store
          , Ord val
          , Eq (dom val)
+         , Show (dom val)
+         , Show store
+         , Show env
+         , Show expr
          , Lattice (dom val)) 
       => ((expr -> StateT (MemoTables dom val expr env store) m val) 
           -> (expr -> StateT (MemoTables dom val expr env store) m val))
       -> (expr -> m val)
 drive eval expr = do
-  let loop mx = do
+  let loop mx n = do
         (v,(m1,mx')) <- runStateT (memoEval eval expr) (lbot,mx)
-        if m1 == mx'
-          then return v
-          else loop m1
-  loop lbot
+        assert (mx == mx') $
+          (if m1 /= mx' 
+             then trace ("m1:  " ++ show m1 ++ "\n" ++ "mx': " ++ show mx' ++ "\n\n")
+             else id) $
+          if m1 == mx'
+            then return v
+            else if n == 0
+              then return v
+              else loop m1 (n-1)
+  loop lbot 0
+  -}
+
+{-
+  StateT store (ListT (StateT memo ID)) a = state -> memo -> ([a,S],memo)
+
+  let loop mx = do
+        let ([VxSxT],(m1,mx')) = runEverything (memoEval eval expr) (lbot,mx) S T
+        assert (mx == mx') $
+          if m1 == mx' 
+            then [VxSxT]
+            else loop m1
+
+
+
+          (if m1 /= mx' 
+             then trace ("m1:  " ++ show m1 ++ "\n" ++ "mx': " ++ show mx' ++ "\n\n")
+             else id) $
+          if m1 == mx'
+            then return v
+            else if n == 0
+              then return v
+              else loop m1 (n-1)
+  loop lbot 0
+-}

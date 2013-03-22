@@ -18,9 +18,12 @@ newtype EnvMonadT env m a = EnvMonadT { unEnvMonadT :: ReaderT env m a}
 runEnvMonadT :: EnvMonadT env m a -> env -> m a
 runEnvMonadT = runReaderT . unEnvMonadT
 
+mapEnvMonadT :: (m a -> n b) -> EnvMonadT env m a -> EnvMonadT env n b
+mapEnvMonadT f = EnvMonadT . mapReaderT f . unEnvMonadT
+
 instance (MonadReader r m) => MonadReader r (EnvMonadT env m) where
   ask = lift ask
-  local = undefined
+  local = mapEnvMonadT . local
 
 instance (Monad m) => MonadEnv env (EnvMonadT env m) where
   askEnv = EnvMonadT ask

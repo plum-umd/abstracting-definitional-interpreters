@@ -1,74 +1,58 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, Rank2Types, ScopedTypeVariables #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, ScopedTypeVariables #-}
 
 module Analyses.ZPDCFA where
 
-import Util
+import Control.Exception
+import Analyses.AbstractM
+import Control.Monad.Identity
+import Control.Monad.Reader
+import Control.Monad.State
+import Control.Monad.Trans
 import Monads
 import StateSpace
-import Control.Monad.Identity
-import Control.Monad.State
-import Control.Monad.Reader
-import Control.Monad.Trans
-import qualified Fixpoints.MemoEval as MemoEval
+import Util
 import qualified Data.Map as Map
+import Fixpoints.MemoEval
 
-newtype AbstractM addr time var val a = AbstractM
-  { unAbstractM :: EnvMonadT (Env var addr)
-                   (StoreMonadT (Store [] addr val)
-                   (TimeMonadT time 
-                   (NonDetT 
-                   Identity))) a }
+newtype ZPDCFAT var val m a = ZPDCFAT
+  { unZPDCFAT :: AbstractMT (CFAAddr var) ZCFATime var val m a }
   deriving
   ( Monad
+  , MonadTrans
   , MonadPlus
-  , MonadEnv (Env var addr)
-  , MonadStore (Store [] addr val)
-  , MonadTime time
-  , Promote []
-  )
-
-runAbstractM :: AbstractM addr time var val a
-             -> Env var addr 
-             -> Store [] addr val 
-             -> time 
-             -> [(a, Store [] addr val, time)]
-runAbstractM aM env store time =
-  let rs = 
-        runIdentity 
-        $ runNonDetT 
-        $ flip runTimeMonadT time
-        $ flip runStoreMonadT store
-        $ flip runEnvMonadT env
-        $ unAbstractM aM
-  in flip map rs $ \ ((a,store),time) -> (a,store,time)
-
-newtype ZPDCFA var val a = ZPDCFA
-  { unZPDCFA :: AbstractM (CFAAddr var) ZCFATime var val a }
-  deriving
-  ( Monad
-  , MonadPlus
+  , MonadState s
+  , MonadReader r
   , MonadEnv (Env var (CFAAddr var))
-  , MonadStore (Store [] (CFAAddr var) val)
+  , MonadStore (Store ListSet (CFAAddr var) val)
   , MonadTime ZCFATime
-  , Promote []
+  , Promote ListSet
   )
 
-runZPDCFA :: ZPDCFA var val a
-          -> Env var (CFAAddr var)
-          -> Store [] (CFAAddr var) val
-          -> ZCFATime
-          -> [(a, Store [] (CFAAddr var) val, ZCFATime)]
-runZPDCFA = runAbstractM . unZPDCFA
+runZPDCFAT :: (Monad m)
+           => ZPDCFAT var val m a
+           -> Env var (CFAAddr var)
+           -> Store ListSet (CFAAddr var) val
+           -> ZCFATime
+           -> m (ListSet (a, Store ListSet (CFAAddr var) val, ZCFATime))
+runZPDCFAT = runAbstractMT . unZPDCFAT
 
 type MemoTables_ZPDCFA expr var val = 
-  MemoEval.MemoTables [] val expr (Env var (CFAAddr var)) (Store [] (CFAAddr var) val)
+  MemoTables ListSet val expr (Env var (CFAAddr var)) (Store ListSet (CFAAddr var) val)
 
-zpdcfa :: forall var val expr.
-          ( Ord expr
-          , Ord val
-          , Ord var)
-       => ((expr -> StateT (MemoTables_ZPDCFA expr var val) (ZPDCFA var val) val) 
-           -> (expr -> StateT (MemoTables_ZPDCFA expr var val) (ZPDCFA var val) val))
-      -> (expr -> ZPDCFA var val val)
-zpdcfa eval = MemoEval.drive eval
+type ZPDCFA_Driver var val expr a = ZPDCFAT var val (StateT (MemoTables_ZPDCFA expr var val) Identity) a
 
+driveZPDCFA :: (Ord val, Ord expr, Ord var)
+            => ((expr -> ZPDCFA_Driver var val expr val) -> (expr -> ZPDCFA_Driver var val expr val))
+            -> (expr -> ListSet (val, Store ListSet (CFAAddr var) val, ZCFATime))
+driveZPDCFA eval expr =
+  let memoEval' = memoEval (lbot :: ListSet ()) in
+  let loop mx =
+        let (_VxSxT_list,(m1,mx')) = 
+              runIdentity 
+              $ flip runStateT (lbot,mx) 
+              $ runZPDCFAT (memoEval' eval expr) Map.empty lbot ()
+        in assert (mx == mx') $
+        if m1 == mx'
+          then _VxSxT_list
+          else loop m1
+  in loop lbot
