@@ -22,28 +22,28 @@ type MemoTables dom val expr env store =
   )
 
 memoEval :: forall m dom val expr env store.
-            ( MonadEnv env m
-            , MonadStore store m
+            ( MonadEnvReader env m
+            , MonadStoreState store m
             , MonadState (MemoTables dom val expr env store) m
             , Promote dom m
             , Ord expr
             , Ord env
             , Ord store
             , Ord val
-            , Lattice (dom val)) 
-         => dom ()
-         -> ((expr -> m val) -> (expr -> m val))
-         -> (expr -> m val)
-memoEval w eval expr = do
+            , Lattice (dom val)
+            )
+         => ((expr -> m (dom val)) -> (expr -> m (dom val)))
+         -> (expr -> m (dom val))
+memoEval eval expr = do
   env <- askEnv
   store <- getStore
   let ss = (expr,env,store) 
-  (m1,mx) <- get
+  (m1,mx) <- get :: m (MemoTables dom val expr env store)
   case Map.lookup ss m1 of
-    Just vD -> promote vD
+    Just vD -> return vD
     Nothing -> do
       modify (first $ ljoin (Map.singleton ss (fromMaybe lbot $ Map.lookup ss mx)))
-      eval (memoEval w eval) expr
+      eval (memoEval eval) expr
 
 {-
 drive :: forall m dom val expr env store.

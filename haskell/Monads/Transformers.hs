@@ -1,11 +1,13 @@
 module Monads.Transformers
-  ( module Monads.Transformers.EnvMonadT
+  ( module Monads.Transformers.EnvReaderT
+  , module Monads.Transformers.EnvStateT
   , module Monads.Transformers.NonDetT
-  , module Monads.Transformers.StoreMonadT
-  , module Monads.Transformers.TimeMonadT
+  , module Monads.Transformers.StoreStateT
+  , module Monads.Transformers.TimeStateT
   ) where
 
-import Monads.Transformers.EnvMonadT
+import Monads.Transformers.EnvReaderT
+import Monads.Transformers.EnvStateT
 import Monads.Transformers.NonDetT
-import Monads.Transformers.StoreMonadT
-import Monads.Transformers.TimeMonadT
+import Monads.Transformers.StoreStateT
+import Monads.Transformers.TimeStateT

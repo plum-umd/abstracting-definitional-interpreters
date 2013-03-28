@@ -1,5 +1,5 @@
-module Lang where
+module Lang
+  ( module Lang.Lambda
+  ) where
 
 import Lang.Lambda
-import Lang.SymbolicLambda
-

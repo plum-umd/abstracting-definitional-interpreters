@@ -1,7 +1,7 @@
 module Analyses
-  ( module Analyses.AbstractM
-  , module Analyses.ZPDCFA
+  ( module Analyses.BigStep
+  , module Analyses.SmallStep
   ) where
 
-import Analyses.AbstractM
-import Analyses.ZPDCFA
+import Analyses.BigStep
+import Analyses.SmallStep

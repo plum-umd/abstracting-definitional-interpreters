@@ -7,8 +7,9 @@ import Lang
 import Monads
 import StateSpace
 import Util
-
-import Lang.SymbolicLambda
+import Text.PrettyPrint.ANSI.Leijen
+import Lang.Lambda.BigStep.Abstract
+import PrettyUtil
 
 main :: IO ()
-main = putStrLn $ show $ run_zpdcfa_SL e2
+main = putDoc $ fpretty $ run_zpdcfa_SL e1

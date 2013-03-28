@@ -1,11 +1,13 @@
 module Monads.Classes
-  ( module Monads.Classes.MonadEnv
-  , module Monads.Classes.MonadStore
-  , module Monads.Classes.MonadTime
+  ( module Monads.Classes.MonadEnvReader
+  , module Monads.Classes.MonadEnvState
+  , module Monads.Classes.MonadStoreState
+  , module Monads.Classes.MonadTimeState
   , module Monads.Classes.Promote
   ) where
 
-import Monads.Classes.MonadEnv
-import Monads.Classes.MonadStore
-import Monads.Classes.MonadTime
+import Monads.Classes.MonadEnvReader
+import Monads.Classes.MonadEnvState
+import Monads.Classes.MonadStoreState
+import Monads.Classes.MonadTimeState
 import Monads.Classes.Promote

@@ -7,10 +7,17 @@ import qualified Data.Map as Map
 
 type Store dom addr val = Map addr (dom val)
 
-joinStore :: (Pointed dom, Lattice (dom val), Ord addr) 
-          => addr 
-          -> val
-          -> Store dom addr val 
-          -> Store dom addr val
-joinStore a v s =
-  ljoin (Map.singleton a (unit v)) s
+updateStoreD :: (Pointed dom, Lattice (dom val), Ord addr)
+             => addr
+             -> dom val
+             -> Store dom addr val
+             -> Store dom addr val
+updateStoreD a vD = Map.unionWith ljoin (Map.singleton a vD)
+
+updateStore :: (Pointed dom, Lattice (dom val), Ord addr) 
+            => addr 
+            -> val
+            -> Store dom addr val 
+            -> Store dom addr val
+updateStore a v = updateStoreD a (unit v)
+

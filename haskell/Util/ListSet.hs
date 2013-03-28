@@ -2,6 +2,7 @@
 
 module Util.ListSet where
 
+import PrettyUtil
 import Util.Pointed
 import Control.Monad
 import Util.Lattice
@@ -9,9 +10,14 @@ import Data.Function
 import qualified Data.Set as Set
 import Control.Monad.State
 import Control.Monad.Reader
+import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import Util.Set
 
 newtype ListSet a = ListSet { runListSet :: [a] }
-  deriving (Monad, MonadPlus, Show)
+  deriving (Functor, Monad, MonadPlus, Show)
+
+instance (FPretty a, Ord a) => FPretty (ListSet a) where
+  fpretty = fpretty . Set.fromList . runListSet
 
 instance (Ord a) => Eq (ListSet a) where
   (==) = (==) `on` Set.fromList . runListSet

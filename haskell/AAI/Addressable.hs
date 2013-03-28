@@ -9,7 +9,7 @@ class Addressable addr var time | time -> addr, time -> var where
   tadvance :: time -> time
   talloc :: var -> time -> addr
 
-alloc :: (MonadTime time m, Addressable addr var time) => var -> m addr
+alloc :: (MonadTimeState time m, Addressable addr var time) => var -> m addr
 alloc x = do
   t <- getTime
   putTime (tadvance t)

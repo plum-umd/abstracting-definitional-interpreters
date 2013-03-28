@@ -9,15 +9,17 @@ import Control.Monad.List
 import Util.ListSet
 
 newtype NonDetT m a = NonDetT { unNonDetT :: ListSetT m a}
-  deriving ( Monad
-           , MonadTrans
-           , MonadPlus
-           , MonadReader r
-           , MonadState s
-           , MonadEnv addr
-           , MonadStore store
-           , MonadTime time
-           )
+  deriving 
+  ( Monad
+  , MonadTrans
+  , MonadPlus
+  , MonadReader r
+  , MonadState s
+  , MonadEnvReader env
+  , MonadEnvState env
+  , MonadStoreState store
+  , MonadTimeState time
+  )
 
 runNonDetT :: NonDetT m a -> m (ListSet a)
 runNonDetT = runListSetT . unNonDetT

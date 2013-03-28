@@ -9,37 +9,11 @@ cabal-version:       >=1.8
 
 library
   exposed-modules:     Main
-                     , AAI
-                     , Analyses
-                     , Fixpoints
-                     , Lang
-                     , StateSpace
-                     , Util
 
-  other-modules:       AAI.Addressable
-                     , Analyses.AbstractM
-                     , Analyses.ZPDCFA
-                     , Fixpoints.MemoEval
-                     , Fixpoints.YEval
-                     , Lang.Lambda
-                     , Lang.SymbolicLambda
-                     , Monads.Classes.MonadEnv
-                     , Monads.Classes.MonadStore
-                     , Monads.Classes.MonadTime
-                     , Monads.Classes.Promote
-                     , Monads.Transformers.EnvMonadT
-                     , Monads.Transformers.NonDetT
-                     , Monads.Transformers.StoreMonadT
-                     , Monads.Transformers.TimeMonadT
-                     , StateSpace.CFA
-                     , StateSpace.Concrete
-                     , StateSpace.Env
-                     , StateSpace.Store
-                     , Util.Lattice
-                     , Util.Lens
-                     , Util.ListSet
-                     , Util.Pointed
-
-  build-depends:       base ==4.6.*
-                     , containers ==0.5.*
-                     , mtl ==2.1.*
+  other-modules:
+  build-depends:       base == 4.6.*
+                     , containers == 0.5.*
+                     , mtl == 2.1.*
+                     , ansi-wl-pprint == 0.6.*
+                     , template-haskell == 2.8.*
+                     , parsec == 3.1.*
