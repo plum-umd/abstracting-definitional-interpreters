@@ -11,17 +11,10 @@ import Control.Monad.Reader
 import Control.Monad.Trans
 import qualified Fixpoints.MemoEval as MemoEval
 import qualified Data.Map as Map
+import Analyses.BigStep.AnalysisT
 
 newtype AbstractT addr time var val m a = AbstractT
-  { unAbstractT :: 
-      EnvReaderT 
-        (Env var addr)
-        (StoreStateT (Store ListSet addr val)
-          (TimeStateT time 
-            (NonDetT 
-              m))) 
-        a 
-  }
+  { unAbstractT :: AnalysisT addr time ListSet var val (NonDetT m) a }
   deriving
   ( Monad
   , MonadPlus
@@ -31,11 +24,22 @@ newtype AbstractT addr time var val m a = AbstractT
   , MonadEnvState env'
   , MonadStoreState (Store ListSet addr val)
   , MonadTimeState time
-  , Promote ListSet
+  , MonadMorph ListSet
   )
 
-instance MonadTrans (AbstractT addr time var val) where
-  lift = AbstractT . lift . lift . lift . lift
+mkAbstractT :: 
+  (Monad m)
+  => (Env var addr 
+      -> Store ListSet addr val 
+      -> time 
+      -> m (ListSet (a, Store ListSet addr val, time))
+     ) 
+  -> AbstractT addr time var val m a
+mkAbstractT f = 
+  AbstractT $
+  mkAnalysisT $ \ env store time ->
+  mkNonDetT $
+  f env store time
 
 runAbstractT :: 
   (Monad m) 
@@ -45,11 +49,13 @@ runAbstractT ::
   -> time 
   -> m (ListSet (a, Store ListSet addr val, time))
 runAbstractT aM env store time =
-  liftM (liftM associate) 
-  $ runNonDetT 
-  $ flip runTimeStateT time
-  $ flip runStoreStateT store
-  $ flip runEnvReaderT env
+  runNonDetT 
+  $ (\x -> runAnalysisT x env store time)
   $ unAbstractT aM
-  where
-    associate ((x,y),z) = (x,y,z)
+
+instance MonadTrans (AbstractT addr time var val) where
+  lift = AbstractT . lift . lift
+
+instance MonadFunctor (AbstractT addr time var val) where
+  monadFmap f aMT = mkAbstractT $ \env store time ->
+    f $ runAbstractT aMT env store time

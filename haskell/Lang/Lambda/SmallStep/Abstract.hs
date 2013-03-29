@@ -24,7 +24,7 @@ type AbstractMonad dom time addr m =
   , Addressable addr String time
   , Pointed dom
   , Functor dom
-  , Promote dom m
+  , MonadMorph dom m
   , Lattice (dom (Val addr))
   , Ord addr
   ) 
@@ -77,7 +77,7 @@ step (LetRecC f x k body c) = do
   modifyStore $ updateStore i v
   return c
 step (IfZC a tb fb) = do
-  v <- promote =<< atomic a
+  v <- mmorph =<< atomic a
   case v of
     Num 0 -> return tb
     Num _ -> return fb
@@ -89,7 +89,7 @@ step (HaltC a) = return $ HaltC a
 
 stepApply :: (AbstractMonad dom time addr m) => Atom -> [Atom] -> m Call
 stepApply f args = do
-  Clo xs body env <- promote =<< atomic f
+  Clo xs body env <- mmorph =<< atomic f
   vDs <- mapM atomic args
   is <- mapM alloc xs
   putEnv env

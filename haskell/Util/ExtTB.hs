@@ -1,12 +1,38 @@
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
+
 module Util.ExtTB where
 
-data ExtBT a =
+import PrettyUtil
+import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import Util.Pointed
+import Util.Lattice
+import Util.MonadFunctor
+import Control.Monad
+import Control.Monad.Trans
+import Control.Monad.Reader
+import Control.Monad.State
+
+data ExtTB a =
     ExtBot
   | Ext a
   | ExtTop
   deriving (Eq, Ord)
 
-instance Lattice (ExtBT a) where
+instance Pointed ExtTB where
+  unit = Ext
+
+instance Functor ExtTB where
+  fmap = liftM
+
+instance Monad ExtTB where
+  return = Ext
+  aM >>= aTobM =
+    case aM of
+      ExtBot -> ExtBot
+      Ext a -> aTobM a
+      ExtTop -> ExtTop
+
+instance Lattice (ExtTB a) where
   lbot = ExtBot
   ltop = ExtTop
   ljoin ExtTop _ = ExtTop
@@ -24,3 +50,62 @@ instance Lattice (ExtBT a) where
   lrefines ExtBot _ = True
   lrefines _ ExtBot = False
   lrefines (Ext _) (Ext _) = False
+
+instance (FPretty a) => FPretty (ExtTB a) where
+  fpretty ExtBot = puncColor $ PP.text "bot"
+  fpretty (Ext a) = fpretty a
+  fpretty ExtTop = puncColor $ PP.text "top"
+
+newtype ExtTBT m a = ExtTBT { runExtTBT :: m (ExtTB a) }
+
+-- Higher Order Monad
+instance MonadTrans ExtTBT where
+  lift = ExtTBT . liftM Ext
+
+instance MonadFunctor ExtTBT where
+  monadFmap = monadMapM
+
+instance MonadMonad ExtTBT where
+  monadExtend f aMT = 
+    ExtTBT 
+    $ liftM join 
+    $ runExtTBT 
+    $ f 
+    $ runExtTBT aMT
+
+instance (Monad m) => MonadMorph ExtTB (ExtTBT m) where
+  mmorph = ExtTBT . return
+
+-- Standard Monad
+instance (Monad m) => Monad (ExtTBT m) where
+  return = ExtTBT . return . return
+  aM >>= aTobM = ExtTBT $ do
+    aE <- runExtTBT aM
+    case aE of
+      ExtBot -> return ExtBot
+      Ext a -> runExtTBT $ aTobM a
+      ExtTop -> return ExtTop
+
+instance (Monad m) => MonadPlus (ExtTBT m) where
+  mzero = ExtTBT $ return ExtBot
+  mplus xMT yMT = ExtTBT $ do
+    x <- runExtTBT xMT
+    y <- runExtTBT yMT
+    return $ ljoin x y
+
+instance (MonadReader r m) => MonadReader r (ExtTBT m) where
+  ask = lift ask 
+  local f = ExtTBT . local f . runExtTBT
+
+instance (MonadState s m) => MonadState s (ExtTBT m) where
+  get = ExtTBT $ liftM Ext get
+  put = ExtTBT . liftM Ext . put
+
+{-
+  , MonadPlus
+  , MonadState s
+  , MonadEnvReader env
+  , MonadEnvState env
+  , MonadStoreState store
+  , MonadTimeState time
+  -}

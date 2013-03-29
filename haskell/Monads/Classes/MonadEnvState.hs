@@ -5,7 +5,7 @@ module Monads.Classes.MonadEnvState where
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.List
-import Util.ListSet
+import Util
 
 class (Monad m) => MonadEnvState env m | m -> env where
   getEnv :: m env
@@ -16,17 +16,8 @@ modifyEnv f = do
   e <- getEnv
   putEnv $ f e
 
--- plumbing
+monadGetEnv :: (MonadEnvState env m, MonadTrans t) => t m env
+monadGetEnv = lift getEnv
 
-instance (MonadEnvState env m) => MonadEnvState env (ListSetT m) where
-  getEnv = lift getEnv
-  putEnv = lift . putEnv
-
-instance (MonadEnvState env m) => MonadEnvState env (ReaderT r m) where
-  getEnv = lift getEnv
-  putEnv = lift . putEnv
-
-instance (MonadEnvState env m) => MonadEnvState env (StateT s m) where
-  getEnv = lift getEnv
-  putEnv = lift . putEnv
-
+monadPutEnv :: (MonadEnvState env m, MonadTrans t) => env -> t m ()
+monadPutEnv = lift . putEnv

@@ -6,6 +6,7 @@ import PrettyUtil
 import Util.Pointed
 import Control.Monad
 import Util.Lattice
+import Util.MonadFunctor
 import Data.Function
 import qualified Data.Set as Set
 import Control.Monad.State
@@ -37,12 +38,25 @@ instance Pointed ListSet where
 
 newtype ListSetT m a = ListSetT { runListSetT :: m (ListSet a) }
 
-mapListSetT :: (Monad m, Monad n) => (m (ListSet a) -> n (ListSet b)) -> ListSetT m a -> ListSetT n b
-mapListSetT f = ListSetT . f . runListSetT
-
+-- Higher Order Monad
 instance MonadTrans ListSetT where
   lift = ListSetT . liftM return
 
+instance MonadFunctor ListSetT where
+  monadFmap = monadMapM
+
+instance MonadMonad ListSetT where
+  monadExtend f aMT =
+    ListSetT
+    $ liftM join
+    $ runListSetT
+    $ f
+    $ runListSetT aMT
+
+instance (Monad m) => MonadMorph ListSet (ListSetT m) where
+  mmorph = ListSetT . return
+
+-- Standard Monad
 instance (Monad m) => Monad (ListSetT m) where
   return a = ListSetT $ return $ return a
   (ListSetT alsM) >>= atobM = ListSetT $ do
@@ -58,9 +72,9 @@ instance (Monad m) => MonadPlus (ListSetT m) where
     return $ mplus as bs
 
 instance (MonadState s m) => MonadState s (ListSetT m) where
-  get = lift get
-  put = lift . put
+  get = monadGet
+  put = monadPut
 
 instance (MonadReader r m) => MonadReader r (ListSetT m) where
-  ask = lift ask
-  local = mapListSetT . local
+  ask = monadAsk
+  local = monadLocal

@@ -1,15 +1,15 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
 
-module Monads.Transformers.NonDetT where
+module Monads.Transformers.DiscreteT where
 
 import Monads.Classes
 import Control.Monad.State
 import Control.Monad.Reader
 import Control.Monad.List
 import Util
-import Monads.Transformers.ListSetT
+import Monads.Transformers.ExtTBT
 
-newtype NonDetT m a = NonDetT { unNonDetT :: ListSetT m a}
+newtype DiscreteT m a = DiscreteT { unDiscreteT :: ExtTBT m a}
   deriving 
   ( Monad
   , MonadTrans
@@ -24,11 +24,11 @@ newtype NonDetT m a = NonDetT { unNonDetT :: ListSetT m a}
   , MonadTimeState time
   )
 
-mkNonDetT :: m (ListSet a) -> NonDetT m a
-mkNonDetT = NonDetT . ListSetT
+mkDiscreteT :: m (ExtTB a) -> DiscreteT m a
+mkDiscreteT = DiscreteT . ExtTBT
 
-runNonDetT :: NonDetT m a -> m (ListSet a)
-runNonDetT = runListSetT . unNonDetT
+runDiscreteT :: DiscreteT m a -> m (ExtTB a)
+runDiscreteT = runExtTBT . unDiscreteT
 
-instance (Monad m) => MonadMorph ListSet (NonDetT m) where
-  mmorph = NonDetT . mmorph
+instance (Monad m) => MonadMorph ExtTB (DiscreteT m) where
+  mmorph = DiscreteT . mmorph

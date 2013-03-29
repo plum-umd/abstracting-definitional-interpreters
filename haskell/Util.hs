@@ -5,6 +5,8 @@ module Util
   , module Util.Pointed
   , module Util.Set
   , module Util.Map
+  , module Util.ExtTB
+  , module Util.MonadFunctor
   ) where
 
 import Util.Lattice
@@ -13,3 +15,5 @@ import Util.ListSet
 import Util.Pointed
 import Util.Set
 import Util.Map
+import Util.ExtTB
+import Util.MonadFunctor

@@ -37,7 +37,7 @@ type AbstractMonad dom time addr m =
   , Addressable addr String time
   , Pointed dom
   , Functor dom
-  , Promote dom m
+  , MonadMorph dom m
   , Lattice (dom (Val addr))
   , Ord addr
   ) 
@@ -74,14 +74,14 @@ eval eval (LetRecE f x b e) = do
     modifyStore (updateStore i v)
     eval e
 eval eval (IfZE c tb fb) = do
-  cv <- promote =<< eval c
+  cv <- mmorph =<< eval c
   case cv of
     Num 0 -> eval tb
     Num _ -> eval fb
     Nat -> eval tb `mplus` eval fb
     _ -> error "ill-formed if0 expression"
 eval eval (AppE e1 e2) = do
-  Clo x e env' <- promote =<< eval e1
+  Clo x e env' <- mmorph =<< eval e1
   vD <- eval e2
   i <- alloc x
   modifyStore (updateStoreD i vD)
@@ -94,8 +94,13 @@ eval eval (PrimE op es) = do
     blah :: [dom a] -> dom [a]
     blah = undefined
 
-type CFAAddr_SL = CFAAddr String
-type CFAVal_SL = Val CFAAddr_SL
+type ZPDCFAAddr = CFAAddr String
+type ZPDCFAVal = Val ZPDCFAAddr
 
-run_zpdcfa_SL :: Expr -> ListSet (ListSet CFAVal_SL, Store ListSet CFAAddr_SL CFAVal_SL, ZCFATime)
-run_zpdcfa_SL expr = driveZPDCFA eval expr
+runZPDCFA :: Expr -> ListSet (ListSet ZPDCFAVal, Store ListSet ZPDCFAAddr ZPDCFAVal, ZCFATime)
+runZPDCFA = driveZPDCFA eval
+
+type ConcreteVal = Val Integer
+
+runConcrete :: Expr -> ExtTB (ExtTB ConcreteVal, Store ExtTB Integer ConcreteVal, Integer)
+runConcrete = driveConcrete eval

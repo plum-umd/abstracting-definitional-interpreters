@@ -5,7 +5,7 @@ module Monads.Classes.MonadStoreState where
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.List
-import Util.ListSet
+import Util
 
 class (Monad m) => MonadStoreState store m | m -> store where
   getStore :: m store
@@ -16,16 +16,8 @@ modifyStore f = do
   s <- getStore
   putStore $ f s
 
--- plumbing
+monadGetStore :: (MonadStoreState store m, MonadTrans t) => t m store
+monadGetStore = lift getStore
 
-instance (MonadStoreState store m) => MonadStoreState store (ListSetT m) where
-  getStore = lift getStore
-  putStore = lift . putStore
-
-instance (MonadStoreState store m) => MonadStoreState store (ReaderT r m) where
-  getStore = lift getStore
-  putStore = lift . putStore
-
-instance (MonadStoreState store m) => MonadStoreState store (StateT s m) where
-  getStore = lift getStore
-  putStore = lift . putStore
+monadPutStore :: (MonadStoreState store m, MonadTrans t) => store -> t m ()
+monadPutStore = lift . putStore

@@ -4,6 +4,7 @@ module Monads.Transformers
   , module Monads.Transformers.NonDetT
   , module Monads.Transformers.StoreStateT
   , module Monads.Transformers.TimeStateT
+  , module Monads.Transformers.DiscreteT
   ) where
 
 import Monads.Transformers.EnvReaderT
@@ -11,3 +12,4 @@ import Monads.Transformers.EnvStateT
 import Monads.Transformers.NonDetT
 import Monads.Transformers.StoreStateT
 import Monads.Transformers.TimeStateT
+import Monads.Transformers.DiscreteT

@@ -25,7 +25,7 @@ memoEval :: forall m dom val expr env store.
             ( MonadEnvReader env m
             , MonadStoreState store m
             , MonadState (MemoTables dom val expr env store) m
-            , Promote dom m
+            , MonadMorph dom m
             , Ord expr
             , Ord env
             , Ord store

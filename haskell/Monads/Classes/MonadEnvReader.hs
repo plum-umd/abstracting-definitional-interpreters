@@ -5,22 +5,14 @@ module Monads.Classes.MonadEnvReader where
 import Control.Monad.State
 import Control.Monad.Reader
 import Control.Monad.List
-import Util.ListSet
+import Util
 
 class (Monad m) => MonadEnvReader env m | m -> env where
   askEnv :: m env
   localEnv :: (env -> env) -> m a -> m a
 
--- plumbing
+monadAskEnv :: (MonadEnvReader env m, MonadTrans t) => t m env
+monadAskEnv = lift askEnv
 
-instance (MonadEnvReader env m) => MonadEnvReader env (ListSetT m) where
-  askEnv = lift askEnv
-  localEnv = mapListSetT . localEnv
-
-instance (MonadEnvReader env m) => MonadEnvReader env (ReaderT r m) where
-  askEnv = lift askEnv
-  localEnv = mapReaderT . localEnv
-
-instance (MonadEnvReader env m) => MonadEnvReader env (StateT s m) where
-  askEnv = lift askEnv
-  localEnv = mapStateT . localEnv
+monadLocalEnv :: (MonadEnvReader env m, MonadFunctor t) => (env -> env) -> t m a -> t m a
+monadLocalEnv f = monadFmap $ localEnv f

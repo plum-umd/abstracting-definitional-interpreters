@@ -12,4 +12,7 @@ import Lang.Lambda.BigStep.Abstract
 import PrettyUtil
 
 main :: IO ()
-main = putDoc $ fpretty $ run_zpdcfa_SL e1
+main = do
+  putDoc $ fpretty $ runZPDCFA e1
+  putStrLn ""
+  putDoc $ fpretty $ runConcrete e1
