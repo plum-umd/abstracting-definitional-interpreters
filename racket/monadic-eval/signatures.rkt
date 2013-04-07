@@ -19,7 +19,7 @@
   [sto^ : new sbox ubox])
 
 (define-signatures
-  [symbolic-monad^ : symbolic? both symbolic-apply])
+  [symbolic^ : symbolic? both symbolic-apply])
 
 (define-signatures
   [unit-ans^ : unit-ans]

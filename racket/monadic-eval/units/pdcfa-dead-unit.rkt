@@ -19,7 +19,7 @@
 ;; context sensitive dead-code.
 
 (import ev^)
-(export eval^ symbolic-monad^ rec^ unit^ unit-ans^ unit-vals^ bind^ err^)
+(export eval^ symbolic^ rec^ unit^ unit-ans^ unit-vals^ bind^ err^)
 
 ;; iterates ev until reaching a fixed point in the memo-table
 (define (eval e)
@@ -33,9 +33,23 @@
 (define (((((rec e r) s) d) m) m*)
   (define ers (list e r s))
   (define anss (hash-ref m ers #false))
+  
+  ;; like ev but takes both branches on abstract values
+  (define (ev* e r)
+    (match e
+      [(ifz e0 e1 e2)
+       (do v ← (rec e0 r)
+         (match v
+           [0           (rec e1 r)]
+           [(? number?) (rec e2 r)]
+           [(? symbolic?)
+            (both (rec e1 r)
+                  (rec e2 r))]))]
+      [_  (ev e r)]))
+  
   (if anss
       (cons (cons anss d) m)
-      (match (((((ev e r) s) (set-remove d e))
+      (match (((((ev* e r) s) (set-remove d e))
 	       (hash-set m ers (hash-ref m* ers (set)))) m*)
         [(cons (cons anss d) m)
          (cons (cons anss d) (hash-set m ers anss))])))
@@ -85,3 +99,10 @@
 
 (define ((err) s)
   (unit-ans 'err s))
+
+
+(define-syntax do
+    (syntax-rules (←)
+      [(do b) b]
+      [(do x ← e . r)
+       (bind e (λ (x) (do . r)))]))

@@ -12,7 +12,8 @@
 ;; eval : E ->_total [Setof Ans]
 
 (import ev^)
-(export eval^ symbolic-monad^ rec^ unit^ unit-ans^ unit-vals^ bind^ err^)
+(export eval^ symbolic^ rec^ unit^ bind^ err^
+        unit-ans^ unit-vals^)
 
 ;; iterates ev until reaching a fixed point in the memo-table
 (define (eval e)
@@ -23,26 +24,23 @@
 	   anss1
 	   (loop m1 anss1))])))
 
-;; ev just once
-#;
-(define (eval e)
-  (match (((ev e (hash)) (hash)) (hash))
-    [(cons anss m) anss]))
+;; like ev but takes both branches on abstract values
+(define (ev* e r)
+  (match e
+    [(ifz e0 e1 e2)
+     (do v ← (rec e0 r)
+       (match v
+         [0           (rec e1 r)]
+         [(? number?) (rec e2 r)]
+         [(? symbolic?)
+          (both (rec e1 r)
+                (rec e2 r))]))]
+    [_  (ev e r)]))
 
-(define ((((rec e r) s) m) m*)
-  (define ers (list e r s))
-  (define anss (hash-ref m ers #false))
-  (if anss
-      (cons anss m)
-      (match ((((ev e r) s) (hash-set m ers (hash-ref m* ers (set)))) m*)
-        [(cons anss m)
-         (cons anss (hash-set m ers anss))])))
 
-;; FO Symbolic values
-(define symbolic? symbol?)
 
-(define (symbolic-apply v0 v1)
-  (err))
+
+
 
 (define ((((both c0 c1) s) m) m*)
   (match (((c0 s) m) m*)
@@ -50,6 +48,16 @@
      (match (((c1 s) m) m*)
        [(cons anss1 m)
         (cons (set-union anss0 anss1) m)])]))
+
+(define ((((rec e r) s) m) m*)
+  (define ers (list e r s))
+  (define anss (hash-ref m ers #false))  
+  (if anss
+      (cons anss m)
+      (match ((((ev* e r) s)
+               (hash-set m ers (hash-ref m* ers (set)))) m*)
+        [(cons anss m)
+         (cons anss (hash-set m ers anss))])))
 
 (define ((((bind a f) s) m) m*)
   (match (((a s) m) m*)
@@ -64,8 +72,21 @@
                 (values (set-union rs (set (cons 'err s))) m)]
                [(cons v s)
                 (match ((((f v) s) m) m*)
-                  [(cons anss m) (values (set-union rs anss) m)])]))])
+                  [(cons anss m) 
+                   (values (set-union rs anss) m)])]))])
        (cons anss m))]))
+
+
+
+
+(define-syntax do
+    (syntax-rules (←)
+      [(do b) b]
+      [(do x ← e . r)
+       (bind e (λ (x) (do . r)))]))
+
+
+
 
 (define ((unit-vals vs) s)
   (unit-anss (for/set ([v vs])
@@ -82,3 +103,15 @@
 
 (define ((err) s)
   (unit-ans 'err s))
+
+;; FO Symbolic values
+(define symbolic? symbol?)
+
+(define (symbolic-apply v0 v1)
+  (err))
+
+;; ev just once
+#;
+(define (eval e)
+  (match (((ev e (hash)) (hash)) (hash))
+    [(cons anss m) anss]))

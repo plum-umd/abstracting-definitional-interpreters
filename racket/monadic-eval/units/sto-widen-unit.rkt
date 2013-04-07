@@ -4,7 +4,6 @@
          "../store.rkt"
          "../syntax.rkt"
          "../set.rkt")
-
 (import unit^ unit-vals^ unit-ans^)
 (export env^ sto^)
 
@@ -16,29 +15,16 @@
     [(cons (lam x e) r)
      (define a x) ; 0CFA-like abstraction
      ;; widen on sto update
-     (unit-ans a (update-sto s a (widen (hash-ref s a (set)) v)))]))
+     (unit-ans a
+       (update-sto s a 
+         (widen (hash-ref s a (set)) v)))]))
 
 (define ((ralloc x v) s)
   (match v
     [(cons e r)
      (define a x)
-     ((unit a) (join-sto s a (cons e (hash-set r x a))))]))
-
-(define ((new v) s)
-  (define a 'box) ; One box per program abstraction
-  (unit-ans a (join-sto s a v)))
-
-(define ((sbox a v) s)
-  (unit-ans a (join-sto s a v)))
-
-(define ((ubox a) s)
-  ((unit-vals (lookup-sto s a)) s))
-
-(define (join-numeric s)
-  (set-add (for/set ([x (in-set s)]
-                     #:unless (number? x))
-                    x)
-           'N))
+     ((unit a) 
+      (join-sto s a (cons e (hash-set r x a))))]))
 
 (define (widen s v)
   (match v
@@ -58,3 +44,19 @@
 
 
 
+
+(define ((new v) s)
+  (define a 'box) ; One box per program abstraction
+  (unit-ans a (join-sto s a v)))
+
+(define ((sbox a v) s)
+  (unit-ans a (join-sto s a v)))
+
+(define ((ubox a) s)
+  ((unit-vals (lookup-sto s a)) s))
+
+(define (join-numeric s)
+  (set-add (for/set ([x (in-set s)]
+                     #:unless (number? x))
+                    x)
+           'N))

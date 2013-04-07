@@ -3,16 +3,10 @@
          "../signatures.rkt"
 	 "../syntax.rkt")
 
-(import unit^ bind^ rec^ δ^ symbolic-monad^ sto^ env^ err^)
+(import unit^ bind^ rec^ δ^ symbolic^ sto^ env^ err^)
 (export ev^)
 
-(define-syntax do
-  (syntax-rules (←)
-    [(do b) b]
-    [(do x ← e . r)
-     (bind e (λ (x) (do . r)))]))
-
-(define (ev e r) ;; E R -> [M Ans]
+(define (ev e r)
   (match e
     ['err (err)]
     [(vbl x) (get r x)]
@@ -57,7 +51,12 @@
             (rec e (extend-env r0 x a)))]
          [(? symbolic?)
           (symbolic-apply v0 v1)]))]))
-
+  
+(define-syntax do
+  (syntax-rules (←)
+    [(do b) b]
+    [(do x ← e . r)
+     (bind e (λ (x) (do . r)))]))
 
 (define (extend-env r x a)
   (hash-set r x a))
