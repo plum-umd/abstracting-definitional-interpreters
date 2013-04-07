@@ -21,6 +21,11 @@ More to come.
 The haskell/ directory contains a similar development using monad
 transformers in Haskell in order to calculate an implementation.
 
+Slides
+------
+
+http://www.ccs.neu.edu/home/dvanhorn/talks/mapls-2013.pdf
+
 Abstract
 --------
 
