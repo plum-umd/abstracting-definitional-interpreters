@@ -91,3 +91,6 @@ prettyArrow = prettySepMapping "=>"
 
 litColor = PP.dullred
 puncColor = PP.dullyellow
+
+showFromPretty :: (FPretty a) => a -> String
+showFromPretty = ($ []) . PP.displayS . PP.renderPretty 1.0 1000 . PP.plain . PP.group . fpretty

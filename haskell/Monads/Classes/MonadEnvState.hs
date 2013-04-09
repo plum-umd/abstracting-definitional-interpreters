@@ -1,11 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
 module Monads.Classes.MonadEnvState where
 
-import Control.Monad.Reader
-import Control.Monad.State
-import Control.Monad.List
-import Util
+import Control.Monad.Trans
 
 class (Monad m) => MonadEnvState env m | m -> env where
   getEnv :: m env
@@ -16,8 +13,16 @@ modifyEnv f = do
   e <- getEnv
   putEnv $ f e
 
-monadGetEnv :: (MonadEnvState env m, MonadTrans t) => t m env
-monadGetEnv = lift getEnv
+localEnvState :: (MonadEnvState env m) => (env -> env) -> m a -> m a
+localEnvState f aM = do
+  e <- getEnv
+  putEnv $ f e
+  a <- aM
+  putEnv e
+  return a
 
-monadPutEnv :: (MonadEnvState env m, MonadTrans t) => env -> t m ()
-monadPutEnv = lift . putEnv
+mGetEnv :: (MonadEnvState env m, MonadTrans t) => t m env
+mGetEnv = lift getEnv
+
+mPutEnv :: (MonadEnvState env m, MonadTrans t) => env -> t m ()
+mPutEnv = lift . putEnv

@@ -1,0 +1,11 @@
+-- currently unused
+-- module Fixpoints.Kleene where
+-- 
+-- kleene :: (Lattice l) => l -> (l -> l) -> l
+-- kleene f bot =
+--   let loop x =
+--         let x' = f x'
+--         in if x' lrefines x 
+--           then x 
+--           else loop x'
+--   in loop bot

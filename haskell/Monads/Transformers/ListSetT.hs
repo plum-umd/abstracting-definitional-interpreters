@@ -3,20 +3,20 @@
 module Monads.Transformers.ListSetT where
 
 import Monads.Classes
-import Util
+import Util.ListSet
 
 instance (MonadEnvReader env m) => MonadEnvReader env (ListSetT m) where
-  askEnv = monadAskEnv
-  localEnv = monadLocalEnv
+  askEnv = mAskEnv
+  localEnv = mLocalEnv
 
 instance (MonadEnvState env m) => MonadEnvState env (ListSetT m) where
-  getEnv = monadGetEnv
-  putEnv = monadPutEnv
+  getEnv = mGetEnv
+  putEnv = mPutEnv
 
 instance (MonadStoreState store m) => MonadStoreState store (ListSetT m) where
-  getStore = monadGetStore
-  putStore = monadPutStore
+  getStore = mGetStore
+  putStore = mPutStore
 
 instance (MonadTimeState time m) => MonadTimeState time (ListSetT m) where
-  getTime = monadGetTime
-  putTime = monadPutTime
+  getTime = mGetTime
+  putTime = mPutTime

@@ -2,33 +2,34 @@
 
 module Monads.Transformers.ReaderT where
 
-import Util
 import Control.Monad.Reader
+import Control.Monad.Trans
 import Monads.Classes
+import Util.MFunctor
 
-instance MonadFunctor (ReaderT r) where
-  monadFmap = monadMapM
+instance MFunctor (ReaderT r) where
+  mFmap = mMapM
 
-instance MonadMonad (ReaderT r) where
-  monadExtend f aMT =
+instance MMonad (ReaderT r) where
+  mExtend f aMT =
     ReaderT $ \r ->
     runReaderT (f $ runReaderT aMT r) r
 
 instance (Monad m, MonadEnvReader env m) => MonadEnvReader env (ReaderT r m) where
-  askEnv = monadAskEnv
-  localEnv = monadLocalEnv
+  askEnv = mAskEnv
+  localEnv = mLocalEnv
 
 instance (Monad m, MonadEnvState store m) => MonadEnvState store (ReaderT r m) where
-  getEnv = monadGetEnv
-  putEnv = monadPutEnv
+  getEnv = mGetEnv
+  putEnv = mPutEnv
 
 instance (Monad m, MonadStoreState store m) => MonadStoreState store (ReaderT r m) where
-  getStore = monadGetStore
-  putStore = monadPutStore
+  getStore = mGetStore
+  putStore = mPutStore
 
 instance (Monad m, MonadTimeState time m) => MonadTimeState time (ReaderT r m) where
-  getTime = monadGetTime
-  putTime = monadPutTime
+  getTime = mGetTime
+  putTime = mPutTime
 
-instance (Monad m, Monad n, MonadMorph m n) => MonadMorph m (ReaderT r n) where
-  mmorph = monadFmap mmorph . lift
+instance (Monad m, Monad n, MMorph m n) => MMorph m (ReaderT r n) where
+  mMorph = mFmap mMorph . lift

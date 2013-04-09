@@ -2,14 +2,15 @@
 
 module SExpKit.Parser where
 
-import Text.Parsec.String
-import Text.Parsec
 import Control.Monad
 import Data.Functor
-import SExpKit.Data
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
+import SExpKit.Data
+import Text.Parsec
+import Text.Parsec.String
 import Text.Printf
+import qualified Text.Parsec as P
 
 mkSExpQQ :: (ToQQ lit) => (String -> Either ParseError (PreSExpG lit)) -> QuasiQuoter
 mkSExpQQ parser = QuasiQuoter expQ patQ undefined undefined
@@ -45,10 +46,10 @@ parseSExpTL = between deadspace deadspace parseSExp
 
 parseSExp :: (Read lit) => Parser (PreSExpG lit)
 parseSExp = msum
-  [ between (char '(') (char ')') parseList
-  , between (char '[') (char ']') parseList
+  [ between (P.char '(') (P.char ')') parseList
+  , between (P.char '[') (P.char ']') parseList
   , parseAnti
-  , try parseLit
+  , P.try parseLit
   , parseSym
   ]
 
@@ -59,30 +60,30 @@ parseList = do
   case sexps of
     [] -> return PreNull
     _ -> do
-      consTail <- parseCons <|> return PreNull
+      consTail <- parseCons P.<|> return PreNull
       deadspace
       return $ foldr PreCons consTail sexps
 
 parseCons :: (Read lit) => Parser (PreSExpG lit)
 parseCons = do
-  char '.'
+  P.char '.'
   deadspace
   parseSExp
 
 parseAnti :: (Read lit) => Parser (PreSExpG lit)
 parseAnti = do
-  char '@'
+  P.char '@'
   uncurry PreAnti <$> msum
-    [ do char '$'
+    [ do P.char '$'
          (AntiVal,) <$> antiName
-    , do try $ string "Sym$"
+    , do P.try $ P.string "Sym$"
          (AntiSym,) <$> antiName
-    , do try $ string "Lit$"
+    , do P.try $ P.string "Lit$"
          (AntiLit,) <$> antiName
     ]
   where
     antiName = msum
-     [ string "_" >> return Nothing
+     [ P.string "_" >> return Nothing
      , Just <$> tokenSym
      ]
   
@@ -94,7 +95,7 @@ tokenLit = readParser
 
 parseSym = PreSym <$> tokenSym
 
-tokenSym = many1 $ noneOf illegal
+tokenSym = P.many1 $ P.noneOf illegal
   where
     -- @ is for anti-patterns (@$x @Sym$x @Lit$x)
     -- # is for nested comments (#| ... |$)
@@ -108,42 +109,46 @@ tokenSym = many1 $ noneOf illegal
 
 readParser :: (Read a) => Parser a
 readParser = do
-  s <- getInput
-  case readsPrec 0 s of
-    [] -> parserFail "read failed"
+  s <- P.getInput
+  case reads s of
+    [] -> P.parserFail "read failed"
     (x,s'):_ -> do
-      setInput s'
+      P.setInput s'
       return x
 
-deadspace = skipMany deadUnit
+deadspace = P.skipMany deadUnit
 
 deadUnit :: Parser ()
-deadUnit = whitespace <|> singleLineComment <|> multilineComment
+deadUnit = whitespace P.<|> singleLineComment P.<|> multilineComment
 
 whitespace :: Parser ()
 whitespace = do
-  oneOf " \t\r\n"
+  P.oneOf " \t\r\n"
   return ()
 
 singleLineComment :: Parser ()
 singleLineComment = do
-  char ';'
-  many $ noneOf "\r\n"
-  string "\n" <|> string "\r\n"
+  P.char ';'
+  P.many $ P.noneOf "\r\n"
+  P.string "\n" P.<|> P.string "\r\n"
   return ()
 
 multilineComment :: Parser ()
 multilineComment = do
-  string "#|"
+  P.string "#|"
   nestedComment 1
-  where
-    nestedComment :: Int -> Parser () 
-    nestedComment 0 = return ()
-    nestedComment i = do
-      a <- commentAtom
-      case a of
-        "#|" -> nestedComment (i+1)
-        "|#" -> nestedComment (i-1)
-        _    -> nestedComment i
 
-    commentAtom = msum [try (string "#|"), try (string "|#"), (:[]) <$> anyChar]
+nestedComment :: Int -> Parser () 
+nestedComment 0 = return ()
+nestedComment i = do
+  a <- commentAtom
+  case a of
+    "#|" -> nestedComment (i+1)
+    "|#" -> nestedComment (i-1)
+    _    -> nestedComment i
+
+commentAtom = msum 
+  [ P.try $ P.string "#|"
+  , P.try $ P.string "|#"
+  , (:[]) <$> P.anyChar
+  ]

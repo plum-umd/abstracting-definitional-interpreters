@@ -1,11 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
 module Monads.Classes.MonadTimeState where
 
-import Control.Monad.Reader
-import Control.Monad.State
-import Control.Monad.List
-import Util
+import Control.Monad.Trans
 
 class (Monad m) => MonadTimeState time m | m -> time where
   getTime :: m time
@@ -16,8 +13,8 @@ modifyTime f = do
   s <- getTime
   putTime $ f s
 
-monadGetTime :: (MonadTimeState time m, MonadTrans t) => t m time
-monadGetTime = lift getTime
+mGetTime :: (MonadTimeState time m, MonadTrans t) => t m time
+mGetTime = lift getTime
 
-monadPutTime :: (MonadTimeState time m, MonadTrans t) => time -> t m ()
-monadPutTime = lift . putTime
+mPutTime :: (MonadTimeState time m, MonadTrans t) => time -> t m ()
+mPutTime = lift . putTime

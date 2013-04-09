@@ -46,7 +46,7 @@ And the concrete evaluator output:
 )
 
 This data structure is the return type of runConcrete at the bottom of
-Lang.Lambda.BigStep.Abstrct.
+Lang.Lambda.BigStep.Abstract.
 
 If you have color in your terminal the output will also be colored :)
 

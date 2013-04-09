@@ -2,7 +2,9 @@
 
 module Lang.Lambda.Examples where
 
+import Lang.Lambda.CPS
 import Lang.Lambda.Data
+import Lang.Lambda.Parsing
 import SExpKit
 
 e1 :: Expr

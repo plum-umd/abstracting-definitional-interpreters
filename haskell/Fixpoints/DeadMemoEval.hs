@@ -1,24 +1,17 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Fixpoints.MemoEval where
+module Fixpoints.DeadMemoEval where
 
 import Control.Arrow
 import Control.Monad.State
-import Data.Map (Map)
 import Data.Maybe
+import Fixpoints.MemoEval (MemoMap, MemoTables)
 import Monads
 import Util.Lattice
 import Util.MFunctor
 import qualified Data.Map as Map
 
-type MemoMap dom val expr env store = 
-  Map (expr,env,store) (dom val)
-type MemoTables dom val expr env store = 
-  ( MemoMap dom val expr env store
-  , MemoMap dom val expr env store
-  )
-
-memoEval ::
+deadMemoEval ::
   ( MonadEnvReader env m
   , MonadStoreState store m
   , MonadState (MemoTables dom val expr env store) m
@@ -32,7 +25,9 @@ memoEval ::
   => ((expr -> m (dom val)) -> expr -> m (dom val))
   -> expr 
   -> m (dom val)
-memoEval eval expr = do
+deadMemoEval eval expr = do
+  -- HERE
+  -- modify $ liftListOp $ List.delete expr
   env <- askEnv
   store <- getStore
   let ss = (expr,env,store) 
@@ -41,4 +36,5 @@ memoEval eval expr = do
     Just vD -> return vD
     Nothing -> do
       modify $ first $ ljoin $ Map.singleton ss $ fromMaybe lbot $ Map.lookup ss mx
-      eval (memoEval eval) expr
+      eval (deadMemoEval eval) expr
+

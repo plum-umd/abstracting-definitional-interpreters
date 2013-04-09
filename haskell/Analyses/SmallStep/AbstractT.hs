@@ -1,8 +1,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Analyses.BigStep.AbstractT where
+module Analyses.SmallStep.AbstractT where
 
-import Analyses.BigStep.AnalysisT
+import Analyses.SmallStep.AnalysisT
 import Control.Monad
 import Control.Monad.Reader
 import Control.Monad.State
@@ -20,7 +20,7 @@ newtype AbstractT addr time var val m a = AbstractT
   , MonadState s
   , MonadReader r
   , MonadEnvReader (Env var addr)
-  , MonadEnvState env'
+  , MonadEnvState (Env var addr)
   , MonadStoreState (Store ListSet addr val)
   , MonadTimeState time
   , MMorph ListSet
@@ -31,7 +31,7 @@ mkAbstractT ::
   => (Env var addr 
       -> Store ListSet addr val 
       -> time 
-      -> m (ListSet (a, Store ListSet addr val, time))
+      -> m (ListSet (a, Env var addr, Store ListSet addr val, time))
      ) 
   -> AbstractT addr time var val m a
 mkAbstractT f = 
@@ -46,7 +46,7 @@ runAbstractT ::
   -> Env var addr 
   -> Store ListSet addr val 
   -> time 
-  -> m (ListSet (a, Store ListSet addr val, time))
+  -> m (ListSet (a, Env var addr, Store ListSet addr val, time))
 runAbstractT aM env store time =
   runNonDetT 
   $ (\x -> runAnalysisT x env store time)
@@ -58,3 +58,4 @@ instance MonadTrans (AbstractT addr time var val) where
 instance MFunctor (AbstractT addr time var val) where
   mFmap f aMT = mkAbstractT $ \env store time ->
     f $ runAbstractT aMT env store time
+

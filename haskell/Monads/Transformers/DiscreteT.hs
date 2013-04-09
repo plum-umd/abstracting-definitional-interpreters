@@ -1,20 +1,21 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, MultiParamTypeClasses #-}
 
 module Monads.Transformers.DiscreteT where
 
-import Monads.Classes
+import Monads.Transformers.ExtTBT
+import Util.MFunctor
+import Util.ExtTB
+import Control.Monad
 import Control.Monad.State
 import Control.Monad.Reader
-import Control.Monad.List
-import Util
-import Monads.Transformers.ExtTBT
+import Monads.Classes
 
 newtype DiscreteT m a = DiscreteT { unDiscreteT :: ExtTBT m a}
   deriving 
   ( Monad
   , MonadTrans
-  , MonadFunctor
-  , MonadMonad
+  , MFunctor
+  , MMonad
   , MonadPlus
   , MonadReader r
   , MonadState s
@@ -30,5 +31,5 @@ mkDiscreteT = DiscreteT . ExtTBT
 runDiscreteT :: DiscreteT m a -> m (ExtTB a)
 runDiscreteT = runExtTBT . unDiscreteT
 
-instance (Monad m) => MonadMorph ExtTB (DiscreteT m) where
-  mmorph = DiscreteT . mmorph
+instance (Monad m) => MMorph ExtTB (DiscreteT m) where
+  mMorph = DiscreteT . mMorph

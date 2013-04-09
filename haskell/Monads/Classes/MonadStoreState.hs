@@ -1,11 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
 module Monads.Classes.MonadStoreState where
 
-import Control.Monad.Reader
-import Control.Monad.State
-import Control.Monad.List
-import Util
+import Control.Monad.Trans
 
 class (Monad m) => MonadStoreState store m | m -> store where
   getStore :: m store
@@ -16,8 +13,8 @@ modifyStore f = do
   s <- getStore
   putStore $ f s
 
-monadGetStore :: (MonadStoreState store m, MonadTrans t) => t m store
-monadGetStore = lift getStore
+mGetStore :: (MonadStoreState store m, MonadTrans t) => t m store
+mGetStore = lift getStore
 
-monadPutStore :: (MonadStoreState store m, MonadTrans t) => store -> t m ()
-monadPutStore = lift . putStore
+mPutStore :: (MonadStoreState store m, MonadTrans t) => store -> t m ()
+mPutStore = lift . putStore

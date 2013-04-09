@@ -3,18 +3,22 @@
 module Lang.Lambda.SmallStep.Abstract where
 
 import AAI
-import Monads
-import StateSpace
+import Control.Applicative
+import Control.Monad hiding (mapM)
+import Data.Traversable
 import Lang.Lambda.Data
+import Lang.Lambda.Printing
+import Monads
+import Prelude hiding (mapM)
+import StateSpace
 import Util
 import qualified Data.Map as Map
-import Control.Monad
 
 data Val addr =
     Num Integer
   | Nat
   | Clo [String] Call (Env String addr)
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord)
 
 type AbstractMonad dom time addr m =
   ( MonadPlus m
@@ -24,7 +28,8 @@ type AbstractMonad dom time addr m =
   , Addressable addr String time
   , Pointed dom
   , Functor dom
-  , MonadMorph dom m
+  , Applicative dom
+  , MMorph dom m
   , Lattice (dom (Val addr))
   , Ord addr
   ) 
@@ -46,11 +51,8 @@ atomic (VarA x) = do
 atomic (LamA x k body) = atomicClo [x,k] body
 atomic (KonA x body) = atomicClo [x] body
 atomic (PrimA o as) = do
-  vsD <- liftM blah $ mapM atomic as
+  vsD <- liftM sequenceA $ mapM atomic as
   return $ fmap (delta o) vsD
-  where
-    blah :: [dom a] -> dom [a]
-    blah = undefined
 
 atomicClo :: (AbstractMonad dom time addr m)
           => [String] 
@@ -77,7 +79,7 @@ step (LetRecC f x k body c) = do
   modifyStore $ updateStore i v
   return c
 step (IfZC a tb fb) = do
-  v <- mmorph =<< atomic a
+  v <- mMorph =<< atomic a
   case v of
     Num 0 -> return tb
     Num _ -> return fb
@@ -89,10 +91,18 @@ step (HaltC a) = return $ HaltC a
 
 stepApply :: (AbstractMonad dom time addr m) => Atom -> [Atom] -> m Call
 stepApply f args = do
-  Clo xs body env <- mmorph =<< atomic f
+  Clo xs body env <- mMorph =<< atomic f
   vDs <- mapM atomic args
   is <- mapM alloc xs
   putEnv env
   mapM_ (modifyEnv . uncurry Map.insert) $ zip xs is
   mapM_ (modifyStore . uncurry Map.insert) $ zip is vDs
   return body
+
+{-
+type ZPDCFAAddr = CFAAddr String
+type ZPDCFAVal = Val ZPDCFAAddr
+
+runZPDCFA :: Expr -> ListSet (ListSet ZPDCFAVal, Store ListSet ZPDCFAAddr ZPDCFAVal, ZCFATime)
+runZPDCFA = driveZPDCFA eval
+-}

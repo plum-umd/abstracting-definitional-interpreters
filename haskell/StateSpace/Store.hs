@@ -1,8 +1,7 @@
 module StateSpace.Store where
 
 import Data.Map (Map)
-import Util.Lattice
-import Util.Pointed
+import Util
 import qualified Data.Map as Map
 
 type Store dom addr val = Map addr (dom val)

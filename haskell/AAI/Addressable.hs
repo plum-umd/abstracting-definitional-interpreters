@@ -2,7 +2,7 @@
 
 module AAI.Addressable where
 
-import Monads
+import Monads.Classes.MonadTimeState
 
 class Addressable addr var time | time -> addr, time -> var where
   tzero :: time

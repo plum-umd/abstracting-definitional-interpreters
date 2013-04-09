@@ -2,23 +2,25 @@
 
 module Monads.Transformers.TimeStateT where
 
-import Monads.Classes
-import Control.Monad.State
+import Control.Monad
 import Control.Monad.Reader
-import Util
+import Control.Monad.State
+import Control.Monad.Trans
+import Monads.Classes
 import Monads.Transformers.StateT
+import Util.MFunctor
 
 newtype TimeStateT time m a = TimeStateT { unTimeStateT :: StateT time m a}
   deriving 
   ( Monad
   , MonadTrans
-  , MonadFunctor
+  , MFunctor
   , MonadPlus
   , MonadReader r
   , MonadEnvReader env
   , MonadEnvState env
   , MonadStoreState store
-  , MonadMorph n
+  , MMorph n
   )
 
 mkTimeStateT :: (time -> m (a,time)) -> TimeStateT time m a
@@ -28,8 +30,8 @@ runTimeStateT :: TimeStateT time m a -> time -> m (a,time)
 runTimeStateT = runStateT . unTimeStateT
 
 instance (MonadState s m) => MonadState s (TimeStateT time m) where
-  get = monadGet
-  put = monadPut
+  get = mGet
+  put = mPut
 
 instance (Monad m) => MonadTimeState time (TimeStateT time m) where
   getTime = TimeStateT get

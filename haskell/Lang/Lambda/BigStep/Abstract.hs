@@ -2,32 +2,39 @@
 
 module Lang.Lambda.BigStep.Abstract where
 
-import PrettyUtil
-import Data.Maybe
-import Control.Monad
-import StateSpace
-import Lang.Lambda.Data
-import Monads
 import AAI
+import Analyses.BigStep
+import Control.Applicative
+import Control.Monad hiding (sequence, mapM)
+import Data.Maybe
+import Data.Traversable
+import Lang.Lambda.Data
+import Lang.Lambda.Printing
+import Monads
+import Prelude hiding (sequence, mapM)
+import PrettyUtil
+import SExpKit
+import StateSpace
 import Util
 import qualified Data.Map as Map
-import Analyses
 import qualified Text.PrettyPrint.ANSI.Leijen as PP
-import SExpKit
 
 data Val addr =
     Num Integer
   | Nat
   | Clo String Expr (Env String addr)
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord)
 
 instance (FPretty addr) => FPretty (Val addr) where
   fpretty (Num i) = litColor $ fpretty i
   fpretty Nat = PP.magenta $ PP.text "Nat"
-  fpretty (Clo x e env) = prettyAngle $
+  fpretty (Clo x e env) = prettyAngle
     [ fpretty $ LamE x e
     , fpretty env
     ]
+
+instance (FPretty addr) => Show (Val addr) where
+  show = showFromPretty
 
 type AbstractMonad dom time addr m =
   ( MonadPlus m
@@ -36,8 +43,9 @@ type AbstractMonad dom time addr m =
   , MonadTimeState time m
   , Addressable addr String time
   , Pointed dom
+  , Applicative dom
   , Functor dom
-  , MonadMorph dom m
+  , MMorph dom m
   , Lattice (dom (Val addr))
   , Ord addr
   ) 
@@ -64,7 +72,7 @@ eval eval (LetE x a e) = do
   i <- alloc x
   vD <- eval a
   modifyStore (updateStoreD i vD)
-  localEnv (Map.insert x i) $ do
+  localEnv (Map.insert x i) $
     eval e
 eval eval (LetRecE f x b e) = do
   i <- alloc f
@@ -74,25 +82,22 @@ eval eval (LetRecE f x b e) = do
     modifyStore (updateStore i v)
     eval e
 eval eval (IfZE c tb fb) = do
-  cv <- mmorph =<< eval c
+  cv <- mMorph =<< eval c
   case cv of
     Num 0 -> eval tb
     Num _ -> eval fb
     Nat -> eval tb `mplus` eval fb
     _ -> error "ill-formed if0 expression"
 eval eval (AppE e1 e2) = do
-  Clo x e env' <- mmorph =<< eval e1
+  Clo x e env' <- mMorph =<< eval e1
   vD <- eval e2
   i <- alloc x
   modifyStore (updateStoreD i vD)
-  localEnv (const $ Map.insert x i env') $ do
+  localEnv (const $ Map.insert x i env') $
     eval e
 eval eval (PrimE op es) = do
-  vDs <- liftM blah $ mapM eval es
+  vDs <- liftM sequenceA $ mapM eval es
   return $ fmap (delta op) vDs
-  where
-    blah :: [dom a] -> dom [a]
-    blah = undefined
 
 type ZPDCFAAddr = CFAAddr String
 type ZPDCFAVal = Val ZPDCFAAddr

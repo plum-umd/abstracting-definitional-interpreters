@@ -2,11 +2,11 @@
 
 module SExpKit.Data where
 
+import Control.Monad
 import Data.List
 import Language.Haskell.TH
-import Control.Monad
-import qualified Text.PrettyPrint.ANSI.Leijen as PP
 import PrettyUtil
+import qualified Text.PrettyPrint.ANSI.Leijen as PP
 
 data PreSExpG lit =
     PreLit lit
@@ -34,7 +34,7 @@ type SExp = SExpG Integer
 
 -- Show
 
-consToList :: SExpG lit -> SExpG lit -> Either [SExpG lit] ([SExpG lit],SExpG lit)
+consToList :: SExpG lit -> SExpG lit -> Either [SExpG lit] ([SExpG lit], SExpG lit)
 consToList sl Null = Left [sl]
 consToList sl sr =
   case sr of
@@ -45,16 +45,15 @@ consToList sl sr =
     _ -> Right ([sl],sr)
 
 listToCons :: [SExpG lit] -> SExpG lit
-listToCons [] = Null
-listToCons (s:ss) = Cons s $ listToCons ss
+listToCons = foldr Cons Null
 
 instance (Show lit) => Show (SExpG lit) where
   show (Lit l) = show l
   show (Sym s) = s
   show (Cons sl sr) =
     case consToList sl sr of
-      Left ss -> "(" ++ intercalate " " (map show ss) ++ ")"
-      Right (ss,s) -> "(" ++ intercalate " " (map show ss) ++ " . " ++ show s ++ ")"
+      Left ss -> "(" ++ unwords (map show ss) ++ ")"
+      Right (ss,s) -> "(" ++ unwords (map show ss) ++ " . " ++ show s ++ ")"
   show Null = "()"
 
 instance (FPretty lit) => FPretty (SExpG lit) where
@@ -65,14 +64,14 @@ instance (FPretty lit) => FPretty (SExpG lit) where
           Left ss ->
             map fpretty ss
           Right (ss,s) ->
-            concat
-            [ map fpretty ss
-            , [ PP.hsep 
-                [ puncColor $ PP.char '.'
-                , fpretty s
-                ]
+            map fpretty ss
+            ++
+            [ PP.hsep 
+              [ puncColor $ PP.char '.'
+              , fpretty s
               ]
             ]
+            
     in prettySExp ds
   fpretty Null = puncColor $ PP.text "()"
 

@@ -1,11 +1,9 @@
 module Util.Lattice where
 
-import Data.Function
-import Data.Map (Map)
 import Data.Set (Set)
-import qualified Data.Map as Map
 import qualified Data.Set as Set
-import qualified Data.List as List
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 class Lattice a where
   lbot :: a

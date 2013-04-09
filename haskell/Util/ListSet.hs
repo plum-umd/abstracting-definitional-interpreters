@@ -2,20 +2,25 @@
 
 module Util.ListSet where
 
-import PrettyUtil
-import Util.Pointed
-import Control.Monad
-import Util.Lattice
-import Util.MonadFunctor
 import Data.Function
 import qualified Data.Set as Set
-import Control.Monad.State
 import Control.Monad.Reader
-import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import Control.Monad.State
+import Control.Monad
+import Control.Monad.Trans
+import Control.Applicative
+import PrettyUtil
+import Util.Lattice
+import Util.Pointed
+import Util.MFunctor
+import Monads.Classes
 import Util.Set
 
 newtype ListSet a = ListSet { runListSet :: [a] }
-  deriving (Functor, Monad, MonadPlus, Show)
+  deriving (Functor, Applicative, Monad, MonadPlus, Show)
+
+liftListOp :: ([a] -> [b]) -> ListSet a -> ListSet b
+liftListOp f (ListSet l) = ListSet $ f l
 
 instance (FPretty a, Ord a) => FPretty (ListSet a) where
   fpretty = fpretty . Set.fromList . runListSet
@@ -42,19 +47,19 @@ newtype ListSetT m a = ListSetT { runListSetT :: m (ListSet a) }
 instance MonadTrans ListSetT where
   lift = ListSetT . liftM return
 
-instance MonadFunctor ListSetT where
-  monadFmap = monadMapM
+instance MFunctor ListSetT where
+  mFmap = mMapM
 
-instance MonadMonad ListSetT where
-  monadExtend f aMT =
+instance MMonad ListSetT where
+  mExtend f aMT =
     ListSetT
     $ liftM join
     $ runListSetT
     $ f
     $ runListSetT aMT
 
-instance (Monad m) => MonadMorph ListSet (ListSetT m) where
-  mmorph = ListSetT . return
+instance (Monad m) => MMorph ListSet (ListSetT m) where
+  mMorph = ListSetT . return
 
 -- Standard Monad
 instance (Monad m) => Monad (ListSetT m) where
@@ -64,6 +69,13 @@ instance (Monad m) => Monad (ListSetT m) where
     liftM (ListSet . concat) $ forM as $ \ a ->
       liftM runListSet $ runListSetT $ atobM a
 
+instance (Monad m) => Applicative (ListSetT m) where
+  pure = return
+  (<*>) = ap
+
+instance (Monad m) => Functor (ListSetT m) where
+  fmap = liftM
+
 instance (Monad m) => MonadPlus (ListSetT m) where
   mzero = ListSetT $ return $ mzero
   mplus aM bM = ListSetT $ do
@@ -72,9 +84,9 @@ instance (Monad m) => MonadPlus (ListSetT m) where
     return $ mplus as bs
 
 instance (MonadState s m) => MonadState s (ListSetT m) where
-  get = monadGet
-  put = monadPut
+  get = mGet
+  put = mPut
 
 instance (MonadReader r m) => MonadReader r (ListSetT m) where
-  ask = monadAsk
-  local = monadLocal
+  ask = mAsk
+  local = mLocal

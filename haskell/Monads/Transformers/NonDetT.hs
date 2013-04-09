@@ -1,20 +1,23 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, MultiParamTypeClasses #-}
 
 module Monads.Transformers.NonDetT where
 
-import Monads.Classes
-import Control.Monad.State
+import Control.Monad
 import Control.Monad.Reader
-import Control.Monad.List
-import Util
+import Control.Monad.State
+import Control.Monad.Trans
+import Monads.Classes
 import Monads.Transformers.ListSetT
+import Util.ListSet
+import Util.MFunctor
+import Util.MFunctor
 
 newtype NonDetT m a = NonDetT { unNonDetT :: ListSetT m a}
   deriving 
   ( Monad
   , MonadTrans
-  , MonadFunctor
-  , MonadMonad
+  , MFunctor
+  , MMonad
   , MonadPlus
   , MonadReader r
   , MonadState s
@@ -30,5 +33,5 @@ mkNonDetT = NonDetT . ListSetT
 runNonDetT :: NonDetT m a -> m (ListSet a)
 runNonDetT = runListSetT . unNonDetT
 
-instance (Monad m) => MonadMorph ListSet (NonDetT m) where
-  mmorph = NonDetT . mmorph
+instance (Monad m) => MMorph ListSet (NonDetT m) where
+  mMorph = NonDetT . mMorph

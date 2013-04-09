@@ -3,20 +3,20 @@
 module Monads.Transformers.ExtTBT where
 
 import Monads.Classes
-import Util
+import Util.ExtTB
 
 instance (MonadEnvReader env m) => MonadEnvReader env (ExtTBT m) where
-  askEnv = monadAskEnv
-  localEnv = monadLocalEnv
+  askEnv = mAskEnv
+  localEnv = mLocalEnv
 
 instance (MonadEnvState env m) => MonadEnvState env (ExtTBT m) where
-  getEnv = monadGetEnv
-  putEnv = monadPutEnv
+  getEnv = mGetEnv
+  putEnv = mPutEnv
 
 instance (MonadStoreState store m) => MonadStoreState store (ExtTBT m) where
-  getStore = monadGetStore
-  putStore = monadPutStore
+  getStore = mGetStore
+  putStore = mPutStore
 
 instance (MonadTimeState time m) => MonadTimeState time (ExtTBT m) where
-  getTime = monadGetTime
-  putTime = monadPutTime
+  getTime = mGetTime
+  putTime = mPutTime

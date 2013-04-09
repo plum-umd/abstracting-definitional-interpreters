@@ -1,18 +1,16 @@
-{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances, TupleSections #-}
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
 module Monads.Classes.MonadEnvReader where
 
-import Control.Monad.State
-import Control.Monad.Reader
-import Control.Monad.List
-import Util
+import Control.Monad.Trans
+import Util.MFunctor
 
 class (Monad m) => MonadEnvReader env m | m -> env where
   askEnv :: m env
   localEnv :: (env -> env) -> m a -> m a
 
-monadAskEnv :: (MonadEnvReader env m, MonadTrans t) => t m env
-monadAskEnv = lift askEnv
+mAskEnv :: (MonadEnvReader env m, MonadTrans t) => t m env
+mAskEnv = lift askEnv
 
-monadLocalEnv :: (MonadEnvReader env m, MonadFunctor t) => (env -> env) -> t m a -> t m a
-monadLocalEnv f = monadFmap $ localEnv f
+mLocalEnv :: (MonadEnvReader env m, MFunctor t) => (env -> env) -> t m a -> t m a
+mLocalEnv f = mFmap $ localEnv f

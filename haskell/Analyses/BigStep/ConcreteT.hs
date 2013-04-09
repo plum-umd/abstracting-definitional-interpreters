@@ -2,16 +2,18 @@
 
 module Analyses.BigStep.ConcreteT where
 
-import qualified Data.Map as Map
-import Fixpoints
+import Analyses.BigStep.AnalysisT
+import Control.Monad
 import Control.Monad.Identity
+import Control.Monad.Reader
+import Control.Monad.State
+import Control.Monad.Trans
+import Fixpoints.YEval
 import Monads
 import StateSpace
-import Util
-import Control.Monad
-import Control.Monad.State
-import Control.Monad.Reader
-import Analyses.BigStep.AnalysisT
+import Util.ExtTB
+import Util.MFunctor
+import qualified Data.Map as Map
 
 newtype ConcreteT var val m a = ConcreteT
   { unConcreteT :: AnalysisT Integer Integer ExtTB var val (DiscreteT m) a }
@@ -24,7 +26,7 @@ newtype ConcreteT var val m a = ConcreteT
   , MonadEnvState env'
   , MonadStoreState (Store ExtTB Integer val)
   , MonadTimeState Integer
-  , MonadMorph ExtTB
+  , MMorph ExtTB
   )
 
 mkConcreteT :: 
@@ -56,15 +58,16 @@ runConcreteT aM env store time =
 instance MonadTrans (ConcreteT var val) where
   lift = ConcreteT . lift . lift
 
-instance MonadFunctor (ConcreteT var val) where
-  monadFmap f aMT = mkConcreteT $ \ env store time ->
+instance MFunctor (ConcreteT var val) where
+  mFmap f aMT = mkConcreteT $ \ env store time ->
     f $ runConcreteT aMT env store time
 
-type Concrete_Driver var val a = ConcreteT var val Identity a
+type ConcreteDriver var val a = ConcreteT var val Identity a
 
 driveConcrete ::
-  ((expr -> Concrete_Driver var val (ExtTB val))
-   -> (expr -> Concrete_Driver var val (ExtTB val))
+  ((expr -> ConcreteDriver var val (ExtTB val))
+   -> expr 
+   -> ConcreteDriver var val (ExtTB val)
   )
   -> expr 
   -> ExtTB (ExtTB val, Store ExtTB Integer val, Integer)

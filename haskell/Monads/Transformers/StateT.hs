@@ -2,30 +2,31 @@
 
 module Monads.Transformers.StateT where
 
-import Util
 import Control.Monad.State
+import Control.Monad.Trans
 import Monads.Classes
+import Util.MFunctor
 
-instance MonadFunctor (StateT s) where
-  monadFmap f aMT =
+instance MFunctor (StateT s) where
+  mFmap f aMT =
     StateT $ f . runStateT aMT
 
 instance (Monad m, MonadEnvReader env m) => MonadEnvReader env (StateT s m) where
-  askEnv = monadAskEnv
-  localEnv = monadLocalEnv
+  askEnv = mAskEnv
+  localEnv = mLocalEnv
 
 instance (Monad m, MonadEnvState store m) => MonadEnvState store (StateT s m) where
-  getEnv = monadGetEnv
-  putEnv = monadPutEnv
+  getEnv = mGetEnv
+  putEnv = mPutEnv
 
 instance (Monad m, MonadStoreState store m) => MonadStoreState store (StateT s m) where
-  getStore = monadGetStore
-  putStore = monadPutStore
+  getStore = mGetStore
+  putStore = mPutStore
 
 instance (Monad m, MonadTimeState time m) => MonadTimeState time (StateT s m) where
-  getTime = monadGetTime
-  putTime = monadPutTime
+  getTime = mGetTime
+  putTime = mPutTime
 
-instance (Monad m, Monad n, MonadMorph m n) => MonadMorph m (StateT s n) where
-  mmorph = monadFmap mmorph . lift
+instance (Monad m, Monad n, MMorph m n) => MMorph m (StateT s n) where
+  mMorph = mFmap mMorph . lift
 

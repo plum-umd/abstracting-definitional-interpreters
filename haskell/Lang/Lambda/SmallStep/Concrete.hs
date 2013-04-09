@@ -3,16 +3,17 @@
 module Lang.Lambda.SmallStep.Concrete where
 
 import AAI
-import StateSpace
-import Monads
-import Lang.Lambda.Data
-import qualified Data.Map as Map
 import Data.Map (Map)
+import Lang.Lambda.Data
+import Lang.Lambda.Printing
+import Monads
+import StateSpace
+import qualified Data.Map as Map
 
 data Val =
     Num Integer
   | Clo [String] Call (Env String Integer)
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord)
 
 type ConcreteMonad m = 
   ( MonadEnvState (Map String Integer) m

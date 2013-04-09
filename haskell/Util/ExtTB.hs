@@ -2,15 +2,16 @@
 
 module Util.ExtTB where
 
-import PrettyUtil
 import qualified Text.PrettyPrint.ANSI.Leijen as PP
-import Util.Pointed
-import Util.Lattice
-import Util.MonadFunctor
-import Control.Monad
-import Control.Monad.Trans
 import Control.Monad.Reader
 import Control.Monad.State
+import Control.Monad
+import Control.Monad.Trans
+import Util.Pointed
+import Control.Applicative
+import Util.Lattice
+import PrettyUtil
+import Util.MFunctor
 
 data ExtTB a =
     ExtBot
@@ -23,6 +24,10 @@ instance Pointed ExtTB where
 
 instance Functor ExtTB where
   fmap = liftM
+
+instance Applicative ExtTB where
+  pure = return
+  (<*>) = ap
 
 instance Monad ExtTB where
   return = Ext
@@ -62,19 +67,19 @@ newtype ExtTBT m a = ExtTBT { runExtTBT :: m (ExtTB a) }
 instance MonadTrans ExtTBT where
   lift = ExtTBT . liftM Ext
 
-instance MonadFunctor ExtTBT where
-  monadFmap = monadMapM
+instance MFunctor ExtTBT where
+  mFmap = mMapM
 
-instance MonadMonad ExtTBT where
-  monadExtend f aMT = 
+instance MMonad ExtTBT where
+  mExtend f aMT = 
     ExtTBT 
     $ liftM join 
     $ runExtTBT 
     $ f 
     $ runExtTBT aMT
 
-instance (Monad m) => MonadMorph ExtTB (ExtTBT m) where
-  mmorph = ExtTBT . return
+instance (Monad m) => MMorph ExtTB (ExtTBT m) where
+  mMorph = ExtTBT . return
 
 -- Standard Monad
 instance (Monad m) => Monad (ExtTBT m) where
@@ -85,6 +90,13 @@ instance (Monad m) => Monad (ExtTBT m) where
       ExtBot -> return ExtBot
       Ext a -> runExtTBT $ aTobM a
       ExtTop -> return ExtTop
+
+instance (Monad m) => Functor (ExtTBT m) where
+  fmap = liftM
+
+instance (Monad m) => Applicative (ExtTBT m) where
+  pure = return
+  (<*>) = ap
 
 instance (Monad m) => MonadPlus (ExtTBT m) where
   mzero = ExtTBT $ return ExtBot
@@ -100,12 +112,3 @@ instance (MonadReader r m) => MonadReader r (ExtTBT m) where
 instance (MonadState s m) => MonadState s (ExtTBT m) where
   get = ExtTBT $ liftM Ext get
   put = ExtTBT . liftM Ext . put
-
-{-
-  , MonadPlus
-  , MonadState s
-  , MonadEnvReader env
-  , MonadEnvState env
-  , MonadStoreState store
-  , MonadTimeState time
-  -}

@@ -4,15 +4,15 @@ import AAI
 import Analyses
 import Fixpoints
 import Lang
+import Lang.Lambda.BigStep.Abstract
 import Monads
+import PrettyUtil
 import StateSpace
 import Util
-import Text.PrettyPrint.ANSI.Leijen
-import Lang.Lambda.BigStep.Abstract
-import PrettyUtil
+import qualified Text.PrettyPrint.ANSI.Leijen as PP
 
 main :: IO ()
 main = do
-  putDoc $ fpretty $ runZPDCFA e1
+  PP.putDoc $ fpretty $ runZPDCFA e1
   putStrLn ""
-  putDoc $ fpretty $ runConcrete e1
+  PP.putDoc $ fpretty $ runConcrete e1

@@ -2,23 +2,25 @@
 
 module Monads.Transformers.StoreStateT where
 
-import Monads.Classes
-import Control.Monad.State
+import Control.Monad
 import Control.Monad.Reader
-import Util
+import Control.Monad.State
+import Control.Monad.Trans
+import Monads.Classes
 import Monads.Transformers.StateT
+import Util.MFunctor
 
 newtype StoreStateT store m a = StoreStateT { unStoreStateT :: StateT store m a}
   deriving 
   ( Monad
   , MonadTrans
-  , MonadFunctor
+  , MFunctor
   , MonadPlus
   , MonadReader r
   , MonadEnvReader env
   , MonadEnvState env
   , MonadTimeState time
-  , MonadMorph n
+  , MMorph n
   )
 
 mkStoreStateT :: (store -> m (a,store)) -> StoreStateT store m a
@@ -28,8 +30,8 @@ runStoreStateT :: StoreStateT store m a -> store -> m (a,store)
 runStoreStateT = runStateT . unStoreStateT
 
 instance (MonadState s m) => MonadState s (StoreStateT store m) where
-  get = monadGet
-  put = monadPut
+  get = mGet
+  put = mPut
 
 instance (Monad m) => MonadStoreState store (StoreStateT store m) where
   getStore = StoreStateT get
