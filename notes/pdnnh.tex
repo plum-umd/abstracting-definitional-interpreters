@@ -1,0 +1,264 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{mathpartir}
+\usepackage{times}
+\usepackage{mathpartir}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{color}
+\usepackage{calc}
+\usepackage{xspace}
+\usepackage{pifont}
+\usepackage{upgreek}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\newcommand\alloc{\widehat{\mathit{alloc}}}
+\newcommand\cache{\widehat{C}}
+\newcommand\mvar{x}
+\newcommand\mlab{\ell}
+\newcommand\mexp{e}
+\newcommand\mval{v}
+\newcommand\menv{\rho}
+\newcommand\maddr{a}
+\newcommand\msto{\sigma}
+\newcommand\mlvar{\mvar^\mlab}
+\newcommand\mce{{\mathit{ce}}}
+\newcommand\mcntr{\delta}
+\newcommand\slam[2]{(\lambda{#1}.{#2})}
+\newcommand\sllam[2]{\slam{#1}{#2}^{\mlab}}
+\newcommand\sapp[2]{({#1}\;{#2})}
+\newcommand\slapp[2]{({#1}\;{#2})^\mlab}
+\newcommand\sclos[2]{\langle{#1},{#2}\rangle}
+\newcommand\NNH[1]{\NNHalt\mce\mcntr{#1}}
+\newcommand\NNHalt[3]{\cache\models^{#1}_{#2} {#3}}
+
+\newcommand\CES[1]{\NNHalt\menv\msto{#1}}
+\newcommand\CESalt[3]{\NNHalt{#1}{#2}{#3}}
+\newcommand\PD[3]{\CES{#1 \Downarrow #2,#3}}
+\newcommand\PDalt[5]{\NNHalt{#1}{#2}{#3 \Downarrow #4,#5}}
+
+
+\begin{document}
+\begin{abstract}
+This note explains how to present pushdown flow analysis in the style
+of Nielsen, Nielsen and Hankin.
+\end{abstract}
+\section{Classic NNH}
+
+Here is the NNH-style presentation of $k$-CFA:
+\[
+\begin{array}{lcl}
+\NNH\mlvar
+&\iff&
+\cache(\mvar,\mce(\mvar)) \subseteq \cache(\mlab,\mcntr)
+\\[2mm]
+\NNH{\sllam\mvar\mexp}
+&\iff&
+\{\sclos{\slam\mvar\mexp}\mce\} \subseteq \cache(\mlab,\mcntr)
+\\[2mm]
+\NNH{\slapp{\mexp^{\mlab_0}}{\mexp^{\mlab_1}}}
+&\iff&
+\NNH{\mexp^{\mlab_0}}\\
+&\wedge&
+\NNH{\mexp^{\mlab_1}}\\
+&\wedge&
+\forall \sclos{\slam\mvar{\mexp^{\mlab'}}}{\mce_0} \in \cache(\mlab_0,\mcntr).\\
+&&
+\qquad \cache(\mlab_1,\mcntr) \subseteq \cache(\mvar,\mcntr)\  \wedge\\
+&&
+\qquad \NNHalt{\mce[\mvar\mapsto\mcntr']}{\mcntr'}{\mexp^{\mlab'}}\\
+&&
+\qquad \cache(\mlab',\mcntr') \subseteq \cache(\mlab,\mcntr)
+\\
+&&
+\qquad \mbox{where }\mcntr' = \lfloor \mcntr\cdot\mlab \rfloor_k
+\end{array}
+\]
+
+
+As I noted in my diss., if you squint, you'll see a ``big-step''
+evaluator lurking within the formalism.  However it is a weird evaluator:
+\begin{itemize}
+\item it is stated as validity relation of a ``cache'' w.r.t.~a program,
+\item it does not ``return'' values, instead it uses the cache to
+  communicate returns, i.e. the abstract evaluation of
+  $\NNH{\mexp^\mlab}$ is a value $\mval \in \cache(\mlab,\mcntr)$,
+\item it does not ``bind'' variables, instead it uses the cache to
+communicate bindings,
+\end{itemize}
+
+The validity relation is coinductive, implying that to check the
+validity of a cache, you must coinductively memoize validation to
+avoid looping.
+
+To \emph{construct} the minimal cache that satisfies the validity
+relation, an easy algorithm is as follows:
+
+\begin{enumerate}
+\item Start with the empty cache.
+\item Try to validate the cache,
+\begin{enumerate}
+\item if it fails, add the minimal information needed to validate the rule that failed, try again.
+\item otherwise return the cache.
+\end{enumerate}
+\end{enumerate}
+
+Since the call and return mechanism is intertwined with a finite
+cache, it does not properly model function calls.  This leads to a
+imprecision that is fundamental to the model (i.e. there are sound
+analyses (caches), which are not validated by this judgment).
+
+\section{Pushdown NNH}
+
+First of all, let's just assume syntax is identified up to source
+location in a program (i.e. we implicitly assume a unique labelling
+and ommit labels in the model).
+
+Second, we'll use a bonafide heap and environment, but make the usual
+restriction that the heap is finite and maps to a set of values.
+
+The cache will now map ``configurations'', i.e. $\mathit{Exp,Env,Sto}$
+triples to sets of values.
+
+\emph{We will avoid the problem of interleaving abstract evaluation
+  with the table by extending the relation to talk about the result of
+  evaluation.  The table simply goes along for the ride in
+  verification, it never drives the control of verification as it does
+  in NNH}.
+
+The new relation takes the form $\PD\mexp\mval{\msto'}$, which can be
+read as ``the cache validates $\mexp$ evaluating
+under $\menv$ and $\msto$ to $\mval,\msto'$.''
+
+\begin{mathpar}
+\inferrule
+    {\mval \in \cache(\mvar,\menv,\msto)\\
+      \mval \in \msto(\menv(\mvar))}
+    {\PD\mvar\mval\msto}
+
+\inferrule
+    {\sclos{\slam\mvar\mexp}\menv \in \cache(\slam\mvar\mexp,\menv,\msto)}
+    {\PD{\slam\mvar\mexp}{\sclos{\slam\mvar\mexp}\menv}{\msto}}
+
+\inferrule
+    {\PD{\mexp_0}{\sclos{\slam\mvar\mexp}{\menv'}}{\msto_1}\\
+      \PDalt{\menv}{\msto_1}{\mexp_1}{\mval'}{\msto_2}\\
+      \PDalt{\menv'[\mvar\mapsto\maddr]}{\msto_2\sqcup[\maddr\mapsto\mval']}{\mexp}{\mval}{\msto'}\\
+      \mval \in \cache(\sapp{\mexp_0}{\mexp_1},\menv,\msto)\\
+      \maddr \in \alloc(\dots)}
+    {\PD{\sapp{\mexp_0}{\mexp_1}}{\mval}{\msto'}}
+\end{mathpar}
+
+This relation is also coinductive, and the least solution can also be
+generated in the same way as before.  However the least cache that is
+valid for a program under this relation is potentially smaller than
+NNH because this allows the proper nesting of calls and returns.
+
+This abstract evaluator looks a lot more like a big-step, environment
+and store-based evaluator.  
+
+\section{Pushdown NNH 0CFA}
+
+Just to make this concrete by instantiating to a familiar
+approximation, (Pushdown) 0CFA (with store-variance):
+
+\begin{mathpar}
+\inferrule
+    {\mval \in \cache(\mvar,\msto)\\
+      \mval \in \msto(\mvar)}
+    {\cache \models_\msto \mvar \Downarrow \mval,\msto}
+
+\inferrule
+    {\slam\mvar\mexp \in \cache(\slam\mvar\mexp,\msto)}
+    {\cache \models_\msto \slam\mvar\mexp \Downarrow \slam\mvar\mexp,\msto}
+
+\inferrule
+    {\cache \models_\msto \mexp_0 \Downarrow \slam\mvar\mexp, \msto_1\\
+      \cache \models_{\msto_1} \mexp_1 \Downarrow \mval', \msto_2\\
+      \cache \models_{\msto_2\sqcup[\mvar\mapsto\mval']} \mexp \Downarrow \mval, \msto'\\
+      \mval \in \cache(\sapp{\mexp_0}{\mexp_1},\msto)}
+    {\cache \models_\msto {\sapp{\mexp_0}{\mexp_1}} \Downarrow \mval,\msto'}
+\end{mathpar}
+
+
+\section{Non-termination}
+
+What about terms that should be proven non-terminating by the
+analysis?  E.g. $\Omega = \sapp{\slam\mvar{\mvar\mvar}}{\slam\mvar{\mvar\mvar}}$
+
+What should $\cache$ hold for 0CFA?  Let $C$ be defined as:
+
+\begin{align*}
+C(\mvar,[\mvar \mapsto \{\slam\mvar{\mvar\mvar}\}]) &= \{\slam\mvar{\mvar\mvar}\}\\
+C(\slam\mvar{\mvar\mvar},\emptyset) &= \{\slam\mvar{\mvar\mvar}\}\\
+C(\mvar\mvar,[\mvar \mapsto \{\slam\mvar{\mvar\mvar}\}]) &= \emptyset\\
+C(\sapp{\slam\mvar{\mvar\mvar}}{\slam\mvar{\mvar\mvar}},\emptyset) &= \emptyset
+\end{align*}
+
+This ought to be a good cache for $\Omega$, but it's not according to
+the relation given so far (but it \emph{is} valid by NNH).
+The reason is we have no $\mval$ to put as the result of $\Omega$.
+
+We could just pick one, say $5$:
+\[
+C\models \Omega \Downarrow 5, \msto
+\]
+
+But this won't validate for $C$ as given, since it requires $5 \in
+C(\Omega,\emptyset)$.  We could of course throw into $C$ anything
+needed to make this result fall out.  But this implies there is no
+least solution, since swapping $6$ for $5$ is just as small.
+
+One option: add a notion of non-termination that has no value
+associated with it.
+\[
+\cache \models^\menv_\msto \mexp \Uparrow
+\]
+such that
+\[
+C \models_\emptyset \Omega \Uparrow
+\]
+
+\begin{mathpar}
+\inferrule
+    {\cache\models^\menv_\msto \mexp_0 \Uparrow}
+    {\cache\models^\menv_\msto {\sapp{\mexp_0}{\mexp_1}} \Uparrow}
+
+\inferrule
+    {\cache\models^\menv_\msto \mexp_0 \Downarrow \mval,\msto'\\
+     \cache\models^\menv_{\msto'} \mexp_1 \Uparrow}
+    {\cache\models^\menv_\msto {\sapp{\mexp_0}{\mexp_1}} \Uparrow}
+
+\inferrule
+    {\cache\models^\menv_\msto \mexp_0 \Downarrow \sclos{\slam\mvar\mexp}{\menv'},\msto'\\
+     \cache\models^\menv_{\msto'} \mexp_1 \Downarrow \mval,\msto''\\
+    \maddr = \alloc(...)}
+    {\cache\models^{\menv'[\mvar\mapsto\maddr]}_{\msto''\sqcup[\maddr\mapsto\mval]} \mexp \Uparrow}
+\end{mathpar}
+
+This judgement lets you exclude results from the cache when an
+expression provably loops.  Now the least valid cache for the example
+(assuming 0CFA) is $C$.
+
+[I worry this is unsound when there \emph{may} be a loop (but not
+  must), because it allows you cut out parts of the cache that are
+  needed.  It might need side conditions on $\cache$ being empty for
+  the non-terminating expression.  Should look at an example with a
+  false loop in it and work through the least analysis.]
+
+\section{Soundness}
+
+How do you prove soundness?  (You need to be able to talk about an
+infinite table for the concrete semantics).
+
+\section{Analysis}
+
+\begin{align*}
+\mathcal{A}(\mexp) = \mbox{ the least }C\mbox{ s.t.}&
+\vdash_\emptyset \mexp \Downarrow \mval,\msto' \implies C\models_\emptyset \mexp \Downarrow \mval,\msto'\\
+&
+\vdash_\emptyset \mexp \Uparrow \implies C\models_\emptyset \mexp \Uparrow
+\end{align*}
+
+\end{document}

@@ -1,0 +1,289 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{mathpartir}
+\usepackage{times}
+\usepackage{mathpartir}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{color}
+\usepackage{calc}
+\usepackage{xspace}
+\usepackage{pifont}
+\usepackage{upgreek}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\newcommand\mproof{\nabla}
+\newcommand\avals[3]{({#1},{#2},{#3})}
+\newcommand\alloc{\widehat{\mathit{alloc}}}
+\newcommand\cache{\widehat{C}}
+\newcommand\mvar{x}
+\newcommand\mlab{\ell}
+\newcommand\mexp{e}
+\newcommand\mval{v}
+\newcommand\mans{a}
+\newcommand\menv{\rho}
+\newcommand\maddr{\ell}
+\newcommand\msto{\sigma}
+\newcommand\mlvar{\mvar^\mlab}
+\newcommand\mce{{\mathit{ce}}}
+\newcommand\mcntr{\delta}
+\newcommand\slam[2]{(\lambda{#1}.{#2})}
+\newcommand\sllam[2]{\slam{#1}{#2}^{\mlab}}
+\newcommand\sapp[2]{({#1}\;{#2})}
+\newcommand\slapp[2]{({#1}\;{#2})^\mlab}
+\newcommand\sclos[2]{\langle{#1},{#2}\rangle}
+\newcommand\NNH[1]{\NNHalt\mce\mcntr{#1}}
+\newcommand\NNHalt[3]{\cache\models^{#1}_{#2} {#3}}
+
+\newcommand\CES[1]{\NNHalt\menv\msto{#1}}
+\newcommand\CESalt[3]{\NNHalt{#1}{#2}{#3}}
+\newcommand\PD[3]{\CES{#1 \Downarrow #2,#3}}
+\newcommand\PDalt[5]{\NNHalt{#1}{#2}{#3 \Downarrow #4,#5}}
+
+
+\begin{document}
+\begin{abstract}
+This note explains how to present pushdown flow analysis in the style
+of Nielsen, Nielsen and Hankin.
+\end{abstract}
+\section{Classic NNH}
+
+Here is the NNH-style presentation of $k$-CFA:
+\[
+\begin{array}{lcl}
+\NNH\mlvar
+&\iff&
+\cache(\mvar,\mce(\mvar)) \subseteq \cache(\mlab,\mcntr)
+\\[2mm]
+\NNH{\sllam\mvar\mexp}
+&\iff&
+\{\sclos{\slam\mvar\mexp}\mce\} \subseteq \cache(\mlab,\mcntr)
+\\[2mm]
+\NNH{\slapp{\mexp^{\mlab_0}}{\mexp^{\mlab_1}}}
+&\iff&
+\NNH{\mexp^{\mlab_0}}\\
+&\wedge&
+\NNH{\mexp^{\mlab_1}}\\
+&\wedge&
+\forall \sclos{\slam\mvar{\mexp^{\mlab'}}}{\mce_0} \in \cache(\mlab_0,\mcntr).\\
+&&
+\qquad \cache(\mlab_1,\mcntr) \subseteq \cache(\mvar,\mcntr)\  \wedge\\
+&&
+\qquad \NNHalt{\mce[\mvar\mapsto\mcntr']}{\mcntr'}{\mexp^{\mlab'}}\\
+&&
+\qquad \cache(\mlab',\mcntr') \subseteq \cache(\mlab,\mcntr)
+\\
+&&
+\qquad \mbox{where }\mcntr' = \lfloor \mcntr\cdot\mlab \rfloor_k
+\end{array}
+\]
+
+
+As I noted in my diss., if you squint, you'll see a ``big-step''
+evaluator lurking within the formalism.  However it is a weird evaluator:
+\begin{itemize}
+\item it is stated as validity relation of a ``cache'' w.r.t.~a program,
+\item it does not ``return'' values, instead it uses the cache to
+  communicate returns, i.e. the abstract evaluation of
+  $\NNH{\mexp^\mlab}$ is a value $\mval \in \cache(\mlab,\mcntr)$,
+\item it does not ``bind'' variables, instead it uses the cache to
+communicate bindings,
+\end{itemize}
+
+The validity relation is coinductive, implying that to check the
+validity of a cache, you must coinductively memoize validation to
+avoid looping.
+
+To \emph{construct} the minimal cache that satisfies the validity
+relation, an easy algorithm is as follows:
+
+\begin{enumerate}
+\item Start with the empty cache.
+\item Try to validate the cache,
+\begin{enumerate}
+\item if it fails, add the minimal information needed to validate the rule that failed, try again.
+\item otherwise return the cache.
+\end{enumerate}
+\end{enumerate}
+
+Since the call and return mechanism is intertwined with a finite
+cache, it does not properly model function calls.  This leads to a
+imprecision that is fundamental to the model (i.e. there are sound
+analyses (caches), which are not validated by this judgment).
+
+\section{Pushdown NNH}
+
+First of all, let's just assume syntax is identified up to source
+location in a program (i.e. we implicitly assume a unique labelling
+and ommit labels in the model).
+
+Second, we'll use a bonafide heap and environment, but make the usual
+restriction that the heap is finite and maps to a set of values.
+
+Third, let's ditch the idea of a cache modeling the result of
+analysis.  We'll take the set of (abstract) evaluations of the program
+as the notion of analysis.
+
+
+Abstract evaluation looks just like the natural semantics for the
+language:
+\[
+\avals\mexp\menv\msto \Downarrow \mans
+\]
+The only exceptions are heaps are finite and store sets of values and
+heap update is interpreted as a join.
+
+\begin{mathpar}
+\inferrule
+    { \mval \in \msto(\menv(\mvar))}
+    {\avals\mvar\menv\msto \Downarrow (\mval,\msto)}
+
+\inferrule
+    { }
+    {\avals{\slam\mvar\mexp}\menv\msto \Downarrow (\sclos{\slam\mvar\mexp}\menv,\msto)}
+
+\inferrule
+    {\avals{\mexp_0}\menv\msto \Downarrow (\sclos{\slam\mvar\mexp}{\menv'},\msto_1)\\
+      \avals{\mexp_1}\menv{\msto_1} \Downarrow (\mval',\msto_2)\\
+      \avals\mexp{\menv'[\mvar\mapsto\maddr]}{\msto_2\sqcup[\maddr\mapsto\mval']} \Downarrow \mans\\
+      \maddr \in \alloc(\dots)}
+    {\avals{\sapp{\mexp_0}{\mexp_1}}\menv\msto \Downarrow \mans}
+\end{mathpar}
+
+We also specify a relation for (abstractly) divergent programs:
+
+\begin{mathpar}
+\inferrule
+    {\avals{\mexp_0}\menv\msto \Uparrow}
+    {\avals{\sapp{\mexp_0}{\mexp_1}}\menv\msto \Uparrow}
+
+\inferrule
+    {\avals{\mexp_0}\menv\msto \Downarrow \mval,\msto'\\
+      \avals{\mexp_1}\menv{\msto'} \Uparrow}
+    {\avals{\sapp{\mexp_0}{\mexp_1}}\menv\msto \Uparrow}    
+
+\inferrule
+    {\avals{\mexp_0}\menv\msto \Downarrow (\sclos{\slam\mvar\mexp}{\menv'},\msto_1)\\
+      \avals{\mexp_1}\menv{\msto_1} \Downarrow (\mval',\msto_2)\\
+      \avals\mexp{\menv'[\mvar\mapsto\maddr]}{\msto_2\sqcup[\maddr\mapsto\mval']} \Uparrow\\
+      \maddr \in \alloc(\dots)}
+    {\avals{\sapp{\mexp_0}{\mexp_1}}\menv\msto \Uparrow}
+\end{mathpar}
+
+
+These relations are both co-inductively defined (usually only
+divergence is co-inductive, but the approximation of the evaluation
+requires it to be co-inductive as well).
+
+The relations are over a finite set of objects, so, e.g., the set
+$
+\{ \mval\ |\ \avals\mexp\emptyset\emptyset \Downarrow \mval \}
+$
+is clearly computable.
+
+It's possible to have an infinite number of proofs of
+$\avals\mexp\menv\msto \Downarrow \mval$ or $\avals\mexp\menv\msto
+\Uparrow$, which correspond to unrollings of the co-inductive
+hypothesis an arbitrary number of times, however we can consider a
+single canonical proof, which never unrolls co-IH, ie. we identify the
+following proof structures:
+\begin{mathpar}
+\infer[co-IH]{A}
+      {\infer{\vdots}
+        {A}}
+
+\equiv
+
+\infer[co-IH]{A}
+{\infer{\vdots}
+  {\infer{A}
+    {\infer{\vdots}
+      {A}}}}
+\end{mathpar}
+
+Let $\mproof$ range over proofs and write $\mproof :
+\avals\mexp\menv\msto \Downarrow \mans$ when $\mproof$ is a proof of
+$\avals\mexp\menv\msto \Downarrow \mans$ and $\mproof :
+\avals\mexp\menv\msto \Uparrow$ when $\mproof$ is a proof of
+$\avals\mexp\menv\msto \Uparrow$.
+
+
+Analysis is defined as:
+\[
+\mathcal{A}(\mexp) = \{ \mproof : \avals\mexp\emptyset\emptyset \Downarrow \mans \}
+\cup
+\{ \mproof : \avals\mexp\emptyset\emptyset \Uparrow \}
+\]
+Under the equivalence given above, $\mathcal{A}(\mexp)$ is finite.
+
+\section{Concrete semantics}
+
+The concrete semantics are obtained by replacing $\alloc$ with a fresh
+allocation strategy (and dropping the requirement of a bounded heap).
+
+Convergence and divergence are exclusive (unlike in analysis).
+%
+It is not computable to decide which applies.
+%
+Some programs have no finite proof of convergence or divergence
+(e.g. an infinitely allocating loop).
+
+Proving soundness of a program assuming it either (provably) converges
+or diverges should be straightforward, but we don't have a real
+semantics for the programs that neither terminate nor revisit the same
+state.
+
+One possibility is to think of such a program as being given by a
+series of proofs with a single hole in it.  The hole represents the
+place where the program continues to evaluate.  (This is just
+introducing the idea of a evaluation context into the world of natural
+semantics, I think, and talking about one (big) step reduction.
+
+\begin{mathpar}
+
+\infer[Ar]
+      {\avals{\mexp_0}\menv\msto \Downarrow \top}
+      {\avals{\sapp{\mexp_0}{\mexp_1}}\menv\msto \Downarrow \top}
+
+\infer[Fn]
+      {\avals{\mexp_0}\menv\msto \Downarrow (\mval,\msto')\\
+  \avals{\mexp_1}\menv{\msto'} \Downarrow \top}
+      {\avals{\sapp{\mexp_0}{\mexp_1}}\menv\msto \Downarrow \top}
+
+\infer[Hole]{ }
+      {\avals{\sapp{\mexp_0}{\mexp_1}}\menv\msto \Downarrow \top}
+\end{mathpar}
+
+
+For any proof of $\avals\mexp\menv\msto \Downarrow \top$, there is
+exactly one subproof of Hole.
+
+Define $\mproof \sqsubseteq \mproof'$ as
+\[
+\mproof \sqsubseteq \mproof' \mbox{ if } \exists\mproof'' . \mproof \equiv [\mproof''/\mathit{Hole}]\mproof'
+\]
+
+For every proof $\mproof$, there is a unique sequence
+\[
+\mproof_0 \sqsubset \mproof_1 \sqsubset ... \sqsubset \mproof_n = \mproof
+\]
+
+We can define evaluation as
+\[
+\mathcal{E}(\mexp) = \{ \mproof : \avals\mexp\emptyset\emptyset \Downarrow \top \}
+\cup \{ \mproof : \avals\mexp\emptyset\emptyset \Downarrow \mans \}
+\cup \{ \mproof : \avals\mexp\emptyset\emptyset \Uparrow \}
+\]
+
+This is a potentially infinite set.  We can prove
+\[
+\mproof \in \mathcal{E}(\mexp) \implies
+\exists \mproof' \in \mathcal{A}(\mexp) .
+\mproof \in \gamma(\mproof')
+\]
+where $\gamma$ is a not unsurprising concretization map from abstract
+evaluation proofs to sets of concrete evaluation proofs.
+
+\end{document}
