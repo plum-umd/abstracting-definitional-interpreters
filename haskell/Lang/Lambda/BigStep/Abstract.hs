@@ -2,6 +2,8 @@
 
 module Lang.Lambda.BigStep.Abstract where
 
+import Data.Lattice
+import System.Console.ANSI
 import AAI
 import Analyses.BigStep
 import Control.Applicative
@@ -12,12 +14,10 @@ import Lang.Lambda.Data
 import Lang.Lambda.Printing
 import Monads
 import Prelude hiding (sequence, mapM)
-import PrettyUtil
-import SExpKit
 import StateSpace
 import Util
 import qualified Data.Map as Map
-import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import Text.MPretty
 
 data Val addr =
     Num Integer
@@ -25,15 +25,17 @@ data Val addr =
   | Clo String Expr (Env String addr)
   deriving (Eq, Ord)
 
-instance (FPretty addr) => FPretty (Val addr) where
-  fpretty (Num i) = litColor $ fpretty i
-  fpretty Nat = PP.magenta $ PP.text "Nat"
-  fpretty (Clo x e env) = prettyAngle
-    [ fpretty $ LamE x e
-    , fpretty env
-    ]
+typeSymbol :: (MonadPretty env out state m) => m a -> m a
+typeSymbol = color Dull Magenta
 
-instance (FPretty addr) => Show (Val addr) where
+instance (IsPretty addr) => IsPretty (Val addr) where
+  pretty (Num i) = pretty i
+  pretty Nat = typeSymbol $ string "Nat"
+  pretty (Clo x e env) = encloseSep (pString "<") (pString ">") (pString ",")
+    [ pretty $ LamE x e
+    , pretty env
+    ]
+instance (IsPretty addr) => Show (Val addr) where
   show = showFromPretty
 
 type AbstractMonad dom time addr m =
@@ -71,7 +73,7 @@ eval eval (LamE x e) = do
 eval eval (LetE x a e) = do
   i <- alloc x
   vD <- eval a
-  modifyStore (updateStoreD i vD)
+  modifyStore $ updateStoreD i vD
   localEnv (Map.insert x i) $
     eval e
 eval eval (LetRecE f x b e) = do

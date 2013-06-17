@@ -7,7 +7,7 @@ import Control.Monad.State
 import Data.Maybe
 import Fixpoints.MemoEval (MemoMap, MemoTables)
 import Monads
-import Util.Lattice
+import Data.Lattice
 import Util.MFunctor
 import qualified Data.Map as Map
 

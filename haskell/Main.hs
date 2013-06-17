@@ -6,13 +6,13 @@ import Fixpoints
 import Lang
 import Lang.Lambda.BigStep.Abstract
 import Monads
-import PrettyUtil
 import StateSpace
 import Util
-import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import qualified Data.Text.Lazy.IO as T
+import Text.MPretty
 
 main :: IO ()
 main = do
-  PP.putDoc $ fpretty $ runZPDCFA e1
+  T.putStrLn $ execPretty $ pretty $ runZPDCFA e1
   putStrLn ""
-  PP.putDoc $ fpretty $ runConcrete e1
+  T.putStrLn $ execPretty $ pretty $ runConcrete e1

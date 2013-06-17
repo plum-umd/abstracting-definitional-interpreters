@@ -2,15 +2,15 @@
 
 module Util.ExtTB where
 
-import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import Data.PartialOrder
+import Data.Lattice
+import Text.MPretty
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad
 import Control.Monad.Trans
 import Util.Pointed
 import Control.Applicative
-import Util.Lattice
-import PrettyUtil
 import Util.MFunctor
 
 data ExtTB a =
@@ -37,6 +37,13 @@ instance Monad ExtTB where
       Ext a -> aTobM a
       ExtTop -> ExtTop
 
+instance PartialOrder (ExtTB a) where
+  lte ExtTop _ = False
+  lte _ ExtTop = True
+  lte ExtBot _ = True
+  lte _ ExtBot = False
+  lte (Ext _) (Ext _) = False
+
 instance Lattice (ExtTB a) where
   lbot = ExtBot
   ltop = ExtTop
@@ -50,16 +57,11 @@ instance Lattice (ExtTB a) where
   lmeet a ExtTop = a
   lmeet ExtTop a = a
   lmeet (Ext _) (Ext _) = ExtBot
-  lrefines ExtTop _ = False
-  lrefines _ ExtTop = True
-  lrefines ExtBot _ = True
-  lrefines _ ExtBot = False
-  lrefines (Ext _) (Ext _) = False
 
-instance (FPretty a) => FPretty (ExtTB a) where
-  fpretty ExtBot = puncColor $ PP.text "bot"
-  fpretty (Ext a) = fpretty a
-  fpretty ExtTop = puncColor $ PP.text "top"
+instance (IsPretty a) => IsPretty (ExtTB a) where
+  pretty ExtBot = literal $ string "bot"
+  pretty (Ext a) = pretty a
+  pretty ExtTop = literal $ string "top"
 
 newtype ExtTBT m a = ExtTBT { runExtTBT :: m (ExtTB a) }
 

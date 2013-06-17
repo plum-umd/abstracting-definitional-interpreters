@@ -2,6 +2,7 @@
 
 module Lang.Lambda.SmallStep.Abstract where
 
+import Data.Lattice
 import AAI
 import Control.Applicative
 import Control.Monad hiding (mapM)

@@ -1,13 +1,15 @@
 .PHONY: run configure build clean
 
-run: build
-	runhaskell Main.hs
+build:
+	cabal build
 
 configure:
 	cabal configure
 
-build:
-	cabal build
-
 clean:
 	cabal clean
+
+run:
+	runhaskell Main.hs
+
+rebuild: clean configure build

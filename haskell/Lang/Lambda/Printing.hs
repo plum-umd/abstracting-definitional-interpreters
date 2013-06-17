@@ -1,8 +1,7 @@
 module Lang.Lambda.Printing where
 
 import Lang.Lambda.Data
-import PrettyUtil
-import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import Text.MPretty
 
 -- A larger lambda language purely for printing purposes
 data PExpr =
@@ -54,87 +53,59 @@ cToP (HaltC a) = HaltP $ aToP a
 
 -- PExpr Pretty Printing
 
-inParens :: PP.Doc -> PP.Doc
-inParens x = PP.hcat 
-  [ puncColor $ PP.char '('
-  , PP.align x
-  , puncColor $ PP.char ')'
-  ]
-
-binderColor = PP.dullcyan
-keywordColor = PP.underline
-primColor = PP.bold . litColor
-
-instance FPretty PExpr where
-  fpretty (LitP l) = litColor $ fpretty l
-  fpretty (VarP x) = PP.text x
-  fpretty (LamP xs body) = 
-    PP.group $ inParens $ PP.vsep
-    [ PP.hsep
-      [ keywordColor $ PP.text "lam"
-      , inParens $ binderColor $ PP.hsep $ map PP.text xs
+instance IsPretty PExpr where
+  pretty (LitP l) = pretty l
+  pretty (VarP x) = string x
+  pretty (LamP xs body) = 
+    group $ buffer $ indentWidth 1 $ parenthesize $ hsep
+      [ keyword $ string "lam"
+      , parenthesize $ buffer $ hsep $ map (binder . string) xs
+      , dropIndent $ pretty body
       ]
-    , fpretty body
-    ]
-  fpretty (LetP x e1 e2) =
-    inParens $ PP.vsep
-    [ PP.hsep
-      [ keywordColor $ PP.text "let"
-      , inParens $ PP.hsep
-        [ binderColor $ PP.text x
-        , PP.align $ fpretty e1
-        ]
-      ]
-    , fpretty e2
-    ]
-  fpretty (LetRecP f xs body e) =
-    inParens $ PP.vsep
-    [ PP.hsep
-      [ keywordColor $ PP.text "letrec"
-      , PP.align $ PP.group $ inParens $ PP.vsep
-        [ PP.hsep
-          [ binderColor $ PP.text f
-          , inParens $ binderColor $ PP.hsep $ map PP.text xs
+  pretty (LetP x e1 e2) = 
+    group $ buffer $ indentWidth 1 $ parenthesize $ hsep
+      [ keyword $ string "let"
+      , parenthesize $ hsep 
+          [ binder $ string x
+          , align $ pretty e1
           ]
-        , fpretty body
+      , dropIndent $ pretty e2
+      ]
+  pretty (LetRecP f xs body e) = 
+    group $ buffer $ indentWidth 1 $ parenthesize $ hsep
+    [ keyword $ string "letrec"
+    , parenthesize $ hsep $ concat
+        [ [ binder $ string f ]
+        , map (binder . string) xs
+        , [ align $ pretty body ]
         ]
+    , dropIndent $ pretty e
+    ]
+  pretty (IfZP c tb fb) =
+    group $ buffer $ indentWidth 1 $ parenthesize $ hsep
+      [ keyword $ string "if0"
+      , align $ pretty c
+      , dropIndent $ pretty tb
+      , dropIndent $ pretty fb
       ]
-    , fpretty e
-    ]
-  fpretty (IfZP c tb fb) =
-    inParens $ PP.vsep
-    [ PP.hsep
-      [ keywordColor $ PP.text "if0"
-      , PP.align $ fpretty c
-      ]
-    , fpretty tb
-    , fpretty fb
-    ]
-  fpretty (AppP e es) =
-    PP.group $ inParens $ PP.vsep 
-    $ map fpretty $ e:es
-  fpretty (PrimP op es) =
-    let opName =
-          case op of
-            Add1 -> "add1"
-            Sub1 -> "sub1"
-    in
-    PP.group $ inParens $ PP.vsep 
-    $ primColor (PP.text opName) : map fpretty es
-  fpretty (HaltP e) =
-    PP.group $ inParens $ PP.vsep
-    [ keywordColor $ PP.text "<halt>"
-    , fpretty e
-    ]
+  pretty (AppP e es) =
+    sexpList $ pretty e : map pretty es
+  pretty (PrimP op es) =
+    let opName = case op of
+          Add1 -> "add1"
+          Sub1 -> "sub1"
+    in sexpList $ keyword (string opName) : map pretty es
+  pretty (HaltP e) =
+    sexpList [keyword $ string "halt", pretty e]
 
 -- Pretty Printing and Show Instances
 
-instance FPretty Expr where
-  fpretty = fpretty . eToP
-instance FPretty Atom where
-  fpretty = fpretty . aToP
-instance FPretty Call where
-  fpretty = fpretty . cToP
+instance IsPretty Expr where
+  pretty = pretty . eToP
+instance IsPretty Atom where
+  pretty = pretty . aToP
+instance IsPretty Call where
+  pretty = pretty . cToP
 
 instance Show Expr where
   show = showFromPretty

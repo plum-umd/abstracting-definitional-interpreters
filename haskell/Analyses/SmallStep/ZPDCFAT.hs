@@ -2,6 +2,7 @@
 
 module Analyses.SmallStep.ZPDCFAT where
 
+import Data.PartialOrder
 import Analyses.SmallStep.AbstractT
 import Control.Exception
 import Control.Monad
@@ -12,7 +13,7 @@ import Control.Monad.Trans
 import Fixpoints.MemoEval
 import Monads
 import StateSpace
-import Util.Lattice
+import Data.Lattice
 import Util.ListSet
 import Util.MFunctor
 import qualified Data.Map as Map
@@ -93,7 +94,7 @@ iterZPDCFA step e =
         let ss' = do
               (e,env,store,time) <- ss'
               runIdentity $ runZPDCFAT (step e) env store time
-        in if ss' `lrefines` ss
+        in if lte ss' ss
           then ss
           else loop ss'
   in loop $ runIdentity $ runZPDCFAT (return e) Map.empty Map.empty ()

@@ -5,7 +5,7 @@ module Lang.Lambda.Examples where
 import Lang.Lambda.CPS
 import Lang.Lambda.Data
 import Lang.Lambda.Parsing
-import SExpKit
+import Data.SExp
 
 e1 :: Expr
 e1 = eFromS

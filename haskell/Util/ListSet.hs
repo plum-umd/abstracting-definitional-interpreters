@@ -2,6 +2,8 @@
 
 module Util.ListSet where
 
+import Data.PartialOrder
+import Text.MPretty
 import Data.Function
 import qualified Data.Set as Set
 import Control.Monad.Reader
@@ -9,34 +11,28 @@ import Control.Monad.State
 import Control.Monad
 import Control.Monad.Trans
 import Control.Applicative
-import PrettyUtil
-import Util.Lattice
+import Data.Lattice
 import Util.Pointed
 import Util.MFunctor
 import Monads.Classes
-import Util.Set
 
 newtype ListSet a = ListSet { runListSet :: [a] }
-  deriving (Functor, Applicative, Monad, MonadPlus, Show)
+  deriving (Functor, Applicative, Monad, MonadPlus, Eq, Ord, Show)
 
 liftListOp :: ([a] -> [b]) -> ListSet a -> ListSet b
 liftListOp f (ListSet l) = ListSet $ f l
 
-instance (FPretty a, Ord a) => FPretty (ListSet a) where
-  fpretty = fpretty . Set.fromList . runListSet
+instance (IsPretty a, Ord a) => IsPretty (ListSet a) where
+  pretty = pretty . Set.fromList . runListSet
 
-instance (Ord a) => Eq (ListSet a) where
-  (==) = (==) `on` Set.fromList . runListSet
-
-instance (Ord a) => Ord (ListSet a) where
-  (<=) = Set.isSubsetOf `on` Set.fromList . runListSet
+instance (Ord a) => PartialOrder (ListSet a) where
+  lte = lte `on` Set.fromList . runListSet
 
 instance (Ord a) => Lattice (ListSet a) where
   lbot = ListSet []
   ltop = error "no representation of top ListSet"
-  x `ljoin` y = ListSet $ Set.toList $ (ljoin `on` Set.fromList . runListSet) x y
-  x `lmeet` y = ListSet $ Set.toList $ (lmeet `on` Set.fromList . runListSet) x y
-  lrefines = (<=)
+  ljoin x y = ListSet $ Set.toList $ (ljoin `on` Set.fromList . runListSet) x y
+  lmeet x y = ListSet $ Set.toList $ (lmeet `on` Set.fromList . runListSet) x y
 
 instance Pointed ListSet where
   unit = return
