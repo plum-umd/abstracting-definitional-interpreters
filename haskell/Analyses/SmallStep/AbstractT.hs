@@ -1,7 +1,12 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleInstances #-}
 
 module Analyses.SmallStep.AbstractT where
 
+import Control.Monad.Identity
+import Data.PartialOrder
+import qualified Data.Map as Map
+import AAI.Addressable
+import StateSpace.Semantics
 import Analyses.SmallStep.AnalysisT
 import Control.Monad
 import Control.Monad.Reader
@@ -35,9 +40,9 @@ mkAbstractT ::
      ) 
   -> AbstractT addr time var val m a
 mkAbstractT f = 
-  AbstractT $
-  mkAnalysisT $ \ env store time ->
-  mkNonDetT $
+  AbstractT $ 
+  mkAnalysisT $ \ env store time -> 
+  mkNonDetT $ 
   f env store time
 
 runAbstractT :: 
@@ -59,3 +64,13 @@ instance MFunctor (AbstractT addr time var val) where
   mFmap f aMT = mkAbstractT $ \env store time ->
     f $ runAbstractT aMT env store time
 
+instance SmallStep (AbstractT addr time var val Identity) where
+  newtype SS (AbstractT addr time var val Identity) a = AbstractSS
+    { unAbstractSS :: ListSet (a, Env var addr, Store ListSet addr val, time) }
+    deriving (PartialOrder)
+  runSS step (AbstractSS sss) = AbstractSS $ do
+    (e, env, store, time) <- sss
+    runIdentity $ runAbstractT (step e) env store time
+
+instance (Addressable addr var time) => Inject (SS (AbstractT addr time var val Identity)) where
+  inject a = AbstractSS $ return (a, Map.empty, Map.empty, tzero)

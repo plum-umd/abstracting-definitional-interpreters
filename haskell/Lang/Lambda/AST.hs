@@ -1,4 +1,6 @@
-module Lang.Lambda.Data where
+module Lang.Lambda.AST where
+
+import Data.PartialOrder
 
 data Op =
     Add1

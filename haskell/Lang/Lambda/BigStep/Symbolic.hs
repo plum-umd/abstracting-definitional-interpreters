@@ -1,23 +1,25 @@
 {-# LANGUAGE FlexibleContexts, ConstraintKinds #-}
 
-module Lang.Lambda.BigStep.Abstract where
+module Lang.Lambda.BigStep.Symbolic where
 
-import Data.Lattice
-import System.Console.ANSI
 import AAI
 import Analyses.BigStep
 import Control.Applicative
 import Control.Monad hiding (sequence, mapM)
+import Data.Lattice
 import Data.Maybe
 import Data.Traversable
-import Lang.Lambda.Data
+import Fixpoints.Memo
+import Fixpoints.Y
+import Lang.Lambda.AST
 import Lang.Lambda.Printing
 import Monads
 import Prelude hiding (sequence, mapM)
 import StateSpace
+import System.Console.ANSI
+import Text.MPretty
 import Util
 import qualified Data.Map as Map
-import Text.MPretty
 
 data Val addr =
     Num Integer
@@ -25,20 +27,7 @@ data Val addr =
   | Clo String Expr (Env String addr)
   deriving (Eq, Ord)
 
-typeSymbol :: (MonadPretty env out state m) => m a -> m a
-typeSymbol = color Dull Magenta
-
-instance (IsPretty addr) => IsPretty (Val addr) where
-  pretty (Num i) = pretty i
-  pretty Nat = typeSymbol $ string "Nat"
-  pretty (Clo x e env) = encloseSep (pString "<") (pString ">") (pString ",")
-    [ pretty $ LamE x e
-    , pretty env
-    ]
-instance (IsPretty addr) => Show (Val addr) where
-  show = showFromPretty
-
-type AbstractMonad dom time addr m =
+type SymbolicMonad dom time addr m =
   ( MonadPlus m
   , MonadEnvReader (Env String addr) m
   , MonadStoreState (Store dom addr (Val addr)) m
@@ -58,7 +47,7 @@ delta Add1 [Nat] = Nat
 delta Sub1 [Num _] = Nat
 delta Sub1 [Nat] = Nat
 
-eval :: (AbstractMonad dom time addr m) 
+eval :: (SymbolicMonad dom time addr m) 
      => (Expr -> m (dom (Val addr)))
      -> Expr 
      -> m (dom (Val addr))
@@ -101,13 +90,27 @@ eval eval (PrimE op es) = do
   vDs <- liftM sequenceA $ mapM eval es
   return $ fmap (delta op) vDs
 
-type ZPDCFAAddr = CFAAddr String
-type ZPDCFAVal = Val ZPDCFAAddr
+type Addr = String
 
-runZPDCFA :: Expr -> ListSet (ListSet ZPDCFAVal, Store ListSet ZPDCFAAddr ZPDCFAVal, ZCFATime)
-runZPDCFA = driveZPDCFA eval
+-- Evaluators
 
-type ConcreteVal = Val Integer
+runConcrete :: Expr -> ExtTB (ExtTB (Val Integer), Store ExtTB Integer (Val Integer), Integer)
+runConcrete = unConcreteOutBS . runY eval
 
-runConcrete :: Expr -> ExtTB (ExtTB ConcreteVal, Store ExtTB Integer ConcreteVal, Integer)
-runConcrete = driveConcrete eval
+runZPDCFA :: Expr -> ListSet (ListSet (Val Addr), Store ListSet Addr (Val Addr), ())
+runZPDCFA = unAbstractOutBS . runMemo eval
+
+runWidening :: Expr -> (ListSet (ListSet (Val Addr), ()), Store ListSet Addr (Val Addr))
+runWidening = unWideningOutBS . runMemo eval
+
+-- Pretty Printing
+
+instance (IsPretty addr) => IsPretty (Val addr) where
+  pretty (Num i) = pretty i
+  pretty Nat = classifier $ string "Nat"
+  pretty (Clo x e env) = encloseSep (pString "<") (pString ">") (pString ",")
+    [ pretty $ LamE x e
+    , pretty env
+    ]
+instance (IsPretty addr) => Show (Val addr) where
+  show = showFromPretty

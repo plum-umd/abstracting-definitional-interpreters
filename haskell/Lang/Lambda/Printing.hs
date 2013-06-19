@@ -1,6 +1,6 @@
 module Lang.Lambda.Printing where
 
-import Lang.Lambda.Data
+import Lang.Lambda.AST
 import Text.MPretty
 
 -- A larger lambda language purely for printing purposes

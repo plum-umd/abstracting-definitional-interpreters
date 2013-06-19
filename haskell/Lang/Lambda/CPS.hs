@@ -1,7 +1,7 @@
 module Lang.Lambda.CPS where
 
 import Control.Monad.State
-import Lang.Lambda.Data
+import Lang.Lambda.AST
 
 -- CPS Transformation
 -- (uses my[DD] trick for representing meta-continuations to reduce

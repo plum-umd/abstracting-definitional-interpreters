@@ -24,7 +24,6 @@ newtype AnalysisT addr time dom var val m a = AnalysisT
   , MonadState s
   , MonadReader r
   , MonadEnvReader (Env var addr)
-  , MonadEnvState env'
   , MonadStoreState (Store dom addr val)
   , MonadTimeState time
   , MMorph dom
@@ -39,11 +38,11 @@ mkAnalysisT ::
      ) 
   -> AnalysisT addr time dom var val m a
 mkAnalysisT f = 
-  AnalysisT $
+  AnalysisT $ 
   mkEnvReaderT $ \ env ->
   mkStoreStateT $ \ store ->
   mkTimeStateT $ \ time ->
-  liftM unassociate $
+  liftM unassociate $ 
   f env store time
   where
     unassociate (x,y,z) = ((x,y),z)
@@ -70,4 +69,3 @@ instance MonadTrans (AnalysisT addr time dom var val) where
 instance MFunctor (AnalysisT addr time dom var val) where
   mFmap f aMT = mkAnalysisT $ \env store time ->
     f $ runAnalysisT aMT env store time
-

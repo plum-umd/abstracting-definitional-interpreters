@@ -1,8 +1,13 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, StandaloneDeriving, FlexibleInstances, FlexibleContexts #-}
 
 module Analyses.BigStep.AbstractT where
 
+import AAI.Addressable
+import qualified Data.Map as Map
+import Data.PartialOrder
+import Data.Lattice
 import Analyses.BigStep.AnalysisT
+import StateSpace.Semantics
 import Control.Monad
 import Control.Monad.Reader
 import Control.Monad.State
@@ -20,7 +25,6 @@ newtype AbstractT addr time var val m a = AbstractT
   , MonadState s
   , MonadReader r
   , MonadEnvReader (Env var addr)
-  , MonadEnvState env'
   , MonadStoreState (Store ListSet addr val)
   , MonadTimeState time
   , MMorph ListSet
@@ -58,3 +62,21 @@ instance MonadTrans (AbstractT addr time var val) where
 instance MFunctor (AbstractT addr time var val) where
   mFmap f aMT = mkAbstractT $ \env store time ->
     f $ runAbstractT aMT env store time
+
+instance BigStep (AbstractT addr time var val) where
+  newtype InBS (AbstractT addr time var val) a = AbstractInBS
+    { unAbstractInBS :: (a, Env var addr, Store ListSet addr val, time) }
+    deriving (PartialOrder, Lattice, Eq, Ord)
+  newtype OutBS (AbstractT addr time var val) a = AbstractOutBS
+    { unAbstractOutBS :: ListSet (a, Store ListSet addr val, time) }
+    deriving (PartialOrder, Lattice, Eq, Ord)
+  askInBS e = do
+    env <- askEnv
+    store <- getStore
+    time <- getTime
+    return $ AbstractInBS (e, env, store, time)
+  runBS eval (AbstractInBS (e, env, store, time)) = 
+    liftM AbstractOutBS $ runAbstractT (eval e) env store time
+
+instance (Addressable addr var time) => Inject (InBS (AbstractT addr time var val)) where
+  inject a = AbstractInBS (a, Map.empty, Map.empty, tzero)

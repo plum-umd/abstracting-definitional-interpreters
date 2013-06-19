@@ -1,11 +1,11 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleInstances #-}
 
-module Analyses.BigStep.ConcreteT where
+module Analyses.SmallStep.ConcreteT where
 
 import Data.PartialOrder
 import Data.Lattice
 import StateSpace.Semantics
-import Analyses.BigStep.AnalysisT
+import Analyses.SmallStep.AnalysisT
 import Control.Monad
 import Control.Monad.Identity
 import Control.Monad.Reader
@@ -25,7 +25,7 @@ newtype ConcreteT var val m a = ConcreteT
   , MonadPlus
   , MonadState s
   , MonadReader r
-  , MonadEnvReader (Env var Integer)
+  , MonadEnvState (Env var Integer)
   , MonadStoreState (Store ExtTB Integer val)
   , MonadTimeState Integer
   , MMorph ExtTB
@@ -36,7 +36,7 @@ mkConcreteT ::
   => (Env var Integer
       -> Store ExtTB Integer val 
       -> Integer 
-      -> m (ExtTB (a, Store ExtTB Integer val, Integer))
+      -> m (ExtTB (a, Env var Integer, Store ExtTB Integer val, Integer))
      )
   -> ConcreteT var val m a
 mkConcreteT f = 
@@ -51,7 +51,7 @@ runConcreteT ::
   -> Env var Integer 
   -> Store ExtTB Integer val 
   -> Integer 
-  -> m (ExtTB (a, Store ExtTB Integer val, Integer))
+  -> m (ExtTB (a, Env var Integer, Store ExtTB Integer val, Integer))
 runConcreteT aM env store time =
   runDiscreteT 
   $ (\x -> runAnalysisT x env store time)
@@ -64,18 +64,13 @@ instance MFunctor (ConcreteT var val) where
   mFmap f aMT = mkConcreteT $ \ env store time ->
     f $ runConcreteT aMT env store time
 
-instance (Ord var, Ord val) => BigStep (ConcreteT var val) where
-  newtype InBS (ConcreteT var val) a = ConcreteInBS 
-    { unConcreteInBS :: (a, Env var Integer, Store ExtTB Integer val, Integer) }
-  newtype OutBS (ConcreteT var val) a = ConcreteOutBS
-    { unConcreteOutBS :: ExtTB (a, Store ExtTB Integer val, Integer) }
-  askInBS e = do
-    env <- askEnv
-    store <- getStore
-    time <- getTime
-    return $ ConcreteInBS (e, env, store, time)
-  runBS run (ConcreteInBS (e, env, store, time)) = 
-    liftM ConcreteOutBS $ runConcreteT (run e) env store time
+instance SmallStep (ConcreteT var val Identity) where
+  newtype SS (ConcreteT var val Identity) a = ConcreteSS 
+    { unConcreteSS :: ExtTB (a, Env var Integer, Store ExtTB Integer val, Integer) }
+    deriving (PartialOrder)
+  runSS step (ConcreteSS sss) = ConcreteSS $ do
+    (e, env, store, time) <- sss
+    runIdentity $ runConcreteT (step e) env store time
 
-instance Inject (InBS (ConcreteT var val)) where
-  inject a = ConcreteInBS (a, Map.empty, Map.empty, 0)
+instance Inject (SS (ConcreteT var val Identity)) where
+  inject a = ConcreteSS $ return (a, Map.empty, Map.empty, 0)

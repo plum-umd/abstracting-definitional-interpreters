@@ -4,7 +4,8 @@ import AAI
 import Analyses
 import Fixpoints
 import Lang
-import Lang.Lambda.BigStep.Abstract
+import qualified Lang.Lambda.BigStep.Symbolic as BS
+import qualified Lang.Lambda.SmallStep.Symbolic as SS
 import Monads
 import StateSpace
 import Util
@@ -13,6 +14,13 @@ import Text.MPretty
 
 main :: IO ()
 main = do
-  T.putStrLn $ execPretty $ pretty $ runZPDCFA e1
-  putStrLn ""
-  T.putStrLn $ execPretty $ pretty $ runConcrete e1
+  putStrLn "--BS Concrete--"
+  ipPrintLn $ BS.runConcrete e1
+  putStrLn "--BS ZPDCFA--"
+  ipPrintLn $ BS.runZPDCFA e1
+  putStrLn "--BS Widening--"
+  ipPrintLn $ BS.runWidening e1
+  putStrLn "--SS Concrete--"
+  ipPrintLn $ SS.runConcrete c1
+  putStrLn "--SS ZPDCFA--"
+  ipPrintLn $ SS.runZPDCFA c1

@@ -3,7 +3,7 @@
 module Lang.Lambda.Examples where
 
 import Lang.Lambda.CPS
-import Lang.Lambda.Data
+import Lang.Lambda.AST
 import Lang.Lambda.Parsing
 import Data.SExp
 

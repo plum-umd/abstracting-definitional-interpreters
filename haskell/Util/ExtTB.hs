@@ -37,12 +37,12 @@ instance Monad ExtTB where
       Ext a -> aTobM a
       ExtTop -> ExtTop
 
-instance PartialOrder (ExtTB a) where
-  lte ExtTop _ = False
-  lte _ ExtTop = True
-  lte ExtBot _ = True
-  lte _ ExtBot = False
-  lte (Ext _) (Ext _) = False
+instance (Eq a) => PartialOrder (ExtTB a) where
+  pcompare ExtBot _ = Just LT
+  pcompare _ ExtBot = Just GT
+  pcompare ExtTop _ = Just GT
+  pcompare _ ExtTop = Just LT
+  pcompare (Ext x) (Ext y) = if x == y then Just EQ else Nothing
 
 instance Lattice (ExtTB a) where
   lbot = ExtBot

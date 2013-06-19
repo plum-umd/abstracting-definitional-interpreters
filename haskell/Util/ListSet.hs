@@ -31,8 +31,8 @@ instance (Ord a) => PartialOrder (ListSet a) where
 instance (Ord a) => Lattice (ListSet a) where
   lbot = ListSet []
   ltop = error "no representation of top ListSet"
-  ljoin x y = ListSet $ Set.toList $ (ljoin `on` Set.fromList . runListSet) x y
-  lmeet x y = ListSet $ Set.toList $ (lmeet `on` Set.fromList . runListSet) x y
+  ljoin x y = ListSet . Set.toList $ (ljoin `on` Set.fromList . runListSet) x y
+  lmeet x y = ListSet . Set.toList $ (lmeet `on` Set.fromList . runListSet) x y
 
 instance Pointed ListSet where
   unit = return
