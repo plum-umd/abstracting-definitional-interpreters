@@ -13,3 +13,6 @@ run:
 	runhaskell Main.hs
 
 rebuild: clean configure build
+
+interact:
+	ghci -interactive-print=Text.MPretty.ipPrintLn Main.hs 
