@@ -23,6 +23,8 @@
      (op2 '- (parse e0) (parse e1))]
     [(list '* e0 e1)
      (op2 '* (parse e0) (parse e1))]
+    [(list 'quotient e0 e1)
+     (op2 'quotient (parse e0) (parse e1))]
     [(list 'ref e)
      (ref (parse e))]
     [(list '! e)

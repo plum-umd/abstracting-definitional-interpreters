@@ -20,7 +20,9 @@
   (match v
     [(cons e r)
      (define a x)
-     ((unit a) (join-sto s a (cons e (hash-set r x a))))]))
+     ((unit a) 
+      (join-sto s a
+        (cons e (hash-set r x a))))]))
 
 (define ((new v) s)
   (define a 'box) ; One box per program abstraction
