@@ -7,20 +7,30 @@
 @(require scribble/eval)
 
 @(define the-pure-eval
-  (make-base-eval #:lang 'monadic-eval/lang '(link eval-pure@ ev@ δ@ env@)))´
+  (make-base-eval #:pretty-print? #f
+		  #:lang 'monadic-eval/lang '(link eval-pure@ ev@ δ@ env@ err@)))
 
 @(define the-box-eval
-  (make-base-eval #:lang 'monadic-eval/lang '(link eval-pure@ ev@ δ@ env-box@)))
+  (make-base-eval #:pretty-print? #f
+		  #:lang 'monadic-eval/lang '(link eval-pure@ ev@ δ@ env-box@ err@)))
 
 @(define the-explicit-sto-eval
-  (make-base-eval #:lang 'monadic-eval/lang '(link eval-sto@ sto-monad@ ev@ δ@ env-sto@)))
+  (make-base-eval #:pretty-print? #f
+		  #:lang 'monadic-eval/lang 
+		  '(link eval-explicit@ ev!@ δ@ sto-explicit@)
+		  #;'(link eval-sto@ sto-monad@ ev@ δ@ env-sto@)))
 
 @(define the-trace-eval
-  (make-base-eval #:lang 'monadic-eval/lang '(link eval-trace@ ev@ δ@ env-sto@)))
+  (make-base-eval #:pretty-print? #f
+		  #:lang 'monadic-eval/lang 
+		  '(link trace@ ev!@ δ@ env-sto@ sto@))
+		  #;'(link eval-trace@ ev@ δ@ env-sto@))
 
 @(define the-reachable-eval
-  (make-base-eval #:lang 'monadic-eval/lang '(link eval-reachable@ ev@ δ@ env-sto@)))
-
+  (make-base-eval #:pretty-print? #f
+		  #:lang 'monadic-eval/lang 
+		  '(link reach@ ev@ δ@ env-sto@)
+		  #;'(link eval-reachable@ ev@ δ@ env-sto@)))
 
 
 @title{Abstracting Definitional Interpreters}
