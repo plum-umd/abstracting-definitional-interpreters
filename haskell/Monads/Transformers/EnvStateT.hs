@@ -1,7 +1,9 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, UndecidableInstances, TypeFamilies, TypeOperators, InstanceSigs, ScopedTypeVariables #-}
 
 module Monads.Transformers.EnvStateT where
 
+import Data.Tuple
+import StateSpace.Semantics
 import Control.Monad
 import Control.Monad.Reader
 import Control.Monad.State
@@ -39,3 +41,7 @@ instance (Monad m) => MonadEnvReader env (EnvStateT env m) where
 instance (Monad m) => MonadEnvState env (EnvStateT env m) where
   getEnv = EnvStateT get
   putEnv = EnvStateT . put
+
+instance (Monad m, SmallStep m) => SmallStep (EnvStateT env m) where
+  type SS (EnvStateT env m) = SS m :.: (,) env
+  runSS k ss = Compose $ runSS (\(env,a) -> liftM swap $ runEnvStateT (k a) env) $ unCompose ss 
