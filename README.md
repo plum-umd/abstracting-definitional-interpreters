@@ -47,3 +47,20 @@ this interpreter implements a form of pushdown control flow analysis
 abstract semantics. True to the definitional style of Reynolds, the
 evaluator involves no explicit mechanics to achieve this property; it
 is simply inherited from the defining language.
+
+Installation
+------------
+
+This code has been tested with Racket 6.0, but probably works with
+other versions of Racket too.
+
+To install (from the root of this repo):
+
+   raco install racket/monadic-eval/
+
+To verify:
+
+   raco test racket/monadic-eval/
+
+This will test every module in the implementation.  If no errors
+occur, the code is working as expected.

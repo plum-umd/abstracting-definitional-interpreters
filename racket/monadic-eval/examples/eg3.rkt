@@ -1,4 +1,4 @@
-#lang monadic-eval (link eval-symbolic@ ev@ δ@ env-sto@)
+#lang monadic-eval (link sval@ ev@ δ@ env-sto@)
 ;; Classical symbolic execution
 ;; Don't interpret test on if, but collect a verification condition
 ;; and evaluate both branches.
