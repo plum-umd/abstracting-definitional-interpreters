@@ -1,4 +1,4 @@
-#lang scribble/sigplan @nocopyright
+#lang scribble/sigplan @10pt @nocopyright
 @(require scribble/manual)
 @(require scribble/decode)
 @(require scriblib/figure)
@@ -37,7 +37,7 @@
 @;title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
 @;subtitle{Functional Pearl}
 
-@authorinfo["David Van Horn" "Northeastern University" "dvanhorn@ccs.neu.edu"]
+@authorinfo["David Van Horn" "University of Maryland" "dvanhorn@cs.umd.edu"]
 
 @abstract{A definitional interpreter written in monadic style can
 express a wide variety of abstract interpretations.  We give a
