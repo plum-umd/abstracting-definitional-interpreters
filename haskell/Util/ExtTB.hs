@@ -13,6 +13,9 @@ import Util.Pointed
 import Control.Applicative
 import Util.MFunctor
 
+-- TODO: This is not really an extension of a with top and bottom, it is a
+-- discrete set, either having 0 (bottom), 1, or all (top) elements.  This
+-- should be renamed!
 data ExtTB a =
     ExtBot
   | Ext a
