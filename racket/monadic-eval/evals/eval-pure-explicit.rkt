@@ -1,11 +1,11 @@
 #lang racket
 (provide eval)
 (require "../units/ev-unit.rkt"
-	 "../units/eval-pure-explicit-unit.rkt"
+	 "../units/eval-sto-unit.rkt"
 	 "../units/sto-monad-unit.rkt"
 	 "../units/env-sto-unit.rkt"
-	 "../units/err-unit.rkt"
-         "../units/delta-unit.rkt")
+         "../units/delta-unit.rkt"
+         "../units/err-unit.rkt")
 
 (define-values/invoke-unit/infer
-  (link eval-pure-explicit@ ev@ sto-monad@ δ@ env-sto@ err@))
+  (link ev@ δ@ eval-sto@ env-sto@ sto-monad@ err@))

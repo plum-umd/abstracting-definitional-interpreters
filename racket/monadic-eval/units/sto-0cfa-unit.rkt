@@ -5,7 +5,9 @@
          "../syntax.rkt")
 
 (import unit^ unit-vals^ unit-ans^)
-(export env^ sto^)
+(export env^ sto^ ref^)
+
+(define ext hash-set)
 
 (define ((get r x) s)
   ((unit-vals (lookup s r x)) s))
@@ -16,13 +18,11 @@
      (define a x) ; 0CFA-like abstraction
      (unit-ans a (join-sto s a v))]))
 
-(define ((ralloc x v) s)
-  (match v
-    [(cons e r)
-     (define a x)
-     ((unit a) 
-      (join-sto s a
-        (cons e (hash-set r x a))))]))
+(define ((ralloc x e ρ) s)
+  (define a x)
+  ((unit a) 
+   (join-sto s a
+             (cons e (hash-set ρ x a)))))
 
 (define ((new v) s)
   (define a 'box) ; One box per program abstraction

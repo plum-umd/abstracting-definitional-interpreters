@@ -5,13 +5,21 @@
          "../syntax.rkt")
 
 (import unit^)
-(export sto^)
+(export env^ sto^ ref^)
 
-(define ((ralloc x v) s)
-  (match v
-    [(cons e r)
-     (define a (next s))
-     ((unit a) (update-sto s a (cons e (hash-set r x a))))]))
+(define sto₀ hash)
+(define env₀ hash)
+(define ext hash-set)
+(define ((get ρ x) σ)
+  ((unit (hash-ref σ (hash-ref ρ x))) σ))
+
+(define ((alloc f v) σ)
+  (define a (next σ))
+  ((unit a) (hash-set σ a v)))
+
+(define ((ralloc x e ρ) s)
+  (define a (next s))
+  ((unit a) (update-sto s a (cons e (hash-set ρ x a)))))
 
 (define ((new v) s)
   (define a (next s))

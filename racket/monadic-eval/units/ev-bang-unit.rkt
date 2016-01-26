@@ -1,11 +1,10 @@
 #lang racket
 (require "../signatures.rkt"
 	 "../syntax.rkt")
-
 (provide ev!@)
 
 (define-unit ev!@
-  (import unit^ bind^ rec^ δ^ env^ sto^ err^)
+  (import unit^ bind^ δ^ env^ sto^ err^ ref^)
   (export ev^)
 
   (define-syntax do
@@ -14,45 +13,42 @@
       [(do x ← e . r)
        (bind e (λ (x) (do . r)))]))
 
-  (define (ev e r) ;; E R -> [M Ans]
+  (define ((ev e ρ) ev)
     (match e
       ['err (err)]
-      [(vbl x) (get r x)]
+      [(vbl x) (get ρ x)]
       [(num n) (unit n)]
-      [(lam x e) (unit (cons (lam x e) r))]
+      [(lam x e) (unit (cons (lam x e) ρ))]
       [(ifz e0 e1 e2)
-       (do v ← (rec e0 r)
+       (do v ← (ev e0 ρ)
 	 (match v
-	   [0 (rec e1 r)]
-	   [n (rec e2 r)]))]
+	   [0 (ev e1 ρ)]
+	   [n (ev e2 ρ)]))]
       [(op1 o e0)
-       (do v ← (rec e0 r)
+       (do v ← (ev e0 ρ)
 	 (δ o v))]
       [(op2 o e0 e1)
-       (do v0 ← (rec e0 r)
-           v1 ← (rec e1 r)
+       (do v0 ← (ev e0 ρ)
+           v1 ← (ev e1 ρ)
 	 (δ o v0 v1))]
       [(ref e)
-       (do v ← (rec e r)
+       (do v ← (ev e ρ)
          (new v))]
       [(drf e)
-       (do a ← (rec e r)
+       (do a ← (ev e ρ)
 	 (ubox a))]
       [(srf e0 e1)
-       (do a ← (rec e0 r)
-           v ← (rec e1 r)
+       (do a ← (ev e0 ρ)
+           v ← (ev e1 ρ)
          (sbox a v))]
       [(lrc f (lam x e0) e)
-       (do a ← (ralloc f (cons (lam x e0) r))
-         (rec e (extend-env r f a)))]
+       (do a ← (ralloc f (lam x e0) ρ)
+         (ev e (ext ρ f a)))]
       [(app e0 e1)
-       (do v0 ← (rec e0 r)
-           v1 ← (rec e1 r)
+       (do v0 ← (ev e0 ρ)
+           v1 ← (ev e1 ρ)
          (match v0
            [(cons (lam x e) r0)
 	    (do a ← (alloc (cons (lam x e) r0) v1)
-	      (rec e (extend-env r0 x a)))]))])))
+	      (ev e (ext r0 x a)))]))])))
 
-
-(define (extend-env r x a)
-  (hash-set r x a))

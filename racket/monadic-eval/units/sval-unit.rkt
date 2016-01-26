@@ -1,10 +1,11 @@
 #lang racket/unit
 (require racket/match
          "../signatures.rkt"
+         "../store.rkt"
 	 "../both.rkt")
 
-(import ev^)
-(export eval^ unit^ bind^ rec^ err^ symbolic^)
+(import)
+(export unit^ bind^ symbolic^ ref^)
 
 (define (symbolic? x) (or (symbol? x) (pair? x)))
 
@@ -14,10 +15,7 @@
 (define (symbolic-apply f v)
   (unit `(,f ,v)))
 
-(define (eval e) ((ev e (hash)) (hash)))
-(define (rec e r) (ev e r))
 (define ((unit v) s) (cons v s))
-(define ((err) s) (cons 'err s))
 (define ((bind a f) s)
   (let loop ([res (a s)])
     (match res
@@ -26,3 +24,13 @@
       [(cons 'err s) (cons 'err s)]
       [(cons v s)
        ((f v) s)])))
+
+(define ((new v) s)
+  (define a (next s))
+  ((unit a) (update-sto s a v)))
+
+(define ((sbox a v) s)
+  ((unit a) (update-sto s a v)))
+
+(define ((ubox a) s)
+  ((unit (lookup-sto s a)) s))

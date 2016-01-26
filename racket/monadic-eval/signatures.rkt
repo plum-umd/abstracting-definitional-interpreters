@@ -10,13 +10,13 @@
   [ev^   : ev]
   [unit^ : unit]
   [bind^ : bind]
-  [rec^  : rec]
-  [env^  : get alloc ralloc]
+  [sto^  : ralloc alloc]
+  [env^  : get ext]
   [δ^    : δ])
 
 (define-signatures
   [err^ : err]
-  [sto^ : new sbox ubox])
+  [ref^ : new sbox ubox])
 
 (define-signatures
   [symbolic^ : symbolic? both symbolic-apply])

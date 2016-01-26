@@ -1,20 +1,15 @@
 #lang racket/unit
-(require racket/match
-         "../signatures.rkt")
+(require "../signatures.rkt")
 
-(import unit^)
-(export env^)
+(import)
+(export env^ sto^)
 
-(define (get r x)
-  (unit (hash-ref r x)))
+(define get hash-ref)
+(define ext hash-set)
 
-(define (alloc f v)
-  (unit v))
-
-(define (ralloc x v)
-  (match v
-    [(cons e r)
-     (define p (make-placeholder #f))
-     (define f (cons e (hash-set r x p)))
-     (placeholder-set! p f)
-     (unit (make-reader-graph f))]))
+(define (alloc f v) v)
+(define (ralloc x e r)
+  (define p (make-placeholder #f))
+  (define f (cons e (hash-set r x p)))
+  (placeholder-set! p f)
+  (make-reader-graph f))

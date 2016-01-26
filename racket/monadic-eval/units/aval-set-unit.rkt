@@ -1,18 +1,10 @@
 #lang racket/unit
 (require racket/match
 	 racket/set
-	 "../signatures.rkt"
-	 "ev-bang-unit.rkt"
-         "delta-unit.rkt"
-         "sto-0cfa-unit.rkt")
+	 "../signatures.rkt")
 
 (import ev^)
-(export eval^ unit^ bind^ rec^ err^ unit-ans^ unit-vals^)
-
-(define (eval e)
-  ((ev e (hash)) (hash)))
-
-(define (rec e r) (ev e r))
+(export  unit^ bind^ unit-ans^ unit-vals^)
 
 (define ((unit v) s)
   (unit-ans v s))
@@ -34,7 +26,4 @@
   (unit-anss (set (cons v s))))
 
 (define (unit-anss anss) anss)
-
-(define ((err) s)
-  (unit-ans 'err s))
 

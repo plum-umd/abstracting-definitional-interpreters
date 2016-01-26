@@ -1,26 +1,30 @@
 #lang racket/unit
 (require racket/match
-	 "../syntax.rkt"
-	 "../store.rkt"
+         "../syntax.rkt"
 	 "../signatures.rkt")
 
-(import unit^)
-(export env^)
+(import)
+(export env^ sto^)
+
+(define ext hash-set)
+
+;; Maybe define in terms of `unit'?
 
 (define ((get ρ x) σ)
-  ((unit (hash-ref σ (hash-ref ρ x))) σ))
+  (cons (hash-ref σ (hash-ref ρ x)) σ))
 
 (define ((alloc f v) σ)
-  (match f
-    [(cons (lam x e) ρ)
-     (define a (next σ))
-     ((unit a) (update-sto σ a v))]))
+  (define a (next σ))
+  (cons a (hash-set σ a v)))
 
-(define ((ralloc x v) σ)
-  (match v
-    [(cons e ρ)
-     (define a (next σ))
-     ((unit a)
-      (update-sto σ a
-        (cons e (hash-set ρ x a))))]))
+(define ((ralloc x e ρ) σ)
+  (define a (next σ))
+  (cons a
+        (hash-set σ a
+                  (cons e (hash-set ρ x a)))))
+
+(define (next s)
+  (for/fold ([a 0])
+            ([i (in-hash-keys s)])
+    (max a (add1 i))))
 

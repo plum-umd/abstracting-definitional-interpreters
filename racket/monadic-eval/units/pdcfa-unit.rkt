@@ -12,19 +12,34 @@
 ;; eval : E ->_total [Setof Ans]
 
 (import ev^)
-(export eval^ symbolic^ rec^ unit^ bind^ err^
+(export eval^ symbolic^ unit^ bind^ err^
         unit-ans^ unit-vals^)
 
 ;; iterates ev until reaching a fixed point in the memo-table
 (define (eval e)
-  (let loop ([m* (hash)] [anss (set)])
-    (match ((((rec e (hash)) (hash)) (hash)) m*)
+  
+  (define ((((ev′ e ρ) σ) m1) m2)
+    (define ers (list e ρ σ))
+    (define anss (hash-ref m1 ers #false))  
+    (if anss
+        (cons anss m1)
+        (match (((((ev e ρ) ev′) σ)
+                 (hash-set m1 ers (hash-ref m2 ers (set)))) m2)                
+          [(cons anss m1)
+           (cons anss (hash-set m1 ers anss))])))
+  
+  
+  (let loop ([m2 (hash)] [anss (set)])
+    (match ((((ev′ e (hash)) (hash)) (hash)) m2)
       [(and r (cons anss1 m1))
-       (if (equal? r (cons anss m*))
+       (if (equal? r (cons anss m2))
 	   anss1
 	   (loop m1 anss1))])))
 
+
+
 ;; like ev but takes both branches on abstract values
+#;
 (define (ev* e r)
   (match e
     [(ifz e0 e1 e2)
@@ -49,15 +64,6 @@
        [(cons anss1 m)
         (cons (set-union anss0 anss1) m)])]))
 
-(define ((((rec e r) s) m) m*)
-  (define ers (list e r s))
-  (define anss (hash-ref m ers #false))  
-  (if anss
-      (cons anss m)
-      (match ((((ev* e r) s)
-               (hash-set m ers (hash-ref m* ers (set)))) m*)
-        [(cons anss m)
-         (cons anss (hash-set m ers anss))])))
 
 (define ((((bind a f) s) m) m*)
   (match (((a s) m) m*)
