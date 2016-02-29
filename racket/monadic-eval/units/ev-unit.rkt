@@ -10,7 +10,8 @@
   (define ((ev e ρ) ev)
     (match e
       [(vbl x) (get ρ x)]
-      [(num n) (unit n)]
+      [(num n)
+       (unit n)]
       [(lam x e) (unit (cons (lam x e) ρ))]
       [(ifz e0 e1 e2)
        (do v ← (ev e0 ρ)

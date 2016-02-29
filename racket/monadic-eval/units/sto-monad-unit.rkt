@@ -5,8 +5,9 @@
 (import)
 (export unit^ bind^)
 
-(define ((unit v) s)
-  (cons v s))
+(define (unit v) 
+  (λ (s)
+    (cons v s)))
 (define ((bind a f) s)
   (match (a s)
     [(cons 'err s) (cons 'err s)]

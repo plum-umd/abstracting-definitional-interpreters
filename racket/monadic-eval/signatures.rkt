@@ -7,6 +7,7 @@
 
 (define-signatures
   [eval^ : eval]
+  [fix^  : fix]
   [ev^   : ev]
   [unit^ : unit]
   [bind^ : bind]

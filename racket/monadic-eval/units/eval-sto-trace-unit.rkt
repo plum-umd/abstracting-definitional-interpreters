@@ -3,5 +3,6 @@
 
 (import ev^ fix^)
 (export eval^)
+
 (define (eval e)
-  ((fix ev) e (hash)))
+  ((((fix ev) e (hash)) (hash)) '()))
