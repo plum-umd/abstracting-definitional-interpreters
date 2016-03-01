@@ -1,8 +1,7 @@
 #lang racket
 (provide eval)
-(require "../units/ev-bang-unit.rkt"
-         "../units/fix-unit.rkt"
-         "../units/eval-sto-unit.rkt"	 
+(require "../fix.rkt"
+         "../units/ev-bang-unit.rkt"
          "../units/sto-monad-unit.rkt"
          "../units/env-sto-unit.rkt"
          "../units/delta-unit.rkt"
@@ -10,4 +9,7 @@
           "../units/err-unit.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev!@ δ@ eval-sto@ fix@ env-sto@ sto-monad@ ref-explicit@ err@))
+  (link ev!@ δ@ env-sto@ sto-monad@ ref-explicit@ err@))
+
+(define (eval e)
+  (mrun ((fix ev) e (hash))))

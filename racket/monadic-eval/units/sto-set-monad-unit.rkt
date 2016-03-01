@@ -4,7 +4,9 @@
          "../signatures.rkt")
 
 (import ev^)
-(export unit^ unit-ans^ unit-vals^ bind^)
+(export unit^ unit-ans^ unit-vals^ bind^ run^)
+
+(define (mrun M) (M (hash)))
 
 (define ((unit v) s) (set (cons v s)))
 

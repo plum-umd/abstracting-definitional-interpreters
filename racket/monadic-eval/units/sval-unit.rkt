@@ -5,7 +5,9 @@
 	 "../both.rkt")
 
 (import)
-(export unit^ bind^ symbolic^ ref^)
+(export unit^ bind^ symbolic^ ref^ run^)
+
+(define (mrun M) (M (hash)))
 
 (define (symbolic? x) (or (symbol? x) (pair? x)))
 

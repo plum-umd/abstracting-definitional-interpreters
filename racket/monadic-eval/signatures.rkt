@@ -6,11 +6,12 @@
   (begin (define-signature sig (name ...)) ...))
 
 (define-signatures
-  [eval^ : eval]
-  [fix^  : fix]
-  [ev^   : ev]
-  [unit^ : unit]
+  [eval^ : eval] ; go away
+  [fix^  : fix]  ; go away
+  [ev^   : ev]   ; go away
+  [unit^ : unit] ; combine
   [bind^ : bind]
+  [run^  : mrun]
   [sto^  : ralloc alloc]
   [env^  : get ext]
   [δ^    : δ])

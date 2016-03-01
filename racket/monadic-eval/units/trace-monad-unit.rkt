@@ -2,7 +2,9 @@
 (require racket/match
          "../signatures.rkt")
 (import)
-(export unit^ bind^)
+(export unit^ bind^ run^)
+
+(define (mrun M) ((M (hash)) '()))
 
 (define (((unit v) s) t) (cons (cons v s) t))
 (define (((bind a f) s) t)

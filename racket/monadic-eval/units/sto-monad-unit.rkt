@@ -3,7 +3,10 @@
          "../signatures.rkt")
 
 (import)
-(export unit^ bind^)
+(export unit^ bind^ run^)
+
+(define (mrun M)
+  (M (hash)))
 
 (define (unit v) 
   (λ (s)
