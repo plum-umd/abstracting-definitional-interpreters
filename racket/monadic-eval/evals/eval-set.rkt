@@ -2,8 +2,6 @@
 (provide eval)
 (require "../fix.rkt"
          "../units/sto-set-monad-unit.rkt"
-         "../units/fix-unit.rkt"
-         "../units/eval-sto-unit.rkt"
 	 "../units/ev-bang-unit.rkt"
          "../units/delta-unit.rkt"
          "../units/sto-set-unit.rkt"
