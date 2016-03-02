@@ -14,6 +14,11 @@
     [(num n) (unit n)]
     [(ifz e0 e1 e2)
      (do v ← (rec e0 r)
+       #;
+       (do b ← (is-zero? v)
+         (if b
+             (rec e1 r)
+             (rec e2 r)))       
        (match v
          [0           (rec e1 r)]
          [(? number?) (rec e2 r)]
