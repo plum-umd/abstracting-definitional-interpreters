@@ -5,7 +5,7 @@
 
 ;; Concrete δ
 (define-unit δ@
-  (import return^ err^)
+  (import monad^ err^)
   (export δ^)
   (define (δ o . vs)   
     (match* (o vs)
@@ -22,7 +22,7 @@
 
 ;; Abstract δ
 (define-unit abs-δ@
-  (import return^ symbolic^ err^)
+  (import monad^ symbolic^ err^)
   (export δ^)
   (define (δ o . vs)
     (match* (o vs)
@@ -44,7 +44,7 @@
 
 ;; Precision preserving abstract δ
 (define-unit pres-δ@
-  (import return^ symbolic^ err^)
+  (import monad^ symbolic^ err^)
   (export δ^)
   (define (δ o . vs)
     (match* (o vs)
@@ -73,7 +73,7 @@
   )
 
 (define-unit symbolic-δ@
-  (import return^)
+  (import monad^)
   (export δ^)
   (define (δ o . vs)
     (return

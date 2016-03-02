@@ -11,9 +11,11 @@
 
 
 (import)
-(export symbolic^ return^ bind^ err^
+(export symbolic^ monad^ err^
         return-ans^ return-vals^)
 
+(define ((mrun M) m2)
+  (((M (hash)) (hash)) m2))
 
 ;; like ev but takes both branches on abstract values
 #;

@@ -4,7 +4,7 @@
          "../signatures.rkt")
 
 (import ev^)
-(export return^ return-ans^ return-vals^ bind^ run^)
+(export monad^ return-ans^ return-vals^)
 
 (define (mrun M) (M (hash)))
 

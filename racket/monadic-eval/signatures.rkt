@@ -9,9 +9,7 @@
   [eval^ : eval] ; go away
   [fix^  : fix]  ; go away
   [ev^   : ev]   ; go away
-  [return^ : return] ; combine
-  [bind^ : bind]
-  [run^  : mrun]
+  [monad^ : return bind mrun]
   [sto^  : ralloc alloc]
   [env^  : get ext]
   [δ^    : δ])

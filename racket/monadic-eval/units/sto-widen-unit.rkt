@@ -4,8 +4,10 @@
          "../store.rkt"
          "../syntax.rkt"
          "../set.rkt")
-(import return^ return-vals^ return-ans^)
+(import monad^ return-vals^ return-ans^)
 (export env^ sto^)
+
+(define ext hash-set) ; ?
 
 (define ((get r x) s)
   ((return-vals (lookup s r x)) s))

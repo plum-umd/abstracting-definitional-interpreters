@@ -1,7 +1,7 @@
 #lang racket/unit
 (require "../signatures.rkt" racket/match)
 (import)
-(export return^ bind^ run^)
+(export monad^)
 
 (define (mrun M) M)
 (define (return v) v)

@@ -3,7 +3,7 @@
          "../signatures.rkt"
 	 "../syntax.rkt")
 
-(import return^ bind^ δ^ symbolic^ sto^ env^ err^ ref^)
+(import monad^ δ^ symbolic^ sto^ env^ err^ ref^)
 (export ev^)
 
 (define ((ev e r) rec)

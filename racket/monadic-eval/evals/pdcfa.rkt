@@ -25,7 +25,7 @@
 
 (define (eval e)     
   (let loop ([m2 (hash)] [anss (set)])
-    (match (((((fix co-ev) e (hash)) (hash)) (hash)) m2)
+    (match ((mrun ((fix co-ev) e (hash))) m2)
       [(and r (cons anss1 m1))
        (if (equal? r (cons anss m2))
 	   anss1

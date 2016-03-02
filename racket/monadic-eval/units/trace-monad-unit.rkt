@@ -2,7 +2,7 @@
 (require racket/match
          "../signatures.rkt")
 (import)
-(export return^ bind^ run^)
+(export monad^)
 
 (define (mrun M) ((M (hash)) '()))
 

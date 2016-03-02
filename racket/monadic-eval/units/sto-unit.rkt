@@ -4,7 +4,7 @@
          "../store.rkt"
          "../syntax.rkt")
 
-(import return^)
+(import monad^)
 (export env^ sto^ ref^)
 
 (define sto₀ hash)

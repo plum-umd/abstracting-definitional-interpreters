@@ -5,7 +5,7 @@
          "../store.rkt"
          "../syntax.rkt")
 
-(import return^ return-vals^ return-ans^)
+(import monad^ return-vals^ return-ans^)
 (export env^ sto^ ref^)
 
 (define ext hash-set)

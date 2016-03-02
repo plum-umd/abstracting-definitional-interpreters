@@ -3,11 +3,10 @@
          "../signatures.rkt"
          "../subexp.rkt")
 (import)
-(export return^ bind^ #;run^)
+(export monad^)
 
 ;; FIXME: can't write mrun here because need expr.
-#;
-(define (mrun M) ((M (hash)) (subexps e)))
+(define (mrun M) (error "Can't run"))
 
 ;; Same as trace monad
 (define (((return v) s) t) (cons (cons v s) t))
