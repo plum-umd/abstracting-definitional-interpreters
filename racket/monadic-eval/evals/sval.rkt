@@ -5,11 +5,11 @@
          "../units/ev-symbolic-unit.rkt"
          "../units/delta-unit.rkt"
          "../units/err-unit.rkt"
-         "../units/env-sto-unit.rkt"
+         "../units/env-sto-nd-unit.rkt"
 	 "../both.rkt")
 
 (define-values/invoke-unit/infer
-  (link sval@ env-sto@ ev-symbolic@ symbolic-δ@ err@))
+  (link sval@ env-sto-nd@ ev-symbolic@ symbolic-δ@ err@))
 
 (define (eval e)
   (mrun ((fix ev) e (hash))))
