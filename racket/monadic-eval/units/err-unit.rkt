@@ -1,5 +1,5 @@
 #lang racket/unit
 (require "../signatures.rkt")
-(import unit^)
+(import return^)
 (export err^)
-(define (err) (unit 'err))
+(define (err) (return 'err))

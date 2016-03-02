@@ -4,15 +4,15 @@
 (provide ev@)
 
 (define-unit ev@
-  (import unit^ bind^ δ^ env^ sto^)
+  (import return^ bind^ δ^ env^ sto^)
   (export ev^)
   
   (define ((ev e ρ) ev)
     (match e
       [(vbl x) (get ρ x)]
       [(num n)
-       (unit n)]
-      [(lam x e) (unit (cons (lam x e) ρ))]
+       (return n)]
+      [(lam x e) (return (cons (lam x e) ρ))]
       [(ifz e0 e1 e2)
        (do v ← (ev e0 ρ)
          (match v

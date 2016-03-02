@@ -11,8 +11,8 @@
 
 
 (import)
-(export symbolic^ unit^ bind^ err^
-        unit-ans^ unit-vals^)
+(export symbolic^ return^ bind^ err^
+        return-ans^ return-vals^)
 
 
 ;; like ev but takes both branches on abstract values
@@ -53,21 +53,21 @@
                    (values (set-union rs anss) m)])]))])
        (cons anss m))]))
 
-(define ((unit-vals vs) s)
-  (unit-anss (for/set ([v vs])
+(define ((return-vals vs) s)
+  (return-anss (for/set ([v vs])
                (cons v s))))
 
-(define (unit-ans v s)
-  (unit-anss (set (cons v s))))
+(define (return-ans v s)
+  (return-anss (set (cons v s))))
 
-(define (((unit-anss anss) m) m*)
+(define (((return-anss anss) m) m*)
   (cons anss m))
 
-(define ((((unit v) s) m) m*)
+(define ((((return v) s) m) m*)
   (cons (set (cons v s)) m))
 
 (define ((err) s)
-  (unit-ans 'err s))
+  (return-ans 'err s))
 
 ;; FO Symbolic values
 (define symbolic? symbol?)

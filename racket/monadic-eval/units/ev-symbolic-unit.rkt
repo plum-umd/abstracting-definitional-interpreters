@@ -3,15 +3,15 @@
          "../signatures.rkt"
 	 "../syntax.rkt")
 
-(import unit^ bind^ δ^ symbolic^ sto^ env^ err^ ref^)
+(import return^ bind^ δ^ symbolic^ sto^ env^ err^ ref^)
 (export ev^)
 
 (define ((ev e r) rec)
   (match e
     ['err (err)]
     [(vbl x) (get r x)]
-    [(sym s) (unit s)]
-    [(num n) (unit n)]
+    [(sym s) (return s)]
+    [(num n) (return n)]
     [(ifz e0 e1 e2)
      (do v ← (rec e0 r)
        #;
@@ -43,7 +43,7 @@
          v ← (rec e1 r)
        (sbox a v))]
     [(lam x e)
-     (unit (cons (lam x e) r))]
+     (return (cons (lam x e) r))]
     [(lrc f (lam x e0) e)
      (do a ← (ralloc f (lam x e0) r)
        (rec e (ext r f a)))]

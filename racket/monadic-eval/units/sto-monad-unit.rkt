@@ -3,12 +3,12 @@
          "../signatures.rkt")
 
 (import)
-(export unit^ bind^ run^)
+(export return^ bind^ run^)
 
 (define (mrun M)
   (M (hash)))
 
-(define (unit v) 
+(define (return v) 
   (λ (s)
     (cons v s)))
 (define ((bind a f) s)

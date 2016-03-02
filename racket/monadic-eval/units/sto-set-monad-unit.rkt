@@ -4,11 +4,11 @@
          "../signatures.rkt")
 
 (import ev^)
-(export unit^ unit-ans^ unit-vals^ bind^ run^)
+(export return^ return-ans^ return-vals^ bind^ run^)
 
 (define (mrun M) (M (hash)))
 
-(define ((unit v) s) (set (cons v s)))
+(define ((return v) s) (set (cons v s)))
 
 (define ((bind a f) s)
   (for*/fold ([rs (set)])
@@ -19,11 +19,11 @@
 		 [(cons v s)
 		  ((f v) s)]))))
 
-(define ((unit-vals vs) s)
-  (unit-anss (for/set ([v vs])
+(define ((return-vals vs) s)
+  (return-anss (for/set ([v vs])
                (cons v s))))
 
-(define (unit-ans v s)
-  (unit-anss (set (cons v s))))
+(define (return-ans v s)
+  (return-anss (set (cons v s))))
 
-(define (unit-anss anss) anss)
+(define (return-anss anss) anss)

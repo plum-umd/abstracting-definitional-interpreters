@@ -1,10 +1,10 @@
 #lang racket/unit
 (require "../signatures.rkt" racket/match)
 (import)
-(export unit^ bind^ run^)
+(export return^ bind^ run^)
 
 (define (mrun M) M)
-(define (unit v) v)
+(define (return v) v)
 (define (bind a f)
   (match a
     ['err 'err]

@@ -4,7 +4,7 @@
 (provide ev!@)
 
 (define-unit ev!@
-  (import unit^ bind^ δ^ env^ sto^ err^ ref^)
+  (import return^ bind^ δ^ env^ sto^ err^ ref^)
   (export ev^)
 
   (define-syntax do
@@ -17,8 +17,8 @@
     (match e
       ['err (err)]
       [(vbl x) (get ρ x)]
-      [(num n) (unit n)]
-      [(lam x e) (unit (cons (lam x e) ρ))]
+      [(num n) (return n)]
+      [(lam x e) (return (cons (lam x e) ρ))]
       [(ifz e0 e1 e2)
        (do v ← (ev e0 ρ)
 	 (match v

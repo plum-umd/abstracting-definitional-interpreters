@@ -9,7 +9,7 @@
   [eval^ : eval] ; go away
   [fix^  : fix]  ; go away
   [ev^   : ev]   ; go away
-  [unit^ : unit] ; combine
+  [return^ : return] ; combine
   [bind^ : bind]
   [run^  : mrun]
   [sto^  : ralloc alloc]
@@ -24,5 +24,5 @@
   [symbolic^ : symbolic? both symbolic-apply])
 
 (define-signatures
-  [unit-ans^ : unit-ans]
-  [unit-vals^ : unit-vals])
+  [return-ans^ : return-ans]
+  [return-vals^ : return-vals])

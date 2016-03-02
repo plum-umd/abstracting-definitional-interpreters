@@ -5,7 +5,7 @@
 	 "../both.rkt")
 
 (import)
-(export unit^ bind^ symbolic^ ref^ run^)
+(export return^ bind^ symbolic^ ref^ run^)
 
 (define (mrun M) (M (hash)))
 
@@ -15,9 +15,9 @@
   (both-ans (c0 s) (c1 s)))
 
 (define (symbolic-apply f v)
-  (unit `(,f ,v)))
+  (return `(,f ,v)))
 
-(define ((unit v) s) (cons v s))
+(define ((return v) s) (cons v s))
 (define ((bind a f) s)
   (let loop ([res (a s)])
     (match res
@@ -29,10 +29,10 @@
 
 (define ((new v) s)
   (define a (next s))
-  ((unit a) (update-sto s a v)))
+  ((return a) (update-sto s a v)))
 
 (define ((sbox a v) s)
-  ((unit a) (update-sto s a v)))
+  ((return a) (update-sto s a v)))
 
 (define ((ubox a) s)
-  ((unit (lookup-sto s a)) s))
+  ((return (lookup-sto s a)) s))

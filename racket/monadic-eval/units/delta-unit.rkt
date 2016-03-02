@@ -5,16 +5,16 @@
 
 ;; Concrete δ
 (define-unit δ@
-  (import unit^ err^)
+  (import return^ err^)
   (export δ^)
   (define (δ o . vs)   
     (match* (o vs)
-      [('add1 (list n))  (unit (add1 n))]
-      [('sub1 (list n))  (unit (sub1 n))]
-      [('- (list n))     (unit (- n))]
-      [('+ (list n1 n2)) (unit (+ n1 n2))]
-      [('- (list n1 n2)) (unit (- n1 n2))]
-      [('* (list n1 n2)) (unit (* n1 n2))]
+      [('add1 (list n))  (return (add1 n))]
+      [('sub1 (list n))  (return (sub1 n))]
+      [('- (list n))     (return (- n))]
+      [('+ (list n1 n2)) (return (+ n1 n2))]
+      [('- (list n1 n2)) (return (- n1 n2))]
+      [('* (list n1 n2)) (return (* n1 n2))]
       [('quotient (list n1 n2))
        (if (zero? n2) (err) (quotient n1 n2))])))
   
@@ -22,21 +22,21 @@
 
 ;; Abstract δ
 (define-unit abs-δ@
-  (import unit^ symbolic^ err^)
+  (import return^ symbolic^ err^)
   (export δ^)
   (define (δ o . vs)
     (match* (o vs)
-      [('add1 (list n))  (unit 'N)]
-      [('sub1 (list n))  (unit 'N)]
-      [('+ (list n1 n2)) (unit 'N)]
-      [('- (list n1 n2)) (unit 'N)]
-      [('* (list n1 n2)) (unit 'N)]
+      [('add1 (list n))  (return 'N)]
+      [('sub1 (list n))  (return 'N)]
+      [('+ (list n1 n2)) (return 'N)]
+      [('- (list n1 n2)) (return 'N)]
+      [('* (list n1 n2)) (return 'N)]
       [('quotient (list n1 (? number? n2)))
        (if (zero? n2)
            (err)
-           (unit 'N))]
+           (return 'N))]
       [('quotient (list n1 n2)) 
-       (both (unit 'N) (err))]))              )
+       (both (return 'N) (err))]))              )
 
 
 
@@ -44,39 +44,39 @@
 
 ;; Precision preserving abstract δ
 (define-unit pres-δ@
-  (import unit^ symbolic^ err^)
+  (import return^ symbolic^ err^)
   (export δ^)
   (define (δ o . vs)
     (match* (o vs)
-      [('add1 (list (? number? n)))  (unit (add1 n))]
-      [('sub1 (list (? number? n)))  (unit (sub1 n))]
-      [('- (list (? number? n)))     (unit (- n))]
-      [('+ (list (? number? n1) (? number? n2))) (unit (+ n1 n2))]
-      [('- (list (? number? n1) (? number? n2))) (unit (- n1 n2))]
-      [('* (list (? number? n1) (? number? n2))) (unit (* n1 n2))]
+      [('add1 (list (? number? n)))  (return (add1 n))]
+      [('sub1 (list (? number? n)))  (return (sub1 n))]
+      [('- (list (? number? n)))     (return (- n))]
+      [('+ (list (? number? n1) (? number? n2))) (return (+ n1 n2))]
+      [('- (list (? number? n1) (? number? n2))) (return (- n1 n2))]
+      [('* (list (? number? n1) (? number? n2))) (return (* n1 n2))]
       [('quotient (list (? number? n1) (? number? n2)))
        (if (zero? n2)
            (err)
-           (unit (quotient n1 n2)))]
-      [('add1 (list n))  (unit 'N)]
-      [('sub1 (list n))  (unit 'N)]
-      [('+ (list n1 n2)) (unit 'N)]
-      [('* (list n1 n2)) (unit 'N)]
-      [('- (list n1 n2)) (unit 'N)]
+           (return (quotient n1 n2)))]
+      [('add1 (list n))  (return 'N)]
+      [('sub1 (list n))  (return 'N)]
+      [('+ (list n1 n2)) (return 'N)]
+      [('* (list n1 n2)) (return 'N)]
+      [('- (list n1 n2)) (return 'N)]
       [('quotient (list n1 (? number? n2)))
        (if (zero? n1)
            (err)
-           (unit 'N))]
+           (return 'N))]
       [('quotient (list n1 n2))
-       (both (err) (unit 'N))]))
+       (both (err) (return 'N))]))
   
   )
 
 (define-unit symbolic-δ@
-  (import unit^)
+  (import return^)
   (export δ^)
   (define (δ o . vs)
-    (unit
+    (return
      (match* (o vs)
        [('add1 (list (? number? n))) (add1 n)]
        [('add1 (list s)) `(add1 ,s)]
