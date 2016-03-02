@@ -15,9 +15,10 @@
       [(lam x e) (return (cons (lam x e) ρ))]
       [(ifz e0 e1 e2)
        (do v ← (ev e0 ρ)
-         (match v
-           [0 (ev e1 ρ)]
-           [n (ev e2 ρ)]))]
+         (do b ← (truish? v)
+           (if b
+               (ev e1 ρ)
+               (ev e2 ρ))))]
       [(op1 o e0)
        (do v ← (ev e0 ρ)
          (δ o v))]

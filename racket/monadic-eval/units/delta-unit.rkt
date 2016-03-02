@@ -16,7 +16,10 @@
       [('- (list n1 n2)) (return (- n1 n2))]
       [('* (list n1 n2)) (return (* n1 n2))]
       [('quotient (list n1 n2))
-       (if (zero? n2) (err) (quotient n1 n2))])))
+       (if (zero? n2) (err) (quotient n1 n2))]))
+
+  (define (truish? v)
+    (return (zero? v))))
   
   
 
@@ -36,11 +39,12 @@
            (err)
            (return 'N))]
       [('quotient (list n1 n2)) 
-       (both (return 'N) (err))]))              )
+       (both (return 'N) (err))]))
 
-
-
-
+  (define (truish? v)
+    (match v
+      ['N (both (return #t) (return #f))]
+      [_  (return (zero? v))])))
 
 ;; Precision preserving abstract δ
 (define-unit pres-δ@
@@ -69,11 +73,14 @@
            (return 'N))]
       [('quotient (list n1 n2))
        (both (err) (return 'N))]))
-  
-  )
+
+    (define (truish? v)
+      (match v
+        ['N (both (return #t) (return #f))]
+        [_  (return (zero? v))])))
 
 (define-unit symbolic-δ@
-  (import monad^)
+  (import monad^ symbolic^)
   (export δ^)
   (define (δ o . vs)
     (return
@@ -100,7 +107,12 @@
             `(quotient ,s1 ,n2))]
        [('quotient (list s1 s2))
         ;; both err and
-        `(quotient ,s1 ,s2)]))))
+        `(quotient ,s1 ,s2)])))
+
+  (define (truish? v)
+    (match v
+      [(? number?) (return (zero? v))]
+      [_ (both (return #t) (return #f))])))
 
 
 (define (δ-err o vs)
