@@ -1,5 +1,6 @@
 #lang racket/unit
 (require racket/match
+         racket/set
          "../signatures.rkt"
          "../store.rkt"
 	 "../both.rkt")
@@ -7,25 +8,29 @@
 (import)
 (export monad^ symbolic^ ref^)
 
+;; State + Non-deterministic monad
+
 (define (mrun M) (M (hash)))
 
 (define (symbolic? x) (or (symbol? x) (pair? x)))
 
+;; Given 2 actions, return new action mapping a state `s` to possibilities
+;; by performing each given action
 (define ((both c0 c1) s)
-  (both-ans (c0 s) (c1 s)))
+  {set-union (c0 s) (c1 s)})
 
 (define (symbolic-apply f v)
   (return `(,f ,v)))
 
-(define ((return v) s) (cons v s))
+(define ((return v) s)
+  {set (cons v s)})
+
 (define ((bind a f) s)
-  (let loop ([res (a s)])
-    (match res
-      [(both-ans a1 a2)
-       (both-ans (loop a1) (loop a2))]
-      [(cons 'err s) (cons 'err s)]
-      [(cons v s)
-       ((f v) s)])))
+  (for/fold ([acc {set}]) ([res (in-set (a s))])
+    (match-define (cons a s*) res)
+    (match a
+      ['err (set-add acc res)]
+      [v (set-union acc ((f v) s*))])))
 
 (define ((new v) s)
   (define a (next s))

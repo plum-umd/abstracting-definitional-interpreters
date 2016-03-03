@@ -6,13 +6,9 @@
 
 (define-syntax check-eval
   (syntax-rules ()
-    [(check-eval e v)
+    [(check-eval e v ...)
      (check-match (eval e)
-                  (cons v σ))]
-    [(check-eval e v0 v1)
-     (check-match (eval e)
-                  (both-ans (cons v0 σ1)
-                            (cons v1 σ2)))]))
+                  (set (cons v _) ...))]))
 
 (check-eval (num 5) 5)
 (check-eval (op1 'add1 (num 5)) 6)
@@ -59,3 +55,14 @@
                  (app (vbl 'f)
                       (num 5)))
             5)
+
+(check-eval (op2 'quotient (num 1) (num 0)) 'err)
+(check-eval (op2 'quotient (num 1) (sym 's)) 'err '(quotient 1 s))
+(check-eval (op2 'quotient (sym 'n) (num 1)) '(quotient n 1))
+(check-eval (ifz (sym 'a)
+                 (ifz (sym 'b) (num 1) (num 2))
+                 (ifz (sym 'c) (num 3) (num 4)))
+            1
+            2
+            3
+            4)

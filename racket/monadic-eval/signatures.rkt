@@ -12,7 +12,7 @@
   [monad^ : return bind mrun]
   [sto^  : ralloc alloc]
   [env^  : get ext]
-  [δ^    : δ])
+  [δ^    : δ truish?])
 
 (define-signatures
   [err^ : err]
