@@ -6,6 +6,7 @@
 #lang racket
 
 (require (for-syntax racket/syntax syntax/parse))
+(require rackunit)
 
 ;;;;;;;;;;
 ; Monoid ;
@@ -19,7 +20,7 @@
 (define-struct monoid (ozero oplus))
 
 (define ((monoid-oconcat O) os)
-  (stream-fold (monoid-oplus O) (monoid-ozero O) (set->stream os)))
+  (sequence-fold (monoid-oplus O) (monoid-ozero O) os))
 
 ;;;;;;;;;
 ; Monad ;
@@ -63,9 +64,9 @@
 
 ; effect-for(nondet) = monad-nondet
 ; nondet (M : type → type) : type
-; mbot : ∀a, M(a)
-; mjoin : ∀a, M(a),M(a) → M(a)
-(define-struct monad-nondet (mbot mjoin))
+; mzero : ∀a, M(a)
+; mplus : ∀a, M(a),M(a) → M(a)
+(define-struct monad-nondet (mzero mplus))
 
 ;;;;;;;;;;
 ; Syntax ;
@@ -87,7 +88,15 @@
     [(with-monad M e)
      (with-syntax ([return (format-id #'e "return")]
                    [bind (format-id #'e "bind")]
-                   [do (format-id #'e "do")])
+                   [do (format-id #'e "do")]
+                   [ask (format-id #'e "ask")]
+                   [local-env (format-id #'e "local-env")]
+                   [tell (format-id #'e "tell")]
+                   [hijack (format-id #'e "hijack")]
+                   [get (format-id #'e "get")]
+                   [put (format-id #'e "put")]
+                   [mzero (format-id #'e "mzero")]
+                   [mplus (format-id #'e "mplus")])
        #'(local [(define return (monad-return M))
                  (define bind (monad-bind M))
                  (define-syntax do
@@ -96,9 +105,19 @@
                      [(do p ← xM . bs)
                       (bind xM (λ (x) 
                                   (match-let [(p x)]
-                                    (do . bs))))]))]
+                                    (do . bs))))]
+                     [(do xM . bs)
+                      (bind xM (λ (x)
+                                  (do . bs)))]))
+                 (define ask       (monad-reader-ask       (dict-ref (monad-effects M) 'reader (make-monad-reader false false))))
+                 (define local-env (monad-reader-local-env (dict-ref (monad-effects M) 'reader (make-monad-reader false false))))
+                 (define tell      (monad-writer-tell      (dict-ref (monad-effects M) 'writer (make-monad-writer false false))))
+                 (define hijack    (monad-writer-hijack    (dict-ref (monad-effects M) 'writer (make-monad-writer false false))))
+                 (define get       (monad-state-get        (dict-ref (monad-effects M) 'state  (make-monad-state false false))))
+                 (define put       (monad-state-put        (dict-ref (monad-effects M) 'state  (make-monad-state false false))))
+                 (define mzero     (monad-nondet-mzero     (dict-ref (monad-effects M) 'nondet (make-monad-nondet false false))))
+                 (define mplus     (monad-nondet-mplus     (dict-ref (monad-effects M) 'nondet (make-monad-nondet false false))))]
            e))]))
-
 
 ;;;;;;;;;;;;;
 ; Instances ;
@@ -110,9 +129,21 @@
              (λ (x) x)
              (λ (xM f) (f xM))
              (hash)))
+(define (IDJF JF) JF)
+
+(module+ test
+  (check-equal?
+    (with-monad ID
+      (do
+        x ← (return 1)
+        y ← (return (+ x 1))
+        (return (+ y 1))))
+    3))
 
 ; Reader Monad Transformer
 ; ReaderT r m a ≔ r → m(a)
+(define (run-ReaderT r xM)
+  (xM r))
 (define (ReaderT M)
   (with-monad M
     (make-monad
@@ -125,7 +156,7 @@
          (λ (r)
             (do 
               x ← (xM r)
-              (f r x))))
+              ((f x) r))))
       ; effects
       (hash
         'reader (make-monad-reader
@@ -136,6 +167,19 @@
                          (λ (r′ xM)
                             (λ (r)
                                (xM r′))))))))
+
+(module+ test
+  (check-equal?
+    (run-ReaderT 1
+      (with-monad (ReaderT ID)
+        (do
+          x ← ask
+          y ← (local-env 10 ask)
+          (return (+ x y)))))
+    11))
+
+(define AddO
+  (make-monoid 0 +))
 
 ; Writer Monad Transformer
 ; WriterT o m a ≔ m(a,o)
@@ -164,10 +208,21 @@
                      (cons x o) ← xM
                      (return (cons (cons x o) ozero))))))))))
 
-
+(module+ test
+  (check-equal?
+    (with-monad (WriterT AddO ID)
+      (do
+        (cons _ n) ← (hijack
+                       (do
+                         (tell 1)
+                         (tell 2)))
+        (tell 10)
+        (return n)))
+    (cons 3 10)))
 
 ; State Monad Transformer
 ; StateT s m a ≔ s → m(a,s)
+(define (run-StateT s xM) (xM s))
 (define (StateT M)
   (with-monad M
   (make-monad
@@ -180,7 +235,7 @@
        (λ (s)
           (do
             (cons x s′) ← (xM s)
-            (f s′ x))))
+            ((f x) s′))))
     ; effects
     (hash
       'state (make-monad-state
@@ -191,6 +246,19 @@
                (λ (s′)
                   (λ (s)
                      (return (cons (void) s′)))))))))
+
+(module+ test
+  (check-equal?
+    (with-monad (StateT ID)
+      (run-StateT 1
+        (do
+          x ← get
+          (put 2)
+          y ← get
+          (put 3)
+          z ← get
+          (return (+ x y z)))))
+    (cons 6 3)))
 
 ; Powerset Commutative Monoid
 
@@ -214,12 +282,21 @@
         (λ (xM f)
            (do
              xs ← xM
-             (oconcat (map f xs))))
+             (oconcat (set-map xs f))))
         ; effects
         (hash
           'nondet (make-monad-nondet
-                    ; mbot
+                    ; mzero
                     ozero
-                    ; mjoin
+                    ; mplus
                     (λ (xM₁ xM₂)
                        (oplus xM₁ xM₂))))))))
+
+(module+ test
+  (check-equal?
+    (with-monad (NondetT IDJF ID)
+      (do
+        x ← (mplus (return 1) (return 2))
+        y ← (mplus (return 3) (return 4))
+        (return (cons x y))))
+    (set (cons 1 3) (cons 1 4) (cons 2 3) (cons 2 4))))
