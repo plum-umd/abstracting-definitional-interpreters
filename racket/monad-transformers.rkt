@@ -2,6 +2,8 @@
 ; TODO: 
 ; • lifting effects
 ; • testing of any kind
+; • support (do y ← thing (define x 1) (return 1))
+; • make a map monoid (that needs a monoid for `v` where the map is `k ⇰ v`
 
 #lang racket
 
@@ -28,7 +30,9 @@
 
 ; A monad is a collection of return+bind operations and a map from supported
 ; effect names to their implementations. Monad transformers will propagate as
-; many effect operations as they know how.
+; many effect operations as they know how. The properties field holds
+; properties that another monad might need to lift an effect. The only property
+; used here is being a monoid functor, which NondetT requires.
 
 ; monad (M : type → type) : type
 ; return : ∀a, a → M(a)
@@ -36,7 +40,7 @@
 ; effects : effect-name ⇰ effect-for(effect-name)
 ; effect-name ∈ {reader, writer, state, nondet}
 ; effect-for : effect-name → type
-(define-struct monad (return bind effects))
+(define-struct monad (return bind effects properties))
 
 ;;;;;;;;;;;
 ; Effects ;
@@ -101,7 +105,8 @@
                    [get (format-id #'e "get")]
                    [put (format-id #'e "put")]
                    [mzero (format-id #'e "mzero")]
-                   [mplus (format-id #'e "mplus")])
+                   [mplus (format-id #'e "mplus")]
+                   [monoid-functor (format-id #'e "monoid-functor")])
        #'(local [(define M′ M)
                  (define return (monad-return M′))
                  (define bind (monad-bind M′))
@@ -115,6 +120,7 @@
                      [(do xM . bs)
                       (bind xM (λ (x)
                                   (do . bs)))]))
+                 (define monoid-functor (dict-ref (monad-properties M′) 'monoid-functor false))
                  (define ask       (monad-reader-ask       (dict-ref (monad-effects M′) 'reader (make-monad-reader false false))))
                  (define local-env (monad-reader-local-env (dict-ref (monad-effects M′) 'reader (make-monad-reader false false))))
                  (define tell      (monad-writer-tell      (dict-ref (monad-effects M′) 'writer (make-monad-writer false false))))
@@ -145,6 +151,18 @@
     ; oplus
     +))
 
+; Pair Monoid
+(define (PairO O₁ O₂)
+  (make-monoid
+    ; ozero
+    (cons (with-monoid O₁ ozero) (with-monoid O₂ ozero))
+    ; oplus
+    (λ (oo₁ oo₂)
+       (match-let ([(cons o₁₁ o₂₁) oo₁]
+                   [(cons o₁₂ o₂₂) oo₂])
+         (cons (with-monoid O₁ (oplus o₁₁ o₁₂)) (with-monoid O₂ (oplus o₂₁ o₂₂)))))))
+
+
 ;;;;;;;;;;;;;;;;;;
 ; Identity monad ;
 ;;;;;;;;;;;;;;;;;;
@@ -153,8 +171,8 @@
 (define ID (make-monad
              (λ (x) x)
              (λ (xM f) (f xM))
-             (hash)))
-(define (IDJF JF) JF)
+             (hash)
+             (hash 'monoid-functor (λ (O) O))))
 
 (module+ test
   (check-equal?
@@ -205,6 +223,7 @@
                                             (do
                                               rₘ ← ask
                                               (return (cons r rₘ))))
+                                         ; local-env
                                          (λ (rrₘ′ xM)
                                             (λ (r)
                                                (match-let ([(cons r′ rₘ′) rrₘ′])
@@ -237,6 +256,21 @@
                                          ; mplus
                                          (λ (xM₁ xM₂)
                                             (λ (r) (mplus (xM₁ r) (xM₂ r)))))))))
+       (hash))
+      ; properties
+      ((compose
+         (if (not (hash-has-key? (monad-properties M) 'monoid-functor)) (λ (h) h)
+           ; propagating monoid functor
+           (λ (h) (hash-set h 'monoid-functor (λ (O)
+                                                (with-monoid (monoid-functor O)
+                                                  (make-monoid
+                                                    ; ozero
+                                                    (λ (r) ozero)
+                                                    ; oplus
+                                                    (λ (xM₁ xM₂)
+                                                       (λ (r)
+                                                          (oplus (xM₁ r) (xM₂ r)))))))))))
+
        (hash)))))
 
 (module+ test
@@ -264,31 +298,35 @@
     (run-ReaderT 1
       (with-monad (ReaderT (WriterT AddO ID))
         (do
-          x ← ask
-          (tell (+ x 1))
-          (tell (+ x 2))
-          (return (+ x 3)))))
-    (cons 4 5))
+          x ← ask ;  x = 1
+          (hijack 
+            (local-env 10
+              (do
+                y ← ask ; y = 10
+                (tell x) ; output = 1
+                (tell y))))))) ; output = 11
+    (cons (cons (void) 11) 0))
   ; ReaderT(StateT(ID))(a) = r → s → (a,s)
   (check-equal?
     (run-StateT 10
       (run-ReaderT 1
-        (with-monad (ReaderT (StateT ID))
+        (with-monad (ReaderT (StateT false ID))
           (do
             x ← ask
             y ← get
+            z ← (local-env 3 ask)
             (put 100)
-            (return (+ x y))))))
-    (cons 11 100))
+            (return (+ x y z))))))
+    (cons 14 100))
   ; ReaderT(NondetT(ID))(a) = r → ℘(a)
   (check-equal?
     (run-ReaderT 1
-      (with-monad (ReaderT (NondetT IDJF ID))
+      (with-monad (ReaderT (NondetT ID))
         (do
-          x ← (mplus ask (return 2))
+          x ← (mplus (mplus (local-env 5 ask) (return 2)) mzero)
           y ← ask
           (return (+ x y)))))
-    (set 2 3)))
+    (set 6 3)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Writer Monad Transformer ;
@@ -309,7 +347,6 @@
              (cons y o″) ← (f x)
              (return (cons y (oplus o′ o″)))))
         ; effects
-
         ((compose
            (if (not (hash-has-key? (monad-effects M) 'reader)) (λ (h) h)
              ; propagating reader effects
@@ -356,8 +393,8 @@
                                           ; put
                                           (λ (s)
                                              (do
-                                               put s
-                                               (return (cons void ozero))))))))
+                                               (put s)
+                                               (return (cons (void) ozero))))))))
            (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
              ; propagating nondet effects
              (λ (h) (hash-set h 'nondet (make-monad-nondet
@@ -365,6 +402,12 @@
                                            mzero
                                            ; mplus
                                            (λ (xM₁ xM₂) (mplus xM₁ xM₂)))))))
+         (hash))
+        ; properties
+        ((compose
+           (if (not (hash-has-key? (monad-properties M) 'monoid-functor)) (λ (h) h)
+             ; propagating monoid functor
+             (λ (h) (hash-set h 'monoid-functor (λ (O′) (monoid-functor (PairO O′ O)))))))
          (hash))))))
 
 (module+ test
@@ -388,15 +431,46 @@
           x ← ask
           (tell x)
           (return (+ x 1)))))
-    (cons 6 5)))
+    (cons 6 5))
+  ; WriterT(WriterT(ID)(a) = ((a,o₁),o₂)
+  (check-equal?
+    (with-monad (WriterT AddO (WriterT AddO ID))
+      (do
+        (tell (cons 1 2))
+        (tell (cons 10 10))
+        (hijack (tell (cons 3 4)))))
+    (cons (cons (cons (void) (cons 3 4)) 11) 12))
+  ; WriterT(StateT(ID))(a) = s → ((a,o),s)
+  (check-equal?
+    (run-StateT 1
+      (with-monad (WriterT AddO (StateT false ID))
+        (do
+          x ← get
+          (tell x)
+          (cons _ y) ← (hijack 
+                         (do 
+                           (tell 10)
+                           (tell 11)))
+          (put y))))
+    (cons (cons (void) 1) 21))
+  ; WriterT(NondetT(ID))(a) = ℘(a,o)
+  (check-equal?
+    (with-monad (WriterT AddO (NondetT ID))
+      (do
+        (mplus (tell 1) (tell 2))
+        (cons _ y) ← (hijack (mplus (tell 1) (tell 2)))
+        (tell 10)
+        (return y)))
+    (set (cons 1 11) (cons 1 12) (cons 2 11) (cons 2 12))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; State Monad Transformer ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; StateT s m a ≔ s → m(a,s)
-(define (run-StateT s xM) (xM s))
-(define (StateT M)
+(define (run-StateT s xM) 
+  (xM s))
+(define (StateT O M)
   (with-monad M
   (make-monad
     ; return
@@ -410,19 +484,89 @@
             (cons x s′) ← (xM s)
             ((f x) s′))))
     ; effects
-    (hash
-      'state (make-monad-state
-               ; get
-               (λ (s)
-                  (return (cons s s)))
-               ; put
-               (λ (s′)
-                  (λ (s)
-                     (return (cons (void) s′)))))))))
+    ((compose
+       (if (not (hash-has-key? (monad-effects M) 'reader)) (λ (h) h)
+         ; propagating reader effects
+         (λ (h) (hash-set h 'reader (make-monad-reader
+                                       ; ask
+                                       (λ (s)
+                                          (do
+                                            r ← ask
+                                            (return (cons r s))))
+                                       ; local-env
+                                       (λ (r xM)
+                                          (λ (s) (local-env r (xM s))))))))
+       (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
+         ; propagating writer effects
+         (λ (h) (hash-set h 'writer (make-monad-writer
+                                       ; tell
+                                       (λ (o)
+                                          (λ (s)
+                                             (do
+                                               (tell o)
+                                               (return (cons (void) s)))))
+                                       ; hijack
+                                       (λ (xM)
+                                          (λ (s)
+                                             (do
+                                               (cons (cons x s′) o) ← (hijack (xM s))  ; xM(s) : m(a,s)
+                                               (return (cons (cons x o) s′)))))))))
+       (if (not (hash-has-key? (monad-effects M) 'state))
+         ; the standard state effect
+         (λ (h) (hash-set h 'state (make-monad-state
+                                      ; get
+                                      (λ (s)
+                                         (return (cons s s)))
+                                      ; put
+                                      (λ (s′)
+                                         (λ (s)
+                                            (return (cons (void) s′)))))))
+         ; combining with an underlying state effect, resulting in a state
+         ; effect of pairs: (StateT s₁ ∘ StateT s₂) = StateT (s₁,s₂)
+         (λ (h) (hash-set h 'state (make-monad-state
+                                      ; get
+                                      (λ (s₁)
+                                         (do
+                                           s₂ ← get
+                                           (return (cons (cons s₁ s₂) s₁))))
+                                      ; put
+                                      (λ (ss′)
+                                         (match-let ([(cons s₁′ s₂′) ss′])
+                                           (λ (s₁)
+                                              (do
+                                                (put s₂′)
+                                                (return (cons (void) s₁′))))))))))
+       (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
+         ; propagating nondet effects
+         (λ (h) (hash-set h 'nondet (make-monad-nondet
+                                       ; mzero
+                                       (λ (s) mzero)
+                                       ; mplus
+                                       (λ (xM₁ xM₂)
+                                          (λ (s)
+                                             (mplus (xM₁ s) (xM₂ s)))))))))
+     (hash))
+    ; properties
+    ((compose
+       (if (or (not (hash-has-key? (monad-properties M) 'monoid-functor))
+               (not (monoid? O))) 
+         (λ (h) h)
+         ; propagating monoid functor
+         (λ (h) (hash-set h 'monoid-functor (λ (O′) 
+                                              (with-monoid (monoid-functor (PairO O O′))
+                                                (make-monoid
+                                                  ; ozero
+                                                  (λ (s) ozero)
+                                                  ; oplus
+                                                  (λ (xM₁ xM₂)
+                                                     (λ (s)
+                                                        (oplus (xM₁ s) (xM₂ s)))))))))))
+     (hash)))))
 
 (module+ test
+  ; StateT(ID)(a) = s → (a,s)
   (check-equal?
-    (with-monad (StateT ID)
+    (with-monad (StateT false ID)
       (run-StateT 1
         (do
           x ← get
@@ -438,9 +582,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; NondetT m a ≔ m(℘(a))
-(define (NondetT JF M)
+(define (NondetT M)
   (with-monad M
-    (with-monoid (JF PowerO)
+    (with-monoid (monoid-functor PowerO)
       (make-monad
         ; return
         (λ (x)
@@ -451,17 +595,62 @@
              xs ← xM
              (oconcat (set-map xs f))))
         ; effects
-        (hash
-          'nondet (make-monad-nondet
-                    ; mzero
-                    ozero
-                    ; mplus
-                    (λ (xM₁ xM₂)
-                       (oplus xM₁ xM₂))))))))
+        ((compose
+           (if (not (hash-has-key? (monad-effects M) 'reader)) (λ (h) h)
+             ; propagating reader effects
+             (λ (h) (hash-set h 'reader (make-monad-reader
+                                           ; ask
+                                           (do
+                                             r ← ask
+                                             (return (set r)))
+                                           ; local-env
+                                           (λ (r xM)
+                                             (local-env r xM))))))
+           (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
+             ; propagating writer effects
+             (λ (h) (hash-set h 'writer (make-monad-writer
+                                           ; tell
+                                           (λ (o)
+                                              (do
+                                                (tell o)
+                                                (return (set (void)))))
+                                           ; hijack
+                                           (λ (xM)
+                                              (do
+                                                (cons xs o) ← (hijack xM)
+                                                (return (set-map xs (λ (x) (cons x o))))))))))
+           (if (not (hash-has-key? (monad-effects M) 'state)) (λ (h) h)
+             ; propagating state effects
+             (λ (h) (hash-set h 'state (make-monad-state
+                                          ; get
+                                          (do
+                                            s ← get
+                                            (return (set s)))
+                                          ; put
+                                          (λ (s)
+                                             (do
+                                               (put s)
+                                               (return (set (void)))))))))
+           ; the standard nondet effect
+           (λ (h) (hash-set h 'nondet
+                            (make-monad-nondet
+                              ; mzero
+                              ozero
+                              ; mplus
+                              (λ (xM₁ xM₂)
+                                 (oplus xM₁ xM₂))))))
+         (hash))
+        ((compose
+           ; nondet is never a monoid functor, not because it can't be, but
+           ; because you should never put a NondetT on top of a NondetT, which
+           ; would hypothetically require the underlying NondetT to be a monoid
+           ; functor—and that would just be stupid. Stupid.
+           )
+         (hash))))))
 
 (module+ test
   (check-equal?
-    (with-monad (NondetT IDJF ID)
+    (with-monad (NondetT ID)
       (do
         x ← (mplus (return 1) (return 2))
         y ← (mplus (return 3) (return 4))
