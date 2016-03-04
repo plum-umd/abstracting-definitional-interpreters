@@ -38,7 +38,7 @@
 ; return : ∀a, a → M(a)
 ; bind : ∀ab, M(a),(a → M(b)) → M(b)
 ; effects : effect-name ⇰ effect-for(effect-name)
-; effect-name ∈ {reader, writer, state, nondet}
+; effect-name ∈ {reader, writer, state, fail, nondet}
 ; effect-for : effect-name → type
 (define-struct monad (return bind effects properties))
 
@@ -52,24 +52,37 @@
 ; monad-reader (r : type) (M : type → type) : type
 ; ask : M(r)
 ; local-env : ∀a, r,M(a) → M(a)
+; local-env(r,ask) = return(r)
 (define-struct monad-reader (ask local-env))
 
 ; effect-for(writer) = monad-writer
 ; monad-writer (o : type) (M : type → type) : type
 ; tell : o → M(unit)
 ; hijack : ∀a, M(a) → M(a,o)
+; hijack(tell(o)) = return(unit,o)
 (define-struct monad-writer (tell hijack))
 
 ; effect-for(state) = monad-state
 ; monad-state (s : type) (M : type → type) : type
 ; get : M(s)
 ; put : s → M(unit)
+; x ← get ; put(x) = return(unit)
 (define-struct monad-state (get put))
+
+; effect-for(fail) = monad-fail
+; monad-fail (M : type → type) : type
+; fail : ∀(a), M(a)
+; try : ∀(a), M(a),M(a) → M(a)
+; try(fail,xM) = xM
+; try(return(x),xM) = return(x)
+(define-struct monad-fail (fail try))
 
 ; effect-for(nondet) = monad-nondet
 ; nondet (M : type → type) : type
 ; mzero : ∀a, M(a)
 ; mplus : ∀a, M(a),M(a) → M(a)
+; mplus(mzero,xM) = xM
+; mplus(xM,mzero) = xM
 (define-struct monad-nondet (mzero mplus))
 
 ;;;;;;;;;;
@@ -104,6 +117,8 @@
                    [hijack (format-id #'e "hijack")]
                    [get (format-id #'e "get")]
                    [put (format-id #'e "put")]
+                   [fail (format-id #'e "fail")]
+                   [try (format-id #'e "try")]
                    [mzero (format-id #'e "mzero")]
                    [mplus (format-id #'e "mplus")]
                    [monoid-functor (format-id #'e "monoid-functor")])
@@ -127,6 +142,8 @@
                  (define hijack    (monad-writer-hijack    (dict-ref (monad-effects M′) 'writer (make-monad-writer false false))))
                  (define get       (monad-state-get        (dict-ref (monad-effects M′) 'state  (make-monad-state false false))))
                  (define put       (monad-state-put        (dict-ref (monad-effects M′) 'state  (make-monad-state false false))))
+                 (define fail      (monad-fail-fail        (dict-ref (monad-effects M′) 'fail   (make-monad-fail false false))))
+                 (define try       (monad-fail-try         (dict-ref (monad-effects M′) 'fail   (make-monad-fail false false))))
                  (define mzero     (monad-nondet-mzero     (dict-ref (monad-effects M′) 'nondet (make-monad-nondet false false))))
                  (define mplus     (monad-nondet-mplus     (dict-ref (monad-effects M′) 'nondet (make-monad-nondet false false))))]
            e))]))
@@ -248,6 +265,14 @@
                                         (λ (s)
                                            (λ (r)
                                               (put s)))))))
+         (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
+           ; propagating fail effects
+           (λ (h) (hash-set h 'nondet (make-monad-nondet
+                                         ; fail
+                                         (λ (r) fail)
+                                         ; try
+                                         (λ (xM₁ xM₂)
+                                            (λ (r) (try (xM₁ r) (xM₂ r))))))))
          (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
            ; propagating nondet effects
            (λ (h) (hash-set h 'nondet (make-monad-nondet
@@ -318,6 +343,16 @@
             (put 100)
             (return (+ x y z))))))
     (cons 14 100))
+  ; ReaderT(FailT(ID))(a) = r → a+1
+  #;(check-equal?
+    (run-ReaderT 1
+      (with-monad (ReaderT (FailT ID))
+        (try
+          (do
+            x ← ask
+            fail)
+          (local-env 2 ask))))
+    2)
   ; ReaderT(NondetT(ID))(a) = r → ℘(a)
   (check-equal?
     (run-ReaderT 1
@@ -395,6 +430,14 @@
                                              (do
                                                (put s)
                                                (return (cons (void) ozero))))))))
+           (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
+             ; propagating fail effects
+             (λ (h) (hash-set h 'nondet (make-monad-fail
+                                           ; fail
+                                           fail
+                                           ; try
+                                           (λ (xM₁ xM₂)
+                                              (try xM₁ xM₂))))))
            (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
              ; propagating nondet effects
              (λ (h) (hash-set h 'nondet (make-monad-nondet
@@ -537,6 +580,14 @@
                                                 (put s₂′)
                                                 (return (cons (void) s₁′))))))))))
        (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
+         (λ (h) (hash-set h 'nondet (make-monad-fail
+                                       ; fail
+                                       (λ (s) fail)
+                                       ; try
+                                       (λ (xM₁ xM₂)
+                                          (λ (s)
+                                            (try (xM₁ s) (xM₂ s))))))))
+       (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
          ; propagating nondet effects
          (λ (h) (hash-set h 'nondet (make-monad-nondet
                                        ; mzero
@@ -575,7 +626,115 @@
           (put 3)
           z ← get
           (return (+ x y z)))))
-    (cons 6 3)))
+    (cons 6 3))
+  ; StateT(ReaderT(ID))(a) = s → r → (a,s)
+  (check-equal?
+    (run-StateT 1
+      (run-ReaderT 2
+        (with-monad (StateT #f (ReaderT ID))
+          (do
+            w ← get
+            x ← ask
+            y ← (local-env 3 ask)
+            (put (+ y 1))
+            z ← get
+            (return (+ w x y z))))))
+    (cons 10 4))
+  ; StateT(WriterT(ID))(a) = s → ((a,s),o)
+  (check-equal?
+    (run-StateT 1
+      (with-monad (StateT #f (WriterT AddO ID))
+        (do
+          x ← get
+          (cons _ y) ← (hijack (tell 2))
+          (put y)
+          (tell x))))
+    (cons (cons (void) 2) 1)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Fail Monad Transformer ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(struct failure () #:transparent)
+
+; FailT m a ≔ m(a+1)
+(define (FailT M)
+  (with-monad M
+    (make-monad
+      ; return
+      (λ (x) x)
+      ; bind
+      (λ (xM f)
+         (do
+           xO ← xM
+           (match xO
+             [(failure) (return (failure))]
+             [x (f x)])))
+      ; effects
+      ((compose
+         (if (not (hash-has-key? (monad-effects M) 'reader)) (λ (h) h)
+           ; propagating reader effects
+           (λ (h) (hash-set h 'reader (make-monad-reader
+                                         ; ask
+                                         ask
+                                         ; local-env
+                                         (λ (r xM)
+                                            (local-env r xM))))))
+         (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
+           ; propagating writer effects
+           (λ (h) (hash-set h 'writer (make-monad-writer
+                                         ; tell
+                                         tell
+                                         ; hijack
+                                         (λ (xM)
+                                            (hijack xM))))))
+         (if (not (hash-has-key? (monad-effects M) 'state)) (λ (h) h)
+           ; propagating state effects
+           (λ (h) (hash-set h 'state (make-monad-state
+                                        ; get
+                                        get
+                                        ; put
+                                        (λ (s)
+                                           (put s))))))
+         ; the standard fail effect
+         (λ (h) (hash-set h 'fail (make-monad-fail
+                                     ; fail
+                                     (return (failure))
+                                     ; try
+                                     (λ (xM₁ xM₂)
+                                        (do
+                                          xO ← xM₁
+                                          (match xO
+                                            [(failure) xM₂]
+                                            [x (return x)]))))))
+         (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
+           (λ (h) (hash-set h 'nondet (make-monad-nondet
+                                         ; mzero
+                                         mzero
+                                         ; mplus
+                                         (λ (xM₁ xM₂)
+                                            (mplus xM₁ xM₂)))))))
+       (hash))
+      ; properties
+      ((compose)
+       (hash)))))
+
+(module+ test
+  ; FailT(ID)(a) = a+1
+  (check-equal?
+    (with-monad (FailT ID)
+      (do
+        (try
+          (do
+            x ← (return 1)
+            fail)
+          (do
+            x ← (return 1)
+            (try
+              (return 1)
+              fail)
+            (return (+ x 1))))))
+    2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Nondet Monad Transformer ;
@@ -631,6 +790,16 @@
                                              (do
                                                (put s)
                                                (return (set (void)))))))))
+           (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
+             ; propagating fail effects
+             ; (DD: not sure about this...)
+             (λ (h) (hash-set h 'fail (make-monad-fail
+                                         ; fail
+                                         fail
+                                         ; try
+                                         (λ (xM₁ xM₂)
+                                            (try xM₁ xM₂))))))
+
            ; the standard nondet effect
            (λ (h) (hash-set h 'nondet
                             (make-monad-nondet
