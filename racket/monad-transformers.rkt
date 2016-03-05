@@ -448,15 +448,14 @@
                                            ; fail
                                            fail
                                            ; try
-                                           (λ (xM₁ xM₂)
-                                              (try xM₁ xM₂))))))
+                                           try))))
            (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
              ; propagating nondet effects
              (λ (h) (hash-set h 'nondet (monad-nondet
                                            ; mzero
                                            mzero
                                            ; mplus
-                                           (λ (xM₁ xM₂) (mplus xM₁ xM₂)))))))
+                                           mplus)))))
          (hash))
         ; properties
         ((compose
@@ -715,7 +714,7 @@
   (with-monad M
     (monad
       ; return
-      (λ (x) (return x))
+      return
       ; bind
       (λ (xM f)
          (do
@@ -731,24 +730,21 @@
                                          ; ask
                                          ask
                                          ; local-env
-                                         (λ (r xM)
-                                            (local-env r xM))))))
+                                         local-env))))
          (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
            ; propagating writer effects
            (λ (h) (hash-set h 'writer (monad-writer
                                          ; tell
                                          tell
                                          ; hijack
-                                         (λ (xM)
-                                            (hijack xM))))))
+                                         hijack))))
          (if (not (hash-has-key? (monad-effects M) 'state)) (λ (h) h)
            ; propagating state effects
            (λ (h) (hash-set h 'state (monad-state
                                         ; get
                                         get
                                         ; put
-                                        (λ (s)
-                                           (put s))))))
+                                        put))))
          ; the standard fail effect
          (λ (h) (hash-set h 'fail (monad-fail
                                      ; fail
@@ -765,8 +761,7 @@
                                          ; mzero
                                          mzero
                                          ; mplus
-                                         (λ (xM₁ xM₂)
-                                            (mplus xM₁ xM₂)))))))
+                                         mplus)))))
        (hash))
       ; properties
       ((compose)
@@ -892,8 +887,7 @@
                                          ; fail
                                          fail
                                          ; try
-                                         (λ (xM₁ xM₂)
-                                            (try xM₁ xM₂))))))
+                                         try))))
 
            ; the standard nondet effect
            (λ (h) (hash-set h 'nondet
@@ -901,8 +895,7 @@
                               ; mzero
                               ozero
                               ; mplus
-                              (λ (xM₁ xM₂)
-                                 (oplus xM₁ xM₂))))))
+                              oplus))))
          (hash))
         ((compose
            ; nondet is never a monoid functor, not because it can't be, but
