@@ -1,14 +1,8 @@
-; author: David Darais
-; TODO: 
-; • lifting effects
-; • testing of any kind
-; • support (do y ← thing (define x 1) (return 1))
-; • make a map monoid (that needs a monoid for `v` where the map is `k ⇰ v`
-
 #lang racket
 
 (require (for-syntax racket/syntax syntax/parse))
 (require rackunit)
+(require racket/hash)
 
 ;;;;;;;;;;
 ; Monoid ;
@@ -124,11 +118,14 @@
        #'(local [(define M′ M)
                  (match-define (monad return bind effects properties) M′)
                  (define-syntax do
-                   (syntax-rules (←)
+                   (syntax-rules (← ≔)
                      [(do xM) xM]
                      [(do p ← xM . bs)
                       (bind xM (match-lambda
                                  [p (do . bs)]))]
+                     [(do x ≔ b . bs)
+                      (match-let ([x b])
+                        (do . bs))]
                      [(do xM . bs)
                       (bind xM (λ (x)
                                   (do . bs)))]))
@@ -144,14 +141,6 @@
 ; Instances ;
 ;;;;;;;;;;;;;
 
-; Powerset Commutative Monoid
-(define PowerO
-  (monoid
-    ; ozero
-    (set)
-    ; oplus
-    set-union))
-
 ; Addition Commutative Monoid
 (define AddO
   (monoid 
@@ -159,6 +148,36 @@
     0 
     ; oplus
     +))
+
+; Max Idempotent Commutative Monoid
+(define MaxO
+  (monoid
+    ; ozero
+    #f
+    ; oplus
+    (λ (n₁ n₂)
+       (match (cons n₁ n₂)
+         [(cons #f n) n]
+         [(cons n #f) n]
+         [(cons n₁ n₂) (max n₁ n₂)]))))
+
+; Powerset Idempotent Commutative Monoid
+(define PowerO
+  (monoid
+    ; ozero
+    (set)
+    ; oplus
+    set-union))
+
+; Finite Map Idempotent Commutative Monoid
+(define (FinMapO O)
+  (with-monoid O
+    (monoid
+      ; ozero
+      (hash)
+      ; oplus
+      (λ (fm₁ fm₂)
+         (hash-union fm₁ fm₂ #:combine oplus)))))
 
 ; Pair Monoid
 (define (PairO O₁ O₂)
@@ -188,8 +207,9 @@
     (with-monad ID
       (do
         x ← (return 1)
-        y ← (return (+ x 1))
-        (return (+ y 1))))
+        y ≔ (+ x 1)
+        z ← (return y)
+        (return (+ z 1))))
     3))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -259,7 +279,7 @@
                                               (put s)))))))
          (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
            ; propagating fail effects
-           (λ (h) (hash-set h 'nondet (monad-nondet
+           (λ (h) (hash-set h 'fail (monad-fail
                                          ; fail
                                          (λ (r) fail)
                                          ; try
@@ -336,7 +356,7 @@
             (return (+ x y z))))))
     (cons 14 100))
   ; ReaderT(FailT(ID))(a) = r → a+1
-  #;(check-equal?
+  (check-equal?
     (run-ReaderT 1
       (with-monad (ReaderT (FailT ID))
         (try
@@ -424,7 +444,7 @@
                                                (return (cons (void) ozero))))))))
            (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
              ; propagating fail effects
-             (λ (h) (hash-set h 'nondet (monad-fail
+             (λ (h) (hash-set h 'fail (monad-fail
                                            ; fail
                                            fail
                                            ; try
@@ -488,6 +508,16 @@
                            (tell 11)))
           (put y))))
     (cons (cons (void) 1) 21))
+  ; WriterT(FailT(ID))(a) = (a,o)+1
+  (check-equal?
+    (with-monad (WriterT AddO (FailT ID))
+      (hijack 
+        (try
+          (do
+            (tell 1)
+            fail)
+          (tell 9))))
+    (cons (cons (void) 9) 0))
   ; WriterT(NondetT(ID))(a) = ℘(a,o)
   (check-equal?
     (with-monad (WriterT AddO (NondetT ID))
@@ -571,8 +601,9 @@
                                               (do
                                                 (put s₂′)
                                                 (return (cons (void) s₁′))))))))))
-       (if (not (hash-has-key? (monad-effects M) 'nondet)) (λ (h) h)
-         (λ (h) (hash-set h 'nondet (monad-fail
+       (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
+         ; propagating fail effects
+         (λ (h) (hash-set h 'fail (monad-fail
                                        ; fail
                                        (λ (s) fail)
                                        ; try
@@ -596,7 +627,7 @@
          (λ (h) h)
          ; propagating monoid functor
          (λ (h) (hash-set h 'monoid-functor (λ (O′) 
-                                              (with-monoid (monoid-functor (PairO O O′))
+                                              (with-monoid (monoid-functor (PairO O′ O))
                                                 (monoid
                                                   ; ozero
                                                   (λ (s) ozero)
@@ -641,7 +672,37 @@
           (cons _ y) ← (hijack (tell 2))
           (put y)
           (tell x))))
-    (cons (cons (void) 2) 1)))
+    (cons (cons (void) 2) 1))
+  ; StateT(StateT(ID))(a) = s₁ → s₂ → ((a,s₁),s₂)
+  (check-equal?
+    (run-StateT 1
+      (run-StateT 2
+        (with-monad (StateT #f (StateT #f ID))
+          (do
+            (cons x y) ← get
+            (put (cons (* x 2) (* y 2)))))))
+    (cons (cons (void) 4) 2))
+  ; StateT(FailT(ID))(a) = s → (a,s)+1
+  (check-equal?
+    (run-StateT 1
+      (with-monad (StateT #f (FailT ID))
+        (do
+          x ← (try
+                (do
+                  (put 4)
+                  fail)
+                get)
+          (return (+ x 1)))))
+    (cons 2 1))
+  ; StateT(NondetT(ID))(a) = s → ℘(a,s)
+  (check-equal?
+    (run-StateT 1
+      (with-monad (StateT #f (NondetT ID))
+        (do
+          (mplus (put 2) (put 3))
+          x ← (mplus get mzero)
+          (mplus (return (+ x 10)) (return (+ x 20))))))
+    (set (cons 12 2) (cons 22 2) (cons 13 3) (cons 23 3))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Fail Monad Transformer ;
@@ -654,7 +715,7 @@
   (with-monad M
     (monad
       ; return
-      (λ (x) x)
+      (λ (x) (return x))
       ; bind
       (λ (xM f)
          (do
@@ -726,7 +787,49 @@
               (return 1)
               fail)
             (return (+ x 1))))))
-    2))
+    2)
+  ; FailT(ReaderT(ID))(a) = r → a+1
+  (check-equal?
+    (run-ReaderT 1
+      (with-monad (FailT (ReaderT ID))
+        (try
+          (do
+            x ← ask
+            fail)
+          (local-env 2 ask))))
+    2)
+  ; FailT(WriterT(ID))(a) = (a+1,o)
+  (check-equal?
+    (with-monad (FailT (WriterT AddO ID))
+      (hijack 
+        (try
+          (do
+            (tell 1)
+            fail)
+          (tell 9))))
+    (cons (cons (void) 10) 0))
+  ; FailT(StateT(ID))(a) = s → (a+1,s)
+  (check-equal?
+    (run-StateT 1
+      (with-monad (FailT (StateT #f ID))
+        (do
+          x ← (try
+                (do
+                  (put 4)
+                  fail)
+                get)
+          (return (+ x 1)))))
+    (cons 5 4))
+  ; FailT(NondetT(ID)) = ℘(a+1)
+  (check-equal?
+    (with-monad (FailT (NondetT ID))
+      (do
+        x ← (try
+                (mplus (return 1) fail)
+                (return 2))
+        y ← (mplus mzero (return 10))
+        (return (+ x y))))
+    (set 11 12)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Nondet Monad Transformer ;
@@ -803,17 +906,52 @@
          (hash))
         ((compose
            ; nondet is never a monoid functor, not because it can't be, but
-           ; because you should never put a NondetT on top of a NondetT, which
-           ; would hypothetically require the underlying NondetT to be a monoid
-           ; functor—and that would just be stupid. Stupid.
+           ; because you should never put a NondetT on top of a NondetT.
            )
          (hash))))))
 
 (module+ test
+  ; NondetT(ID)(a) = ℘(a)
   (check-equal?
     (with-monad (NondetT ID)
       (do
         x ← (mplus (return 1) (return 2))
         y ← (mplus (return 3) (return 4))
         (return (cons x y))))
-    (set (cons 1 3) (cons 1 4) (cons 2 3) (cons 2 4))))
+    (set (cons 1 3) (cons 1 4) (cons 2 3) (cons 2 4)))
+  ; NondetT(ReaderT(ID))(a) = r → ℘(a)
+  (check-equal?
+    (run-ReaderT 1
+      (with-monad (NondetT (ReaderT ID))
+        (do
+          x ← (mplus (mplus (local-env 5 ask) (return 2)) mzero)
+          y ← ask
+          (return (+ x y)))))
+    (set 6 3))
+  ; NondetT(WriterT(ID))(a) = (℘(a),o)
+  (check-equal?
+    (with-monad (NondetT (WriterT MaxO ID))
+      (do
+        (mplus (tell 1) (tell 2))
+        (cons _ y) ← (hijack (mplus (tell 1) (tell 2)))
+        (tell 10)
+        (return y)))
+    (cons (set 2) 10))
+  ; NondetT(StateT(ID))(a) = s → (℘(a),s)
+  (check-equal?
+    (run-StateT 1
+      (with-monad (NondetT (StateT MaxO ID))
+        (do
+          (mplus (put 2) (put 3))
+          x ← (mplus get mzero)
+          (mplus (return (+ x 10)) (return (+ x 20))))))
+    (cons (set 13 23) 3))
+  ; NondetT(StateT[FinMap](ID))(a) = [k⇰v] → (℘(a),[k⇰v])
+  (check-equal?
+    (run-StateT (hash)
+      (with-monad (NondetT (StateT (FinMapO MaxO) ID))
+        (do
+          (mplus (put (hash 'k 2)) (put (hash 'k 3)))
+          x ← (mplus get mzero)
+          (mplus (return (+ (hash-ref x 'k) 10)) (return (+ (hash-ref x 'k) 20))))))
+    (cons (set 13 23) (hash 'k 3))))
