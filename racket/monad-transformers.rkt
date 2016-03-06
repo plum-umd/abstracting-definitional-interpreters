@@ -1,5 +1,7 @@
 #lang racket
 
+(provide (all-defined-out))
+
 (require (for-syntax racket/syntax syntax/parse))
 (require rackunit)
 (require racket/hash)
