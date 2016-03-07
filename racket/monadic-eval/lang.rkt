@@ -1,5 +1,5 @@
 #lang racket
-(require "syntax.rkt" "parser.rkt" "units.rkt")
+(require "syntax.rkt" "parser.rkt" "units.rkt" "units/ev-unit.rkt" "fix.rkt")
 (require (for-syntax racket/syntax))
 
 (require racket/stxparam)
@@ -19,10 +19,12 @@
 
 (define-syntax (module-begin stx)
   (syntax-case stx ()
-    [(_ l e ...)
+    [(_ (l ...) e0 e ...)
      (begin
-      (define linkage (syntax->datum #'l))
+      (define linkage (syntax->datum #'(link ev@ l ...)))
+      (define ev-exp (syntax->datum #'e0))
        #`(#%module-begin
-	  (define-values/invoke-unit/infer #,linkage)
+          (define-values/invoke-unit/infer #,linkage)
+          (define (eval e1) (mrun (#,ev-exp e1 (hash))))
           (set-box! run (λ (x) (eval (parse x))))
           ((unbox run) 'e) ...))]))
