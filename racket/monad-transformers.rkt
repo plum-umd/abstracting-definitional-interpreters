@@ -47,9 +47,9 @@
 ; effect-for(reader) = monad-reader
 ; monad-reader (r : type) (M : type → type) : type
 ; ask : M(r)
-; local-env : ∀a, r,M(a) → M(a)
-; local-env(r,ask) = return(r)
-(struct monad-reader (ask local-env) #:transparent)
+; with : ∀a, r,M(a) → M(a)
+; local(r,ask) = return(r)
+(struct monad-reader (ask local) #:transparent)
 
 ; effect-for(writer) = monad-writer
 ; monad-writer (o : type) (M : type → type) : type
@@ -93,9 +93,10 @@
      (with-syntax ([ozero (format-id #'e "ozero")]
                    [oplus (format-id #'e "oplus")]
                    [oconcat (format-id #'e "oconcat")])
-       #'(local [(define O′ O)
-                 (match-define (monoid ozero oplus) O′)
-                 (define oconcat (monoid-oconcat O′))]
+       #'(let ()
+           (define O′ O)
+           (match-define (monoid ozero oplus) O′)
+           (define oconcat (monoid-oconcat O′))
            e))]))
 ; `(with-monad M e)` introduces monad operations and do notation into scope
 ; inside of `e`. There might be a better way to do this (or at least automate
@@ -107,7 +108,7 @@
                    [bind (format-id #'e "bind")]
                    [do (format-id #'e "do")]
                    [ask (format-id #'e "ask")]
-                   [local-env (format-id #'e "local-env")]
+                   [local (format-id #'e "local")]
                    [tell (format-id #'e "tell")]
                    [hijack (format-id #'e "hijack")]
                    [get (format-id #'e "get")]
@@ -117,26 +118,27 @@
                    [mzero (format-id #'e "mzero")]
                    [mplus (format-id #'e "mplus")]
                    [monoid-functor (format-id #'e "monoid-functor")])
-       #'(local [(define M′ M)
-                 (match-define (monad return bind effects properties) M′)
-                 (define-syntax do
-                   (syntax-rules (← ≔)
-                     [(do xM) xM]
-                     [(do p ← xM . bs)
-                      (bind xM (match-lambda
-                                 [p (do . bs)]))]
-                     [(do x ≔ b . bs)
-                      (match-let ([x b])
-                        (do . bs))]
-                     [(do xM . bs)
-                      (bind xM (λ (x)
-                                  (do . bs)))]))
-                 (define monoid-functor (hash-ref properties 'monoid-functor #f))
-                 (match-define (monad-reader ask local-env) (hash-ref effects 'reader (monad-reader #f #f)))
-                 (match-define (monad-writer tell hijack) (hash-ref effects 'writer (monad-writer #f #f)))
-                 (match-define (monad-state get put) (hash-ref effects 'state  (monad-state #f #f)))
-                 (match-define (monad-fail fail try) (hash-ref effects 'fail   (monad-fail #f #f)))
-                 (match-define (monad-nondet mzero mplus) (hash-ref effects 'nondet (monad-nondet #f #f)))]
+       #'(let ()
+           (define M′ M)
+           (match-define (monad return bind effects properties) M′)
+           (define-syntax do
+             (syntax-rules (← ≔)
+               [(do xM) xM]
+               [(do p ← xM . bs)
+                (bind xM (match-lambda
+                           [p (do . bs)]))]
+               [(do x ≔ b . bs)
+                (match-let ([x b])
+                  (do . bs))]
+               [(do xM . bs)
+                (bind xM (λ (x)
+                            (do . bs)))]))
+           (define monoid-functor (hash-ref properties 'monoid-functor #f))
+           (match-define (monad-reader ask local) (hash-ref effects 'reader (monad-reader #f #f)))
+           (match-define (monad-writer tell hijack) (hash-ref effects 'writer (monad-writer #f #f)))
+           (match-define (monad-state get put) (hash-ref effects 'state  (monad-state #f #f)))
+           (match-define (monad-fail fail try) (hash-ref effects 'fail   (monad-fail #f #f)))
+           (match-define (monad-nondet mzero mplus) (hash-ref effects 'nondet (monad-nondet #f #f)))
            e))]))
 
 ;;;;;;;;;;;;;
@@ -242,7 +244,7 @@
                                          ; ask
                                          (λ (r)
                                             (return r))
-                                         ; local-env
+                                         ; local
                                          (λ (r′ xM)
                                             (λ (r)
                                                (xM r′))))))
@@ -254,11 +256,11 @@
                                             (do
                                               rₘ ← ask
                                               (return (cons r rₘ))))
-                                         ; local-env
+                                         ; local
                                          (λ (rrₘ′ xM)
                                             (λ (r)
                                                (match-let ([(cons r′ rₘ′) rrₘ′])
-                                                 (local-env rₘ′ (xM r′)))))))))
+                                                 (local rₘ′ (xM r′)))))))))
          (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
            ; propagating writer effects
            (λ (h) (hash-set h 'writer (monad-writer
@@ -319,7 +321,7 @@
       (with-monad (ReaderT ID)
         (do
           x ← ask
-          y ← (local-env 10 ask)
+          y ← (local 10 ask)
           (return (+ x y)))))
     11)
   ; ReaderT(ReaderT(ID))(a) = r₁ → r₂ → a
@@ -329,7 +331,7 @@
         (with-monad (ReaderT (ReaderT ID))
           (do
             (cons x₁ y₁) ← ask
-            (cons x₂ y₂) ← (local-env (cons 3 4) ask)
+            (cons x₂ y₂) ← (local (cons 3 4) ask)
             (return (+ (* x₁ x₁) y₁ x₂ y₂))))))
     12)
   ; ReaderT(WriterT(ID))(a) = r → (a,o)
@@ -339,7 +341,7 @@
         (do
           x ← ask ;  x = 1
           (hijack 
-            (local-env 10
+            (local 10
               (do
                 y ← ask ; y = 10
                 (tell x) ; output = 1
@@ -353,7 +355,7 @@
           (do
             x ← ask
             y ← get
-            z ← (local-env 3 ask)
+            z ← (local 3 ask)
             (put 100)
             (return (+ x y z))))))
     (cons 14 100))
@@ -365,14 +367,14 @@
           (do
             x ← ask
             fail)
-          (local-env 2 ask))))
+          (local 2 ask))))
     2)
   ; ReaderT(NondetT(ID))(a) = r → ℘(a)
   (check-equal?
     (run-ReaderT 1
       (with-monad (ReaderT (NondetT ID))
         (do
-          x ← (mplus (mplus (local-env 5 ask) (return 2)) mzero)
+          x ← (mplus (mplus (local 5 ask) (return 2)) mzero)
           y ← ask
           (return (+ x y)))))
     (set 6 3)))
@@ -404,9 +406,9 @@
                                            (do
                                              r ← ask
                                              (return (cons r ozero)))
-                                           ; local-env
+                                           ; local
                                            (λ (r xM)
-                                              (local-env r xM))))))
+                                              (local r xM))))))
            (if (not (hash-has-key? (monad-effects M) 'writer))
              ; the standard writer effect
              (λ (h) (hash-set h 'writer (monad-writer
@@ -559,9 +561,9 @@
                                           (do
                                             r ← ask
                                             (return (cons r s))))
-                                       ; local-env
+                                       ; local
                                        (λ (r xM)
-                                          (λ (s) (local-env r (xM s))))))))
+                                          (λ (s) (local r (xM s))))))))
        (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
          ; propagating writer effects
          (λ (h) (hash-set h 'writer (monad-writer
@@ -659,7 +661,7 @@
           (do
             w ← get
             x ← ask
-            y ← (local-env 3 ask)
+            y ← (local 3 ask)
             (put (+ y 1))
             z ← get
             (return (+ w x y z))))))
@@ -731,8 +733,8 @@
            (λ (h) (hash-set h 'reader (monad-reader
                                          ; ask
                                          ask
-                                         ; local-env
-                                         local-env))))
+                                         ; local
+                                         local))))
          (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
            ; propagating writer effects
            (λ (h) (hash-set h 'writer (monad-writer
@@ -793,7 +795,7 @@
           (do
             x ← ask
             fail)
-          (local-env 2 ask))))
+          (local 2 ask))))
     2)
   ; FailT(WriterT(ID))(a) = (a+1,o)
   (check-equal?
@@ -854,9 +856,9 @@
                                            (do
                                              r ← ask
                                              (return (set r)))
-                                           ; local-env
+                                           ; local
                                            (λ (r xM)
-                                             (local-env r xM))))))
+                                             (local r xM))))))
            (if (not (hash-has-key? (monad-effects M) 'writer)) (λ (h) h)
              ; propagating writer effects
              (λ (h) (hash-set h 'writer (monad-writer
@@ -919,7 +921,7 @@
     (run-ReaderT 1
       (with-monad (NondetT (ReaderT ID))
         (do
-          x ← (mplus (mplus (local-env 5 ask) (return 2)) mzero)
+          x ← (mplus (mplus (local 5 ask) (return 2)) mzero)
           y ← ask
           (return (+ x y)))))
     (set 6 3))
