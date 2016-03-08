@@ -6,7 +6,7 @@
 (import monad^ state^ δ^ env^)
 (export ev^)
 
-(define (ev e)
+(define ((ev ev) e)
   (with-monad M
     (match e
       [(vbl x)
