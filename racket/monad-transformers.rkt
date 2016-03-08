@@ -153,6 +153,14 @@
     ; oplus
     +))
 
+; List Monoid
+(define ListO
+  (monoid
+    ; ozero
+    '()
+    ; oplus
+    append))
+
 ; Max Idempotent Commutative Monoid
 (define MaxO
   (monoid
@@ -193,14 +201,6 @@
        (match-let ([(cons o₁₁ o₂₁) oo₁]
                    [(cons o₁₂ o₂₂) oo₂])
          (cons (with-monoid O₁ (oplus o₁₁ o₁₂)) (with-monoid O₂ (oplus o₂₁ o₂₂)))))))
-
-; List Monoid
-(define (ListO O₁ O₂)
-  (monoid
-    ; ozero
-    '()
-    ; oplus
-    append))
 
 
 ;;;;;;;;;;;;;;;;;;
@@ -477,6 +477,13 @@
          (hash))))))
 
 (module+ test
+  ; WriterT(ID)(a) = (a,o)
+  (check-equal?
+    (with-monad (WriterT ListO ID)
+      (do (tell (list 1))
+          (tell (list 2))
+        (return 5)))
+    (cons 5 (list 1 2)))
   ; WriterT(ID)(a) = (a,o)
   (check-equal?
     (with-monad (WriterT AddO ID)

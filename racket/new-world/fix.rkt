@@ -1,7 +1,3 @@
-#lang racket
-(provide fix)
-(define ((fix f) e) ((f (fix f)) e))
-=======
 #lang typed/racket/base
 (provide fix)
 
