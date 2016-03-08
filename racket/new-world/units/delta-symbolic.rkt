@@ -39,12 +39,12 @@
                        (fail))
                    (do (refine (op1 'flip s2)) 
                        (return `(quotient ,s1 ,s2))))]))]
-      [('flip (list v)) ; return 1 for 0; 0 for anything else
+      [('flip (list v))
        (do φ ← get-path-cond
            (case (proves-0 φ v)
              [(✓) (return 1)]
              [(✗) (return 0)]
-             [(?) (mplus ; TODO: or the other way around???
+             [(?) (mplus
                    (do (refine (op1 'flip v))
                        (return 0))
                    (do (refine v)
