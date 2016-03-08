@@ -49,4 +49,4 @@
            (match v0
              [(cons (lam x e) ρ)
               (local-env ρ (ext x v1 (ev e)))]
-             [_ #|FIXME|# mzero]))])))
+             [_ fail]))])))

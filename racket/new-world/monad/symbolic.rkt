@@ -10,11 +10,11 @@
 ;;;;; monad^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define M (StateT PowerO (StateT PowerO (ReaderT (NondetT ID)))))
+(define M (ReaderT (FailT (StateT #f (StateT #f (NondetT ID))))))
 
 (define (mrun m)
   ;; A path-condition is a set of symbolic values known to have evaluated to 0
-  (run-ReaderT (hash) (run-StateT (set) (run-StateT (hash) m))))
+  (run-StateT (set) (run-StateT (hash) (run-ReaderT (hash) m))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -1,5 +1,6 @@
 #lang racket
 (require rackunit
+         "../../monad-transformers.rkt"
          "../evals/sval.rkt"
          "../syntax.rkt"
          "util.rkt")
@@ -42,8 +43,8 @@
             8
             9)
             
-#;(check-eval (op1 'add1 (app (sym 'f) (num '7)))
-            '(add1 (f 7)))
+(check-eval (op1 'add1 (app (sym 'f) (num '7)))
+            (failure))
 (check-eval (lrc 'f (lam 'x
                          (ifz (vbl 'x)
                               (vbl 'x)
@@ -56,8 +57,8 @@
                       (num 5)))
             5)
 
-#;(check-eval (op2 'quotient (num 1) (num 0)) #f)
-#;(check-eval (op2 'quotient (num 1) (sym 's)) #f '(quotient 1 s))
+(check-eval (op2 'quotient (num 1) (num 0)) (failure))
+(check-eval (op2 'quotient (num 1) (sym 's)) (failure) '(quotient 1 s))
 (check-eval (op2 'quotient (sym 'n) (num 1)) '(quotient n 1))
 (check-eval (ifz (sym 'a)
                  (ifz (sym 'b) (num 1) (num 2))
