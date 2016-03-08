@@ -20,4 +20,4 @@
   [ref^      : mkbox sbox ubox]
   [alloc^    : alloc]
   [δ^        : δ truish?]
-  [symbolic^ : symbolic?])
+  [symbolic^ : symbolic? refine get-path-cond])

@@ -14,15 +14,14 @@
       [(vbl x)               (find x)]
       [(num n)               (return n)]
 
-      [(ifz e₀ e₁ e₂)        (do v ← (ev e₀)
+      [(ifz e0 e1 e2)        (do v ← (ev e0)
                                  b ← (truish? v)
-                               (ev (if b e₁ e₂)))]
-
-      [(op1 o e₀)            (do v ← (ev e₀)
+                               (ev (if b e1 e2)))]
+      [(op1 o e0)            (do v ← (ev e0)
                                (δ o v))]
       [(op2 o e₀ e₁)         (do v₀ ← (ev e₀)
                                  v₁ ← (ev e₁)
-                                 (δ o v₀ v₁))]
+                               (δ o v₀ v₁))]
 
       [(lrc f (lam x e₀) e₁) (rext f (lam x e₀) (ev e₁))]
       [(lam x e₀)            (do ρ ← ask
