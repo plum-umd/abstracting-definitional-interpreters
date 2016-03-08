@@ -1,23 +1,25 @@
 #lang racket
 (provide eval)
-(require "../monad/concrete.rkt"
+(require "../../monad-transformers.rkt"
+         "../fix.rkt"
+         "../signatures.rkt"
+         "../units/ev-base.rkt"
+         "../units/oev-dead.rkt"
          "../units/alloc-nat.rkt"
          "../units/delta-con.rkt"
-         "../units/ev-base.rkt"
-         "../units/oev-id.rkt"
          "../units/ref-explicit.rkt"
          "../units/st-explicit.rkt"
-         "../fix.rkt")
+         "../monad/dead.rkt")
 
 (define-values/invoke-unit/infer
   (link alloc-nat@
-        concrete@
+        dead@
         delta-con@
         ev-base@
-        oev-id@
+        oev-dead@
         ref-explicit@
         st-explicit@))
 
-;; eval : e → (cons v σ)
+;; eval : e → (cons (cons v θ) σ)
 (define (eval e)
   (mrun ((fix (oev ev)) e)))

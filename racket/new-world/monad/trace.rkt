@@ -8,7 +8,7 @@
 
 ;; mrun : M ρ σ a [-> ρ] [-> σ] -> a
 (define (mrun m [ρ₀ (hash)] [σ₀ (hash)])
-  (run-ReaderT ρ₀ (run-StateT σ₀ m)))
+  (run-StateT σ₀ (run-ReaderT ρ₀ m)))
 
 ;; env^ impl:
 (define ask-env   (with-monad M ask))

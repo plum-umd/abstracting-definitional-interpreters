@@ -1,29 +1,40 @@
 #lang racket/unit
-
 (require racket/match
-         "../syntax.rkt"
          "../../monad-transformers.rkt"
+         "../syntax.rkt"
          "../signatures.rkt")
 
-(import monad^ alloc^ state^ δ^)
+(import alloc^ monad^ ref^ state^ δ^)
 (export ev^)
 
 (define ((ev ev) e)
   (with-monad M
     (match e
+
       [(vbl x)               (find x)]
       [(num n)               (return n)]
-      [(ifz e0 e1 e2)        (do v ← (ev e0)
-                               (do b ← (truish? v)
-                                 (ev (if b e1 e2))))]
-      [(op1 o e0)            (do v ← (ev e0)
+
+      [(ifz e₀ e₁ e₂)        (do v ← (ev e₀)
+                                 b ← (truish? v)
+                               (ev (if b e₁ e₂)))]
+
+      [(op1 o e₀)            (do v ← (ev e₀)
                                (δ o v))]
-      [(op2 o e0 e1)         (do v0 ← (ev e0)
-                                 v1 ← (ev e1)
-                               (δ o v0 v1))]
-      [(lrc f (lam x e0) e1) (rext f (lam x e0) (ev e1))]
-      [(lam x e0)            (do ρ ← ask
-                               (return (cons (lam x e0) ρ)))]
-      [(app e0 e1)           (do (cons (lam x e) ρ) ← (ev e0)
-                                 v1                 ← (ev e1)
-                               (local ρ (ext x v1 (ev e))))])))
+      [(op2 o e₀ e₁)         (do v₀ ← (ev e₀)
+                                 v₁ ← (ev e₁)
+                                 (δ o v₀ v₁))]
+
+      [(lrc f (lam x e₀) e₁) (rext f (lam x e₀) (ev e₁))]
+      [(lam x e₀)            (do ρ ← ask
+                               (return (cons (lam x e₀) ρ)))]
+      [(app e₀ e₁)           (do (cons (lam x e₂) ρ) ← (ev e₀)
+                                 v₁                  ← (ev e₁)
+                               (local ρ (ext x v₁ (ev e₂))))]
+
+      [(ref e₀)              (bind (ev e₀) mkbox)]
+      [(drf e₀)              (bind (ev e₀) ubox)]
+      [(srf e₀ e₁)           (do v₀ ← (ev e₀)
+                                 v₁ ← (ev e₁)
+                               (sbox v₀ v₁))]
+      
+      [_                     fail])))

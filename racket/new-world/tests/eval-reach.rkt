@@ -1,14 +1,15 @@
 #lang racket
 (require rackunit
+         racket/set
          "../../monad-transformers.rkt"
-         "../evals/eval-con.rkt"
+         "../evals/eval-reach.rkt"
          "../syntax.rkt")
 
 (define-syntax check-eval
   (syntax-rules ()
     [(check-eval e v)
      (check-match (eval e)
-                  (cons v _))]))
+                  (cons (cons v _) (? set?)))]))
 
 (define-syntax check-fail
   (syntax-rules ()
@@ -21,12 +22,12 @@
   (check-eval (op2 '+ (num 5) (num 11)) 16)
   (check-eval (lam 'x (vbl 'x))
               (cons (lam 'x (vbl 'x)) ρ))
-
+  
   (check-eval (app (lam 'x (num 7)) (num 5)) 7)
   (check-eval (app (lam 'x (lam '_ (vbl 'x))) (num 5))
-              (cons (lam '_ (vbl 'x)) ρ))
-  (check-eval (app (lam 'x (vbl 'x)) (num 5)) 5)
-
+              (cons (lam '_ (vbl 'x)) ρ))            
+  (check-eval (app (lam 'x (vbl 'x)) (num 5)) 5)          
+  
   (check-eval (ifz (num 0) (num 7) (num 8)) 7)
   (check-eval (ifz (num 1) (num 7) (num 8)) 8)
   (check-eval (ref (num 5))
@@ -47,7 +48,7 @@
                                 (vbl 'x)
                                 (op1 'add1
                                      (app (vbl 'f)
-                                          (op2 '+
+                                          (op2 '+ 
                                                (vbl 'x)
                                                (num -1))))))
                    (app (vbl 'f)

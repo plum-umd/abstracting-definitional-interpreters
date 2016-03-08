@@ -1,23 +1,25 @@
 #lang racket
 (provide eval)
-(require "../fix.rkt"
+(require "../../monad-transformers.rkt"
+         "../fix.rkt"
          "../signatures.rkt"
-         "../../monad-transformers.rkt"
-         "../monad/trace.rkt"
          "../units/ev-base.rkt"
+         "../units/oev-trace.rkt"
          "../units/alloc-nat.rkt"
          "../units/delta-con.rkt"
-         "../units/st-explicit.rkt")
+         "../units/ref-explicit.rkt"
+         "../units/st-explicit.rkt"
+         "../monad/trace.rkt")
 
 (define-values/invoke-unit/infer
-  (link alloc-nat@ ev-base@ delta-con@ st-explicit@ trace@))
+  (link alloc-nat@
+        trace@
+        delta-con@
+        ev-base@
+        oev-trace@
+        ref-explicit@
+        st-explicit@))
 
-(define ((ev-trace ev-trace) e)
-  (with-monad M
-    (do ρ ← ask-env
-        σ ← get-store
-        (tell-trace (list e ρ σ))
-        ((ev ev-trace) e))))
-
+;; eval : e → (cons v (cons σ τ))
 (define (eval e)
-  (mrun ((fix ev-trace) e)))
+  (mrun ((fix (oev ev)) e)))

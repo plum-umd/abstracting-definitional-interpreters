@@ -1,13 +1,20 @@
 #lang racket
 (require rackunit
+         "../../monad-transformers.rkt"
          "../evals/eval-trace.rkt"
          "../syntax.rkt")
 
 (define-syntax check-eval
   (syntax-rules ()
     [(check-eval e v)
-     (check-match (car (eval e))
-                  (cons v _))]))
+     (check-match (eval e)
+                  (cons (cons v _) (? list?)))]))
+
+(define-syntax check-fail
+  (syntax-rules ()
+    [(check-fail e)
+     (check-match (eval e) (failure))]))
+
 (module+ test
   (check-eval (num 5) 5)
   (check-eval (op1 'add1 (num 5)) 6)
@@ -22,20 +29,19 @@
   
   (check-eval (ifz (num 0) (num 7) (num 8)) 7)
   (check-eval (ifz (num 1) (num 7) (num 8)) 8)
-  ;; (check-eval (ref (num 5))
-  ;;             (? number?))
-  ;; (check-eval (drf (ref (num 5))) 5)
-  ;; (check-eval (drf (srf (ref (num 5)) (num 7))) 7)
-  ;; (check-eval (op1 'add1
-  ;;                  (ifz (drf (srf (ref (num 0)) (num 1)))
-  ;;                       'err
-  ;;                       (num 42)))
-  ;;             43)
-  ;; (check-eval (op1 'add1
-  ;;                  (ifz (drf (srf (ref (num 1)) (num 0)))
-  ;;                       'err
-  ;;                       (num 42)))
-  ;;             'err)
+  (check-eval (ref (num 5))
+              (? number?))
+  (check-eval (drf (ref (num 5))) 5)
+  (check-eval (drf (srf (ref (num 5)) (num 7))) 7)
+  (check-eval (op1 'add1
+                   (ifz (drf (srf (ref (num 0)) (num 1)))
+                        'err
+                        (num 42)))
+              43)
+  (check-fail (op1 'add1
+                   (ifz (drf (srf (ref (num 1)) (num 0)))
+                        'err
+                        (num 42))))
   (check-eval (lrc 'f (lam 'x
                            (ifz (vbl 'x)
                                 (vbl 'x)

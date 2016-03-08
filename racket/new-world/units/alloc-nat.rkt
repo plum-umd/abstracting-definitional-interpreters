@@ -1,11 +1,13 @@
 #lang racket/unit
-(require "../signatures.rkt")
-(import)
+(require "../../monad-transformers.rkt"
+         "../signatures.rkt")
+(import monad^)
 (export alloc^)
 
-(define alloc
-  (let ([n (box 0)])
-    (lambda (_)
-      (let ([n* (unbox n)])
-        (set-box! n (add1 n*))
-        n*))))
+(define n (box 0))
+
+(define (alloc _)
+  (with-monad M
+    (let ([n* (unbox n)])
+      (set-box! n (add1 n*))
+      (return n*))))
