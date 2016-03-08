@@ -194,6 +194,14 @@
                    [(cons o₁₂ o₂₂) oo₂])
          (cons (with-monoid O₁ (oplus o₁₁ o₁₂)) (with-monoid O₂ (oplus o₂₁ o₂₂)))))))
 
+; List Monoid
+(define (ListO O₁ O₂)
+  (monoid
+    ; ozero
+    '()
+    ; oplus
+    append))
+
 
 ;;;;;;;;;;;;;;;;;;
 ; Identity monad ;
