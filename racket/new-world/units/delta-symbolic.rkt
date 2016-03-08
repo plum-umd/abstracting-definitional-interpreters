@@ -65,8 +65,8 @@
     [(? number?) '✗]
     [(cons (lam _ _) _) '✗]
     [e #:when (set-member? φ e) '✓]
-    [e #:when (set-member? φ (op1 'add1 e)) '✗]
-    [(op1 'add1 e*) (flip-R (proves-0 φ e*))]
+    [e #:when (set-member? φ (op1 'flip e)) '✗]
+    [(op1 'flip e*) (flip-R (proves-0 φ e*))]
     [_ '?]))
 
 (define (flip-R R)
