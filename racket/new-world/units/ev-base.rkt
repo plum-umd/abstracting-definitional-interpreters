@@ -14,8 +14,8 @@
       [(vbl x)               (find x)]
       [(num n)               (return n)]
       [(ifz e0 e1 e2)        (do v ← (ev e0)
-                               (do b ← (truish? v)
-                                 (ev (if b e1 e2))))]
+                                 b ← (truish? v)
+                                 (ev (if b e1 e2)))]
       [(op1 o e0)            (do v ← (ev e0)
                                (δ o v))]
       [(op2 o e0 e1)         (do v0 ← (ev e0)
