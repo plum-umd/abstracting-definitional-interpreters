@@ -54,6 +54,6 @@
                         (num 5)))
               5)
   (check-eval (op2 'quotient (num 1) (num 3))
-              1/3)
+              0)
   #;(check-eval (op2 'quotient (num 1) (num 0))
               'err))
