@@ -4,8 +4,7 @@
 (export alloc^)
 
 (define alloc
-  (let ([n (box 0)])
-    (lambda (_)
-      (let ([n* (unbox n)])
-        (set-box! n (add1 n*))
-        n*))))
+  (let ([n 0])
+    (λ (_)
+      (begin0 n
+        (set! n (+ 1 n))))))
