@@ -23,20 +23,20 @@
       [('* (list s1 s2)) (return `(* ,s1 ,s2))]       
       [('quotient (list (? number? n1) (? number? n2)))
        (if (zero? n2)
-           (fail)
+           fail ; FIXME
            (return (quotient n1 n2)))]
       [('quotient (list s1 (? number? n2)))
        (if (zero? n2)
-           (fail)
+           fail ; FIXME
            (return `(quotient ,s1 ,n2)))]
       [('quotient (list s1 s2))
        (do φ ← get-path-cond
            (case (proves-0 φ (op1 'flip s2))
-             [(✓) (fail)]
+             [(✓) #|FIXME|# fail]
              [(✗) (return `(quotient ,s1 ,s2))]
              [(?) (mplus ; TODO: or the other way around?
                    (do (refine s2)
-                       (fail))
+                       #|FIXME|# fail)
                    (do (refine (op1 'flip s2)) 
                        (return `(quotient ,s1 ,s2))))]))]
       [('flip (list v))
@@ -58,7 +58,7 @@
          [(0) #f]
          [(1) #t])))))
 
-;; The proof relation is internal to `δ` for now
+;; The proof relation is internal to `δ` for now (not part of any public interface)
 (define (proves-0 φ e) ; TODO more precise
   (match e
     [0 '✓]
