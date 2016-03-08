@@ -1,6 +1,6 @@
 #lang racket/base
 
-(provide eval)
+;(provide eval)
 (require racket/unit racket/match racket/set
          "../fix.rkt"
          "../signatures.rkt"
@@ -13,7 +13,7 @@
          "../units/ev-symbolic.rkt")
 
 (define-values/invoke-unit/infer
-  (link env@ st-explicit@ alloc-nat@ delta-symbolic@ symbolic@ ev-symbolic@))
+  (link symbolic@ env@ ev-symbolic@ st-explicit@ alloc-nat@ delta-symbolic@))
 
-(define (eval e)
+#;(define (eval e)
   (mrun ((fix ev) e)))
