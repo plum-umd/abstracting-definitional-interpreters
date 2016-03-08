@@ -34,6 +34,9 @@
        (do ρ ← ask-env
          (return (cons (lam x e0) ρ)))]
       [(app e0 e1)
-       (do (cons (lam x e) ρ) ← (ev e0)
-           v1                 ← (ev e1)
-         (local-env ρ (ext x v1 (ev e))))])))
+       (do v0 ← (ev e0)
+           v1 ← (ev e1)
+           (match v0
+             [(cons (lam x e) ρ)
+              (local-env ρ (ext x v1 (ev e)))]
+             [_ #|FIXME|# mzero]))])))
