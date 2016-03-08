@@ -13,6 +13,8 @@
        (find x)]
       [(num n)
        (return n)]
+      [(sym x)
+       (return x)]
       [(ifz e0 e1 e2)
        (do v ← (ev e0)
          n ← (δ 'flip v)
@@ -33,5 +35,5 @@
          (return (cons (lam x e0) ρ)))]
       [(app e0 e1)
        (do (cons (lam x e) ρ) ← (ev e0)
-         v1                 ← (ev e1)
+           v1                 ← (ev e1)
          (local-env ρ (ext x v1 (ev e))))])))

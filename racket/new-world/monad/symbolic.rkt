@@ -10,7 +10,7 @@
 ;;;;; monad^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define M (NondetT (StateT PowerO (ReaderT ID))))
+(define M (StateT PowerO (ReaderT (NondetT ID))))
 
 (define (mrun m)
   ;; Path condition represented as set of evaluation known to have evaluated to 0
