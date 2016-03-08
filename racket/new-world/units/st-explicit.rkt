@@ -17,7 +17,7 @@
   (with-monad M
     (do ρ  ← ask-env
         σ  ← get-store
-        a  ≔ (alloc σ)
+        a  ← (alloc σ)
         ρ* ≔ (hash-set ρ x a)
         σ* ≔ (hash-set σ a v)
       (put-store σ*)
@@ -28,7 +28,7 @@
   (with-monad M
     (do ρ  ← ask-env
         σ  ← get-store
-        a  ≔ (alloc σ)
+        a  ← (alloc σ)
         ρ* ≔ (hash-set ρ x a)
         σ* ≔ (hash-set σ a (cons e ρ*))
       (put-store σ*)
