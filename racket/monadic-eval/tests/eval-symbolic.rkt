@@ -7,7 +7,7 @@
          "../set.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-base@ monad-symbolic@ alloc-con@ delta-symbolic@ ev-symbolic@))
+  (link ev@ monad-symbolic@ alloc@ δ-symbolic@ ev-symbolic@))
 
 (define (eval e)
   (mrun ((fix (ev-symbolic ev)) e)))

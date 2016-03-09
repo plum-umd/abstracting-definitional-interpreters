@@ -8,7 +8,7 @@
          "../units.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-base@ ev-dead@ eval-dead@ monad-dead@ alloc-con@ delta-con@))
+  (link ev@ ev-dead@ eval-dead@ monad-dead@ alloc@ δ@))
 
 (define (eval e) (mrun ((eval-dead (fix (ev-dead ev))) e)))
 

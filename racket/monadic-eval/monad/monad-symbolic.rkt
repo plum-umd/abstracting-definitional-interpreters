@@ -12,7 +12,7 @@
 (define M (ReaderT (FailT (StateT #f (StateT #f (NondetT ID))))))
 
 (define (mrun m)
-  ;; A path-condition is a set of symbolic values known to have evaluated to 0
+  ;; A pathdition is a set of symbolic values known to have evaluated to 0
   (run-StateT (set) (run-StateT (hash) (run-ReaderT (hash) m))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

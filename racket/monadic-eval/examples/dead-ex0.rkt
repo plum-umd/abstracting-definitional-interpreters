@@ -1,5 +1,5 @@
 #lang monadic-eval
-(ev-base@ ev-dead@ eval-dead@ monad-dead@ alloc-con@ delta-con@)
+(ev@ ev-dead@ eval-dead@ monad-dead@ alloc@ δ@)
 (eval-dead (fix (ev-dead ev)))
 
 (add1 0)

@@ -1,6 +1,4 @@
-#lang monadic-eval
-(ev-base@ monad-con@ alloc-con@ delta-con@)
-(fix ev)
+#lang monadic-eval (ev@ monad@ alloc@ δ@) (fix ev)
 
 (rec f (λ (x)
          (if0 x x
