@@ -2,7 +2,6 @@
 .DEFAULT: test
 
 test:
-	@for test in $$(find tests/ -name '*.rkt') ; \
-		do raco test $${test} ; \
-	done
 	@raco test ../monad-transformers.rkt
+	@raco test tests
+	@raco test examples

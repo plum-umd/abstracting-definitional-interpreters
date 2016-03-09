@@ -2,8 +2,16 @@
 (require rackunit
          racket/set
          "../../monad-transformers.rkt"
-         "../evals/eval-reach.rkt"
+         "../util/fix.rkt"
+         "../units.rkt"
          "../syntax.rkt")
+
+(define-values/invoke-unit/infer
+  (link ev-base@ ev-reach@ monad-reach@ alloc-nat@
+        delta-con@ ref-explicit@ st-explicit@))
+
+(define (eval e)
+  (mrun ((fix (ev-reach ev)) e)))
 
 (define-syntax check-eval
   (syntax-rules ()

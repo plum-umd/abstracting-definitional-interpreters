@@ -1,7 +1,7 @@
 #lang racket/unit
 (require "../../monad-transformers.rkt"
          "../signatures.rkt")
-(import monad^ alloc^ env^ store^)
+(import monad^ alloc^ menv^ mstore^)
 (export ref^)
 
 ;; ref^ impl

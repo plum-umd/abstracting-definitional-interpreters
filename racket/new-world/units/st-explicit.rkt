@@ -1,7 +1,7 @@
 #lang racket/unit
 (require "../../monad-transformers.rkt"
          "../signatures.rkt")
-(import monad^ alloc^ env^ store^)
+(import monad^ alloc^ menv^ mstore^)
 (export state^)
 
 (define (find x)
@@ -17,7 +17,7 @@
   (with-monad M
     (do ρ  ← ask-env
         σ  ← get-store
-        a  ≔ (alloc σ)
+        a  ← (alloc x)
         ρ* ≔ (hash-set ρ x a)
         σ* ≔ (hash-set σ a v)
       (put-store σ*)
@@ -28,7 +28,7 @@
   (with-monad M
     (do ρ  ← ask-env
         σ  ← get-store
-        a  ≔ (alloc σ)
+        a  ← (alloc x)
         ρ* ≔ (hash-set ρ x a)
         σ* ≔ (hash-set σ a (cons e ρ*))
       (put-store σ*)

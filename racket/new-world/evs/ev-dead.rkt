@@ -1,0 +1,15 @@
+#lang racket/unit
+(require racket/match
+         racket/set
+         "../../monad-transformers.rkt"
+         "../signatures.rkt")
+
+(import mdead^ monad^)
+(export ev-dead^)
+
+(define (((ev-dead ev0) ev) e)
+  (with-monad M
+    (do θ  ← get-dead
+        θ* ≔ (set-remove θ e)
+        (put-dead θ*)
+        ((ev0 ev) e))))

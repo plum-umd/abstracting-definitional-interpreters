@@ -5,16 +5,16 @@
 (import monad^)
 (export δ^)
 
-(define (δ op . vs)
+(define (δ . ovs)
   (with-monad M
-    (match* (op vs)
-      [('add1 (list n))  (return (add1 n))]
-      [('sub1 (list n))  (return (sub1 n))]
-      [('- (list n))     (return (- n))]
-      [('+ (list n1 n2)) (return (+ n1 n2))]
-      [('- (list n1 n2)) (return (- n1 n2))]
-      [('* (list n1 n2)) (return (* n1 n2))]
-      [('quotient (list n1 n2))
+    (match ovs
+      [`(add1 ,n)   (return (add1 n))]
+      [`(sub1 ,n)   (return (sub1 n))]
+      [`(- ,n)      (return (- n))]
+      [`(+ ,n1 ,n2) (return (+ n1 n2))]
+      [`(- ,n1 ,n2) (return (- n1 n2))]
+      [`(* ,n1 ,n2) (return (* n1 n2))]
+      [`(quotient ,n1 ,n2)
        (if (zero? n2)
            fail
            (return (quotient n1 n2)))])))

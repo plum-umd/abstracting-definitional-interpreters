@@ -1,8 +1,16 @@
 #lang racket
 (require rackunit
          "../../monad-transformers.rkt"
-         "../evals/eval-trace.rkt"
+         "../util/fix.rkt"
+         "../units.rkt"
          "../syntax.rkt")
+
+(define-values/invoke-unit/infer
+  (link ev-base@ ev-trace@ monad-trace@ alloc-nat@
+        delta-con@ ref-explicit@ st-explicit@))
+
+(define (eval e)
+  (mrun ((fix (ev-trace ev)) e)))
 
 (define-syntax check-eval
   (syntax-rules ()

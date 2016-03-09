@@ -1,8 +1,15 @@
 #lang racket
 (require rackunit
          "../../monad-transformers.rkt"
-         "../evals/eval-con.rkt"
-         "../syntax.rkt")
+         "../util/fix.rkt"
+         "../syntax.rkt"
+         "../units.rkt")
+
+(define-values/invoke-unit/infer
+  (link ev-base@ monad-con@ alloc-nat@
+        delta-con@ ref-explicit@ st-explicit@))
+
+(define (eval e) (mrun ((fix ev) e)))
 
 (define-syntax check-eval
   (syntax-rules ()
@@ -54,6 +61,5 @@
                         (num 5)))
               5)
   (check-eval (op2 'quotient (num 1) (num 3))
-              1/3)
-  #;(check-eval (op2 'quotient (num 1) (num 0))
-              'err))
+              0)
+  (check-fail (op2 'quotient (num 1) (num 0))))

@@ -2,13 +2,21 @@
 (require rackunit
          racket/match
          racket/set
+         "../../monad-transformers.rkt"
+         "../util/fix.rkt"
          "../syntax.rkt"
-         "../evals/eval-dead.rkt")
+         "../units.rkt")
+
+(define-values/invoke-unit/infer
+  (link ev-base@ ev-dead@ eval-dead@ monad-dead@ alloc-nat@
+        delta-con@ ref-explicit@ st-explicit@))
+
+(define (eval e) (mrun ((eval-dead (fix (ev-dead ev))) e)))
 
 (define-syntax check-eval
   (syntax-rules ()
     [(check-eval e v s)
-     (check-equal? (car (eval e))
+     (check-equal? (let ([out (eval e)]) (cons (caar out) (cdr out)))
                    (cons v s))]))
 (module+ test
   (check-eval '(num 5) 5 {set})
