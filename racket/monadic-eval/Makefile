@@ -1,12 +1,16 @@
 .PHONY: clean default test
-DEFAULT: test
+DEFAULT: compile
+
+compile:
+	raco make -j 4 **/*.rkt
 
 init:
 	@echo "Initializing racket #lang"
 	cd .. && raco link monadic-eval
 
-test: init
-	raco make **/*.rkt
-	@raco test examples
+test: compile
 	@raco test transformers.rkt
 	@raco test tests
+
+examples: compile init
+	@raco test examples
