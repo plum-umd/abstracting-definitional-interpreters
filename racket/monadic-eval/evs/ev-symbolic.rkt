@@ -1,12 +1,12 @@
 #lang racket/unit
 
 (require racket/match
-         "../signatures.rkt" "../syntax.rkt" "../../monad-transformers.rkt")
+         "../signatures.rkt" "../syntax.rkt" "../transformers.rkt")
 
-(import monad^ state^ δ^ env^ ref^)
-(export ev^)
+(import monad^ state^ δ^ menv^ ref^)
+(export ev-symbolic^)
 
-(define ((ev ev) e)
+(define ((ev-symbolic ev) e)
   (with-monad M
     (match e
       [(vbl x)

@@ -1,7 +1,7 @@
 #lang racket/unit
 
 (require racket/match racket/set
-         "../syntax.rkt" "../signatures.rkt" "../../monad-transformers.rkt")
+         "../syntax.rkt" "../signatures.rkt" "../transformers.rkt")
 
 (import monad^ symbolic^)
 (export δ^)

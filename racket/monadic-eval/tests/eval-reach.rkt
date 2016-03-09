@@ -1,8 +1,8 @@
 #lang racket
 (require rackunit
          racket/set
-         "../../monad-transformers.rkt"
-         "../util/fix.rkt"
+         "../transformers.rkt"
+         "../fix.rkt"
          "../units.rkt"
          "../syntax.rkt")
 

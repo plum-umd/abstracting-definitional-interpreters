@@ -2,7 +2,7 @@
 (require "syntax.rkt"
          "parser.rkt"
          "units.rkt"
-         "util/fix.rkt")
+         "fix.rkt")
 (require (for-syntax racket/syntax))
 
 (require racket/stxparam)

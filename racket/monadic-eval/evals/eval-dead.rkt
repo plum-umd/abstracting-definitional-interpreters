@@ -1,7 +1,7 @@
 #lang racket/unit
-(require "../../monad-transformers.rkt"
+(require "../transformers.rkt"
          "../signatures.rkt"
-         "../util/subexp.rkt")
+         "../subexp.rkt")
 
 (import mdead^ monad^)
 (export eval-dead^)

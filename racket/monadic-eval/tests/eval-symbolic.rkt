@@ -1,9 +1,9 @@
 #lang racket
 (require rackunit
-         "../../monad-transformers.rkt"
-         "../evals/sval.rkt"
+         "../transformers.rkt"
+         "../evals/eval-symbolic.rkt"
          "../syntax.rkt"
-         "util.rkt")
+         "../set.rkt")
 
 (define-syntax check-eval
   (syntax-rules ()

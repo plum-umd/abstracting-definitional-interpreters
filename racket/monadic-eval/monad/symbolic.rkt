@@ -1,10 +1,9 @@
 #lang racket/unit
 
-(require racket/set "../signatures.rkt" "../../monad-transformers.rkt")
+(require racket/set "../signatures.rkt" "../transformers.rkt")
 
 (import)
-(export monad^ store^ symbolic^)
-
+(export monad^ menv^ mstore^ symbolic^)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; monad^
@@ -15,7 +14,6 @@
 (define (mrun m)
   ;; A path-condition is a set of symbolic values known to have evaluated to 0
   (run-StateT (set) (run-StateT (hash) (run-ReaderT (hash) m))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; store^
@@ -31,6 +29,12 @@
     (do (cons σ φ) ← get
         (put (cons σ* φ)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; env^
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define ask-env   (with-monad M ask))
+(define local-env (with-monad M local))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; symbolic^
