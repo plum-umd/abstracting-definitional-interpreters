@@ -13,6 +13,7 @@
 ;; evs
 (define-signatures
   [ev^          : ev]
+  [ev-ref^      : ev-ref]
   [ev-trace^    : ev-trace]
   [ev-reach^    : ev-reach]
   [ev-dead^     : ev-dead]

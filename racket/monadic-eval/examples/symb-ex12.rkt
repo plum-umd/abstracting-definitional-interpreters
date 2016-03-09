@@ -1,6 +1,6 @@
 #lang monadic-eval
-(ev@ monad-symbolic@ alloc@ δ-symbolic@ ev-symbolic@)
-(fix (ev-symbolic ev))
+(ev@ ev-ref@ monad-symbolic@ alloc@ δ-symbolic@ ev-symbolic@)
+(fix (ev-symbolic (ev-ref ev)))
 
 (rec f (λ (x)
          (if0 x x

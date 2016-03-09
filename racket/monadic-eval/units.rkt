@@ -6,6 +6,7 @@
 
  ;; evs
  "evs/ev.rkt"
+ "evs/ev-ref.rkt"
  "evs/ev-dead.rkt"
  "evs/ev-reach.rkt"
  "evs/ev-symbolic.rkt"
@@ -36,6 +37,7 @@
 
   ;; evs
   "evs/ev.rkt"
+  "evs/ev-ref.rkt"
   "evs/ev-dead.rkt"
   "evs/ev-reach.rkt"
   "evs/ev-symbolic.rkt"

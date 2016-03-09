@@ -1,3 +1,3 @@
-#lang monadic-eval (ev@ monad@ alloc@ δ@) (fix ev)
+#lang monadic-eval (ev@ ev-ref@  monad@ alloc@ δ@) (fix (ev-ref ev))
 
 (! ((ref 5) := 7))
