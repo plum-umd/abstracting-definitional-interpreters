@@ -8,14 +8,10 @@
         δ^ alloc^)
 (export ev-compile^)
 
-(define ((ev-compile ev) e)
+(define (((ev-compile ev0) ev) e)
   (with-monad M
     (match e
 
-      [(vbl x)               (do ρ ← ask-env
-                                 σ ← get-store
-                                 (return (hash-ref σ (hash-ref ρ x))))]
-      [(num n)               (return n)]
       [(ifz e₀ e₁ e₂)        (let ([c₀ (ev e₀)]
                                    [c₁ (ev e₁)]
                                    [c₂ (ev e₂)])
@@ -70,4 +66,4 @@
                                                          (update-store (λ (σ) (hash-set σ a v₁)))
                                                          (return (list 'box a)))]
                                      [_              fail])))]
-      ['err                  fail])))
+      [e ((ev0 ev) e)])))

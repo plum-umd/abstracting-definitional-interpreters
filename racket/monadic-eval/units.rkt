@@ -11,7 +11,7 @@
 
  ;; evs
  "evs/ev.rkt"
- "evs/ev-base.rkt"
+ "evs/ev-ref.rkt"
  "evs/ev-dead.rkt"
  "evs/ev-reach.rkt"
  "evs/ev-symbolic.rkt"
@@ -19,18 +19,18 @@
  "evs/ev-compile.rkt"
 
  ;; monads
- "monad/monad-con.rkt"
+ "monad/monad.rkt"
  "monad/monad-dead.rkt"
  "monad/monad-reach.rkt"
  "monad/monad-symbolic.rkt"
  "monad/monad-trace.rkt"
 
  ;; alloc
- "units/alloc-con.rkt"
+ "units/alloc.rkt"
 
- ;; delta
- "units/delta-con.rkt"
+ ;; δ
+ "units/delta.rkt"
  "units/delta-pres.rkt"
  "units/delta-symbolic.rkt"
- "units/delta-top.rkt"
+ "units/delta-abs.rkt"
  )

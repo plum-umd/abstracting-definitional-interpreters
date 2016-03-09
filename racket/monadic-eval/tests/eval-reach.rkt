@@ -7,10 +7,10 @@
          "../syntax.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-base@ ev-reach@ monad-reach@ alloc-con@ delta-con@))
+  (link ev@ ev-ref@ ev-reach@ monad-reach@ alloc@ δ@))
 
 (define (eval e)
-  (mrun ((fix (ev-reach ev)) e)))
+  (mrun ((fix (ev-reach (ev-ref ev))) e)))
 
 (define-syntax check-eval
   (syntax-rules ()

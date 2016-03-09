@@ -1,5 +1,5 @@
 #lang monadic-eval
-(ev-base@ monad-symbolic@ alloc-con@ delta-symbolic@ ev-symbolic@)
-(fix (ev-symbolic ev))
+(ev@ ev-ref@ monad-symbolic@ alloc@ δ-symbolic@ ev-symbolic@)
+(fix (ev-symbolic (ev-ref ev)))
 
 (! ((ref 5) := 7))

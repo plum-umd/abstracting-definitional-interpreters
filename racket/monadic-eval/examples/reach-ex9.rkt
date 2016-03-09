@@ -1,5 +1,5 @@
 #lang monadic-eval
-(ev-base@ ev-reach@ monad-reach@ alloc-con@ delta-con@)
-(fix (ev-reach ev))
+(ev@ ev-ref@ ev-reach@ monad-reach@ alloc@ δ@)
+(fix (ev-reach (ev-ref ev)))
 
 (! (ref 5))

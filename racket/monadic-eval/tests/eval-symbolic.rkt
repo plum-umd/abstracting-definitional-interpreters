@@ -7,10 +7,10 @@
          "../set.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-base@ monad-symbolic@ alloc-con@ delta-symbolic@ ev-symbolic@))
+  (link ev@ ev-ref@ monad-symbolic@ alloc@ δ-symbolic@ ev-symbolic@))
 
 (define (eval e)
-  (mrun ((fix (ev-symbolic ev)) e)))
+  (mrun ((fix (ev-symbolic (ev-ref ev))) e)))
 
 (define-syntax check-eval
   (syntax-rules ()
@@ -50,6 +50,8 @@
             8
             9)
             
+;; This is a type error and shouldn't be tested.
+#;
 (check-eval (op1 'add1 (app (sym 'f) (num '7)))
             (failure))
 (check-eval (lrc 'f (lam 'x
