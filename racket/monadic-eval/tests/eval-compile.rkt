@@ -8,7 +8,7 @@
 (define-values/invoke-unit/infer
   (link ev-compile@ monad-con@ alloc-con@ delta-con@))
 
-(define (eval e) (mrun ((fix ev) e)))
+(define (eval e) (mrun ((fix ev-compile) e)))
 
 (define-syntax check-eval
   (syntax-rules ()
@@ -26,17 +26,17 @@
   (check-eval (op1 'add1 (num 5)) 6)
   (check-eval (op2 '+ (num 5) (num 11)) 16)
   (check-eval (lam 'x (vbl 'x))
-              (clo 'x (? procedure?) ρ))
+              (list 'clo 'x (? procedure?) ρ))
 
   (check-eval (app (lam 'x (num 7)) (num 5)) 7)
   (check-eval (app (lam 'x (lam '_ (vbl 'x))) (num 5))
-              (clo '_ (? procedure?) ρ))
+              (list 'clo '_ (? procedure?) ρ))
   (check-eval (app (lam 'x (vbl 'x)) (num 5)) 5)
 
   (check-eval (ifz (num 0) (num 7) (num 8)) 7)
   (check-eval (ifz (num 1) (num 7) (num 8)) 8)
   (check-eval (ref (num 5))
-              (bx _))
+              (list 'box _))
   (check-eval (drf (ref (num 5))) 5)
   (check-eval (drf (srf (ref (num 9)) (num 7))) 7)
   (check-eval (op1 'add1

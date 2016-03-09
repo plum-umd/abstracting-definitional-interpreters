@@ -6,9 +6,9 @@
 
 (import monad^ menv^ mstore^
         δ^ alloc^)
-(export ev^)
+(export ev-compile^)
 
-(define ((ev ev) e)
+(define ((ev-compile ev) e)
   (with-monad M
     (match e
 
@@ -36,16 +36,16 @@
                                    a ← (alloc f)
                                    ρ* ≔ (hash-set ρ f a)
                                    ; TODO: this needs to be hash-union for abstract stores
-                                   (update-store (λ (σ) (hash-set σ a (clo x c₀ ρ*))))
+                                   (update-store (λ (σ) (hash-set σ a (list 'clo x c₀ ρ*))))
                                    (local-env ρ* c₁)))]
       [(lam x e₀)            (let ([c₀ (ev e₀)])
                                (do ρ ← ask-env
-                                   (return (clo x c₀ ρ))))]
+                                   (return (list 'clo x c₀ ρ))))]
       [(app e₀ e₁)           (let ([c₀ (ev e₀)]
                                    [c₁ (ev e₁)])
                                (do v₀ ← c₀
                                    (match v₀
-                                     [(clo x c₂ ρ)  (do v₁ ← c₁
+                                     [(list 'clo x c₂ ρ)  (do v₁ ← c₁
                                                                a ← (alloc x)
                                                                ρ* ≔ (hash-set ρ x a)
                                                                (update-store (λ (σ) (hash-set σ a v₁)))
@@ -53,21 +53,21 @@
                                      [_                    fail])))]
       [(ref e₀)              (let ([c₀ (ev e₀)])
                                (do v₀ ← c₀
-                                   a ← (alloc 'bx)
+                                   a ← (alloc 'box)
                                    (update-store (λ (σ) (hash-set σ a v₀)))
-                                   (return (bx a))))]
+                                   (return (list 'box a))))]
       [(drf e₀)              (let ([c₀ (ev e₀)])
                                (do v₀ ← c₀
                                    (match v₀
-                                     [(bx a)  (do σ ← get-store
+                                     [(list 'box a)  (do σ ← get-store
                                                          (return (hash-ref σ a)))]
                                      [_              fail])))]
       [(srf e₀ e₁)           (let ([c₀ (ev e₀)]
                                    [c₁ (ev e₁)])
                                (do v₀ ← c₀
                                    (match v₀
-                                     [(bx a)  (do v₁ ← c₁
+                                     [(list 'box a)  (do v₁ ← c₁
                                                          (update-store (λ (σ) (hash-set σ a v₁)))
-                                                         (return (bx a)))]
+                                                         (return (list 'box a)))]
                                      [_              fail])))]
       ['err                  fail])))
