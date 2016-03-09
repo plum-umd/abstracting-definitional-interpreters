@@ -1,5 +1,5 @@
 .PHONY: clean default test
-.DEFAULT: test
+DEFAULT: test
 
 init:
 	@echo "Initializing racket #lang"
