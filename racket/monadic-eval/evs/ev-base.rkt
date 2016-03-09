@@ -52,5 +52,6 @@
       [(srf e₀ e₁)           (do v₀ ← (ev e₀)
                                  (match v₀
                                    [(cons 'box a)  (do v₁ ← (ev e₁)
-                                                       (update-store (λ (σ) (hash-set σ a v₁))))]
+                                                       (update-store (λ (σ) (hash-set σ a v₁))))
+                                                       (return (cons 'box a))]
                                    [_              fail]))])))
