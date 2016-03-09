@@ -14,3 +14,5 @@
 (struct srf (e0 e1)    #:symbolic)
 (struct sym (s)        #:symbolic)
 (struct lrc (f x e)    #:symbolic)
+(struct bx  (a)        #:symbolic)
+(struct clo (x e ρ)    #:symbolic)

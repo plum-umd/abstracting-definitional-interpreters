@@ -10,6 +10,7 @@
  "evs/ev-reach.rkt"
  "evs/ev-symbolic.rkt"
  "evs/ev-trace.rkt"
+ "evs/ev-compile.rkt"
 
  ;; monads
  "monad/monad-con.rkt"
@@ -39,6 +40,7 @@
   "evs/ev-reach.rkt"
   "evs/ev-symbolic.rkt"
   "evs/ev-trace.rkt"
+  "evs/ev-compile.rkt"
 
   ;; monads
   "monad/monad-con.rkt"

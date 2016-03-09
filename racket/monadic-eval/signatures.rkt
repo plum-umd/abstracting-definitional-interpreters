@@ -16,7 +16,8 @@
   [ev-trace^    : ev-trace]
   [ev-reach^    : ev-reach]
   [ev-dead^     : ev-dead]
-  [ev-symbolic^ : ev-symbolic])
+  [ev-symbolic^ : ev-symbolic]
+  [ev-compile^  : ev-compile])
 
 ;; monad, monoid, and component-specific effects
 (define-signatures
