@@ -1,6 +1,6 @@
 #lang racket/unit
 (require racket/match
-         "../../monad-transformers.rkt"
+         "../transformers.rkt"
          "../syntax.rkt"
          "../signatures.rkt")
 

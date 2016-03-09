@@ -2,8 +2,8 @@
 (require rackunit
          racket/match
          racket/set
-         "../../monad-transformers.rkt"
-         "../util/fix.rkt"
+         "../transformers.rkt"
+         "../fix.rkt"
          "../syntax.rkt"
          "../units.rkt")
 

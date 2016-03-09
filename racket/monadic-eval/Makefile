@@ -2,6 +2,7 @@
 .DEFAULT: test
 
 test:
-	@raco test ../monad-transformers.rkt
+	raco make **/*.rkt
+	@raco test transformers.rkt
 	@raco test tests
 	@raco test examples

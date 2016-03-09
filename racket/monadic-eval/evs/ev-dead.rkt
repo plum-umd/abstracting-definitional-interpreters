@@ -1,7 +1,7 @@
 #lang racket/unit
 (require racket/match
          racket/set
-         "../../monad-transformers.rkt"
+         "../transformers.rkt"
          "../signatures.rkt")
 
 (import mdead^ monad^)

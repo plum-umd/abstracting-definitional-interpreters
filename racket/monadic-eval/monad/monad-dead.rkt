@@ -1,7 +1,7 @@
 #lang racket/unit
 (require racket/set
          "../signatures.rkt"
-         "../../monad-transformers.rkt")
+         "../transformers.rkt")
 (import)
 (export monad^ menv^ mstore^ mdead^)
 
@@ -22,6 +22,11 @@
   (with-monad M
     (do (cons _ θ) ← get
       (put (cons σ θ)))))
+(define (update-store f)
+  (with-monad M
+    (do
+      σ ← get-store
+      (put-store (f σ)))))
 
 ;; dead^ impl:
 (define get-dead (with-monad M (bind get (compose1 return cdr))))
@@ -29,3 +34,8 @@
   (with-monad M
     (do (cons σ _) ← get
       (put (cons σ θ)))))
+(define (update-dead f)
+  (with-monad M
+    (do
+      θ ← get-dead
+      (put-dead (f θ)))))
