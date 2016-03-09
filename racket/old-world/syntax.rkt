@@ -1,6 +1,6 @@
 #lang racket
 (provide (all-defined-out))
-(require "util/sstruct.rkt")
+(require "sstruct.rkt")
 
 (struct app (e0 e1)    #:symbolic)
 (struct lam (x  e)     #:symbolic)

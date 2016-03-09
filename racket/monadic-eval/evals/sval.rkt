@@ -1,15 +1,20 @@
-#lang racket
-(provide eval (struct-out both-ans))
-(require "../fix.rkt"
-         "../units/sval-unit.rkt"
-         "../units/ev-symbolic-unit.rkt"
-         "../units/delta-unit.rkt"
-         "../units/err-unit.rkt"
-         "../units/env-sto-nd-unit.rkt"
-	 "../both.rkt")
+#lang racket/base
+
+(provide eval)
+(require racket/unit racket/match racket/set
+         "../fix.rkt"
+         "../signatures.rkt"
+         "../syntax.rkt"
+         "../monad/symbolic.rkt"
+         "../units/env.rkt"
+         "../units/alloc-nat.rkt"
+         "../units/delta-symbolic.rkt"
+         "../units/st-explicit.rkt"
+         "../units/ev-symbolic.rkt"
+         "../units/ref-explicit.rkt")
 
 (define-values/invoke-unit/infer
-  (link sval@ env-sto-nd@ ev-symbolic@ symbolic-δ@ err@))
+  (link symbolic@ env@ ev-symbolic@ st-explicit@ alloc-nat@ delta-symbolic@ ref-explicit@))
 
 (define (eval e)
-  (mrun ((fix ev) e (hash))))
+  (mrun ((fix ev) e)))

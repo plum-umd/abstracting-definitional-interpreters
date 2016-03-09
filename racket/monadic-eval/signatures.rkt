@@ -5,22 +5,31 @@
   (define-signatures [sig : name ...] ...)
   (begin (define-signature sig (name ...)) ...))
 
+;; evals
 (define-signatures
-  [eval^ : eval] ; go away
-  [fix^  : fix]  ; go away
-  [ev^   : ev]   ; go away
-  [monad^ : return bind mrun]
-  [sto^  : ralloc alloc]
-  [env^  : get ext]
-  [δ^    : δ truish?])
+  [eval-dead^  : eval-dead]
+  [eval-pdcfa^ : eval-pdcfa])
 
+;; evs
 (define-signatures
-  [err^ : err]
-  [ref^ : new sbox ubox])
+  [ev^       : ev]
+  [ev-trace^ : ev-trace]
+  [ev-reach^ : ev-reach]
+  [ev-dead^  : ev-dead])
 
+;; monad, monoid, and component-specific effects
 (define-signatures
-  [symbolic^ : symbolic? both symbolic-apply])
+  [monad^  : M mrun]
+  [monoid^ : O]
+  [mdead^  : get-dead put-dead]
+  [menv^   : ask-env local-env]
+  [mreach^ : tell-reach hijack-reach]
+  [mstore^ : get-store put-store]
+  [mtrace^ : tell-trace hijack-trace])
 
+;; metafunctions
 (define-signatures
-  [return-ans^ : return-ans]
-  [return-vals^ : return-vals])
+  [alloc^ : alloc]
+  [δ^     : δ truish?]
+  [ref^   : mkbox sbox ubox]
+  [state^ : rext ext find])

@@ -1,7 +1,6 @@
 #lang racket
 (provide subexps)
-(require racket/set
-         "../syntax.rkt")
+(require "syntax.rkt")
 
 (define (subexps e)
   (set-add (match e

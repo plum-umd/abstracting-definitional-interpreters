@@ -1,54 +1,68 @@
-#lang racket
-(require #;"units/aval-set-unit.rkt"
-	 "units/delta-unit.rkt"
-	 #;"units/env-box-unit.rkt"
-	 #;"units/env-sto-unit.rkt"
-	 "units/env-unit.rkt"
-	 "units/err-unit.rkt"
-	 #;"units/ev-bang-unit.rkt"
-	 #;"units/ev-symbolic-unit.rkt"
-	 #;"units/ev-unit.rkt"
-	 #;"units/dead-unit.rkt"
-	 #;"units/reach-unit.rkt"
-	 #;"units/trace-unit.rkt"
-	 "units/id-unit.rkt"
-	 #;"units/pdcfa-unit.rkt"
-	 #;"units/pdcfa-dead-unit.rkt"
-	 #;"units/sto-0cfa-unit.rkt"
-	 #;"units/sto-explicit-unit.rkt"
-#|
-	 "units/sto-implicit-unit.rkt"
-	 "units/sto-monad-unit.rkt"
-	 "units/sto-set-unit.rkt"
-	 "units/sto-unit.rkt"
-         "units/sto-widen-unit.rkt"
-	 "units/sval-unit.rkt"
-|#
-)
+#lang racket/base
 
-(provide (all-from-out #;"units/aval-set-unit.rkt"
-		       "units/delta-unit.rkt"
-		       #;"units/env-box-unit.rkt"
-		       #;"units/env-sto-unit.rkt"
-		       "units/env-unit.rkt"
-		       "units/err-unit.rkt"
-		       #;"units/ev-bang-unit.rkt"
-		       #;"units/ev-symbolic-unit.rkt"
-		       #;"units/ev-unit.rkt"
-		       #;"units/dead-unit.rkt"
-                       #;"units/reach-unit.rkt"
-		       #;"units/trace-unit.rkt"
-		       "units/id-unit.rkt"
-                       #|
-		       "units/pdcfa-unit.rkt"
-                       "units/pdcfa-dead-unit.rkt"
-		       "units/sto-0cfa-unit.rkt"
-		       "units/sto-explicit-unit.rkt"
-		       "units/sto-implicit-unit.rkt"
-		       "units/sto-monad-unit.rkt"
-		       "units/sto-set-unit.rkt"
-		       "units/sto-unit.rkt"
-                       "units/sto-widen-unit.rkt"
-                       "units/sval-unit.rkt"
-|#
-))
+(require
+ ;; evals
+ "evals/eval-dead.rkt"
+
+ ;; evs
+ "evs/ev-base.rkt"
+ "evs/ev-dead.rkt"
+ "evs/ev-reach.rkt"
+ "evs/ev-trace.rkt"
+
+ ;; monads
+ "monad/monad-con.rkt"
+ "monad/monad-dead.rkt"
+ "monad/monad-reach.rkt"
+ "monad/monad-trace.rkt"
+
+ ;; alloc
+ "units/alloc-nat.rkt"
+
+ ;; delta
+ "units/delta-con.rkt"
+ "units/delta-pres.rkt"
+ "units/delta-top.rkt"
+
+ ;; references
+ "units/ref-explicit.rkt"
+ "units/ref-unary.rkt"
+
+ ;; state manipulations
+ "units/st-explicit.rkt"
+
+
+ )
+
+(provide
+ (all-from-out
+  ;; evals
+  "evals/eval-dead.rkt"
+
+  ;; evs
+  "evs/ev-base.rkt"
+  "evs/ev-dead.rkt"
+  "evs/ev-reach.rkt"
+  "evs/ev-trace.rkt"
+
+  ;; monads
+  "monad/monad-con.rkt"
+  "monad/monad-dead.rkt"
+  "monad/monad-reach.rkt"
+  "monad/monad-trace.rkt"
+
+  ;; alloc
+  "units/alloc-nat.rkt"
+
+  ;; delta
+  "units/delta-con.rkt"
+  "units/delta-pres.rkt"
+  "units/delta-top.rkt"
+
+  ;; references
+  "units/ref-explicit.rkt"
+  "units/ref-unary.rkt"
+
+  ;; state manipulations
+  "units/st-explicit.rkt"
+  ))

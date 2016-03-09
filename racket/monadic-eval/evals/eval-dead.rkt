@@ -1,22 +1,13 @@
-#lang racket
-(provide eval)
-(require "../fix.rkt"
+#lang racket/unit
+(require "../../monad-transformers.rkt"
          "../signatures.rkt"
-         "../subexp.rkt"
-         "../units/ev-unit.rkt"
-         "../units/dead-monad-unit.rkt"
-         "../units/delta-unit.rkt"
-         "../units/sto-unit.rkt"
-         "../units/err-unit.rkt")
+         "../util/subexp.rkt")
 
-(define-values/invoke-unit/infer
-  (link ev@ δ@ dead-monad@ sto@ err@))
+(import mdead^ monad^)
+(export eval-dead^)
 
-(define ((((ev-dead e ρ) ev-dead) σ) τ)
-  ((((ev e ρ) ev-dead) σ)
-   (set-remove τ e)))
-
-;; FIXME: rewrite with mrun.  Put e in monad?
-(define (eval e)
-  ((((fix ev-dead) e (hash)) (hash)) (subexps e)))
-
+;; eval-dead : (e → M v) → e → M v
+(define ((eval-dead eval) e₀)
+  (with-monad M
+    (do (put-dead (subexps e₀))
+        (eval e₀))))
