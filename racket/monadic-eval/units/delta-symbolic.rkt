@@ -23,27 +23,20 @@
       [('* (list s1 s2)) (return `(* ,s1 ,s2))]       
       [('quotient (list (? number? n1) (? number? n2)))
        (if (zero? n2)
-           fail ; FIXME
+           fail
            (return (quotient n1 n2)))]
       [('quotient (list s1 (? number? n2)))
        (if (zero? n2)
-           fail ; FIXME
+           fail
            (return `(quotient ,s1 ,n2)))]
       [('quotient (list s1 s2))
-       (do φ ← get-path-cond
-           (case (proves-0 φ (op1 'flip s2))
-             [(✓) #|FIXME|# fail]
-             [(✗) (return `(quotient ,s1 ,s2))]
-             [(?) (mplus ; TODO: or the other way around?
-                   (do (refine s2)
-                       #|FIXME|# fail)
-                   (do (refine (op1 'flip s2)) 
-                       (return `(quotient ,s1 ,s2))))]))]
+       (do b ← (truish? s2) ; relies on `s2`'s range being just numbers
+           (if b fail (return `(quotient ,s1 ,s2))))]
       [('flip (list v))
        (do b ← (truish? v)
            (return (if b 1 0)))])))
 
-(define (truish? v) ; defer to `δ` for more precision when proof relation works
+(define (truish? v)
   (with-monad M
     (do φ ← get-path-cond
         (case (proves-0 φ v)

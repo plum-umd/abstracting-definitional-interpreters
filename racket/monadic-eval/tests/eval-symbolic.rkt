@@ -74,3 +74,29 @@
             2
             3
             4)
+(check-eval (ifz (sym 's)
+                 (ifz (sym 's) (num 1) (num 2))
+                 (ifz (sym 's) (num 3) (num 4)))
+            1
+            4)
+(check-eval (ifz (op1 'flip (sym 's))
+                 (ifz (sym 's) (num 1) (num 2))
+                 (ifz (sym 's) (num 3) (num 4)))
+            2
+            3)
+(check-eval (ifz (sym 's)
+                 (ifz (op1 'flip (sym 's)) (num 1) (num 2))
+                 (ifz (op1 'flip (sym 's)) (num 3) (num 4)))
+            2
+            3)
+(check-eval (ifz (op1 'flip (sym 's))
+                 (ifz (op1 'flip (sym 's)) (num 1) (num 2))
+                 (ifz (op1 'flip (sym 's)) (num 3) (num 4)))
+            1
+            4)
+(check-eval (ifz (sym 's) (op2 'quotient (num 1) (sym 's)) (num 42))
+            (failure)
+            42)
+(check-eval (ifz (op1 'flip (sym 's)) (op2 'quotient (num 1) (sym 's)) (num 42))
+            '(quotient 1 s)
+            42)
