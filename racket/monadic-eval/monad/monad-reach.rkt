@@ -18,6 +18,11 @@
 ;; store^ impl:
 (define get-store (with-monad M get))
 (define put-store (with-monad M put))
+(define (update-store f)
+  (with-monad M
+    (do
+      σ ← get-store
+      (put-store (f σ)))))
 
 ;; reach^ impl:
 (define tell-reach   (with-monad M tell))
