@@ -101,24 +101,25 @@
 ; `(with-monad M e)` introduces monad operations and do notation into scope
 ; inside of `e`. There might be a better way to do this (or at least automate
 ; it) but I have bigger fish to fry at the moment.
-(define-syntax (with-monad stx)
+
+(define-syntax (define-monad stx)
   (syntax-parse stx
-    [(with-monad M e)
-     (with-syntax ([return (format-id #'e "return")]
-                   [bind (format-id #'e "bind")]
-                   [do (format-id #'e "do")]
-                   [ask (format-id #'e "ask")]
-                   [local (format-id #'e "local")]
-                   [tell (format-id #'e "tell")]
-                   [hijack (format-id #'e "hijack")]
-                   [get (format-id #'e "get")]
-                   [put (format-id #'e "put")]
-                   [fail (format-id #'e "fail")]
-                   [try (format-id #'e "try")]
-                   [mzero (format-id #'e "mzero")]
-                   [mplus (format-id #'e "mplus")]
-                   [monoid-functor (format-id #'e "monoid-functor")])
-       #'(let ()
+    [(define-monad M)
+     (with-syntax ([return (format-id #'M "return")]
+                   [bind (format-id #'M "bind")]
+                   [do (format-id #'M "do")]
+                   [ask (format-id #'M "ask")]
+                   [local (format-id #'M "local")]
+                   [tell (format-id #'M "tell")]
+                   [hijack (format-id #'M "hijack")]
+                   [get (format-id #'M "get")]
+                   [put (format-id #'M "put")]
+                   [fail (format-id #'M "fail")]
+                   [try (format-id #'M "try")]
+                   [mzero (format-id #'M "mzero")]
+                   [mplus (format-id #'M "mplus")]
+                   [monoid-functor (format-id #'M "monoid-functor")])
+       #'(begin
            (define M′ M)
            (match-define (monad return bind effects properties) M′)
            (define-syntax do
@@ -138,8 +139,12 @@
            (match-define (monad-writer tell hijack) (hash-ref effects 'writer (monad-writer #f #f)))
            (match-define (monad-state get put) (hash-ref effects 'state  (monad-state #f #f)))
            (match-define (monad-fail fail try) (hash-ref effects 'fail   (monad-fail #f #f)))
-           (match-define (monad-nondet mzero mplus) (hash-ref effects 'nondet (monad-nondet #f #f)))
-           e))]))
+           (match-define (monad-nondet mzero mplus) (hash-ref effects 'nondet (monad-nondet #f #f)))))]))
+
+(define-syntax-rule
+  (with-monad M e)
+  (let () (define-monad M) e))
+
 
 ;;;;;;;;;;;;;
 ; Instances ;
