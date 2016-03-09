@@ -22,5 +22,7 @@
              fail
              (return (quotient n1 n2)))])))
 
+  (define (⊔ x . _) x)
+
   (define (truish? v)
     (with-monad M (return (zero? v)))))

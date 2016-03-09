@@ -17,7 +17,8 @@
   [ev-reach^    : ev-reach]
   [ev-dead^     : ev-dead]
   [ev-symbolic^ : ev-symbolic]
-  [ev-compile^  : ev-compile])
+  [ev-compile^  : ev-compile]
+  [ev-pdcfa^    : ev-pdcfa])
 
 ;; monad, monoid, and component-specific effects
 (define-signatures
@@ -32,5 +33,5 @@
 ;; metafunctions
 (define-signatures
   [alloc^    : alloc]
-  [δ^        : δ truish?]
+  [δ^        : δ truish? ⊔]
   [symbolic^ : symbolic? refine get-path-cond])

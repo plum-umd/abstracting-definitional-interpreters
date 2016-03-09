@@ -38,6 +38,8 @@
          (do b ← (truish? v)
            (return (if b 1 0)))])))
 
+  (define (⊔ v . _) v)
+
   (define (truish? v)
     (with-monad M
       (do φ ← get-path-cond
