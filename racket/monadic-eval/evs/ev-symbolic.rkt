@@ -45,11 +45,12 @@
              [_              fail]))]
       [(srf e₀ e₁)
        (do v₀ ← (ev e₀)
-           (match v₀
-             [(cons 'box a)  
-              (do v₁ ← (ev e₁)
-                  (update-store (λ (σ) (hash-set σ a v₁))))]
-             [_              fail]))]
+         (match v₀
+           [(cons 'box a)  
+            (do v₁ ← (ev e₁)
+                (update-store (λ (σ) (hash-set σ a v₁)))
+                (return (cons 'box a)))]
+           [_              fail]))]
       [(lrc f (lam x e₀) e₁)
        (do ρ ← ask-env
            a ← (alloc f)
@@ -69,4 +70,4 @@
                   ρ* ≔ (hash-set ρ x a)
                   (update-store (λ (σ) (hash-set σ a v₁)))
                   (local-env ρ* (ev e₂)))]
-             [_                    fail]))])))
+      ['err fail]))])))

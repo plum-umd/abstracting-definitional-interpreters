@@ -37,7 +37,7 @@
   (check-eval (ifz (num 0) (num 7) (num 8)) 7)
   (check-eval (ifz (num 1) (num 7) (num 8)) 8)
   (check-eval (ref (num 5))
-              (? number?))
+              (cons 'box _))
   (check-eval (drf (ref (num 5))) 5)
   (check-eval (drf (srf (ref (num 5)) (num 7))) 7)
   (check-eval (op1 'add1
