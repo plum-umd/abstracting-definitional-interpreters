@@ -21,15 +21,13 @@
 (define-signatures
   [monad^  : M mrun]
   [monoid^ : O]
-  [mdead^  : get-dead put-dead]
+  [mdead^  : get-dead put-dead update-dead]
   [menv^   : ask-env local-env]
   [mreach^ : tell-reach hijack-reach]
-  [mstore^ : get-store put-store]
+  [mstore^ : get-store put-store update-store]
   [mtrace^ : tell-trace hijack-trace])
 
 ;; metafunctions
 (define-signatures
   [alloc^ : alloc]
-  [δ^     : δ truish?]
-  [ref^   : mkbox sbox ubox]
-  [state^ : rext ext find])
+  [δ^     : δ truish?])
