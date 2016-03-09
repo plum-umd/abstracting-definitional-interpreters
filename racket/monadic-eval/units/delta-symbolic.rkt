@@ -40,23 +40,20 @@
                    (do (refine (op1 'flip s2)) 
                        (return `(quotient ,s1 ,s2))))]))]
       [('flip (list v))
-       (do φ ← get-path-cond
-           (case (proves-0 φ v)
-             [(✓) (return 1)]
-             [(✗) (return 0)]
-             [(?) (mplus
-                   (do (refine (op1 'flip v))
-                       (return 0))
-                   (do (refine v)
-                       (return 1)))]))])))
+       (do b ← (truish? v)
+           (return (if b 1 0)))])))
 
 (define (truish? v) ; defer to `δ` for more precision when proof relation works
   (with-monad M
-    (do ~v ← (op1 'flip v)
-      (return
-       (case ~v
-         [(0) #f]
-         [(1) #t])))))
+    (do φ ← get-path-cond
+        (case (proves-0 φ v)
+          [(✓) (return #t)]
+          [(✗) (return #f)]
+          [(?) (mplus
+                (do (refine v)
+                    (return #t))
+                (do (refine (op1 'flip v))
+                    (return #f)))]))))
 
 ;; The proof relation is internal to `δ` for now (not part of any public interface)
 (define (proves-0 φ e) ; TODO more precise
