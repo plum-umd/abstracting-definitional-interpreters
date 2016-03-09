@@ -48,16 +48,19 @@
            vs))
 
   (define (truish? v)
-    (with-monad M
-      (do φ ← get-path-cond
-        (case (proves-0 φ v)
-          [(✓) (return #t)]
-          [(✗) (return #f)]
-          [(?) (mplus
-                (do (refine v)
-                    (return #t))
-                (do (refine (op1 'flip v))
-                    (return #f)))])))))
+    (case v
+      [(N) (mplus (return #t) (return #f))]
+      [else
+       (with-monad M
+         (do φ ← get-path-cond
+           (case (proves-0 φ v)
+             [(✓) (return #t)]
+             [(✗) (return #f)]
+             [(?) (mplus
+                   (do (refine v)
+                       (return #t))
+                   (do (refine (op1 'flip v))
+                       (return #f)))])))])))
 
 ;; The proof relation is internal to `δ` for now (not part of any public interface)
 (define (proves-0 φ e) ; TODO more precise
