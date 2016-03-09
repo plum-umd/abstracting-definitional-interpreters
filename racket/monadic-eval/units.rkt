@@ -17,21 +17,12 @@
  "monad/monad-trace.rkt"
 
  ;; alloc
- "units/alloc-nat.rkt"
+ "units/alloc-con.rkt"
 
  ;; delta
  "units/delta-con.rkt"
  "units/delta-pres.rkt"
  "units/delta-top.rkt"
-
- ;; references
- "units/ref-explicit.rkt"
- "units/ref-unary.rkt"
-
- ;; state manipulations
- "units/st-explicit.rkt"
-
-
  )
 
 (provide
@@ -52,17 +43,10 @@
   "monad/monad-trace.rkt"
 
   ;; alloc
-  "units/alloc-nat.rkt"
+  "units/alloc-con.rkt"
 
   ;; delta
   "units/delta-con.rkt"
   "units/delta-pres.rkt"
   "units/delta-top.rkt"
-
-  ;; references
-  "units/ref-explicit.rkt"
-  "units/ref-unary.rkt"
-
-  ;; state manipulations
-  "units/st-explicit.rkt"
   ))

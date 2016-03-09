@@ -1,8 +1,9 @@
 #lang racket/unit
 
-(require "../signatures.rkt")
+(require "../signatures.rkt"
+         "../transformers.rkt")
 
-(import)
+(import monad^)
 (export alloc^)
 
-(define (alloc x) (x))
+(define alloc (with-monad M return))
