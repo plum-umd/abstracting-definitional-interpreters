@@ -10,10 +10,11 @@
          "../units/alloc-nat.rkt"
          "../units/delta-symbolic.rkt"
          "../units/st-explicit.rkt"
-         "../units/ev-symbolic.rkt")
+         "../units/ev-symbolic.rkt"
+         "../units/ref-explicit.rkt")
 
 (define-values/invoke-unit/infer
-  (link env@ st-explicit@ alloc-nat@ delta-symbolic@ symbolic@ ev-symbolic@))
+  (link symbolic@ env@ ev-symbolic@ st-explicit@ alloc-nat@ delta-symbolic@ ref-explicit@))
 
 (define (eval e)
   (mrun ((fix ev) e)))
