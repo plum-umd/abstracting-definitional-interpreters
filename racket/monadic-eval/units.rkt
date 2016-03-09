@@ -8,12 +8,14 @@
  "evs/ev-base.rkt"
  "evs/ev-dead.rkt"
  "evs/ev-reach.rkt"
+ "evs/ev-symbolic.rkt"
  "evs/ev-trace.rkt"
 
  ;; monads
  "monad/monad-con.rkt"
  "monad/monad-dead.rkt"
  "monad/monad-reach.rkt"
+ "monad/monad-symbolic.rkt"
  "monad/monad-trace.rkt"
 
  ;; alloc
@@ -22,6 +24,7 @@
  ;; delta
  "units/delta-con.rkt"
  "units/delta-pres.rkt"
+ "units/delta-symbolic.rkt"
  "units/delta-top.rkt"
  )
 
@@ -34,12 +37,14 @@
   "evs/ev-base.rkt"
   "evs/ev-dead.rkt"
   "evs/ev-reach.rkt"
+  "evs/ev-symbolic.rkt"
   "evs/ev-trace.rkt"
 
   ;; monads
   "monad/monad-con.rkt"
   "monad/monad-dead.rkt"
   "monad/monad-reach.rkt"
+  "monad/monad-symbolic.rkt"
   "monad/monad-trace.rkt"
 
   ;; alloc
@@ -48,5 +53,6 @@
   ;; delta
   "units/delta-con.rkt"
   "units/delta-pres.rkt"
+  "units/delta-symbolic.rkt"
   "units/delta-top.rkt"
   ))

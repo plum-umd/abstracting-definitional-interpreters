@@ -1,9 +1,16 @@
 #lang racket
 (require rackunit
          "../transformers.rkt"
-         "../evals/eval-symbolic.rkt"
+         "../fix.rkt"
+         "../units.rkt"
          "../syntax.rkt"
          "../set.rkt")
+
+(define-values/invoke-unit/infer
+  (link ev-base@ monad-symbolic@ alloc-con@ delta-symbolic@ ev-symbolic@))
+
+(define (eval e)
+  (mrun ((fix (ev-symbolic ev)) e)))
 
 (define-syntax check-eval
   (syntax-rules ()
@@ -43,8 +50,7 @@
             8
             9)
             
-; I took out the catch-all case in ev-symbolic and now this fails... why???
-#;(check-eval (op1 'add1 (app (sym 'f) (num '7)))
+(check-eval (op1 'add1 (app (sym 'f) (num '7)))
             (failure))
 (check-eval (lrc 'f (lam 'x
                          (ifz (vbl 'x)
