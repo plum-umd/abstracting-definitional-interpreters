@@ -29,11 +29,11 @@
  "monad/monad-trace.rkt"
 
  ;; alloc
- "units/alloc.rkt"
+ "metafuns/alloc.rkt"
 
  ;; δ
- "units/delta.rkt"
- "units/delta-pres.rkt"
- "units/delta-symbolic.rkt"
- "units/delta-abs.rkt"
+ "metafuns/delta.rkt"
+ "metafuns/delta-pres.rkt"
+ "metafuns/delta-symbolic.rkt"
+ "metafuns/delta-abs.rkt"
  )

@@ -25,9 +25,9 @@
   [ev-compile^  : ev-compile]
   [ev-cache^    : ev-cache])
 
-;; these are open monadic interpreters
-;;   omi : (exp → M value) → exp → M value
-;; the distinction between an open ev and an omi is that an omi
+;; these are open monadic interpreters, or evals, where
+;;   eval : (exp → M value) → exp → M value
+;; the distinction between an open ev and an eval is that an eval
 ;; expects to be given a fixed open ev, while an open ev expects
 ;; to be given its own fixpoint
 (define-signatures
