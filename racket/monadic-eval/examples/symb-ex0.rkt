@@ -1,5 +1,5 @@
 #lang monadic-eval
-(monad-symbolic@ alloc@ δ-symbolic@ ev-symbolic@ ev!@)
+(monad-symbolic@ alloc@ state@ δ-symbolic@ ev-symbolic@ ev!@)
 (fix (ev-symbolic ev!))
 
 (add1 0)

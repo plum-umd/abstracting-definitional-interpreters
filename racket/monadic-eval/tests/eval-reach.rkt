@@ -7,7 +7,7 @@
          "../syntax.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-reach@ monad-reach@ alloc@ δ@ ev!@))
+  (link ev-reach@ monad-reach@ state@ alloc@ δ@ ev!@))
 
 (define (eval e)
   (mrun ((fix (ev-reach ev!)) e)))

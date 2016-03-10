@@ -31,6 +31,10 @@
  ;; alloc
  "metafuns/alloc.rkt"
 
+ ;; state
+ "metafuns/state.rkt"
+ "metafuns/state-set.rkt"
+
  ;; δ
  "metafuns/delta.rkt"
  "metafuns/delta-pres.rkt"

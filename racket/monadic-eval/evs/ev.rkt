@@ -4,17 +4,14 @@
          "../syntax.rkt"
          "../signatures.rkt")
 
-(import monad^ menv^ mstore^ δ^ alloc^)
+(import monad^ menv^ mstore^ state^ δ^ alloc^)
 (export ev^)
 
 (define-monad M)
 
 (define ((ev ev) e)
   (match e
-    [(vbl x)
-     (do ρ ← ask-env
-         σ ← get-store
-       (return (hash-ref σ (hash-ref ρ x))))]
+    [(vbl x) (find x)]
     
     [(num n) (return n)]
     
@@ -33,25 +30,21 @@
        (δ o v₀ v₁))]
 
     [(lrc f (lam x e₀) e₁) 
-     (do ρ ← ask-env
-         a ← (alloc f)
+     (do ρ  ← ask-env
+         a  ← (alloc f)
          ρ* ≔ (hash-set ρ f a)
-         ; TODO: this needs to be hash-union for abstract stores
-         (update-store (λ (σ) (hash-set σ a (cons (lam x e₀) ρ*))))
-       (local-env ρ* (ev e₁)))]
+         (ext x a (cons (lam x e₀) ρ*)
+              (ev e₁)))]
 
     [(lam x e₀)
      (do ρ ← ask-env
        (return (cons (lam x e₀) ρ)))]
     
     [(app e₀ e₁)
-     (do v₀ ← (ev e₀)
-       (match v₀
-         [(cons (lam x e₂) ρ)  
-          (do v₁ ← (ev e₁)
-              a ← (alloc x)
-              ρ* ≔ (hash-set ρ x a)
-              (update-store (λ (σ) (hash-set σ a v₁)))
-              (local-env ρ* (ev e₂)))]))]
+     (do (cons (lam x e₂) ρ) ← (ev e₀)
+         v₁ ← (ev e₁)
+         a  ← (alloc x)
+         (ext x a v₁
+              (ev e₂)))]
 
     ['err fail]))
