@@ -1,6 +1,9 @@
 #lang racket/unit
 
-(require racket/set "../signatures.rkt" "../transformers.rkt")
+(require racket/set 
+         "../signatures.rkt" 
+         "../transformers.rkt"
+         "../map.rkt")
 
 (import)
 (export monad^ menv^ mstore^ symbolic^)
@@ -13,7 +16,7 @@
 
 (define (mrun m)
   ;; A pathdition is a set of symbolic values known to have evaluated to 0
-  (run-StateT (set) (run-StateT (hash) (run-ReaderT (hash) m))))
+  (run-StateT (set) (run-StateT ∅ (run-ReaderT ∅ m))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; store^

@@ -1,7 +1,8 @@
 #lang racket/unit
 (require racket/set
          "../signatures.rkt"
-         "../transformers.rkt")
+         "../transformers.rkt"
+	 "../map.rkt")
 (import)
 (export monad^ menv^ mstore^ mdead^)
 
@@ -9,7 +10,7 @@
 (define M (ReaderT (StateT #f (StateT #f (FailT ID)))))
 
 ;; mrun : (M ρ σ θ a) [→ ρ [→ σ [→ θ]]] → (a × σ) × θ
-(define (mrun m [ρ₀ (hash)] [σ₀ (hash)] [θ₀ {set}])
+(define (mrun m [ρ₀ ∅] [σ₀ ∅] [θ₀ {set}])
   (run-StateT θ₀ (run-StateT σ₀ (run-ReaderT ρ₀ m))))
 
 ;; env^ impl:
