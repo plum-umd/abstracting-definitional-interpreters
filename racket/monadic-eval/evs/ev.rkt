@@ -14,7 +14,7 @@
     [(vbl x)
      (do ρ ← ask-env
          σ ← get-store
-       (return (hash-ref σ (hash-ref ρ x))))]
+       (return (σ (ρ x))))]
     
     [(num n) (return n)]
     
@@ -35,9 +35,9 @@
     [(lrc f (lam x e₀) e₁) 
      (do ρ ← ask-env
          a ← (alloc f)
-         ρ* ≔ (hash-set ρ f a)
+         ρ* ≔ (ρ f a)
          ; TODO: this needs to be hash-union for abstract stores
-         (update-store (λ (σ) (hash-set σ a (cons (lam x e₀) ρ*))))
+         (update-store (λ (σ) (σ a (cons (lam x e₀) ρ*))))
        (local-env ρ* (ev e₁)))]
 
     [(lam x e₀)
@@ -50,6 +50,6 @@
          [(cons (lam x e₂) ρ)  
           (do v₁ ← (ev e₁)
               a ← (alloc x)
-              ρ* ≔ (hash-set ρ x a)
-              (update-store (λ (σ) (hash-set σ a v₁)))
+              ρ* ≔ (ρ x a)
+              (update-store (λ (σ) (σ a v₁)))
             (local-env ρ* (ev e₂)))]))]))
