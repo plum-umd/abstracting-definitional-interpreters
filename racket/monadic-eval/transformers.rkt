@@ -108,6 +108,7 @@
      (with-syntax ([return (format-id #'M "return")]
                    [bind (format-id #'M "bind")]
                    [do (format-id #'M "do")]
+                   [for/monad+ (format-id #'M "for/monad+")]
                    [ask (format-id #'M "ask")]
                    [local (format-id #'M "local")]
                    [tell (format-id #'M "tell")]
@@ -133,7 +134,15 @@
                   (do . bs))]
                [(do xM . bs)
                 (bind xM (λ (x)
-                            (do . bs)))]))
+                           (do . bs)))]))
+           (define-syntax (for/monad+ stx)
+             (syntax-case stx ()
+               [(_ clauses . defs+exprs)
+                (with-syntax ([original stx])
+                  #'(for/fold/derived original
+                                      ([m mzero])
+                                      clauses
+                      (mplus m (let () . defs+exprs))))]))
            (define monoid-functor (hash-ref properties 'monoid-functor #f))
            (match-define (monad-reader ask local) (hash-ref effects 'reader (monad-reader #f #f)))
            (match-define (monad-writer tell hijack) (hash-ref effects 'writer (monad-writer #f #f)))
@@ -971,4 +980,9 @@
           (mplus (put (hash 'k 2)) (put (hash 'k 3)))
           x ← (mplus get mzero)
           (mplus (return (+ (hash-ref x 'k) 10)) (return (+ (hash-ref x 'k) 20))))))
-    (cons (set 13 23) (hash 'k 3))))
+    (cons (set 13 23) (hash 'k 3)))
+  ; NondetT(ID)(a) = ℘(a)
+  (check-equal?
+   (with-monad (NondetT ID)
+     (for/monad+ ([x (list 1 2 3 4 5)]) (return x)))
+    (set 1 2 3 4 5)))
