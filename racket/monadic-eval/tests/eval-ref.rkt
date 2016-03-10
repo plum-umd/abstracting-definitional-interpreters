@@ -6,37 +6,32 @@
          "../units.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-compile@ monad@ alloc@ δ@ ev!@))
+  (link monad@ alloc@ δ@ ev!@))
 
-(define (eval e) (mrun ((fix (ev-compile ev!)) e)))
+(define (eval e) (mrun ((fix ev!) e)))
 
-(define-syntax check-eval
-  (syntax-rules ()
-    [(check-eval e v)
-     (check-match (eval e)
-                  (cons v _))]))
+(define-syntax-rule (check-eval e v)
+  (check-match (eval e) (cons v _)))
 
-(define-syntax check-fail
-  (syntax-rules ()
-    [(check-fail e)
-     (check-match (eval e) (failure))]))
+(define-syntax-rule (check-fail e)
+  (check-match (eval e) (failure)))
 
 (module+ test
   (check-eval (num 5) 5)
   (check-eval (op1 'add1 (num 5)) 6)
   (check-eval (op2 '+ (num 5) (num 11)) 16)
   (check-eval (lam 'x (vbl 'x))
-              (list 'clo 'x (? procedure?) ρ))
+              (cons (lam 'x (vbl 'x)) ρ))
 
   (check-eval (app (lam 'x (num 7)) (num 5)) 7)
   (check-eval (app (lam 'x (lam '_ (vbl 'x))) (num 5))
-              (list 'clo '_ (? procedure?) ρ))
+              (cons (lam '_ (vbl 'x)) ρ))
   (check-eval (app (lam 'x (vbl 'x)) (num 5)) 5)
 
   (check-eval (ifz (num 0) (num 7) (num 8)) 7)
   (check-eval (ifz (num 1) (num 7) (num 8)) 8)
   (check-eval (ref (num 5))
-              (list 'box _))
+              (cons 'box _))
   (check-eval (drf (ref (num 5))) 5)
   (check-eval (drf (srf (ref (num 9)) (num 7))) 7)
   (check-eval (op1 'add1
@@ -62,4 +57,3 @@
   (check-eval (op2 'quotient (num 1) (num 3))
               0)
   (check-fail (op2 'quotient (num 1) (num 0))))
-

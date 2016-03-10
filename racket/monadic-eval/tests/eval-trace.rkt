@@ -6,10 +6,10 @@
          "../syntax.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-ref@ ev-trace@ monad-trace@ alloc@ δ@ ev@))
+  (link ev-trace@ monad-trace@ alloc@ δ@ ev!@))
 
 (define (eval e)
-  (mrun ((fix (ev-trace (ev-ref ev))) e)))
+  (mrun ((fix (ev-trace ev!)) e)))
 
 (define-syntax check-eval
   (syntax-rules ()

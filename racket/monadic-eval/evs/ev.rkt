@@ -52,4 +52,6 @@
               a ← (alloc x)
               ρ* ≔ (hash-set ρ x a)
               (update-store (λ (σ) (hash-set σ a v₁)))
-            (local-env ρ* (ev e₂)))]))]))
+              (local-env ρ* (ev e₂)))]))]
+
+    ['err fail]))

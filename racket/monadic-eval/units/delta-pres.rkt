@@ -31,11 +31,6 @@
           [`(quotient ,n1 ,n2) 
            (oplus (return 'N) fail)]))))
 
-  (define (⊔ v . vs)
-    (foldl (λ (vₙ lub) (if (equal? vₙ lub) vₙ 'N))
-           v
-           vs))
-
   (define (truish? v)
     (with-monad  M
       (with-monoid O

@@ -9,8 +9,11 @@
  ;; evals
  "evals/eval-dead.rkt"
 
- ;; evs
+ ;; open evs
  "evs/ev.rkt"
+ "evs/ev-bang.rkt"
+
+ ;; ext envs
  "evs/ev-ref.rkt"
  "evs/ev-dead.rkt"
  "evs/ev-reach.rkt"

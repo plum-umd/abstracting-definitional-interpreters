@@ -1,6 +1,6 @@
 #lang monadic-eval
-(ev-trace@ monad-trace@ alloc@ δ@ ev@)
-(fix (ev-trace ev))
+(ev-trace@ monad-trace@ alloc@ δ@ ev!@)
+(fix (ev-trace ev!))
 
 (add1 0)
 ((λ (n) (if0 n (add1 3) 8)) 0)

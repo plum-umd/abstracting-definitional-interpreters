@@ -1,6 +1,6 @@
 #lang monadic-eval
-(ev-ref@ ev-dead@ eval-dead@ monad-dead@ alloc@ δ@ ev@)
-(eval-dead (fix (ev-dead (ev-ref ev))))
+(ev-dead@ eval-dead@ monad-dead@ alloc@ δ@ ev!@)
+(eval-dead (fix (ev-dead ev!)))
 
 (rec f (λ (x)
          (if0 x x

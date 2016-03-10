@@ -42,11 +42,6 @@
          (do b ← (truish? v)
            (return (if b 1 0)))])))
 
-  (define (⊔ v . vs)
-    (foldl (λ (vₙ lub) (if equal? vₙ lub) vₙ 'N)
-           v
-           vs))
-
   (define (truish? v)
     (with-monad M
       (case v

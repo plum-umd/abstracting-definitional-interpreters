@@ -6,20 +6,15 @@
          "../units.rkt")
 
 (define-values/invoke-unit/infer
-  (link ev-ref@ monad@ alloc@ δ@ ev@))
+  (link monad@ alloc@ δ@ ev@))
 
-(define (eval e) (mrun ((fix (ev-ref ev)) e)))
+(define (eval e) (mrun ((fix ev) e)))
 
-(define-syntax check-eval
-  (syntax-rules ()
-    [(check-eval e v)
-     (check-match (eval e)
-                  (cons v _))]))
+(define-syntax-rule (check-eval e v)
+  (check-match (eval e) (cons v _)))
 
-(define-syntax check-fail
-  (syntax-rules ()
-    [(check-fail e)
-     (check-match (eval e) (failure))]))
+(define-syntax-rule (check-fail e)
+  (check-match (eval e) (failure)))
 
 (module+ test
   (check-eval (num 5) 5)
@@ -35,19 +30,6 @@
 
   (check-eval (ifz (num 0) (num 7) (num 8)) 7)
   (check-eval (ifz (num 1) (num 7) (num 8)) 8)
-  (check-eval (ref (num 5))
-              (cons 'box _))
-  (check-eval (drf (ref (num 5))) 5)
-  (check-eval (drf (srf (ref (num 9)) (num 7))) 7)
-  (check-eval (op1 'add1
-                   (ifz (drf (srf (ref (num 0)) (num 1)))
-                        'err
-                        (num 42)))
-              43)
-  (check-fail (op1 'add1
-                   (ifz (drf (srf (ref (num 1)) (num 0)))
-                        'err
-                        (num 42))))
   (check-eval (lrc 'f (lam 'x
                            (ifz (vbl 'x)
                                 (vbl 'x)
