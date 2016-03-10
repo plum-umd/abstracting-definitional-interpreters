@@ -17,4 +17,4 @@
   (do ρ  ← ask-env
       ρ* ≔ (hash-set ρ x a)
       (update-store (λ (σ) (hash-set σ a v)))
-      (return (void))))
+      (local-env ρ* m)))
