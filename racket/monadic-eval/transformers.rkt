@@ -87,17 +87,20 @@
 
 ; `(with-monoid O e)` introduces `ozero`, `oplus` and `oconcat` specialized to
 ; the monoid `O` into scope inside of `e`.
-(define-syntax (with-monoid stx)
+(define-syntax (define-monoid stx)
   (syntax-parse stx
-    [(with-monoid O e)
-     (with-syntax ([ozero (format-id #'e "ozero")]
-                   [oplus (format-id #'e "oplus")]
-                   [oconcat (format-id #'e "oconcat")])
-       #'(let ()
+    [(define-monoid O)
+     (with-syntax ([ozero (format-id #'O "ozero")]
+                   [oplus (format-id #'O "oplus")]
+                   [oconcat (format-id #'O "oconcat")])
+       #'(begin
            (define O′ O)
            (match-define (monoid ozero oplus) O′)
-           (define oconcat (monoid-oconcat O′))
-           e))]))
+           (define oconcat (monoid-oconcat O′))))]))
+
+(define-syntax-rule
+  (with-monoid O e)
+  (let () (define-monoid O) e))
 ; `(with-monad M e)` introduces monad operations and do notation into scope
 ; inside of `e`. There might be a better way to do this (or at least automate
 ; it) but I have bigger fish to fry at the moment.
