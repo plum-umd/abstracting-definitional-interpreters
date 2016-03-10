@@ -2,9 +2,10 @@
 
 (provide (all-defined-out))
 
-(require (for-syntax racket/syntax syntax/parse))
-(require rackunit)
-(require racket/hash)
+(require (for-syntax racket/syntax syntax/parse)
+         rackunit
+         racket/hash
+         "map.rkt")
 
 ;;;;;;;;;;
 ; Monoid ;
@@ -138,6 +139,12 @@
                [(do xM . bs)
                 (bind xM (λ (x)
                            (do . bs)))]))
+           (define monoid-functor (hash-ref properties 'monoid-functor #f))
+           (match-define (monad-reader ask local) (hash-ref effects 'reader (monad-reader #f #f)))
+           (match-define (monad-writer tell hijack) (hash-ref effects 'writer (monad-writer #f #f)))
+           (match-define (monad-state get put) (hash-ref effects 'state  (monad-state #f #f)))
+           (match-define (monad-fail fail try) (hash-ref effects 'fail   (monad-fail #f #f)))
+           (match-define (monad-nondet mzero mplus) (hash-ref effects 'nondet (monad-nondet #f #f)))
            (define-syntax (for/monad+ stx)
              (syntax-case stx ()
                [(_ clauses . defs+exprs)
@@ -145,13 +152,7 @@
                   #'(for/fold/derived original
                                       ([m mzero])
                                       clauses
-                      (mplus m (let () . defs+exprs))))]))
-           (define monoid-functor (hash-ref properties 'monoid-functor #f))
-           (match-define (monad-reader ask local) (hash-ref effects 'reader (monad-reader #f #f)))
-           (match-define (monad-writer tell hijack) (hash-ref effects 'writer (monad-writer #f #f)))
-           (match-define (monad-state get put) (hash-ref effects 'state  (monad-state #f #f)))
-           (match-define (monad-fail fail try) (hash-ref effects 'fail   (monad-fail #f #f)))
-           (match-define (monad-nondet mzero mplus) (hash-ref effects 'nondet (monad-nondet #f #f)))))]))
+                                      (mplus m (let () . defs+exprs))))]))))]))
 
 (define-syntax-rule
   (with-monad M e)
@@ -200,13 +201,11 @@
 
 ; Finite Map Idempotent Commutative Monoid
 (define (FinMapO O)
-  (with-monoid O
-    (monoid
-      ; ozero
-      (hash)
-      ; oplus
-      (λ (fm₁ fm₂)
-         (hash-union fm₁ fm₂ #:combine oplus)))))
+  (monoid
+   ; ozero
+   ∅
+   ; oplus
+   (lambda (m1 m2) (⊔ m1 m2 #:combine (with-monoid O oplus)))))
 
 ; Pair Monoid
 (define (PairO O₁ O₂)
@@ -916,14 +915,24 @@
                                              (do
                                                (put s)
                                                (return (set (void)))))))))
-           (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
-             ; propagating fail effects
-             ; (DD: not sure about this...)
-             (λ (h) (hash-set h 'fail (monad-fail
-                                         ; fail
-                                         fail
-                                         ; try
-                                         try))))
+           ;; (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
+           ;;     ; propagating fail effects
+           ;;     ; (DD: not sure about this...)
+           ;;     (λ (h) (hash-set h 'fail (monad-fail
+           ;;                               ; fail
+           ;;                               fail
+           ;;                               ; try
+           ;;                               try))))
+           ;; NL: Couldn't find a way to compose NondetT with FailT
+           ;;     without lots of Bad Things™ happening.
+           ;;     I don't think we should--since control-flow is no
+           ;;     longer defunctionalized we should not have
+           ;;     defunctionalized exceptions.
+           (λ (h) (hash-set h 'fail (monad-fail
+                                     ; fail
+                                     ozero
+                                     ; try
+                                     ozero)))
 
            ; the standard nondet effect
            (λ (h) (hash-set h 'nondet
@@ -980,10 +989,10 @@
     (run-StateT (hash)
       (with-monad (NondetT (StateT (FinMapO MaxO) ID))
         (do
-          (mplus (put (hash 'k 2)) (put (hash 'k 3)))
+          (mplus (put (∅ 'k 2)) (put (∅ 'k 3)))
           x ← (mplus get mzero)
-          (mplus (return (+ (hash-ref x 'k) 10)) (return (+ (hash-ref x 'k) 20))))))
-    (cons (set 13 23) (hash 'k 3)))
+          (mplus (return (+ (x 'k) 10)) (return (+ (x 'k) 20))))))
+    (cons (set 13 23) (∅ 'k 3)))
   ; NondetT(ID)(a) = ℘(a)
   (check-equal?
    (with-monad (NondetT ID)

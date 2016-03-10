@@ -1,11 +1,12 @@
 #lang racket/unit
 (require racket/match
          racket/set
+         "../map.rkt"
          "../transformers.rkt"
          "../syntax.rkt"
          "../signatures.rkt")
 
-(import monad^ menv^ mstore^ mcached^ δ^ alloc^)
+(import monad^ menv^ mstore^ mcache^ δ^ alloc^)
 (export ev-cache^)
 
 (define (((ev-cache ev0) ev) e)
@@ -14,12 +15,11 @@
         σ ← get-store
         ς ≔ (list e ρ σ)
         Σ ← get-$
-        (if (hash-has-key? Σ ς)
-            (return (Σ ς))
+        (if (ς . ∈ . Σ)
+            (for/monad+ ([v (Σ ς)]) (return v))
             (do Σ⊥ ← ask-⊥
-                Σ* ≔ (hash-set Σ ς (Σ⊥ ς {set}))
+                Σ* ≔ (Σ ς (if (ς . ∈ . Σ⊥) (Σ⊥ ς) {set}))
                 (put-$ Σ*)
-                v  ← ((ev0 ev) e)
-                (update-$
-                  (λ (Σ′) (hash-update Σ′ ς (λ (vs) (set-add vs v)) {set v})))
+                v ← ((ev0 ev) e)
+                (update-$ (λ (Σ′) (Σ′ ς (set-add (Σ′ ς) v))))
                 (return v))))))

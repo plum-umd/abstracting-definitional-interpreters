@@ -11,7 +11,10 @@
 
 (define ((ev ev) e)
   (match e
-    [(vbl x) (find x)]
+    [(vbl x)
+     (do ρ ← ask-env
+         a ≔ (ρ x)
+         (find a))]
     
     [(num n) (return n)]
     
@@ -33,8 +36,8 @@
      (do ρ  ← ask-env
          a  ← (alloc f)
          ρ* ≔ (ρ f a)
-         (ext f a (cons (lam x e₀) ρ*)
-              (ev e₁)))]
+         (ext a (cons (lam x e₀) ρ*))
+         (local-env ρ* (ev e₁)))]
 
     [(lam x e₀)
      (do ρ ← ask-env
@@ -44,6 +47,8 @@
      (do (cons (lam x e₂) ρ) ← (ev e₀)
          v₁ ← (ev e₁)
          a  ← (alloc x)
-         (local-env ρ (ext x a v₁ (ev e₂))))]
+         ρ* ≔ (ρ x a)
+         (ext a v₁)
+         (local-env ρ* (ev e₂)))]
 
     ['err fail]))

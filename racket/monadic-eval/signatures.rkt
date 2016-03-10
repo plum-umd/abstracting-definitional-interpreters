@@ -23,7 +23,8 @@
   [ev-dead^     : ev-dead]
   [ev-symbolic^ : ev-symbolic]
   [ev-compile^  : ev-compile]
-  [ev-cache^    : ev-cache])
+  [ev-cache^    : ev-cache]
+  [ev-debug^    : ev-debug])
 
 ;; these are open monadic interpreters, or evals, where
 ;;   eval : (exp → M value) → exp → M value
@@ -40,7 +41,7 @@
   [monoid^  : O]
 
   ;; lifted effects for state-space components
-  [mcached^ : ask-⊥ local-⊥ get-$ put-$ update-$]
+  [mcache^  : ask-⊥ local-⊥ get-$ put-$ update-$]
   [mdead^   : get-dead put-dead update-dead]
   [menv^    : ask-env local-env]
   [mreach^  : tell-reach hijack-reach]
