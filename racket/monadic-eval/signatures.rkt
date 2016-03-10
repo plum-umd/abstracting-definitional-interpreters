@@ -8,7 +8,7 @@
 ;; evals
 (define-signatures
   [eval-dead^  : eval-dead]
-  [eval-pdcfa^ : eval-pdcfa])
+  [eval-coind^ : eval-coind])
 
 ;; evs
 (define-signatures
@@ -19,20 +19,22 @@
   [ev-dead^     : ev-dead]
   [ev-symbolic^ : ev-symbolic]
   [ev-compile^  : ev-compile]
-  [ev-pdcfa^    : ev-pdcfa])
+  [ev-cache^    : ev-cache])
 
 ;; monad, monoid, and component-specific effects
 (define-signatures
-  [monad^  : M mrun]
-  [monoid^ : O]
-  [mdead^  : get-dead put-dead update-dead]
-  [menv^   : ask-env local-env]
-  [mreach^ : tell-reach hijack-reach]
-  [mstore^ : get-store put-store update-store]
-  [mtrace^ : tell-trace hijack-trace])
+  [monad^   : M mrun]
+  [monoid^  : O]
+  [mcached^ : ask-⊥ local-⊥ get-$ put-$ update-$]
+  [mdead^   : get-dead put-dead update-dead]
+  [menv^    : ask-env local-env]
+  [mreach^  : tell-reach hijack-reach]
+  [mstore^  : get-store put-store update-store]
+  [mtrace^  : tell-trace hijack-trace])
 
 ;; metafunctions
 (define-signatures
   [alloc^    : alloc]
-  [δ^        : δ truish? ⊔]
+  [state^    : find ext]
+  [δ^        : δ truish?]
   [symbolic^ : symbolic? refine get-path-cond])

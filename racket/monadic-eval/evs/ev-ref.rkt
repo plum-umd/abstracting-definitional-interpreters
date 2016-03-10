@@ -15,19 +15,13 @@
                        a ← (alloc 'box)
                        (update-store (λ (σ) (hash-set σ a v)))
                        (return (cons 'box a)))]
-      [(drf e₀)    (do v₀ ← (ev e₀)
-                       (match v₀
-                         [(cons 'box a)
-                          (do σ ← get-store
-                              v ≔ (hash-ref σ a)
-                              (return v))]
-                         [_ fail]))]
-      [(srf e₀ e₁) (do v₀ ← (ev e₀)
-                       (match v₀
-                         [(cons 'box a)
-                          (do v₁ ← (ev e₁)
-                              (update-store (λ (σ) (hash-set σ a v₁)))
-                              (return (cons 'box a)))]
-                         [_ fail]))]
+      [(drf e₀)    (do (cons 'box a) ← (ev e₀)
+                       σ ← get-store
+                       v ≔ (hash-ref σ a)
+                       (return v))]
+      [(srf e₀ e₁) (do (cons 'box a) ← (ev e₀)
+                       v₁ ← (ev e₁)
+                       (update-store (λ (σ) (hash-set σ a v₁)))
+                       (return (cons 'box a)))]
       
       [e ((ev0 ev) e)])))
