@@ -5,7 +5,7 @@
 (provide δ-symbolic@)
 
 (define-unit δ-symbolic@
-  (import monad^ symbolic^)
+  (import monad^ msymbolic^)
   (export δ^)
 
   (define (δ o . vs)

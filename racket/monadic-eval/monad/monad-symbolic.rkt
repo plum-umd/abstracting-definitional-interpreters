@@ -6,7 +6,7 @@
          "../map.rkt")
 
 (import)
-(export monad^ menv^ mstore^ symbolic^)
+(export monad^ menv^ mstore^ msymbolic^)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; monad^
@@ -47,9 +47,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; symbolic^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (symbolic? x)
-  (or (symbol? x) (pair? x)))
 
 (define (refine e)
   (with-monad M

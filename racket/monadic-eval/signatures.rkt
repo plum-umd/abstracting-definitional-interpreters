@@ -46,7 +46,8 @@
   [menv^    : ask-env local-env]
   [mreach^  : tell-reach hijack-reach]
   [mstore^  : get-store put-store update-store]
-  [mtrace^  : tell-trace hijack-trace])
+  [mtrace^  : tell-trace hijack-trace]
+  [msymbolic^ : refine get-path-cond])
 
 ;; metafunctions
 (define-signatures
@@ -67,6 +68,5 @@
   ;; truish? : value → M bool
   ;;   does the value subsume 0?
   
-  [symbolic^ : symbolic? refine get-path-cond]
   ;; 
   )
