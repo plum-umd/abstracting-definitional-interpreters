@@ -32,7 +32,7 @@
     [(lrc f (lam x e₀) e₁) 
      (do ρ  ← ask-env
          a  ← (alloc f)
-         ρ* ≔ (hash-set ρ f a)
+         ρ* ≔ (ρ f a)
          (ext f a (cons (lam x e₀) ρ*)
               (ev e₁)))]
 

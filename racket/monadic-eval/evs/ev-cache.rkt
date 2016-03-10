@@ -15,9 +15,9 @@
         ς ≔ (list e ρ σ)
         Σ ← get-$
         (if (hash-has-key? Σ ς)
-            (return (hash-ref Σ ς))
+            (return (Σ ς))
             (do Σ⊥ ← ask-⊥
-                Σ* ≔ (hash-set Σ ς (hash-ref Σ⊥ ς {set}))
+                Σ* ≔ (hash-set Σ ς (Σ⊥ ς {set}))
                 (put-$ Σ*)
                 v  ← ((ev0 ev) e)
                 (update-$

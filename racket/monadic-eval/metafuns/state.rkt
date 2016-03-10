@@ -11,10 +11,10 @@
 (define (find x)
   (do ρ ← ask-env
       σ ← get-store
-      (return (hash-ref σ (hash-ref ρ x)))))
+      (return (σ (ρ x)))))
 
 (define (ext x a v m)
   (do ρ  ← ask-env
-      ρ* ≔ (hash-set ρ x a)
-      (update-store (λ (σ) (hash-set σ a v)))
+      ρ* ≔ (ρ x a)
+      (update-store (λ (σ) (σ a v)))
       (local-env ρ* m)))
