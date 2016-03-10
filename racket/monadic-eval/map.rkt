@@ -1,7 +1,7 @@
 #lang racket
 ;; Finite map data structure
 (require racket/hash)
-(provide ∅ ∈ ⊔ (struct-out map))
+(provide ∅ ∈ ⊔ map-to-hash)
 
 (define (map-print m port mode)
   (let ([recur (case mode
