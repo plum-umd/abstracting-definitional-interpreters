@@ -1,5 +1,5 @@
 #lang monadic-eval
-(ev-reach@ monad-reach@ alloc@ state@ δ@ ev!@)
+(monad-reach@ alloc@ state@ δ@ ev!@ ev-reach@)
 (fix (ev-reach ev!))
 
 (add1 0)
@@ -15,4 +15,6 @@
          (if0 x x
               (add1 (f (+ x -1)))))
      (f 5))
-
+(! (ref 5))
+(! ((ref 5) := 7))
+(add1 (if0 (! ((ref 0) := 1)) fail 42))

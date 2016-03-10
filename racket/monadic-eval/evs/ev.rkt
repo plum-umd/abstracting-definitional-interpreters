@@ -6,6 +6,7 @@
 
 (import monad^ menv^ mstore^ state^ δ^ alloc^)
 (export ev^)
+(init-depend monad^)
 
 (define-monad M)
 
@@ -32,11 +33,11 @@
          v₁ ← (ev e₁)
          (δ o v₀ v₁))]
 
-    [(lrc f (lam x e₀) e₁) 
+    [(lrc f e₀ e₁) 
      (do ρ  ← ask-env
          a  ← (alloc f)
          ρ* ≔ (ρ f a)
-         (ext a (cons (lam x e₀) ρ*))
+         (ext a (cons e₀ ρ*))
          (local-env ρ* (ev e₁)))]
 
     [(lam x e₀)
