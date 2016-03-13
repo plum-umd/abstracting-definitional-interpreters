@@ -24,8 +24,8 @@
 
 (define ∈
   (case-lambda
-    [(∈ k m) (hash-has-key? (map-to-hash m) k)]
-    [(∈ m)   (in-hash (map-to-hash m))]))
+    [(k m) (hash-has-key? (map-to-hash m) k)]
+    [(m)   (in-hash (map-to-hash m))]))
 
 (define (size m) (hash-count (map-to-hash m)))
 
