@@ -22,6 +22,6 @@
           (do Σ⊥ ← ask-⊥
               Σ* ≔ (Σ ς (if (ς . ∈ . Σ⊥) (Σ⊥ ς) {set}))
               (put-$ Σ*)
-              v ← ((ev0 ev) e)
+              v  ← ((ev0 ev) e)
               (update-$ (λ (Σ′) (Σ′ ς (set-add (Σ′ ς) v))))
               (return v)))))

@@ -14,17 +14,20 @@
   (do ρ ← ask-env
       σ ← get-store
       ς ≔ (list e ρ σ)
-      Σ ← (mlfp (λ (Σ) (do (put-$ ∅)
-                           (put-store σ)
-                           (local-⊥ Σ (local-env ρ (eval e)))
-                           Σ′ ← get-$
-                           (return Σ′))))
-      (for/monad+ ([v (Σ ς)]) (return v))))
+      (mlfp (λ (Σ) (do (put-$ ∅)
+                       (put-store σ)
+                       (local-⊥ Σ (eval e))
+                       Σ′ ← get-$
+                       (return (⊔ Σ Σ′)))))
+      Σ ← get-$
+      (for/monad+ ([v (Σ ς)])
+        (return v))))
 
-; mlfp : ((k → v) → M (k → v)) → M (k → v)
+; mlfp : ((k → v) → M (k ↦ v)) → M unit
 (define (mlfp f)
   (let loop ([x ∅])
     (do x′ ← (f x)
-      (if (equal? x′ x)
-          (return x′)
-          (loop x′)))))
+      (begin; (printf "old Σ ~a new Σ:\n~a\n~a\n" (equal? x′ x) x′ x)
+        (if (equal? x′ x)
+            (return (void))
+            (loop x′))))))

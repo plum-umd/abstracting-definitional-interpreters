@@ -9,10 +9,14 @@
     [(? symbol? s) (vbl s)]
     [(list 'λ (list x) e)
      (lam x (parse e))]
+    [(list 'let x e0 e1)
+     (app (lam x (parse e1)) (parse e0))]
     [(list 'if0 e0 e1 e2)
      (ifz (parse e0)
           (parse e1)
           (parse e2))]
+    [(list 'flip e)
+     (op1 'flip (parse e))]
     [(list 'add1 e)
      (op1 'add1 (parse e))]
     [(list 'sub1 e)

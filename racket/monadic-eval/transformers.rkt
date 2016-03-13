@@ -79,7 +79,7 @@
 ; mzero : ∀a, M(a)
 ; mplus : ∀a, M(a),M(a) → M(a)
 ; mplus(mzero,xM) = xM
-; mplus(xM,mzero) = xM
+ ; mplus(xM,mzero) = xM
 (struct monad-nondet (mzero mplus) #:transparent)
 
 ;;;;;;;;;;
@@ -552,6 +552,12 @@
             fail)
           (tell 9))))
     (cons (cons (void) 9) 0))
+  ; WriterT(ID)(a) = (a,o)+1
+  (check-equal?
+   (with-monad (WriterT ListO ID)
+     (do (cons _ (list 1)) ← (hijack (tell (list 1)))
+         (tell (list 9))))
+   (cons (void) (list 9)))
   ; WriterT(NondetT(ID))(a) = ℘(a,o)
   (check-equal?
     (with-monad (WriterT AddO (NondetT ID))
@@ -915,24 +921,14 @@
                                              (do
                                                (put s)
                                                (return (set (void)))))))))
-           ;; (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
-           ;;     ; propagating fail effects
-           ;;     ; (DD: not sure about this...)
-           ;;     (λ (h) (hash-set h 'fail (monad-fail
-           ;;                               ; fail
-           ;;                               fail
-           ;;                               ; try
-           ;;                               try))))
-           ;; NL: Couldn't find a way to compose NondetT with FailT
-           ;;     without lots of Bad Things™ happening.
-           ;;     I don't think we should--since control-flow is no
-           ;;     longer defunctionalized we should not have
-           ;;     defunctionalized exceptions.
-           (λ (h) (hash-set h 'fail (monad-fail
-                                     ; fail
-                                     ozero
-                                     ; try
-                                     ozero)))
+           (if (not (hash-has-key? (monad-effects M) 'fail)) (λ (h) h)
+               ; propagating fail effects
+               ; (DD: not sure about this...)
+               (λ (h) (hash-set h 'fail (monad-fail
+                                         ; fail
+                                         fail
+                                         ; try
+                                         try))))
 
            ; the standard nondet effect
            (λ (h) (hash-set h 'nondet
@@ -997,4 +993,10 @@
   (check-equal?
    (with-monad (NondetT ID)
      (for/monad+ ([x (list 1 2 3 4 5)]) (return x)))
-    (set 1 2 3 4 5)))
+    (set 1 2 3 4 5))
+  ; NondetT(ID)(a) = ℘(a)
+  (check-equal?
+   (with-monad (FailT (StateT #f (NondetT ID)))
+     (run-StateT 0 (mplus (for/monad+ ([x (list 1 2 3)]) (return x))
+                          fail)))
+   (set (cons (failure) 0) (cons 1 0) (cons 2 0) (cons 3 0))))

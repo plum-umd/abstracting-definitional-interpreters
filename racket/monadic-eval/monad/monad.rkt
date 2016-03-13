@@ -8,7 +8,7 @@
 ;; monad^ impl:
 
 ;; M := ρ → σ → (a × σ)
-(define M (ReaderT (StateT #f (FailT ID))))
+(define M (ReaderT (FailT (StateT #f ID))))
 
 ;; mrun : (M a) [→ ρ [→ θ [→ σ]]] → a × σ
 (define (mrun m [ρ₀ ∅] [σ₀ ∅])

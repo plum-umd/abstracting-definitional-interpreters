@@ -1,7 +1,7 @@
 #lang racket
 ;; Finite map data structure
 (require racket/hash)
-(provide ∅ ∈ ⊔ in-map)
+(provide ∅ ⊔ ∈)
 
 (define (map-print m port mode)
   (let ([recur (case mode
@@ -22,12 +22,12 @@
   #:methods gen:custom-write
   [(define write-proc map-print)])
 
-(define-syntax-rule (in-map m)
-  (in-hash (map-to-hash m)))
+(define-syntax ∈
+  (syntax-rules ()
+    [(∈ k m) (hash-has-key? (map-to-hash m) k)]
+    [(∈ m)   (in-hash (map-to-hash m))]))
 
 (define ∅ (map (hash)))
-
-(define (∈ k m) (hash-has-key? (map-to-hash m) k))
 
 (define (⊔ m₁ m₂ #:combine [cod-⊔ (λ (x _) x)])
   (map (hash-union (map-to-hash m₁)
@@ -39,6 +39,8 @@
   (define r ∅)
   (check-equal? ((r 'x 1) 'x) 1)
   (check-equal? ((r 'x 1) 'y 2) ((r 'y 2) 'x 1))
-  (check-equal? (for/list ([(k v) (in-map ((r 'x 1) 'y 2))])
+  (check-equal? (∈ 'x (r 'x 1)) #t)
+  (check-equal? ('y . ∈ . (r 'x 1)) #f)
+  (check-equal? (for/list ([(k v) (∈ ((r 'x 1) 'y 2))])
                   (cons k v))
-                '((y . 2) (x . 1))))
+                '((x . 1) (y . 2))))

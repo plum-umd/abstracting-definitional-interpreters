@@ -1,63 +1,35 @@
 #lang racket
-(require rackunit
-         racket/set
-         "../transformers.rkt"
-         "../fix.rkt"
-         "../units.rkt"
-         "../syntax.rkt")
-
-(define-values/invoke-unit/infer
-  (link monad-reach@ state@ alloc@ δ@ ev!@ ev-reach@))
-
-(define (eval e)
-  (mrun ((fix (ev-reach ev!)) e)))
-
-(define-syntax check-eval
-  (syntax-rules ()
-    [(check-eval e v)
-     (check-match (eval e)
-                  (cons (cons v _) (? set?)))]))
-
-(define-syntax check-fail
-  (syntax-rules ()
-    [(check-fail e)
-     (check-match (eval e) (failure))]))
 
 (module+ test
-  (check-eval (num 5) 5)
-  (check-eval (op1 'add1 (num 5)) 6)
-  (check-eval (op2 '+ (num 5) (num 11)) 16)
-  (check-eval (lam 'x (vbl 'x))
-              (cons (lam 'x (vbl 'x)) ρ))
+  (require rackunit
+           "../map.rkt"
+           "../fixed/eval-reach.rkt"
+           "../syntax.rkt"
+           "tests.rkt")
+
+  ;; eval : e → (v × σ) × Σ
+  (define (get-v-σs x) (list (car x)))
+
+  (test eval (dd 0) get-v-σs
+        #:answer   22
+        #:bindings '("N" 0) '("x" 2) '("y" 11))
   
-  (check-eval (app (lam 'x (num 7)) (num 5)) 7)
-  (check-eval (app (lam 'x (lam '_ (vbl 'x))) (num 5))
-              (cons (lam '_ (vbl 'x)) ρ))            
-  (check-eval (app (lam 'x (vbl 'x)) (num 5)) 5)          
+  (test eval (dd 1) get-v-σs
+        #:answer   91
+        #:bindings '("N" 1) '("x" 7) '("y" 13))
   
-  (check-eval (ifz (num 0) (num 7) (num 8)) 7)
-  (check-eval (ifz (num 1) (num 7) (num 8)) 8)
-  (check-eval (ref (num 5))
-              (cons 'box _))
-  (check-eval (drf (ref (num 5))) 5)
-  (check-eval (drf (srf (ref (num 5)) (num 7))) 7)
-  (check-eval (op1 'add1
-                   (ifz (drf (srf (ref (num 0)) (num 1)))
-                        'err
-                        (num 42)))
-              43)
-  (check-fail (op1 'add1
-                   (ifz (drf (srf (ref (num 1)) (num 0)))
-                        'err
-                        (num 42))))
-  (check-eval (lrc 'f (lam 'x
-                           (ifz (vbl 'x)
-                                (vbl 'x)
-                                (op1 'add1
-                                     (app (vbl 'f)
-                                          (op2 '+ 
-                                               (vbl 'x)
-                                               (num -1))))))
-                   (app (vbl 'f)
-                        (num 5)))
-              5))
+  (test eval (fact 5) get-v-σs
+        #:answer   120
+        #:bindings
+         '("x" 5) '("x" 4) '("x" 3) '("x" 2) '("x" 1) '("x" 0)
+         '("f" _))
+  
+  (test eval (fact -1) DIVERGES)
+
+  (test eval omega DIVERGES)
+
+  (test eval omega-push DIVERGES)
+
+  (test eval ref-sref get-v-σs
+        #:answer   42
+        #:bindings '(_ 0)))

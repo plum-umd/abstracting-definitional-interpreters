@@ -29,6 +29,7 @@
  "monad/monad-dead.rkt"
  "monad/monad-nd.rkt"
  "monad/monad-pdcfa.rkt"
+ "monad/monad-pdcfa-widen.rkt"
  "monad/monad-reach.rkt"
  "monad/monad-symbolic.rkt"
  "monad/monad-trace.rkt"
@@ -39,6 +40,7 @@
 
  ;; state
  "metafuns/state.rkt"
+ "metafuns/state-crush.rkt"
  "metafuns/state-nd.rkt"
 
  ;; δ
