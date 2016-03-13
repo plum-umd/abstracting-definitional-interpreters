@@ -17,8 +17,7 @@
       (mlfp (λ (Σ) (do (put-$ ∅)
                        (put-store σ)
                        (local-⊥ Σ (eval e))
-                       Σ′ ← get-$
-                       (return (⊔ Σ Σ′)))))
+                       get-$)))
       Σ ← get-$
       (for/monad+ ([v (Σ ς)])
         (return v))))
@@ -27,7 +26,6 @@
 (define (mlfp f)
   (let loop ([x ∅])
     (do x′ ← (f x)
-      (begin; (printf "old Σ ~a new Σ:\n~a\n~a\n" (equal? x′ x) x′ x)
-        (if (equal? x′ x)
-            (return (void))
-            (loop x′))))))
+      (if (equal? x′ x)
+          (return (void))
+          (loop x′)))))
