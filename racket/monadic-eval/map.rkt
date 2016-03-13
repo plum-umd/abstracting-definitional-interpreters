@@ -1,7 +1,7 @@
 #lang racket
 ;; Finite map data structure
 (require racket/hash)
-(provide ∅ ∈ ⊔ map-to-hash size)
+(provide ∅ ⊔ ∈ size)
 
 (define (map-print m port mode)
   (let ([recur (case mode
@@ -22,13 +22,16 @@
   #:methods gen:custom-write
   [(define write-proc map-print)])
 
-(define ∅ (map (hash)))
+(define-syntax ∈
+  (syntax-rules ()
+    [(∈ k m) (hash-has-key? (map-to-hash m) k)]
+    [(∈ m)   (in-hash (map-to-hash m))]))
 
 (define (size m) (hash-count (map-to-hash m)))
 
-(define (∈ k m) (hash-has-key? (map-to-hash m) k))
+(define ∅ (map (hash)))
 
-(define (⊔ m₁ m₂ #:combine [cod-⊔ set-union])
+(define (⊔ m₁ m₂ #:combine [cod-⊔ (λ (x _) x)])
   (map (hash-union (map-to-hash m₁)
                    (map-to-hash m₂)
                    #:combine cod-⊔)))
@@ -37,4 +40,10 @@
   (require rackunit)
   (define r ∅)
   (check-equal? ((r 'x 1) 'x) 1)
-  (check-equal? ((r 'x 1) 'y 2) ((r 'y 2) 'x 1)))
+  (check-equal? ((r 'x 1) 'y 2) ((r 'y 2) 'x 1))
+  (check-equal? (∈ 'x (r 'x 1)) #t)
+  (check-equal? ('y . ∈ . (r 'x 1)) #f)
+  (check-true
+   (let ([l (for/list ([(k v) (∈ ((r 'x 1) 'y 2))])
+              (cons k v))])
+     (not (false? (and (member (cons 'y 2) l) (member (cons 'x 1) l)))))))

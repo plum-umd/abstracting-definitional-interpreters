@@ -11,14 +11,14 @@
   (define (δ . ovs)
     (with-monad M
       (match ovs
-        [`(add1 ,n)   (return 'N)]
-        [`(sub1 ,n)   (return 'N)]
-        [`(+ ,n₁ ,n₂) (return 'N)]
-        [`(- ,n₁ ,n₂) (return 'N)]
-        [`(* ,n₁ ,n₂) (return 'N)]
-        [`(quotient ,n₁ ,(? number? n₂))
+        [`(add1 ,_)   (return 'N)]
+        [`(sub1 ,_)   (return 'N)]
+        [`(+ ,_ ,_) (return 'N)]
+        [`(- ,_ ,_) (return 'N)]
+        [`(* ,_ ,_) (return 'N)]
+        [`(quotient ,_ ,(? number? n₂))
          (if (zero? n₂) fail (return 'N))]
-        [`(quotient ,n₁ ,n₂) 
+        [`(quotient ,_ ,_)
          (mplus (return 'N) fail)])))
 
   (define (truish? v)

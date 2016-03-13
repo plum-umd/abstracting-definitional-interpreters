@@ -5,12 +5,12 @@
 (import)
 (export monad^ menv^ mstore^ mcache^)
 
-;; M ρ σ Σ⊥ Σ a := ρ → σ → Σ⊥ → Σ → ℘(((a ∪ (failure)) × σ)) × Σ
+;; M ρ σ Σ⊥ Σ a := ρ → σ → Σ⊥ → Σ → (℘(a ∪ (failure)) × σ) × Σ
 (define M
   (ReaderT                  ; ρ
     (FailT
-   (StateT #f               ; σ
   (NondetT
+   (StateT (FinMapO PowerO) ; σ
   (ReaderT                  ; Σ⊥
    (StateT (FinMapO PowerO) ; Σ
         ID)))))))
@@ -59,3 +59,4 @@
 (define (update-$ f)
   (do Σ ← get-$
     (put-$ (f Σ))))
+

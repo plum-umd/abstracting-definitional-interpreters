@@ -6,4 +6,7 @@
 (import monad^)
 (export alloc^)
 
-(define alloc (with-monad M return))
+(define-monad M)
+
+(define (alloc x)
+  (return (if (symbol? x) (symbol->string x) x)))

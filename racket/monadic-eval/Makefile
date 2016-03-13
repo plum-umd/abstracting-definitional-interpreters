@@ -10,11 +10,12 @@ compile: init
 
 test: compile
 	@raco test transformers.rkt
-	@raco test tests
+	@raco test tests/eval*.rkt
 
 examples: compile
 	@raco test examples
 
 clean:
 	rm -f .\#* \#*\# *\~ &>/dev/null
+	rm -f **/.\#* **/\#*\# **/*\~ &>/dev/null
 	rm -rf $$(find . -type d -name compiled | xargs)

@@ -5,11 +5,11 @@
 (provide δ-pres@)
 
 (define-unit δ-pres@
-  (import monad^ monoid^)
+  (import monad^)
   (export δ^)
 
   (define (δ . ovs)
-    (with-monad  M
+    (with-monad M
       (match ovs
         [`(add1 ,(? number? n))  (return (add1 n))]
         [`(sub1 ,(? number? n))  (return (sub1 n))]
@@ -24,14 +24,18 @@
          (if (zero? n₂)
              fail
              (return (quotient n₁ n₂)))]
-        [`(,(or 'add1 'sub1 '+ '- '*) ,n) (return 'N)]
-        [`(quotient ,n1 ,(? number? n2))
-         (if (zero? n2) fail (return 'N))]
-        [`(quotient ,n1 ,n2) 
+        [`(add1 ,_)   (return 'N)]
+        [`(sub1 ,_)   (return 'N)]
+        [`(+ ,_ ,_) (return 'N)]
+        [`(- ,_ ,_) (return 'N)]
+        [`(* ,_ ,_) (return 'N)]
+        [`(quotient ,_ ,(? number? n₂))
+         (if (zero? n₂) fail (return 'N))]
+        [`(quotient ,_ ,_)
          (mplus (return 'N) fail)])))
 
   (define (truish? v)
-    (with-monad M
+    (with-monad  M
       (match v
-        ['N (mplus  (return #t) (return #f))]
+        ['N (mplus (return #t) (return #f))]
         [_  (return (zero? v))]))))

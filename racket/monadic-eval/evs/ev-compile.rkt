@@ -4,8 +4,7 @@
          "../syntax.rkt"
          "../signatures.rkt")
 
-(import monad^ menv^ mstore^
-        δ^ alloc^)
+(import monad^ menv^ mstore^ δ^ alloc^)
 (export ev-compile^)
 
 (define (((ev-compile ev0) ev) e)
