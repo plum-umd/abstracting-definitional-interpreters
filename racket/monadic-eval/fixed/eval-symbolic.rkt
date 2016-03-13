@@ -4,7 +4,7 @@
 (provide eval)
 
 (define-values/invoke-unit/infer
-  (link monad-symbolic@ alloc@ state@ δ-symbolic@ ev-symbolic@ ev!@))
+  (link monad-symbolic@ alloc-bang@ state@ δ-symbolic@ ev-symbolic@ ev!@))
 
 ;; eval : exp -> ℘(((value ∪ (failure)) × σ) × φ)
 (define (eval e)

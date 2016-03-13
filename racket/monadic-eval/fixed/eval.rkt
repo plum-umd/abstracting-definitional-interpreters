@@ -6,6 +6,6 @@
 (provide eval)
 
 (define-values/invoke-unit/infer
-  (link monad@ state@ alloc@ δ@ ev@ ev-debug@))
+  (link monad@ state@ alloc-bang@ δ@ ev@ ev-debug@))
 
 (define (eval e) (mrun ((fix ev) e)))
