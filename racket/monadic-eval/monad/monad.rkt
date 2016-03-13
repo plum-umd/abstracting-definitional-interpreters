@@ -3,7 +3,7 @@
          "../transformers.rkt"
 	 "../map.rkt")
 (import)
-(export monad^ menv^ mstore^ state^)
+(export monad^ menv^ mstore^)
 
 ;; monad^ impl:
 
@@ -27,10 +27,3 @@
       (put-store (f σ))))
 
 
-;; In-lined from metafunctions
-
-(define (find a)
-  (do σ ← get-store
-      (return (σ a))))
-
-(define (ext a v) (update-store (λ (σ) (σ a v))))
