@@ -8,9 +8,9 @@
 
 (define n (box 0))
 
-(define (alloc _)
+(define (alloc x)
   (with-monad M
     (let ([n* (unbox n)])
       (set-box! n (add1 n*))
-      (return n*))))
+      (return (format "~a_~a" x n*)))))
 
