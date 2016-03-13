@@ -1,16 +1,15 @@
 #lang racket/unit
 
 (require "../signatures.rkt"
-         "../transformers.rkt")
+         "../transformers.rkt"
+	 "../map.rkt")
 
-(import monad^)
+(import monad^ mstore^)
 (export alloc^)
 
-(define n (box 0))
+(define-monad M)
 
 (define (alloc _)
-  (with-monad M
-    (let ([n* (unbox n)])
-      (set-box! n (add1 n*))
-      (return n*))))
+  (do σ ← get-store
+    (return (size σ))))
 

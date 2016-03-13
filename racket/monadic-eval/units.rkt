@@ -35,6 +35,7 @@
 
  ;; alloc
  "metafuns/alloc.rkt"
+ "metafuns/alloc-bang.rkt"
  "metafuns/alloc-0cfa.rkt"
 
  ;; state
