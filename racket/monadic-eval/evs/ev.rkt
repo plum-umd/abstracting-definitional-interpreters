@@ -4,7 +4,7 @@
          "../syntax.rkt"
          "../signatures.rkt")
 
-(import monad^ menv^ mstore^ state^ δ^ alloc^)
+(import monad^ menv^ state^ δ^ alloc^)
 (export ev^)
 (init-depend monad^)
 
@@ -14,8 +14,7 @@
   (match e
     [(vbl x)
      (do ρ ← ask-env
-         a ≔ (ρ x)
-         (find a))]
+         (find (ρ x)))]
     
     [(num n) (return n)]
     
@@ -36,9 +35,8 @@
     [(lrc f e₀ e₁) 
      (do ρ  ← ask-env
          a  ← (alloc f)
-         ρ* ≔ (ρ f a)
-         (ext a (cons e₀ ρ*))
-         (local-env ρ* (ev e₁)))]
+         (ext a (cons e₀ (ρ f a)))
+         (local-env (ρ f a) (ev e₁)))]
 
     [(lam x e₀)
      (do ρ ← ask-env
@@ -47,9 +45,8 @@
     [(app e₀ e₁)
      (do (cons (lam x e₂) ρ) ← (ev e₀)
          v₁ ← (ev e₁)
-         a  ← (alloc x)
-         ρ* ≔ (ρ x a)
+         a  ← (alloc x)        
          (ext a v₁)
-         (local-env ρ* (ev e₂)))]
+         (local-env (ρ x a) (ev e₂)))]
 
     ['err fail]))
