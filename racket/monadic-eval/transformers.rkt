@@ -748,7 +748,14 @@
 ; Fail Monad Transformer ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(struct failure () #:transparent)
+;(struct failure () #:transparent)
+(define-match-expander failure
+  (lambda (stx)
+    (syntax-case stx ()
+      [(_) #''failure]))
+  (lambda (stx)
+    (syntax-case stx ()
+      [_ #''failure])))
 
 ; FailT m a ≔ m(a+1)
 (define (FailT M)
