@@ -1,7 +1,6 @@
 #lang racket
 (require "../fix.rkt"
-         "../units.rkt"
-         "../tests/tests.rkt")
+         "../units.rkt")
 (provide eval)
 
 (define-values/invoke-unit/infer

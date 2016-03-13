@@ -13,6 +13,7 @@
   (define get-as-σs car)
 
   (test eval (dd '(add1 0)) get-as-σs
+        #:timeout  60
         #:answer   'N
         #:bindings `("N" ,{set 'N})
                    `("x" ,{set 7})
@@ -47,11 +48,13 @@
                    `("y" ,{set 13}))
   
   (test eval (fact 5) get-as-σs
+        #:timeout  60
         #:answer   'N
         #:bindings `("x" ,{set 'N 5})
                    `("f" _))
   
   (test eval (fact -1) get-as-σs
+        #:timeout  60
         #:answer   'N
         #:bindings `("x" ,{set 'N -1})
                    `("f" _) 1)

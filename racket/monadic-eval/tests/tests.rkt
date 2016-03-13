@@ -41,7 +41,7 @@
   (parse `(if0 (! ((ref 1) := 0)) 42 err)))
 
 
-(define MAXTIME 10)
+(define-for-syntax MAXTIME 5)
 (define (timeout secs thunk)
   (define e (engine (λ (_) (thunk))))
   (if (engine-run (* secs 1000) e)
@@ -63,8 +63,10 @@
     #:datum-literals (DIVERGES)
     ;; Tests for divergence, assuming no tests
     ;; runs longer than MAXTIME seconds.
-    [(test eval:expr exp:expr DIVERGES)
-     #'(check-false (timeout MAXTIME (λ () (eval exp))))]
+    [(test eval:expr exp:expr DIVERGES
+           (~optional (~seq #:timeout max-time:expr)
+                      #:defaults ([max-time #`#,MAXTIME])))
+     #'(check-false (timeout max-time (λ () (eval exp))))]
 
     ;; Tests that the output values are what we expect,
     ;; and the store has at least the given values σ-v ...
@@ -73,18 +75,20 @@
     ;; with answers on the left and a store
     ;; on the right.
     [(test eval:expr exp:expr get-as-σs
+           (~optional (~seq #:timeout max-time:expr)
+                      #:defaults ([max-time #`#,MAXTIME]))
            (~seq (~optional (~seq #:answer exp-a:expr)
                             #:defaults ([exp-a #'{set}]))
                  #:bindings exp-b:expr ...) ...
                  (~seq #:preds pred) ...)
-     #'(let ([out (timeout MAXTIME (λ () (eval exp)))])
+     #'(let ([out (timeout max-time (λ () (eval exp)))])
          ;; if output is #f, it ran longer than MAXTIME
          ;; and we assume it diverged
          (check-true (truish? out)) ;; diverged?
          (if (not out)
              (begin
                (printf "Test ran for more than ~a seconds.\n~a\n"
-                       MAXTIME
+                       max-time
                        (pp exp))
                (printf "We assume it diverged.\n"))
 
