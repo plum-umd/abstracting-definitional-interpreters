@@ -26,6 +26,7 @@
 
  ;; monads
  "monad/monad.rkt"
+ "monad/monad-alt.rkt"
  "monad/monad-dead.rkt"
  "monad/monad-nd.rkt"
  "monad/monad-pdcfa.rkt"
