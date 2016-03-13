@@ -1,8 +1,7 @@
 #lang racket/unit
 (require "../map.rkt"
          "../signatures.rkt"
-         "../transformers.rkt"
-         "monad-pdcfa-effects.rkt")
+         "../transformers.rkt")
 (import)
 (export monad^ menv^ mstore^ mcache^)
 
