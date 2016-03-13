@@ -7,21 +7,21 @@
 (define-unit δ@
   (import monad^)
   (export δ^)
+  (define-monad M)
 
   (define (δ . ovs)
-    (with-monad M
-      (match ovs
-        [`(add1 ,n)   (return (add1 n))]
-        [`(sub1 ,n)   (return (sub1 n))]
-        [`(- ,n)      (return (- n))]
-        [`(+ ,n1 ,n2) (return (+ n1 n2))]
-        [`(- ,n1 ,n2) (return (- n1 n2))]
-        [`(* ,n1 ,n2) (return (* n1 n2))]
-        [`(quotient ,n1 ,n2)
-         (if (zero? n2)
-             fail
-             (return (quotient n1 n2)))]
-        [_ fail])))
+    (match ovs
+      [(list 'add1 n)  (return (add1 n))]
+      [(list 'sub1 n)  (return (sub1 n))]
+      [(list '- n)     (return (- n))]
+      [(list '+ n1 n2) (return (+ n1 n2))]
+      [(list '- n1 n2) (return (- n1 n2))]
+      [(list '* n1 n2) (return (* n1 n2))]
+      [(list 'quotient n1 n2)
+       (if (zero? n2)
+           fail
+           (return (quotient n1 n2)))]
+      [_ fail]))
 
   (define (truish? v)
-    (with-monad M (return (zero? v)))))
+    (return (zero? v))))
