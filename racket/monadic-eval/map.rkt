@@ -41,6 +41,7 @@
   (check-equal? ((r 'x 1) 'y 2) ((r 'y 2) 'x 1))
   (check-equal? (∈ 'x (r 'x 1)) #t)
   (check-equal? ('y . ∈ . (r 'x 1)) #f)
-  (check-equal? (for/list ([(k v) (∈ ((r 'x 1) 'y 2))])
-                  (cons k v))
-                '((x . 1) (y . 2))))
+  (check-true
+   (let ([l (for/list ([(k v) (∈ ((r 'x 1) 'y 2))])
+              (cons k v))])
+     (not (false? (and (member (cons 'y 2) l) (member (cons 'x 1) l)))))))

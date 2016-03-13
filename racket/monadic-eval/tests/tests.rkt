@@ -41,7 +41,7 @@
   (parse `(if0 (! ((ref 1) := 0)) 42 err)))
 
 
-(define MAXTIME 5)
+(define MAXTIME 7)
 (define (timeout secs thunk)
   (define e (engine (λ (_) (thunk))))
   (if (engine-run (* secs 1000) e)
