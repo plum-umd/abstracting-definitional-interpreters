@@ -22,8 +22,8 @@
   #:methods gen:custom-write
   [(define write-proc map-print)])
 
-(define-syntax ∈
-  (syntax-rules ()
+(define ∈
+  (case-lambda
     [(∈ k m) (hash-has-key? (map-to-hash m) k)]
     [(∈ m)   (in-hash (map-to-hash m))]))
 
