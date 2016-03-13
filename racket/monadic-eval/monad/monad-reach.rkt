@@ -12,19 +12,19 @@
 (define (mrun m [ρ₀ ∅] [σ₀ ∅])
   (run-StateT σ₀ (run-ReaderT ρ₀ m)))
 
+(define-monad M)
+
 ;; env^ impl:
-(define ask-env   (with-monad M ask))
-(define local-env (with-monad M local))
+(define ask-env   ask)
+(define local-env local)
 
 ;; store^ impl:
-(define get-store (with-monad M get))
-(define put-store (with-monad M put))
+(define get-store get)
+(define put-store put)
 (define (update-store f)
-  (with-monad M
-    (do
-      σ ← get-store
-      (put-store (f σ)))))
+  (do σ ← get-store
+      (put-store (f σ))))
 
 ;; reach^ impl:
-(define tell-reach   (with-monad M tell))
-(define hijack-reach (with-monad M hijack))
+(define tell-reach   tell)
+(define hijack-reach hijack)
