@@ -28,12 +28,11 @@
  "monad/monad.rkt"
  "monad/monad-alt.rkt"
  "monad/monad-dead.rkt"
+ "monad/monad-output.rkt"
  "monad/monad-nd.rkt"
  "monad/monad-pdcfa.rkt"
  "monad/monad-pdcfa-widen.rkt"
- "monad/monad-reach.rkt"
  "monad/monad-symbolic.rkt"
- "monad/monad-trace.rkt"
 
  ;; alloc
  "metafuns/alloc.rkt"
@@ -50,4 +49,7 @@
  "metafuns/delta-pres.rkt"
  "metafuns/delta-symbolic.rkt"
  "metafuns/delta-abs.rkt"
+
+ ;; monoids
+ "transformers.rkt"
  )

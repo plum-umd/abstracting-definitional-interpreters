@@ -5,7 +5,8 @@
 (require (for-syntax racket/syntax syntax/parse)
          rackunit
          racket/hash
-         "map.rkt")
+         "map.rkt"
+         "signatures.rkt")
 
 ;;;;;;;;;;
 ; Monoid ;
@@ -198,6 +199,11 @@
     (set)
     ; oplus
     set-union))
+
+(define-unit AddO@   (import) (export monoid^) (define O AddO))
+(define-unit ListO@  (import) (export monoid^) (define O ListO))
+(define-unit MaxO@   (import) (export monoid^) (define O MaxO))
+(define-unit PowerO@ (import) (export monoid^) (define O PowerO))
 
 ; Finite Map Idempotent Commutative Monoid
 (define (FinMapO O)

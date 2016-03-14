@@ -49,15 +49,10 @@
     ['failure 'failure]
     [(cons v σ) (cons (unparse-v v) (unparse-σ σ))]))
 
-(define (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩list x)
+(define (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩seq x)
   (match x
     [(cons l r) (cons (unparse-⟨maybe-v⟩×σ l)
-                      (map unparse-⟨e-ρ-σ⟩ r))]))
-
-(define (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩set x)
-  (match x
-    [(cons l r) (cons (unparse-⟨maybe-v⟩×σ l)
-                      (map unparse-⟨e-ρ-σ⟩ (set->list r)))]))
+                      (map unparse-⟨e-ρ-σ⟩ (for/list ([x r]) x)))]))
 
 (define (unparse-⟨e-ρ-σ⟩ ers)
   (match ers

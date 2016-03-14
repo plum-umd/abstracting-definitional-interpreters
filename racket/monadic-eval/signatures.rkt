@@ -41,12 +41,10 @@
   [monoid^  : O]
 
   ;; lifted effects for state-space components
-  [mcache^  : ask-⊥ local-⊥ get-$ put-$ update-$]
-  [mdead^   : get-dead put-dead update-dead]
-  [menv^    : ask-env local-env]
-  [mreach^  : tell-reach hijack-reach]
-  [mstore^  : get-store put-store update-store]
-  [mtrace^  : tell-trace hijack-trace]
+  [mcache^    : ask-⊥ local-⊥ get-$ put-$ update-$]
+  [mdead^     : get-dead put-dead update-dead]
+  [menv^      : ask-env local-env]
+  [mstore^    : get-store put-store update-store]
   [msymbolic^ : refine get-path-cond])
 
 ;; metafunctions
