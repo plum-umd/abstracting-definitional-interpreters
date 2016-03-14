@@ -25,6 +25,7 @@
  "evs/ev-debug.rkt"
 
  ;; monads
+ "monad/monad-hand.rkt"
  "monad/monad.rkt"
  "monad/monad-alt.rkt"
  "monad/monad-dead.rkt"
