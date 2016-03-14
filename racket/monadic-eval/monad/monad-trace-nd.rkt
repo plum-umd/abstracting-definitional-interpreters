@@ -5,7 +5,7 @@
          "../unparse.rkt"
          "../map.rkt")
 (import)
-(export monad^ menv^ mstore^ mtrace^)
+(export monad^ menv^ mstore^)
 
 ;; monad^ impl:
 
@@ -19,7 +19,7 @@
 
 (define (mret x) 
   (for/set ([y (in-set x)])
-    (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩list y)))
+    (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩seq y)))
 
 ;; env^ impl:
 (define ask-env   ask)
