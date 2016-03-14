@@ -7,7 +7,7 @@
 (export monad^ menv^ mstore^ mreach^)
 
 ;; M ρ σ a := ρ → σ → (a × ℘(a)) × σ
-(define M (ReaderT (StateT #f (WriterT PowerO (FailT ID)))))
+(define M (ReaderT (FailT (StateT #f (WriterT PowerO ID)))))
 
 ;; mrun : (M ρ θ σ a) [→ ρ [→ θ [→ σ]]] → (a × ℘(a)) × σ
 (define (mrun m [ρ₀ ∅] [σ₀ ∅])
