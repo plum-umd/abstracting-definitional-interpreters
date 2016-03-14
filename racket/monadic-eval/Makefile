@@ -3,6 +3,9 @@ DEFAULT: compile
 
 init:
 	@echo "Initializing #lang monadic-eval"
+	@for oldlink in $$(raco link -l | grep monadic-eval | sed 's/^.*path: //' | xargs); do \
+	  raco link -r $$oldlink ; \
+  done
 	cd .. && raco link monadic-eval
 
 compile: init
