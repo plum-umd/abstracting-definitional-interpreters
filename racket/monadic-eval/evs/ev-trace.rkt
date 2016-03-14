@@ -3,7 +3,7 @@
          "../transformers.rkt"
          "../signatures.rkt")
 
-(import monad^ menv^ mstore^ mtrace^)
+(import monad^ menv^ mstore^)
 (export ev-trace^)
 
 (define-monad M)
@@ -11,5 +11,5 @@
 (define (((ev-trace ev0) ev) e)
   (do ρ ← ask-env
       σ ← get-store
-      (tell-trace `((,e ,ρ ,σ)))
+      (tell `((,e ,ρ ,σ)))
       ((ev0 ev) e)))
