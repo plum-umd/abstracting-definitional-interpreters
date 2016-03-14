@@ -4,7 +4,7 @@
          "../transformers.rkt"
          "../signatures.rkt")
 
-(import monad^ menv^ mstore^ mreach^)
+(import monad^ menv^ mstore^)
 (export ev-reach^)
 (init-depend monad^)
 
@@ -13,5 +13,5 @@
 (define (((ev-reach ev0) ev) e)
   (do ρ ← ask-env
       σ ← get-store
-      (tell-reach {set `(,e ,ρ ,σ)})
+      (tell {set `(,e ,ρ ,σ)})
       ((ev0 ev) e)))

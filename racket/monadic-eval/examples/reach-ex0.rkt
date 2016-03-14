@@ -1,5 +1,5 @@
 #lang monadic-eval
-(monad-reach@ alloc@ state@ δ@ ev!@ ev-reach@)
+(PowerO@ monad-output@ alloc@ state@ δ@ ev!@ ev-reach@)
 (fix (ev-reach ev!))
 
 (add1 0)
