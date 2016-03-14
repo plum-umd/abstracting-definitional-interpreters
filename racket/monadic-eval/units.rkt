@@ -29,6 +29,7 @@
  "monad/monad-alt.rkt"
  "monad/monad-dead.rkt"
  "monad/monad-nd.rkt"
+ "monad/monad-trace-nd.rkt"
  "monad/monad-pdcfa.rkt"
  "monad/monad-pdcfa-widen.rkt"
  "monad/monad-reach.rkt"
