@@ -1,6 +1,7 @@
 #lang racket/unit
 (require "../signatures.rkt"
          "../transformers.rkt"
+         "../unparse.rkt"
 	 "../map.rkt")
 (import)
 (export monad^ menv^ mstore^ mreach^)
@@ -14,8 +15,7 @@
 
 (define-monad M)
 
-;; placeholder
-(define (mret x) x)
+(define mret unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩set)
 
 ;; env^ impl:
 (define ask-env   ask)

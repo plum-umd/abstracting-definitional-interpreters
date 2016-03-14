@@ -54,6 +54,11 @@
     [(cons l r) (cons (unparse-⟨maybe-v⟩×σ l)
                       (map unparse-⟨e-ρ-σ⟩ r))]))
 
+(define (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩set x)
+  (match x
+    [(cons l r) (cons (unparse-⟨maybe-v⟩×σ l)
+                      (map unparse-⟨e-ρ-σ⟩ (set->list r)))]))
+
 (define (unparse-⟨e-ρ-σ⟩ ers)
   (match ers
     [(list e r s) (list (unparse e) r (unparse-σ s))]))
