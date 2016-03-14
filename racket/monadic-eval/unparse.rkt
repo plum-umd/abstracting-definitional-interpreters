@@ -39,6 +39,10 @@
     (for/hash ([(k v) (∈ σ)])
       (values k (unparse-v v)))))
 
+(define (unparse-⟨⟨maybe-v⟩×σ⟩set ans)
+  (for/set ([x (in-set ans)])
+    (unparse-⟨maybe-v⟩×σ x)))
+
 (define (unparse-⟨maybe-v⟩×σ ans)
   (match ans
     [(cons 'failure σ) (cons 'failure (unparse-σ σ))]
