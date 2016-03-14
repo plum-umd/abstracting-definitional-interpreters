@@ -1,7 +1,7 @@
 #lang racket
 ;; Finite map data structure
 (require racket/hash)
-(provide ∅ ⊔ ∈ size)
+(provide ∅ ⊔ ∈ size hash->map)
 
 (define (map-print m port mode)
   (let ([recur (case mode
@@ -21,6 +21,8 @@
      (map (hash-set (map-to-hash m) x v))])
   #:methods gen:custom-write
   [(define write-proc map-print)])
+
+(define hash->map map)
 
 (define ∈
   (case-lambda

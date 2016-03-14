@@ -14,6 +14,9 @@
 
 (define-monad M)
 
+;; placeholder
+(define (mret x) x)
+
 ;; env^ impl:
 (define ask-env   ask)
 (define local-env local)

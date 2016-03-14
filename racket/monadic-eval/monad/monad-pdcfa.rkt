@@ -23,6 +23,9 @@
   (run-StateT  σ₀
   (run-ReaderT ρ₀ m)))))
 
+;; placeholder
+(define (mret x) x)
+
 ;; menv^ impl:
 
 (define ask-env (bind ask (compose1 return car)))

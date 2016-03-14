@@ -13,6 +13,9 @@
 (define (mrun m [ρ₀ ∅] [σ₀ ∅] [θ₀ {set}])
   (run-StateT θ₀ (run-StateT σ₀ (run-ReaderT ρ₀ m))))
 
+;; placeholder
+(define (mret x) x)
+
 ;; env^ impl:
 (define ask-env   (with-monad M ask))
 (define local-env (with-monad M local))

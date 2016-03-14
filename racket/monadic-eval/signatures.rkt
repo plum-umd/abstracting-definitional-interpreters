@@ -37,7 +37,7 @@
 
 ;; monad, monoid, and component-specific effects
 (define-signatures
-  [monad^   : M mrun]
+  [monad^   : M mrun mret]
   [monoid^  : O]
 
   ;; lifted effects for state-space components

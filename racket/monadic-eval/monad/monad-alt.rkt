@@ -1,6 +1,7 @@
 #lang racket/unit
 (require "../signatures.rkt"
          "../transformers.rkt"
+	 "../unparse.rkt"
 	 "../map.rkt")
 (import)
 (export monad^ menv^ mstore^)
@@ -14,6 +15,8 @@
 ;; mrun : (M a) [→ ρ [→ θ [→ σ]]] → a × σ
 (define (mrun m [ρ₀ ∅] [σ₀ ∅])
   (run-StateT σ₀ (run-ReaderT ρ₀ m)))
+
+(define mret unparse-⟨maybe-v×σ⟩)
 
 ;; env^ impl:
 (define ask-env ask)

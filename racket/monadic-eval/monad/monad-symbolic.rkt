@@ -18,6 +18,9 @@
   ;; A pathdition is a set of symbolic values known to have evaluated to 0
   (run-StateT (set) (run-StateT ∅ (run-ReaderT ∅ m))))
 
+;; placeholder
+(define (mret x) x)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; store^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

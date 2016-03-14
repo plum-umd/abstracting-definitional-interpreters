@@ -29,5 +29,5 @@
        #`(#%module-begin
           (define-values/invoke-unit/infer #,linkage)
           (define (eval e1) (mrun (#,ev-exp e1)))
-          (set-box! run (λ (x) (eval (parse x))))
+          (set-box! run (λ (x) (mret (eval (parse x)))))
           ((unbox run) 'e) ...))]))
