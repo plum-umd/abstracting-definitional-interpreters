@@ -65,3 +65,9 @@
 			      (author-name "Matthias" "Felleisen"))
 	    #:date "1998"
 	    #:location (proceedings-location "ACM SIGPLAN 1998 Conference on Programming Language Design and Implementation")))
+
+
+#| Robert Glück. Simulation of two-way pushdown automata revisited. In
+Semantics, Abstract Interpretation, and Reasoning about Programs:
+Essays Dedicated to David A. Schmidt on the Occasion of his Sixtieth
+Birthday, 2013.  |#
