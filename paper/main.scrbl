@@ -53,6 +53,10 @@
    (make-monadic-eval '(monad-pdcfa@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache@ eval-coind@)
                       '(eval-coind (fix (ev-cache ev)))))
 
+@(define the-symbolic-eval
+   (make-monadic-eval '(monad-symbolic@ δ-symbolic@ alloc@ state@ ev-symbolic@ ev@)
+                      '(fix (ev-symbolic ev))))
+
 @title{Abstracting Definitional Interpreters @subtitle{Functional Pearl}}
 
 @;title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
@@ -530,90 +534,94 @@ Let us now start to look at abstractions.
 
 @section[#:tag "symbolic"]{Symbolic Execution}
 
-A simple extension to the monad and metafunctions allow symbolic execution
-with unknown base values@~cite[king-76].
-We first extend the syntax with symbolic numbers @racket[(sym X)],
-which at evaluates to the symbol itself.
-Primitives now work with both regular and symbolic values, and introduce
-non-determinism.
-As standard, symbolic execution relies on a path-condition
-to remember the choice made at each branch to allow eliminating infeasible
+@Figure-ref{symbolic} shows an extension to the monad stack
+and metafunctions to allow symbolic execution with unknown base values@~cite[king-76].
+We first extend the syntax with symbolic numbers @racket[(sym X)].
+Primitives such as @racket['quotient] now work with both regular
+and symbolic values, introduce non-determinism, and may return
+new symbolic values.
+As standard, symbolic execution employs a path-condition
+remembering assumptions made at each branch to allow eliminating infeasible
 paths and constructing test cases.
 We represent the path-condition @racket[φ] as a set of symbolic values
 known to have evaluated to @racket[0].
-This set is interpreted as a connjunction, and is another state component
-provided by @racket[StateT].
-Primitive operations and conditionals rely on metafunction @racket[zero?],
-which determines and remembers a value's "truthiness".
-Operation @racket[flip] is a convenient way of presenting negation.
-Metafunction @racket[zero?] in turn relies on proof relation @racket[proves-0]
-to check if its argument is definitely @racket[0], non-@racket[0],
-or uncertain.
+This set is another state component provided by @racket[StateT].
+Monadic operations @racket[_get-path-cond]
+and @racket[_refine] reference and update the path-condition.
+Metafunction @racket[_zero?] determines and remembers a value's ``truthiness'',
+which relies on @racket[proves-0] for a result of
+{@racket['✓], @racket['✗], @racket['?]} indicating if
+its argument is definitely @racket[0], non-@racket[0], or uncertain, respectively.
+Operator @racket['flip] represents negation in our language.
 
-A scaled up symbolic executor can employ an SMT solver for interesting
-arithmetics, and extend the language with symbolic functions
+In the following example, the symbolic executor concludes that only results
+@racket[2] and @racket[7] are plausible:
+@interaction[
+  #:eval the-symbolic-eval 
+  (if0 'x (if0 'x 2 3) (if0 'x 5 7))
+]
+
+A scaled up symbolic executor can have @racket[_zero?] calling out
+to an SMT solver for interesting arithmetics,
+and extend the language with symbolic functions
 and blame semantics for sound higher-order symbolic
-execution@~cite[vanhorn-oopsla12,nguyen-pldi15].
+execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
 
-@figure["syntax-symbolic" "Extended Syntax"]{
+@figure["symbolic" "Symbolic execution variant"]{
 @codeblock[#:keep-lang-line? #f]|{
   #lang racket
   E  ::= ...       
          (sym X)  ; Symbolic number
 }|
-}
-
-@figure["sym" "Symbolic Execution variant"]{
 @filebox[@racket[symbolic-monad@]]{
 @racketblock[
 (define-monad
-  (ReaderT (FailT (StateT 
-    (StateT (NondetT ID))))))
+  (ReaderT (FailT (StateT (StateT (NondetT ID))))))
 ]}
 @filebox[@racket[ev-symbolic@]]{
 @racketblock[
 (define (((ev-symbolic ev₀) ev) e)
   (match e
-    [(sym x) (return x)]
+    [(sym x) (_return x)]
     [e       ((ev₀ ev) e)]))
 ]}
 @filebox[@racket[δ-symbolic@]]{
 @racketblock[
 (define (δ . ovs)
   (match ovs
+    ... ; TODO can't put comment in here...
     [(list 'quotient v₀ v₁)
-     (do z? ← (zero? v₁)
+     (do z? ← (_zero? v₁)
          (cond
-          [z? fail]
+          [z? _fail]
           [(and (number? v₀) (number? v₁))
-           (return (quotient v₀ v₁))]
-          [else (return `(quotient ,v₀ ,v₁))]))]
+           (_return (quotient v₀ v₁))]
+          [else (_return `(quotient ,v₀ ,v₁))]))]
     [(list 'flip 0) 1]
-    [(list 'flip (? number?)) 0]
-    [(list 'flip s) `(flip ,s)]))
+    ... ; TODO can't put comment in here...
+    ))
 (define (zero? v)
-  (do φ ← get-path-cond
+  (do φ ← _get-path-cond
       (match (proves-0 φ v)
-        ['✓ (return #t)]
-        ['✗ (return #f)]
-        ['? (mplus
-              (do (refine v)
-                  (return #t))
-              (do (refine (op1 'flip v))
-                  (return #f)))])))
+        ['✓ (_return #t)]
+        ['✗ (_return #f)]
+        ['? (_mplus (do (_refine v)
+                        (_return #t))
+                   (do (_refine (op1 'flip v))
+                       (_return #f)))])))
 (define (proves-0 φ v)
   (match v
-    [0 '✓]
-    [(? number?) '✗]
+    [(? number?) (if (= 0 v) '✓ '✗)]
     [v #:when (∈ φ v) '✓]
     [v #:when (∈ φ `(flip ,v)) '✗]
-    [`(flip ,v′)
-      (match (proves-0 φ v′)
-        ['✓ '✗]
-        ['✗ '✓]
-        ['? '?])]
+    [`(flip ,v′) (match (proves-0 φ v′)
+                   ['✓ '✗]
+                   ['✗ '✓]
+                   ['? '?])]
     [_ '?]))
 ]}}
+
+
 
 @section[#:tag "base"]{Abstracting Base Values}
 
