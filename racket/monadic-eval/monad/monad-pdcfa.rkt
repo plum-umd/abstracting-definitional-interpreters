@@ -1,6 +1,8 @@
 #lang racket/unit
-(require "../map.rkt"
+(require racket/match
+         "../map.rkt"
          "../signatures.rkt"
+         "../unparse.rkt"
          "../transformers.rkt")
 (import)
 (export monad^ menv^ mstore^ mcache^)
@@ -24,7 +26,10 @@
   (run-ReaderT ρ₀ m)))))
 
 ;; placeholder
-(define (mret x) x)
+(define (mret x)
+  (match x ; disarcd cache and store
+    [(cons svs cache) (unparse-⟨⟨maybe-v⟩×σ⟩set/discard-σ svs)]))
+
 
 ;; menv^ impl:
 
