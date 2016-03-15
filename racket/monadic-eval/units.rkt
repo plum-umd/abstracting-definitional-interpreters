@@ -16,6 +16,7 @@
 
  ;; ext envs
  "evs/ev-ref.rkt"
+ "evs/ev-cycle.rkt"
  "evs/ev-dead.rkt"
  "evs/ev-reach.rkt"
  "evs/ev-symbolic.rkt"
@@ -29,6 +30,7 @@
  "monad/monad-by-hand.rkt"
  "monad/monad.rkt"
  "monad/monad-alt.rkt"
+ "monad/monad-cycle.rkt"
  "monad/monad-dead.rkt"
  "monad/monad-output.rkt"
  "monad/monad-nd.rkt"

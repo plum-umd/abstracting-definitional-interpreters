@@ -23,6 +23,7 @@
   [ev-dead^     : ev-dead]
   [ev-symbolic^ : ev-symbolic]
   [ev-compile^  : ev-compile]
+  [ev-cycle^    : ev-cycle]
   [ev-cache^    : ev-cache]
   [ev-debug^    : ev-debug])
 
@@ -45,6 +46,7 @@
   [mdead^     : get-dead put-dead update-dead]
   [menv^      : ask-env local-env]
   [mstore^    : get-store put-store update-store]
+  [mcycle^    : ask-cycle local-cycle]
   [msymbolic^ : refine get-path-cond])
 
 ;; metafunctions
