@@ -79,10 +79,10 @@ wide variety of concrete and abstract interpretations.
 In recent years, there has been considerable effort in the systematic
 construction of abstract interpreters for higher-order languages using
 abstract machines---first-order transition systems---as a semantic
-basis.  The so-called _abstracting abstract machines_ (AAM) approach
-to abstract interpretation is a recipe for transforming a machine
-semantics into an easily abstractable form.  There are a few essential
-elements to the transformation:
+basis.  The so-called @emph{abstracting abstract machines} (AAM)
+approach to abstract interpretation@~cite[aam] is a recipe for
+transforming a machine semantics into an easily abstractable form.
+There are a few essential elements to the transformation:
 
 @itemlist[
 @item{continuations are heap-allocated}
@@ -933,8 +933,7 @@ execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
 @figure["symbolic" "Symbolic execution variant"]{
 @codeblock[#:keep-lang-line? #f]|{
   #lang racket
-  E  ::= ...       
-         (sym X)  ; Symbolic number
+  E  ::= ... (sym X)  ; Symbolic number
 }|
 @filebox[@racket[symbolic-monad@]]{
 @racketblock[

@@ -5,6 +5,14 @@
 (define-cite ~cite citet generate-bibliography #:style number-style)
 
 (define dimvar (author-name "Dimitris" "Vardoulakis"))
+(define dvh (author-name "David" "Van Horn"))
+(define might (author-name "Matthew" "Might"))
+
+(define aam
+  (make-bib #:title "Abstracting Abstract Machines"
+            #:author (authors dvh might)
+  	    #:date "2010"
+    	    #:location (proceedings-location "ACM International Conference on Functional Programming")))
 
 (define reynolds72
   (make-bib #:title "Definitional interpreters for higher-order programming languages"
@@ -45,7 +53,7 @@
   (make-bib #:title "Pushdown Control-Flow Analysis of Higher-Order Programs"
             #:author (authors (author-name "Christopher" "Earl")
 			      (author-name "Matthew" "Might")
-			      (author-name "David" "Van Horn"))
+			      dvh)
 	    #:date "2010"
 	    #:location (proceedings-location "Workshop on Scheme and Functional Programming")))
 
@@ -75,7 +83,7 @@
 (define vanhorn-oopsla12
   (make-bib #:title "Higher-order symbolic execution via contracts"
             #:author (authors (author-name "Sam" "Tobin-Hochstadt")
-                              (author-name "David" "Van Horn"))
+                              dvh)
             #:date "2012"
             #:location (proceedings-location "ACM international conference on Object oriented programming systems languages and applications")))
 
