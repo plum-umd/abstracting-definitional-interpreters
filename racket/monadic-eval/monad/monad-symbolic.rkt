@@ -1,9 +1,11 @@
 #lang racket/unit
 
-(require racket/set 
+(require racket/match
+         racket/set 
          "../signatures.rkt" 
          "../transformers.rkt"
-         "../map.rkt")
+         "../map.rkt"
+         "../unparse.rkt")
 
 (import)
 (export monad^ menv^ mstore^ msymbolic^)
@@ -19,7 +21,10 @@
   (run-StateT (set) (run-StateT ∅ (run-ReaderT ∅ m))))
 
 ;; placeholder
-(define (mret x) x)
+(define (mret xs)
+  (for/set ([x xs])
+    (match-define (cons (cons e _) φ) x)
+    `(,e . ,φ)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; store^
