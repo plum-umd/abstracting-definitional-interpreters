@@ -242,8 +242,9 @@ applications.
      (do ρ ← _ask-env
          (_find (ρ x)))]    
     [(ifz e₀ e₁ e₂) 
-     (do v ← (ev e₀)
-         (ev (if (_zero? v) e₁ e₂)))]
+     (do v  ← (ev e₀)
+         z? ← (_zero? v)
+         (ev (if z? e₁ e₂)))]
     [(op1 o e₀)
      (do v ← (ev e₀)
          (_δ o v))]   
