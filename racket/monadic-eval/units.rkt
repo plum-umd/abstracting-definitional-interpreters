@@ -21,6 +21,7 @@
  "evs/ev-symbolic.rkt"
  "evs/ev-trace.rkt"
  "evs/ev-cache.rkt"
+ "evs/ev-cache0.rkt"
  "evs/ev-compile.rkt"
  "evs/ev-debug.rkt"
 
@@ -32,6 +33,7 @@
  "monad/monad-output.rkt"
  "monad/monad-nd.rkt"
  "monad/monad-trace-nd.rkt"
+ "monad/monad-cache.rkt"
  "monad/monad-pdcfa.rkt"
  "monad/monad-pdcfa-widen.rkt"
  "monad/monad-symbolic.rkt"
@@ -40,6 +42,7 @@
  "metafuns/alloc.rkt"
  "metafuns/alloc-bang.rkt"
  "metafuns/alloc-0cfa.rkt"
+ "metafuns/alloc-x.rkt"
 
  ;; state
  "metafuns/state.rkt"

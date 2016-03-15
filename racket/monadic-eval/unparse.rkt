@@ -36,12 +36,24 @@
 
 (define (unparse-σ σ)
   (hash->map
-    (for/hash ([(k v) (∈ σ)])
-      (values k (unparse-v v)))))
+    (for/hash ([(k v) (∈ σ)] #:unless (equal? k '_)) ; HACK!
+      (values k 
+              (if (set? v)
+                  (for/list ([v v]) (unparse-v v))
+                  (unparse-v v))))))
 
+(define (unparse-⟨⟨maybe-v⟩×σ⟩set/discard-σ ans)
+  (for/set ([x (in-set ans)])
+    (unparse-⟨maybe-v⟩ (car x))))
+  
 (define (unparse-⟨⟨maybe-v⟩×σ⟩set ans)
   (for/set ([x (in-set ans)])
     (unparse-⟨maybe-v⟩×σ x)))
+
+(define (unparse-⟨maybe-v⟩ x)
+  (match x
+    ['failure 'failure]
+    [v (unparse-v v)]))
 
 (define (unparse-⟨maybe-v⟩×σ ans)
   (match ans
