@@ -899,6 +899,15 @@ We are left with two remaining problems; we need to figure out: 1) how
 to pipe the cache from one run of the interpreter into the next and 2)
 when to stop.  The answer to both is given in @figure-ref{cache-fix}.
 
+The @racket[fix-cache] function takes a @emph{closed evaluator},
+i.e. something of the form @racket[(fix ev)].  It iteratively runs the
+evaluator.  Each run of the evaluator resets the ``local'' cache to
+empty and uses the cache of the previous run as it's fallback cache
+(initially it's empty).  The computation stops when a least
+fixed-point in the cache has been reached, that is, when running the
+evaluator with a prior gives no changes in the resulting cache.  At
+that point, the result is returned.
+
 @figure["cache-fix" "Finding fixed-points in the cache"]{
 @filebox[@racket[fix-cache@]]{
 @racketblock[
@@ -906,7 +915,7 @@ when to stop.  The answer to both is given in @figure-ref{cache-fix}.
   (do ρ ← _ask-env
       σ ← _get-store
       ς ≔ (list e ρ σ)
-      (mlfp (λ (Σ) (do (_put-$ ∅)
+      (mlfp (λ (Σ) (do (_put-$ ∅-map)
                        (_put-store σ)
                        (_local-⊥ Σ (eval e))
                        _get-$)))
@@ -915,11 +924,11 @@ when to stop.  The answer to both is given in @figure-ref{cache-fix}.
         (_return v))))
 
 (define (mlfp f)
-  (let loop ([x ∅])
+  (let loop ([x ∅-map])
     (do x′ ← (f x)
-      (if (equal? x′ x)
-          (return (void))
-          (loop x′)))))
+        (if (equal? x′ x)
+            (return (void))
+            (loop x′)))))
 ]}}
 
 
