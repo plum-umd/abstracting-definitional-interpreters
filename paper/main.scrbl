@@ -1130,22 +1130,6 @@ its symbol, which we take to stand for the value of an arbitrary
 }|
 
 
-@section{Related work}
-
-Danvy, monadic interpreters and abstract machines.
-
-@subsection{Monadic interpreters}
-
-@~cite[steele-popl94 liang-popl95]
-
-@subsection{Monadic abstract interpreters}
-
-PLDI 2013: small-step monad.
-
-@subsection{Big CFA2}
-
-@~cite[cfa2-diss]
-
 
 @section{Conclusion}
 
@@ -1153,6 +1137,9 @@ PLDI 2013: small-step monad.
 @url{https://github.com/dvanhorn/monadic-eval}}
 
 }
+
+@include-section{related-work.scrbl}
+
 
 @;{
 @bold{Acknowledgments}: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.
