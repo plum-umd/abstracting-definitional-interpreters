@@ -7,7 +7,8 @@ env:
    - RACKET_VERSION=HEAD
 
 before_install:
- - cat install-racket.sh | bash
+ - git clone https://github.com/greghendershott/travis-racket.git
+ - cat travis-racket/install-racket.sh | bash
  - export PATH="${RACKET_DIR}/bin:${PATH}"
 
 install:
