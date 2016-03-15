@@ -12,16 +12,15 @@
 
 (define-monad M)
 
-(define (((ev-cache ev0) ev) e)
+(define (((ev-cache ev₀) ev) e)
   (do ρ ← ask-env
       σ ← get-store
       ς ≔ (list e ρ σ)
       Σ ← get-$
-      (if (ς . ∈ . Σ)
+      (if (∈ ς Σ)
           (for/monad+ ([v (Σ ς)]) (return v))
           (do Σ⊥ ← ask-⊥
-              Σ* ≔ (Σ ς (if (ς . ∈ . Σ⊥) (Σ⊥ ς) {set}))
-              (put-$ Σ*)
-              v  ← ((ev0 ev) e)
-              (update-$ (λ (Σ′) (Σ′ ς (set-add (Σ′ ς) v))))
+              (put-$ (Σ ς (if (∈ ς Σ⊥) (Σ⊥ ς) (set))))
+              v  ← ((ev₀ ev) e)
+              (update-$ (λ (Σ) (Σ ς (set-add (Σ ς) v))))
               (return v)))))
