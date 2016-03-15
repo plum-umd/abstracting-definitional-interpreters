@@ -526,6 +526,94 @@ So our setup makes it easy not only to express the run of the mill
 interpreter, but also different forms of collecting semantics.
 Let us now start to look at abstractions.
 
+
+@section[#:tag "symbolic"]{Symbolic Execution}
+
+A simple extension to the monad and metafunctions allow symbolic execution
+with unknown base values@~cite[king-76].
+We first extend the syntax with symbolic numbers @racket[(sym X)],
+which at evaluates to the symbol itself.
+Primitives now work with both regular and symbolic values, and introduce
+non-determinism.
+As standard, symbolic execution relies on a path-condition
+to remember the choice made at each branch to allow eliminating infeasible
+paths and constructing test cases.
+We represent the path-condition @racket[φ] as a set of symbolic values
+known to have evaluated to @racket[0].
+This set is interpreted as a connjunction, and is another state component
+provided by @racket[StateT].
+Primitive operations and conditionals rely on metafunction @racket[zero?],
+which determines and remembers a value's "truthiness".
+Operation @racket[flip] is a convenient way of presenting negation.
+Metafunction @racket[zero?] in turn relies on proof relation @racket[proves-0]
+to check if its argument is definitely @racket[0], non-@racket[0],
+or uncertain.
+
+A scaled up symbolic executor can employ an SMT solver for interesting
+arithmetics, and extend the language with symbolic functions
+and blame semantics for sound higher-order symbolic
+execution@~cite[vanhorn-oopsla12,nguyen-pldi15].
+
+@figure["syntax-symbolic" "Extended Syntax"]{
+@codeblock[#:keep-lang-line? #f]|{
+  #lang racket
+  E  ::= ...       
+         (sym X)  ; Symbolic number
+}|
+}
+
+@figure["sym" "Symbolic Execution variant"]{
+@filebox[@racket[symbolic-monad@]]{
+@racketblock[
+(define-monad
+  (ReaderT (FailT (StateT 
+    (StateT (NondetT ID))))))
+]}
+@filebox[@racket[ev-symbolic@]]{
+@racketblock[
+(define (((ev-symbolic ev₀) ev) e)
+  (match e
+    [(sym x) (return x)]
+    [e       ((ev₀ ev) e)]))
+]}
+@filebox[@racket[δ-symbolic@]]{
+@racketblock[
+(define (δ . ovs)
+  (match ovs
+    [(list 'quotient v₀ v₁)
+     (do z? ← (zero? v₁)
+         (cond
+          [z? fail]
+          [(and (number? v₀) (number? v₁))
+           (return (quotient v₀ v₁))]
+          [else (return `(quotient ,v₀ ,v₁))]))]
+    [(list 'flip 0) 1]
+    [(list 'flip (? number?)) 0]
+    [(list 'flip s) `(flip ,s)]))
+(define (zero? v)
+  (do φ ← get-path-cond
+      (match (proves-0 φ v)
+        ['✓ (return #t)]
+        ['✗ (return #f)]
+        ['? (mplus
+              (do (refine v)
+                  (return #t))
+              (do (refine (op1 'flip v))
+                  (return #f)))])))
+(define (proves-0 φ v)
+  (match v
+    [0 '✓]
+    [(? number?) '✗]
+    [v #:when (∈ φ v) '✓]
+    [v #:when (∈ φ `(flip ,v)) '✗]
+    [`(flip ,v′)
+      (match (proves-0 φ v′)
+        ['✓ '✗]
+        ['✗ '✓]
+        ['? '?])]
+    [_ '?]))
+]}}
+
 @section[#:tag "base"]{Abstracting Base Values}
 
 One of things an abstract interpreter must do in order to become

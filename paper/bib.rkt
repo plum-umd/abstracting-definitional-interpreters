@@ -66,6 +66,23 @@
 	    #:date "1998"
 	    #:location (proceedings-location "ACM SIGPLAN 1998 Conference on Programming Language Design and Implementation")))
 
+(define king-76
+  (make-bib #:title "Symbolic Execution and Program Testing"
+            #:author (authors (author-name "James C." "King"))
+            #:date "1976"
+            ))
+
+(define vanhorn-oopsla12
+  (make-bib #:title "Higher-order symbolic execution via contracts"
+            #:author (authors (author-name "Sam" "Tobin-Hochstadt")
+                              (author-name "David" "Van Horn"))
+            #:date "2012"))
+
+(define nguyen-pldi15
+  (make-bib #:title "Relatively Complete Counterexamples for Higher-order Programs"
+            #:author (authors (author-name "Phúc C." "Nguyễn")
+                              (author-name "David" "Van Horn"))
+            #:date "2015"))
 
 #| Robert Glück. Simulation of two-way pushdown automata revisited. In
 Semantics, Abstract Interpretation, and Reasoning about Programs:
