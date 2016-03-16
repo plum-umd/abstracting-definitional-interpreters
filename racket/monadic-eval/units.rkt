@@ -38,6 +38,7 @@
  "monad/monad-nd.rkt"
  "monad/monad-trace-nd.rkt"
  "monad/monad-cache.rkt"
+ "monad/monad-grabbag.rkt"
  "monad/monad-pdcfa.rkt"
  "monad/monad-pdcfa-show-store.rkt"
  "monad/monad-pdcfa-gc.rkt"
