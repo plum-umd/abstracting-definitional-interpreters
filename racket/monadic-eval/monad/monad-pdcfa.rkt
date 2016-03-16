@@ -1,6 +1,5 @@
 #lang racket/unit
-(require racket/match
-         "../map.rkt"
+(require "../map.rkt"
          "../signatures.rkt"
          "../unparse.rkt"
          "../transformers.rkt"

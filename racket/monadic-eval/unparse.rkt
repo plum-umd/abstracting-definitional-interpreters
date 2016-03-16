@@ -43,11 +43,11 @@
                   (unparse-v v))))))
 
 (define (unparse-⟨⟨maybe-v⟩×σ⟩set/discard-σ ans)
-  (for/set ([x ans])
+  (for/list ([x ans])
     (unparse-⟨maybe-v⟩ (car x))))
   
 (define (unparse-⟨⟨maybe-v⟩×σ⟩set ans)
-  (for/set ([x ans])
+  (for/list ([x ans])
     (unparse-⟨maybe-v⟩×σ x)))
 
 (define (unparse-⟨maybe-v⟩ x)
@@ -79,5 +79,5 @@
     [(cons vs s) (cons (unparse-⟨maybe-v⟩set vs) (unparse-σ s))]))
 
 (define (unparse-⟨maybe-v⟩set vs)
-  (for/set ([v vs])
+  (for/list ([v vs])
     (unparse-⟨maybe-v⟩ v)))

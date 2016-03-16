@@ -131,9 +131,9 @@
                                                     (string-trim k #px"_.*")
                                                     k)
                                                 v)))]
-                        [act-as.bs (for/list ([as.σ (get-as-σs out)])
+                        [act-as.bs (for/set ([as.σ (get-as-σs out)])
                                      (cons (car as.σ) (σ-to-bs (cdr as.σ))))]
-                        [exp-as.bs (list (cons exp-a
+                        [exp-as.bs (set (cons exp-a
                                                (set exp-b ...)) ...)])
                    ;(printf "Expected:\n~a\n" exp-as.bs)
                    ;(printf "Actual:\n~a\n" act-as.bs)
@@ -150,14 +150,14 @@
                                                      (for/and ([a-b (cdr act-a.b)])
                                                        (for/or ([eb e-b])
                                                          (equish? eb a-b)))))
-                                      (remove act-a.b rem-act))])
+                                      (set-remove rem-act act-a.b))])
                               (if rem-act′ rem-act′
                                   (begin
                                     (check-true #f)
                                     (printf "Did not compute expected result:")
                                     (printf "\nas: ~a\nσ:  ~a\n" e-a e-b)
                                     rem-act))))])
-                     (check-true (empty? unexpected-results))
+                     (check-true (set-empty? unexpected-results))
                      (for ([unexp unexpected-results])
                        (printf "Unexpected result:\nas: ~a\nσ:  ~a\n"
                                (car unexp) (cdr unexp)))
