@@ -3,7 +3,8 @@
          "../map.rkt"
          "../signatures.rkt"
          "../unparse.rkt"
-         "../transformers.rkt")
+         "../transformers.rkt"
+         "CacheT.rkt")
 (import)
 (export monad^ menv^ mstore^ mcache^)
 
@@ -13,23 +14,18 @@
     (FailT
    (StateT #f               ; σ
   (NondetT
-  (ReaderT                  ; Σ⊥
-   (StateT (FinMapO PowerO) ; Σ
-        ID)))))))
+   (CacheT (FinMapO PowerO) ID))))))
 
 (define-monad M)
 
 (define (mrun m [ρ₀ ∅] [σ₀ ∅] [Σ⊥₀ ∅] [Σ₀ ∅])
-  (run-StateT  Σ₀
-  (run-ReaderT Σ⊥₀
+  (run-CacheT  Σ₀ Σ⊥₀
   (run-StateT  σ₀
-  (run-ReaderT ρ₀ m)))))
+  (run-ReaderT ρ₀ m))))
 
 ;; placeholder
 (define (mret x)
-  (match x ; disarcd cache and store
-    [(cons svs cache) (unparse-⟨⟨maybe-v⟩×σ⟩set/discard-σ svs)]))
-
+  (unparse-⟨⟨maybe-v⟩×σ⟩set/discard-σ (ret-CacheT x)))
 
 ;; menv^ impl:
 
