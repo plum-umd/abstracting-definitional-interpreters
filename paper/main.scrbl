@@ -1009,7 +1009,7 @@ In the following example, the symbolic executor recognizes that
 result @racket[3] and division-by-0 error are not feasible:
 @interaction[
   #:eval the-symbolic-eval 
-  (if0 'x (if0 'x 2 3) '(quotient 5 x))
+  (if0 'x (if0 'x 2 3) (quotient 5 'x))
 ]
 
 A scaled up symbolic executor can have @racket[_zero?] calling out
