@@ -6,7 +6,7 @@
 
 All of the components discussed in this paper have been implemented as
 units@~cite[flatt-pldi98] in Racket@~cite[plt-tr1].  We have also
-implemented a @smaller{@tt{#lang}} langauge so that composing and
+implemented a @smaller{@tt{#lang}} language so that composing and
 experimenting with these interpreters is easy.  Assuming Racket is
 installed, you can install the @smaller{@tt{monadic-eval}} package
 with (URL redacted for double-blind):
