@@ -391,12 +391,12 @@ And the main entry-point for the interpreter:
 (define (eval e) (mrun ((fix ev) e)))
 ]
 
-By taking advantage of Racket's languages-as-libraries features, we
-can easily construct REPLs for interacting with this interpreter.
-Here are a few examples, which make use of a concrete syntax for more
-succinctly writing expressions.  The identity function evaluates to an
-answer consisting of a closure over the empty environment together
-with the empty store:
+By taking advantage of Racket's languages-as-libraries
+features@~cite[tobin-hochstadt-pldi11], we can easily construct REPLs
+for interacting with this interpreter.  Here are a few examples, which
+make use of a concrete syntax for more succinctly writing expressions.
+The identity function evaluates to an answer consisting of a closure
+over the empty environment together with the empty store:
 @interaction[#:eval the-pure-eval
   (λ (x) x)
 ]
