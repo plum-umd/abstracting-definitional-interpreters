@@ -1,18 +1,22 @@
 #lang racket/unit
-(require "../map.rkt"
+(require racket/match
+         "../map.rkt"
          "../signatures.rkt"
+         "../unparse.rkt"
          "../transformers.rkt"
-	 "../unparse.rkt"
          "CacheT.rkt")
 (import)
 (export monad^ menv^ mstore^ mcache^)
 
-;; M ρ σ Σ⊥ Σ a := ρ → σ → Σ⊥ → Σ → (℘(a ∪ (failure)) × σ) × Σ
+
+;; SAME AS monad-pdcfa but shows the store.
+
+;; M ρ σ Σ⊥ Σ a := ρ → σ → Σ⊥ → Σ → ℘(((a ∪ (failure)) × σ)) × Σ
 (define M
   (ReaderT                  ; ρ
     (FailT
+   (StateT #f               ; σ
   (NondetT
-   (StateT (FinMapO PowerO) ; σ
    (CacheT (FinMapO PowerO) ID))))))
 
 (define-monad M)
@@ -22,9 +26,8 @@
   (run-StateT  σ₀
   (run-ReaderT ρ₀ m))))
 
-;; placeholder
 (define (mret x)
-  (unparse-⟨maybe-v⟩set×σ (ret-CacheT x)))
+  (unparse-⟨⟨maybe-v⟩×σ⟩set (ret-CacheT x)))
 
 ;; menv^ impl:
 
@@ -62,4 +65,3 @@
 (define (update-$ f)
   (do Σ ← get-$
     (put-$ (f Σ))))
-

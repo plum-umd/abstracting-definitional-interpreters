@@ -73,3 +73,11 @@
 (define (unparse-⟨e-ρ-σ⟩ ers)
   (match ers
     [(list e r s) (list (unparse e) r (unparse-σ s))]))
+
+(define (unparse-⟨maybe-v⟩set×σ x)
+  (match x
+    [(cons vs s) (cons (unparse-⟨maybe-v⟩set vs) (unparse-σ s))]))
+
+(define (unparse-⟨maybe-v⟩set vs)
+  (for/set ([v vs])
+    (unparse-⟨maybe-v⟩ v)))
