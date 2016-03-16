@@ -52,7 +52,7 @@
         #:answer 42 #:bindings
         #:answer (failure) #:bindings)
   
-  (define 1/s_42 (parse `(if0 (flip 's) (quotient 1 's) 42)))
+  (define 1/s_42 (parse `(if0 (¬ 's) (quotient 1 's) 42)))
   (test eval 1/s_42 get-as-σs
         #:answer 42 #:bindings
         #:answer '(quotient 1 s) #:bindings)

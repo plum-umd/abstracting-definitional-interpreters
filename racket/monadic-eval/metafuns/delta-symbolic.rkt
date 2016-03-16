@@ -64,8 +64,8 @@
     [(? number?) '✗]
     [(cons (lam _ _) _) '✗]
     [e #:when (set-member? φ e) '✓]
-    [e #:when (set-member? φ (op1 '¬ e)) '✗]
-    [(op1 '¬ e*) (¬-R (proves-0 φ e*))]
+    [e #:when (set-member? φ `(¬ ,e)) '✗]
+    [`(¬ ,e*) (¬-R (proves-0 φ e*))]
     [_ '?]))
 
 (define (¬-R R)
