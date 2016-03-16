@@ -81,11 +81,11 @@ transformers@~cite[darais-oopsla15] can help with this aspect.  But
 even if we fixed a particular set of components and monad transformer
 stack, we run up against the challenge of having to prove soundness in
 the presence of concrete computations which may not terminate.
-Handling this in the small-step setting is easy using a
-preservation-based argument, but it's not clear how to do it with our
-approach.  Rompf and Amin's recent work on proving type soundness with
-definitional interpreters@~cite[rompf-15] appears revelant and perhaps
-paves a way forward.
+Handling this in the small-step setting is easy using a preservation
+argument, but it's not clear how to do it with our approach.  Rompf
+and Amin's recent work on proving type soundness with definitional
+interpreters@~cite[rompf-15] appears revelant and perhaps paves a way
+forward.
 
 Now that we have abstract interpreters formulated with a basis in
 abstract machines and with a basis in monadic interpreters, an obvious
