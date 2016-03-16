@@ -654,7 +654,7 @@ cause the interpreter to diverge:
 ]
 
 To solve this problem, let's introduce a notion of a @emph{cache}
-which is a mapping from states to sets of values.  The basic idea is
+which is a mapping from states to sets of value, store pairs.  The basic idea is
 that we will use the cache to do a form of co-inductive programming.
 While evaluating a state @racket[ς] for the first time, we may at some
 point be asked to evaluate exactly @racket[ς] again.  Should this
