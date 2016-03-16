@@ -784,7 +784,7 @@ Concretely, this program always returns @racket[2], however with the
 combination of loop detection and abstraction determines that this
 program always produces @racket[0].  That's clearly unsound.
 
-@section{Fixing the Cache}
+@section[#:tag "fixing-cache"]{Fixing the Cache}
 
 The basic problem with the caching solution of @secref{cache} is that
 it cuts short the exploration of the program's behavior.  In the
@@ -1152,6 +1152,7 @@ its symbol, which we take to stand for the value of an arbitrary
 
 }
 
+@include-section{try-it.scrbl}
 @include-section{related-work.scrbl}
 
 
