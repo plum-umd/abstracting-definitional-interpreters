@@ -1045,9 +1045,9 @@ execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
       (match v
         [(? number? n) (return (= 0 n))]
         [v #:when (∈ v φ) (return #t)]
-        [v #:when (∈ v `(¬ ,v)) (return #f)]
+        [v #:when (∈ `(¬ ,v) φ) (return #f)]
         [`(¬ ,v′) (do a ← (zero? v′)
-                     (not a))]
+                     (return (not a)))]
         [v (mplus (do (_refine v)
                       (return #t))
                   (do (_refine `(¬ ,v))
