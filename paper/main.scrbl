@@ -449,12 +449,11 @@ and store.  The top-level evaluation function is then:
   (mrun ((fix (ev-tell ev)) e)))
 ]
 
-@figure["trace" "Tracing variant"]{
+@figure["trace" "Trace collecting semantics"]{
 @filebox[@racket[trace-monad@]]{
 @racketblock[
 (define-monad
-  (ReaderT (FailT (StateT 
-    (WriterT List ID)))))
+  (ReaderT (FailT (StateT (WriterT List ID)))))
 ]}
 @filebox[@racket[ev-tell@]]{
 @racketblock[
@@ -477,6 +476,59 @@ Were we to swap @racket[List] with @racket[Set] in the monad stack, we
 would obtain a @emph{reachable} state semantics, another common form
 of collecting semantics, that loses the order and repetition of
 states.
+
+As another collecting semantics variant, we can also consider
+collecting the @emph{dead code} in a program.  Here we use a monad
+stack that has an addition state component (with operations named
+@racket[put-dead] and @racket[get-dead]), which will the set of dead
+expressions.  Initially, this will contain all of the subexpressions
+of the program.  As the interpreter recurs through expressions, it
+will remove them from the dead set.
+
+@Figure-ref{dead} defines the monad stack for the dead code collecting
+semantics and the @racket[ev-dead@] component which interposes itself
+on an @racket[ev] function to remove the given subexpression before
+recurring.  Since computing the dead code requires an outer wrapper
+that sets the initial set of dead code to be all of the subexpressions
+in the program, it requires a @racket[eval-dead@] component which
+consumes a @emph{closed evaluator}, i.e. something of the form
+@racket[(fix ev)].
+
+Putting these pieces together, the dead code collecting semantics can
+be defined as:
+@racketblock[
+(define (eval e)
+  (mrun ((eval-dead (fix (ev-dead ev))) e)))
+]
+
+Running a program with the dead code interpreter produces an answer
+and the set of expressions that were not evaluated during the running
+of a program:
+@interaction[#:eval the-dead-eval
+(if0 0 1 2)
+(λ (x) x)
+(if0 (quotient 1 0) 2 3)]
+
+
+@figure["dead" "Dead code collecting semantics"]{
+@filebox[@racket[dead-monad@]]{
+@racketblock[
+(define-monad
+  (ReaderT (StateT (StateT (FailT ID)))))
+]}
+@filebox[@racket[ev-dead@]]{
+@racketblock[
+(define (((ev-dead ev₀) ev) e)
+  (do θ  ← _get-dead       
+      (_put-dead (set-remove θ e))
+      ((ev₀ ev) e)))
+]}
+@filebox[@racket[eval-dead@]]{
+@racketblock[
+(define ((eval-dead eval) e₀)
+  (do (_put-dead (subexps e₀))
+      (eval e₀)))
+]}}
 
 So our setup makes it easy not only to express the run of the mill
 interpreter, but also different forms of collecting semantics.

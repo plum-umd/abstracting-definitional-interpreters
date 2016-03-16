@@ -65,6 +65,12 @@
     ['failure 'failure]
     [(cons v σ) (cons (unparse-v v) (unparse-σ σ))]))
 
+(define (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e⟩set x)
+  (match x
+    [(cons as es)
+     (cons (unparse-⟨maybe-v⟩×σ as)
+           (for/set ([e es]) (unparse e)))]))
+
 (define (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩seq x)
   (match x
     [(cons l r) (cons (unparse-⟨maybe-v⟩×σ l)
