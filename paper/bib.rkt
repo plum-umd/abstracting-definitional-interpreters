@@ -26,6 +26,15 @@
   	    #:date "2010"
     	    #:location (proceedings-location "ACM International Conference on Functional Programming")))
 
+(define aam-jfp
+  (make-bib #:title "Systematic Abstraction of Abstract Machines"
+            #:author (authors dvh might)
+  	    #:date "2012"
+    	    #:location (journal-location "Journal of Functional Programming"
+					 #:number "4--5"
+					 #:volume "22")))
+
+
 (define reynolds72
   (make-bib #:title "Definitional interpreters for higher-order programming languages"
             #:author (author-name "John" "Reynolds")
@@ -164,3 +173,24 @@ Birthday")
             #:author (authors might)
             #:location (proceedings-location "34th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages")
 	    #:date "2007"))
+
+(define earl-icfp12
+  (make-bib #:title "Introspective Pushdown Analysis of Higher-Order Programs"
+            #:author (authors (author-name "Christopher" "Earl")
+			      (author-name "Ilya" "Sergey")
+			      might
+			      dvh)
+	    #:location (proceedings-location "ACM SIGPLAN International Conference on Functional Programming")
+	    #:date "2012"))
+			      
+(define johnson-jfp14
+  (make-bib #:title "Pushdown flow analysis with abstract garbage collection"
+	    #:author (authors (author-name "J. Ian" "Johnson")
+			      (author-name "Ilya" "Sergey")
+			      (author-name "Christopher" "Earl")
+			      might
+			      dvh)
+	    #:location (journal-location "Journal of Functional Programming"
+					 #:number "2--3"
+					 #:volume "24")
+	    #:date "2014"))
