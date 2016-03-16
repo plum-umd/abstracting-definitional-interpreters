@@ -19,9 +19,9 @@
                        (local-⊥ Σ (eval e))
                        get-$)))
       Σ ← get-$
-      (for/monad+ ([e.v.ρ.σ (Σ ς)])
-        (do (put-store (cadddr e.v.ρ.σ))
-            (return (cadr e.v.ρ.σ))))))
+      (for/monad+ ([v.σ (Σ ς)])
+        (do (put-store (cdr v.σ))
+            (return (car v.σ))))))
 
 ; mlfp : ((k → v) → M (k ↦ v)) → M unit
 (define (mlfp f)

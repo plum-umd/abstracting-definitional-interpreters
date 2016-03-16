@@ -18,12 +18,12 @@
       ς ≔ (list e ρ σ)
       Σ ← get-$
       (if (∈ ς Σ)
-          (for/monad+ ([e.v.ρ.σ (Σ ς)])
-            (do (put-store (cadddr e.v.ρ.σ))
-                (return (cadr e.v.ρ.σ))))
+          (for/monad+ ([v.σ (Σ ς)])
+            (do (put-store (cdr v.σ))
+                (return (car v.σ))))
           (do Σ⊥ ← ask-⊥
               (put-$ (Σ ς (if (∈ ς Σ⊥) (Σ⊥ ς) (set))))
               v  ← ((ev₀ ev) e)
               σ  ← get-store
-              (update-$ (λ (Σ) (Σ ς (set-add (Σ ς) (list e v ρ σ)))))
+              (update-$ (λ (Σ) (Σ ς (set-add (Σ ς) (cons v σ)))))
               (return v)))))

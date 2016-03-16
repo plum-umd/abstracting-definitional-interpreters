@@ -18,7 +18,7 @@
   (run-StateT σ₀ (run-ReaderT ρ₀ m)))
 
 (define (mret x) 
-  (for/set ([y (in-set x)])
+  (for/set ([y x])
     (unparse-⟨⟨maybe-v⟩×σ⟩×⟨e-ρ-σ⟩seq y)))
 
 ;; env^ impl:

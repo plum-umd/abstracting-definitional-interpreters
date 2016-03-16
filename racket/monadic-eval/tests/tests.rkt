@@ -45,8 +45,7 @@
             (Uₚ Uₚ))))
 
 (define ref-sref
-  (parse `(if0 (! ((ref 1) := 0)) 42 err)))
-
+  (parse '(if0 (! ((ref 1) := 0)) 42 err)))
 
 (define-for-syntax MAXTIME 5)
 (define (timeout secs thunk)

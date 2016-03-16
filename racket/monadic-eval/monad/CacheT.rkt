@@ -16,4 +16,4 @@
   (run-ReaderT Σ⊥₀ m)))
 
 ;; disregard the cache on return
-(define (ret-CacheT x) (cdr x))
+(define (ret-CacheT x) (car x))
