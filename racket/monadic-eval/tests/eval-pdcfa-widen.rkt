@@ -13,36 +13,42 @@
   (define (get-as-σs out) (list (cons (caar out) (cdar out))))
 
   (test eval (dd '(add1 0)) get-as-σs
+        #:timeout  60
         #:answer   {set 2 3 5 7 11 13}
         #:bindings `("input" ,{set 'N})
                    `("x" ,{set 3 5 7 2})
                    `("y" ,{set 11 13}))
 
   (test eval (dd 0) get-as-σs
+        #:timeout  60
         #:answer   {set 2}
         #:bindings `("input" ,{set 0})
                    `("x" ,{set 2})
                    `("y" ,{set 11}))
 
   (test eval (dd 1) get-as-σs
+        #:timeout  60
         #:answer   {set 13}
         #:bindings `("input" ,{set 1})
                    `("x" ,{set 7})
                    `("y" ,{set 13}))
 
   (test eval (dd* '(add1 0)) get-as-σs
+        #:timeout  60
         #:answer   {set 'N}
         #:bindings `("input" ,{set 'N})
                    `("x" ,{set 3 5 7 2})
                    `("y" ,{set 11 13}))
 
   (test eval (dd* 0) get-as-σs
+        #:timeout  60
         #:answer   {set 'N}
         #:bindings `("input" ,{set 0})
                    `("x" ,{set 2})
                    `("y" ,{set 11}))
 
   (test eval (dd* 1) get-as-σs
+        #:timeout  60
         #:answer   {set 'N}
         #:bindings `("input" ,{set 1})
                    `("x" ,{set 7})
