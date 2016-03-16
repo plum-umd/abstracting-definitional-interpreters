@@ -920,6 +920,7 @@ the expected answers on the previous examples:
 Let us now take stock of what we've got.
 
 @include-section{reynolds.scrbl}
+@include-section{store-widen.scrbl}
 
 @section[#:tag "symbolic"]{Symbolic Execution and Path-Sensitive Verification}
 

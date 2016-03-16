@@ -12,7 +12,7 @@
                       #:lang 'monadic-eval/lang 
                       link
                       fix))
-    (set-eval-limits ev 2 200)
+    (set-eval-limits ev 5 200)
     ev))
 
 (define the-pure-eval
@@ -45,6 +45,14 @@
 
 (define the-pdcfa-eval
    (make-monadic-eval '(monad-pdcfa@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache@ eval-coind@)
+                      '(eval-coind (fix (ev-cache ev)))))
+
+(define the-pdcfa-eval/show-store
+   (make-monadic-eval '(monad-pdcfa-show-store@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache@ eval-coind@)
+                      '(eval-coind (fix (ev-cache ev)))))
+
+(define the-widen-pdcfa-eval/show-store
+   (make-monadic-eval '(monad-pdcfa-widen@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache@ eval-coind@)
                       '(eval-coind (fix (ev-cache ev)))))
 
 (define the-symbolic-eval
