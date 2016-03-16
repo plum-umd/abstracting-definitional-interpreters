@@ -62,3 +62,7 @@
 (define the-symbolic-eval
    (make-monadic-eval '(monad-symbolic@ δ-symbolic@ alloc@ state@ ev-symbolic@ ev@)
                       '(fix (ev-symbolic ev))))
+
+(define the-alt-eval
+   (make-monadic-eval '(monad-pdcfa@ state-crush@ alloc-x@ δ-pres@ ev@ ev-cache@ eval-coind@)
+                      '(eval-coind (fix (ev-cache ev)))))
