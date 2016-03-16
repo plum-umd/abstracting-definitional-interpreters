@@ -983,11 +983,11 @@ execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
   (do φ ← _get-path-cond
       (match v
         [(? number? n) (return (= 0 n))]
-        ['N (mplus (return #t) (return #f))]
         [v #:when (∈ v φ) (return #t)]
         [v #:when (∈ v `(¬ ,v)) (return #f)]
         [`(¬ ,v′) (do a ← (zero? v′)
                      (not a))]
+        ['N (mplus (return #t) (return #f))]
         [v (mplus (do (_refine v)
                       (return #t))
                   (do (_refine `(¬ ,v))
