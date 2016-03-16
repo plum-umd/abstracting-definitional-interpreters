@@ -784,7 +784,7 @@ Concretely, this program always returns @racket[2], however with the
 combination of loop detection and abstraction determines that this
 program always produces @racket[0].  That's clearly unsound.
 
-@section[#:tag "fix"]{Fixing the Cache}
+@section[#:tag "fixing-cache"]{Fixing the Cache}
 
 The basic problem with the caching solution of @secref{cache} is that
 it cuts short the exploration of the program's behavior.  In the
@@ -989,7 +989,7 @@ Traditional symbolic executors mainly aim to find bugs
 and provide no termination guarantee.
 We can apply abstracting units presented in previous sections,
 namely base value widening (@secref{base}), finite allocation (@secref{closures}),
-caching and fixing (@secref{cache} and @secref{fix}) to turn
+caching and fixing (@secref{cache} and @secref{fixing-cache}) to turn
 a symbolic execution into a sound, path-sensitive program verification.
 
 Operations on symbolic values introduce a new source of infinite configurations
@@ -1190,6 +1190,7 @@ its symbol, which we take to stand for the value of an arbitrary
 
 }
 
+@include-section{try-it.scrbl}
 @include-section{related-work.scrbl}
 
 

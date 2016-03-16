@@ -10,7 +10,16 @@
 (define darais (author-name "David" "Darais"))
 (define pcn (author-name "Phúc C." "Nguyễn"))
 (define sth (author-name "Sam" "Tobin-Hochstadt"))
-                              
+            
+
+(define plt-tr1
+  (make-bib #:title    "Reference: Racket"
+            #:author   (authors "Matthew Flatt" "PLT")
+            #:date     "2010"
+            #:location (techrpt-location #:institution "PLT Design Inc."
+                                         #:number "PLT-TR-2010-1")
+            #;#;#:url      "https://racket-lang.org/tr1/"))
+                  
 (define aam
   (make-bib #:title "Abstracting Abstract Machines"
             #:author (authors dvh might)

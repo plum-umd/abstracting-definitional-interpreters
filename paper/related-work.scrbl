@@ -2,7 +2,7 @@
 
 @(require "bib.rkt")
 
-@title{Related work}
+@title{Related Work}
 
 Danvy, monadic interpreters and abstract machines. @~cite[ager-tcs05]
 
