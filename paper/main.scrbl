@@ -14,18 +14,20 @@
 
 @authorinfo["" "" ""]
 
-@abstract{A definitional interpreter written in monadic style can
-express a wide variety of abstract interpretations.  We give a
-rational reconstruction of a definitional abstract interpreter for a
-higher-order language by constructing a series of units implementing
-monadic operations.  The denouement of our story is a sound and
-computable abstract interpreter that arises from the composition of
-simple, independent components.  Remarkably, this interpreter
-implements a form of pushdown control flow analysis (PDCFA) in which
-calls and returns are always properly matched in the abstract
-semantics.  True to the definitional style of Reynolds, the evaluator
-involves no explicit mechanics to achieve this property; it is simply
-inherited from the defining language.}
+@abstract{In this paper, we show that a definitional interpreter
+written in monadic style can express not only the usual notion of
+interpretation, but also a wide variety of collecting semantics,
+abstract interpretations, symbolic execution, and their intermixings.
+We give a rational reconstruction of a definitional @emph{abstract}
+interpreter for a higher-order language by building a series of
+components implementing monadic operations.  The denouement of our
+story is a computable abstract interpreter that arises from the
+composition of simple, independent components.  Remarkably, this
+interpreter implements a form of pushdown control flow analysis
+(PDCFA) in which calls and returns are always properly matched in the
+abstract semantics.  True to the definitional style of Reynolds, the
+evaluator involves no explicit mechanics to achieve this property; it
+is simply inherited from the defining language.}
 
 @keywords{definitional interpreters, abstract interpretation, pushdown
 control flow analysis, symbolic execution}
@@ -49,7 +51,7 @@ In this paper, we make the following two observations:
 can simultaneously define a language's semantics as well as
 safe approximations of those semantics.}
 
-@item{These definitional abstract interpreters can inherit
+@item{These definitional @emph{abstract} interpreters can inherit
 characteristics of the defining language.  In particular, we show that
 the abstract interpreter inherits the call and return matching
 property of the defining language and therefore realizes an abstract
