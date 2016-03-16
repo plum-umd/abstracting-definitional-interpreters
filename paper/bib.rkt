@@ -194,3 +194,9 @@ Birthday")
 					 #:number "2--3"
 					 #:volume "24")
 	    #:date "2014"))
+
+(define moggi-89
+  (make-bib #:title "An abstract view of programming languages"
+            #:author (author-name "Eugenio" "Moggi")
+	    #:location (techrpt-location #:institution "Edinburgh University" #:number "ECS-LFCS-90-113")
+	    #:date "1989"))
