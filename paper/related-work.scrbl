@@ -56,10 +56,12 @@ appears it would run in to the same issues identified here.
 Our formulation of a pushdown abstract interpreter computes an
 abstraction similar to the many existing variants of pushdown flow
 analysis@~cite[cfa2-lmcs pdcfa-sfp10 cfa2-diss aam-jfp earl-icfp12
-johnson-dls14 johnson-jfp14 gilray-popl16].  Our incorporation of an
+johnson-dls14 johnson-jfp14 gilray-popl16].
+@;{ Our incorporation of an
 abstract garbage collector into a pushdown abstract interpreter
 achieves a similar goal as that of so-called @emph{introspective}
-pushdown abstract interpreters@~cite[earl-icfp12 johnson-jfp14].  The
+pushdown abstract interpreters@~cite[earl-icfp12 johnson-jfp14].  }
+The
 mixing of symbolic execution and abstract intrepretation is similar in
 spirit to the @emph{logic flow analysis} of Might@~cite[might-popl07],
 albeit in a pushdown setting and with a stronger notion of negation;

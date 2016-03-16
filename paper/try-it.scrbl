@@ -20,9 +20,10 @@ A @smaller{@tt{#lang monadic-eval}} program starts with a list of
 components, which are linked together, and an expression producing an
 evaluator.  Subsequent forms are interpreted as expressions when run.
 Programs can be run from the command-line or interactively in the
-DrRacket IDE.  For example, here is a screen shot of the PDCFA
+DrRacket IDE.  For example, @figure-ref{screen} shows a screen shot of the PDCFA
 evaluator running the example from @secref{fixing-cache}.
 
-@image[#:scale .29]{screen.pdf}
+@figure["screen" "Screenshot of monadic language"]{
+@image[#:scale .29]{screen.pdf}}
 
 

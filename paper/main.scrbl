@@ -967,12 +967,15 @@ Let us now take stock of what we've got.
 
 @section[#:tag "symbolic"]{Symbolic Execution and Path-Sensitive Verification}
 
+As a final exercise in abstract interpretation component engineering,
+we develop a monadic view of symbolic execution.
+
 We present an extension to the monad stack and metafunctions
-that gives rise to a symbolic execution@~cite[king-76],
+that gives rise to a symbolic executor@~cite[king-76],
 then show how abstractions discussed in previous sections
 can be applied to enforce termination,
 turning a traditional symbolic execution into a path-sensitive
-verification.
+verification engine.
 
 @subsection{Symbolic Execution}
 @Figure-ref{symbolic} shows the units needed to turn the existing interpreter
