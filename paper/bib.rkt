@@ -200,3 +200,10 @@ Birthday")
             #:author (author-name "Eugenio" "Moggi")
 	    #:location (techrpt-location #:institution "Edinburgh University" #:number "ECS-LFCS-90-113")
 	    #:date "1989"))
+
+(define rompf-15
+  (make-bib #:title "From F to DOT: Type Soundness Proofs with Definitional Interpreters"
+            #:author (authors (author-name "Tiark" "Rompf")
+	    	     	      (author-name "Nada" "Amin"))
+	     #:location (techrpt-location #:institution "arXiv" #:number "1510.05216")
+             #:date "2015"))

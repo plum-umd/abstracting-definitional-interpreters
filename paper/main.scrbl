@@ -106,8 +106,7 @@ Moreover, the soundness of the resulting abstraction is self-evident
 and easily proved.
 
 The AAM approach has been used to build static analyzers for languages
-such as Java, JavaScript, Racket, Coq, and Erlang.  It's been applied
-to malware detection, contract verification, and ?.
+such as Java, JavaScript, Racket, Coq, and Erlang.
 
 Given the success of the AAM approach, it's natural to wonder what is
 essential about the low-level machine basis of the semantics and
@@ -950,13 +949,13 @@ With these peices in place, we can construct an interpreter as:
   (mrun ((fix-cache (fix (ev-cache ev))) e)))
 ]
 When linked with @racket[δ^] and @racket[alloc^], this interpreter is
-a sound, computable abstraction of the original definitional
-interpreter.  Note that the iterated evaluator always terminates: the
-cache resulting from each run of the evaluator contains @emph{at
-least} as much information as the prior cache, each run of the
-evaluator terminates, so the iterated evaluator terminates by the same
-principle as before: the cache monotonically grows and is finite in
-size.
+a computable---and we conjecture, sound---abstraction of the original
+definitional interpreter.  Note that the iterated evaluator always
+terminates: the cache resulting from each run of the evaluator
+contains @emph{at least} as much information as the prior cache, each
+run of the evaluator terminates, so the iterated evaluator terminates
+by the same principle as before: the cache monotonically grows and is
+finite in size.
 
 We have thus achieved our goal and can confirm it gives
 the expected answers on the previous examples:
@@ -1275,6 +1274,7 @@ its symbol, which we take to stand for the value of an arbitrary
 
 @include-section{try-it.scrbl}
 @include-section{related-work.scrbl}
+@include-section{conclusions.scrbl}
 
 
 @;{
