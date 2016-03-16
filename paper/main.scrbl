@@ -686,14 +686,15 @@ maintaining the cache, we avoid the possibility of diverging.
 We use the following monad stack, which adds a ``cache'' component,
 which will be a finite map from states to sets of values:
 @racketblock[
-(ReaderT (FailT (StateT (NondetT (CacheT ID)))))
+(ReaderT (FailT (StateT (NondetT (StateT+ ID)))))
 ]
 
-The @racket[CacheT] monad transformer is a slight variation of
-@racket[StateT], with operations @racket[get-$] and @racket[update-$]
-for getting and updating the cache, respectively.  The difference
-between this and the state monad is it that joins finite maps by union
-of the range in its @racket[mplus] operation.
+The @racket[StateT+] monad transformer provides operations
+@racket[get-$] and @racket[update-$] for getting and updating the
+cache, respectively. It joins its finite maps by union of the range
+when @racket[mplus] is called, because it cannot defer to an
+underlying monoid as the outer @racket[StateT] does with
+@racket[NondetT].
 
 @Figure-ref{ev-cache0} gives an @racket[ev]-wrapper that interposes
 itself on each recursive call to do the following steps:
@@ -821,7 +822,7 @@ stack:
 @racketblock[
 (ReaderT (FailT (StateT (NondetT 
   (ReaderT @code:comment{the prior cache}
-    (CacheT ID))))))
+    (StateT+ ID))))))
 ]
 
 The revised @racket[ev-cache@] component is given in

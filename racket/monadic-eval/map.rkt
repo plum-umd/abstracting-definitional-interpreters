@@ -1,7 +1,7 @@
 #lang racket
 ;; Finite map data structure
 (require racket/hash)
-(provide ∅ ⊔ ∈ size hash->map)
+(provide ∅ ⊔ ∈ size hash->map for/map)
 
 (define (map-print m port mode)
   (let ([recur (case mode
@@ -33,10 +33,19 @@
 
 (define ∅ (map (hash)))
 
-(define (⊔ m₁ m₂ #:combine [cod-⊔ (λ (x _) x)])
-  (map (hash-union (map-to-hash m₁)
-                   (map-to-hash m₂)
-                   #:combine cod-⊔)))
+(define (⊔ m₁ #:combine [cod-⊔ (λ (x _) x)] . mₙ)
+  (map (apply hash-union
+              (map-to-hash m₁)
+              (foldl (λ (m a) (cons (map-to-hash m) a)) '() mₙ)
+              #:combine cod-⊔)))
+
+(define-syntax (for/map stx)
+  (syntax-case stx ()
+    [(_ clauses defs+exprs ...)
+     (with-syntax ([original stx])
+       #'(for/fold/derived original ([m ∅]) clauses
+           (let-values ([(k v) (let () defs+exprs ...)])
+             (m k v))))]))
 
 (module+ test
   (require rackunit)
