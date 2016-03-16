@@ -671,9 +671,9 @@ maintaining the cache, we avoid the possibility of diverging.
       ς ≔ (list e ρ σ)
       Σ ← _get-$
       (if (∈ ς Σ)
-          (for/monad+ ([v.σ (Σ ς)])
-            (do (_put-store (cdr v.σ))
-                (_return (car v.σ))))
+          (for/monad+ ([v×σ (Σ ς)])
+            (do (_put-store (cdr v×σ))
+                (_return (car v×σ))))
           (do (_put-$ (Σ ς ∅))
               v  ← ((ev₀ ev) e)
               (_update-$ 
@@ -838,9 +838,9 @@ degenerates into exactly what was given in @figure-ref{ev-cache0}.
       ς ≔ (list e ρ σ)
       Σ ← _get-$
       (if (∈ ς Σ)
-          (for/monad+ ([v.σ (Σ ς)])
-            (do (_put-store (cdr v.σ))
-                (_return (car v.σ))))
+          (for/monad+ ([v×σ (Σ ς)])
+            (do (_put-store (cdr v×σ))
+                (_return (car v×σ))))
           (do Σ⊥ ← _ask-⊥
               @code:comment{initialize to prior, if exists}
               (_put-$ (Σ ς (if (∈ ς Σ⊥) (Σ⊥ ς) ∅)))
@@ -877,9 +877,9 @@ that point, the result is returned.
                        (_local-⊥ Σ (eval e))
                        _get-$)))
       Σ ← _get-$
-      (for/monad+ ([v.σ (Σ ς)])
-        (do (_put-store (cdr v.σ))
-            (_return (car v.σ))))))
+      (for/monad+ ([v×σ (Σ ς)])
+        (do (_put-store (cdr v×σ))
+            (_return (car v×σ))))))
 
 (define (mlfp f)
   (let loop ([x ∅-map])
