@@ -40,12 +40,12 @@ non-deterministic pushdown automata@~cite[glück-schmidtfest13].
 Vardoulakis, who was the first to develop the idea of a pushdown
 abstraction for higher-order flow analysis@~cite[cfa2-lmcs],
 formalized CFA2 using a CPS model, which is similar in spirit to a
-machine-based model.  However, in his dissertation he sketches an
-alternative presentation dubbed ``Big CFA2'' which is a big-step
-operational semantics for doing pushdown analysis quite similar in
-spirit to the approach presented here.  One key difference is that Big
-CFA2 fixes a particular coarse abstraction of base values and
-closures---for example, both branches of a conditional are always
+machine-based model.  However, in his dissertation@~cite[cfa2-diss] he
+sketches an alternative presentation dubbed ``Big CFA2'' which is a
+big-step operational semantics for doing pushdown analysis quite
+similar in spirit to the approach presented here.  One key difference
+is that Big CFA2 fixes a particular coarse abstraction of base values
+and closures---for example, both branches of a conditional are always
 evaluated.  Consequently, it only uses a single iteration of the
 abstract evaluation function, similar to the @emph{unsound} approach
 of @secref{cache} and avoids the need for the cache-based fixed-point
@@ -65,11 +65,12 @@ spirit to the @emph{logic flow analysis} of Might@~cite[might-popl07],
 albeit in a pushdown setting and with a stronger notion of negation;
 generally, our presentation resembles traditional formulations of
 symbolic execution more closely.  Our approach to symbolic execution
-is inspired by Nguyễn's work on higher-order symbolic
-execution@~cite[nguyen-pldi15], although we don't handle the case of
-higher-order symbolic values.  In principle, this should be possible
-by adapting Nguyễn's method to a formulation in a compositional
-evaluator.
+only handles the first-order case of symbolic values, as is
+traditional.  However, Nguyễn's work on higher-order symbolic
+execution@~cite[nguyen-pldi15] demonstrates how to scale to behavioral
+symbolic values.  In principle, it should be possible to handle this
+case in our approach by adapting Nguyễn's method to a formulation in a
+compositional evaluator.
 
 We have eschewed soundness proofs in this paper.  This is done in part
 to emphasize the pearly intuitions and constructions of abstract
