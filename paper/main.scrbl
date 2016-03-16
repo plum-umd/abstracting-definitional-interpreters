@@ -63,12 +63,12 @@ pdcfa-sfp10].}
 A common problem of past approaches to the control flow analysis of
 functional languages is the inability to properly match a function
 call with its return in the abstract semantics, leading to infeasible
-program (abstract) executions in which a return is made from one point
-in the program text, but control returns to another.  The CFA2
-analysis of Vardoulakis and Shivers@~cite[cfa2-lmcs] was the first
-approach that overcame this shortcoming.  In essence, this kind of
-analysis can be viewed as replacing the traditional finite automata
-abstractions of programs with pushdown automata@~cite[pdcfa-sfp10].
+program (abstract) executions in which a call is made from one point
+in the program, but control returns to another.  The CFA2 analysis of
+Vardoulakis and Shivers@~cite[cfa2-lmcs] was the first approach that
+overcame this shortcoming.  In essence, this kind of analysis can be
+viewed as replacing the traditional finite automata abstractions of
+programs with pushdown automata@~cite[pdcfa-sfp10].
 
 In this paper we investigate the use of definitional interpreters as
 the basis for abstract interpretation of higher-order languages.  We
@@ -87,11 +87,11 @@ transforming a machine semantics into an easily abstractable form.
 There are a few essential elements to the transformation:
 
 @itemlist[
-@item{continuations are heap-allocated}
-@item{variable bindings are heap-allocated}
-@item{the range of the heap is changed from values to sets of values}
-@item{heap update is interpreted as a join}
-@item{heap dereference is interpreted as a non-deterministic choice}]
+@item{allocating continuations in the store}
+@item{allocated variable bindings in the store}
+@item{using a store that maps addresses to @emph{sets} of values}
+@item{interpreting store updates as a join}
+@item{interpreting store dereference as a non-deterministic choice}]
 
 These transformations are semantics-preserving as the original and
 derived machines operate in a lock-step correspondence.  But the real
@@ -100,20 +100,19 @@ to turn the derived machine into an abstract interpreter with two
 simple steps:
 
 @itemlist[
-@item{bounding heap allocation to a finite set of addresses}
+@item{bounding store allocation to a finite set of addresses}
 @item{widening base values to some abstract domain}
 ]
 
 Moreover, the soundness of the resulting abstraction is self-evident
 and easily proved.
 
-The AAM approach has been used to build static analyzers for languages
-such as Java, JavaScript, Racket, Coq, and Erlang.
-
-Given the success of the AAM approach, it's natural to wonder what is
-essential about the low-level machine basis of the semantics and
-whether a similar approach is possible with a higher-level formulation
-of the semantics such as a compositional evaluation function.
+The AAM approach has been applied to a wide variety of languages and
+applications, and given the success of the AAM approach, it's natural
+to wonder what is essential about the low-level machine basis of the
+semantics and whether a similar approach is possible with a
+higher-level formulation of the semantics such as a compositional
+evaluation function.
 
 This paper shows that the essence of the AAM approach can be put on a
 high-level semantic basis.  We show that compositional evaluators,
@@ -121,42 +120,29 @@ written in monadic style can express similar abstractions to that of
 AAM.  Moreover, we show that the high-level semantics offers a number
 of benefits not available to the machine model.  
 
+First, as we will see, the definitional interpreter approach is not
+formulated as a transformation on the semantics itself, but rather
+uses alternative notions of a monad to express the ``abstracting''
+transformations.  This means the concrete and abstract interpreters
+for a language can share large parts of their implementation; there is
+just one interpreter with a multiplicity of interpretations.}
 
-Benefits of a definitional interpreter approach:
+Second, there is a rich body of work and many tools and techniques for
+constructing @emph{extensible} interpreters, all of which applies to
+high-level semantics, not machines.  By putting abstract
+interpretation for higher-order languages on a high-level semantic
+basis, we can bring these results to bear on the construction of
+extensible abstract interpreters.  In particular, we use @emph{monad
+transformers} to build re-usable components for mixing and matching
+the constiuent parts of an abstract interpreter.
 
-@itemlist[
-@item{As we will see, the definitional interpreter approach is not
-  formulated as a transformation on the semantics itself, but rather
-  uses alternative notions of a monad to express the ``abstracting''
-  transformations.  This means the concrete and abstract interpreters
-  for a language can share large parts of their implementation; there
-  is just one interpreter with a multiplicity of interpretations.}
+Finally, using definitional interpreters for abstract interpretation
+satisfies an intellectual itch that asks whether it can be done at
+all.  In solving this technical challenge, we discover a pleasant
+surprise about the definitional interpreter approach: it is inherently
+``pushdown.''  Under the interpreter approach, the property follows
+for free as a gift from the metalanguage.
 
-@item{There is a rich body of work and many tools and techniques for
-  constructing @emph{extensible} interpreters, all of which applies to
-  high-level semantics, not machines.  By putting abstract
-  interpretation for higher-order languages on a high-level semantic
-  basis, we can bring these results to bear on the construction of
-  extensible abstract interpreters.  In particular, we use @emph{monad
-  transformers} to build re-usable components for mixing and matching
-  the constiuent parts of an abstract interpreter.}
-
-@item{Finally, using definitional interpreters for abstract
-  interpretation satisfies an intellectual itch that asks whether it
-  can be done at all.  In solving this technical challenge, we
-  discover a pleasant surprise about the definitional interpreter
-  approach: it is inherently ``pushdown,'' a property that has been
-  the subject of several papers.  Under the interpreter approach, it
-  comes for free.}  
-]
-
-@;{
-@subsection{Notation and terminology}
-
-Our technical development is carried out in Racket [Racket TR], a Lisp
-dialect.  We assume a basic familiarity with definitional interpreters
-in the style of Landin [Landin].
-}
 
 @section{A Definitional Interpreter}
 
@@ -238,7 +224,7 @@ At first glance, it has many conventional aspects:
   definition was evaluated,}
 
 @item{it is structured monadically and uses monad operations to interact
-  with the environment and heap,}
+  with the environment and store,}
 
 @item{it relies on a helper function @racket[_δ] to interpret primitive operations.}
 ]
@@ -838,9 +824,10 @@ soundness:
    (f (add1 0)))
 ]
 
-Concretely, this program always returns @racket[2], however with the
-combination of loop detection and abstraction determines that this
-program always produces @racket[0].  That's clearly unsound.
+Concretely, this program returns @racket[2], however with the
+combination of loop detection and abstraction, the abstract
+interpreter determines that this program produces @racket[0], which is
+clearly unsound.
 
 @section[#:tag "fixing-cache"]{Fixing the Cache}
 
