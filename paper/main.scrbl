@@ -1,61 +1,12 @@
 #lang scribble/sigplan @nocopyright
-@(require scribble/manual)
-@(require scribble/decode)
-@(require scriblib/figure)
-@(require scriblib/footnote)
-@(require "bib.rkt")
-@(require scribble/eval)
-@(require racket/pretty
-	  racket/engine
-          racket/sandbox)
-
-@(define cols 45)
-
-@(define (make-monadic-eval link fix)
-  (parameterize [(pretty-print-columns cols)]
-    (define ev
-      (make-base-eval #:pretty-print? #t
-                      #:lang 'monadic-eval/lang 
-                      link
-                      fix))
-    (set-eval-limits ev 2 200)
-    ev))
-
-@(define the-pure-eval
-   (make-monadic-eval '(monad@ δ@ alloc@ state@ ev@)
-                      '(fix ev)))
-
-@(define the-pure-eval-alt
-   (make-monadic-eval '(monad-alt@ δ@ alloc@ state@ ev@)
-                      '(fix ev)))
-
-@(define the-trace-eval
-   (make-monadic-eval '(ListO@ monad-output@ δ@ alloc@ state@ ev-trace@ ev@)
-                      '(fix (ev-trace ev))))
-
-@(define the-reach-eval
-   (make-monadic-eval '(PowerO@ monad-output@ δ@ alloc@ state@ ev-reach@ ev@)
-                      '(fix (ev-reach ev))))
-
-@(define the-abs-delta-eval
-  (make-monadic-eval '(monad-nd@ δ-abs@ alloc@ state@ ev@)
-                     '(fix ev)))
-
-@(define the-0cfa-eval
-   (make-monadic-eval '(monad-nd@ alloc-x@ state-nd@ δ-abs@ ev@) 
-                      '(fix ev)))
-
-@(define the-simple-cache-eval
-   (make-monadic-eval '(monad-cache@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache0@)
-                      '(fix (ev-cache ev))))
-
-@(define the-pdcfa-eval
-   (make-monadic-eval '(monad-pdcfa@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache@ eval-coind@)
-                      '(eval-coind (fix (ev-cache ev)))))
-
-@(define the-symbolic-eval
-   (make-monadic-eval '(monad-symbolic@ δ-symbolic@ alloc@ state@ ev-symbolic@ ev@)
-                      '(fix (ev-symbolic ev))))
+@(require "bib.rkt"
+	  "evals.rkt")
+@(require scribble/manual
+	  scriblib/figure
+	  scribble/decode
+	  scriblib/footnote
+	  scribble/eval
+	  racket/pretty)
 
 @title{Abstracting Definitional Interpreters @subtitle{Functional Pearl}}
 
@@ -128,10 +79,10 @@ wide variety of concrete and abstract interpretations.
 In recent years, there has been considerable effort in the systematic
 construction of abstract interpreters for higher-order languages using
 abstract machines---first-order transition systems---as a semantic
-basis.  The so-called _abstracting abstract machines_ (AAM) approach
-to abstract interpretation is a recipe for transforming a machine
-semantics into an easily abstractable form.  There are a few essential
-elements to the transformation:
+basis.  The so-called @emph{abstracting abstract machines} (AAM)
+approach to abstract interpretation@~cite[aam] is a recipe for
+transforming a machine semantics into an easily abstractable form.
+There are a few essential elements to the transformation:
 
 @itemlist[
 @item{continuations are heap-allocated}
@@ -993,8 +944,7 @@ execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
 @figure["symbolic" "Symbolic execution variant"]{
 @codeblock[#:keep-lang-line? #f]|{
   #lang racket
-  E  ::= ...       
-         (sym X)  ; Symbolic number
+  E  ::= ... (sym X)  ; Symbolic number
 }|
 @filebox[@racket[symbolic-monad@]]{
 @racketblock[
@@ -1193,22 +1143,6 @@ its symbol, which we take to stand for the value of an arbitrary
 }|
 
 
-@section{Related work}
-
-Danvy, monadic interpreters and abstract machines.
-
-@subsection{Monadic interpreters}
-
-@~cite[steele-popl94 liang-popl95]
-
-@subsection{Monadic abstract interpreters}
-
-PLDI 2013: small-step monad.
-
-@subsection{Big CFA2}
-
-@~cite[cfa2-diss]
-
 
 @section{Conclusion}
 
@@ -1216,6 +1150,9 @@ PLDI 2013: small-step monad.
 @url{https://github.com/dvanhorn/monadic-eval}}
 
 }
+
+@include-section{related-work.scrbl}
+
 
 @;{
 @bold{Acknowledgments}: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.
