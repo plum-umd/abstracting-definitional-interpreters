@@ -20,9 +20,15 @@ PLDI 2013: small-step monad. @~cite[sergey-pldi13].
 
 @~cite[darais-oopsla15]
 
+@~cite[johnson-dls14]
+
 @section{Big CFA2}
 
 @~cite[cfa2-diss]
 
 @~cite[glück-schmidtfest13]
+
+HOFA and SE:
+
+@~cite[might-popl07]
 

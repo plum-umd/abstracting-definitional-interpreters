@@ -9,6 +9,7 @@
 (define might (author-name "Matthew" "Might"))
 (define darais (author-name "David" "Darais"))
 (define pcn (author-name "Phúc C." "Nguyễn"))
+(define sth (author-name "Sam" "Tobin-Hochstadt"))
                               
 (define aam
   (make-bib #:title "Abstracting Abstract Machines"
@@ -131,3 +132,26 @@ Birthday")
 	    #:author (authors darais might dvh)
 	    #:location (proceedings-location "ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications")
 	    #:date "2015"))
+
+(define johnson-dls14
+  (make-bib #:title "Abstracting Abstract Control"
+	    #:author (authors (author-name "J. Ian" "Johnson")
+			      dvh)
+	    #:location (proceedings-location "10th ACM Symposium on Dynamic Languages")
+	    #:date "2014"))
+
+(define tobin-hochstadt-pldi11
+  (make-bib #:title "Languages as Libraries"
+	    #:author (authors sth
+			      (author-name "Vincent" "St-Amour")
+			      (author-name "Ryan" "Culpepper")
+			      (author-name "Matthew" "Flatt")
+			      (author-name "Matthias" "Felleisen"))
+	    #:location (proceedings-location "ACM SIGPLAN International Conference on Programming Language Design and Implementation")
+	    #:date "2011"))
+
+(define might-popl07
+  (make-bib #:title "Logic Flow Analysis of Higher-Order Programs"
+            #:author (authors might)
+            #:location (proceedings-location "34th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages")
+	    #:date "2007"))
