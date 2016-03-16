@@ -671,12 +671,15 @@ maintaining the cache, we avoid the possibility of diverging.
       ς ≔ (list e ρ σ)
       Σ ← _get-$
       (if (∈ ς Σ)
-          (for/monad+ ([v (Σ ς)]) (_return v))
+          (for/monad+ ([v.σ (Σ ς)])
+            (do (_put-store (cdr v.σ))
+                (_return (car v.σ))))
           (do (_put-$ (Σ ς ∅))
               v  ← ((ev₀ ev) e)
               (_update-$ 
                 (λ (Σ) 
-                  (Σ ς (set-add (Σ ς) v))))
+                  (Σ ς (set-add (Σ ς)
+                                (cons v σ)))))
               (_return v)))))
 ]}}
 
@@ -844,7 +847,8 @@ degenerates into exactly what was given in @figure-ref{ev-cache0}.
               v  ← ((ev₀ ev) e)
               (_update-$ 
                 (λ (Σ) 
-                  (Σ ς (set-add (Σ ς) (cons v σ)))))
+                  (Σ ς (set-add (Σ ς)
+                                (cons v σ)))))
               (_return v)))))
 ]}}
 
