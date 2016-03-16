@@ -893,7 +893,7 @@ that point, the result is returned.
 With these peices in place, we can construct an interpreter as:
 @racketblock[
 (define (eval e)
-  (mrun ((fix-cache (ev-cache ev)) e)))
+  (mrun ((fix-cache (fix (ev-cache ev))) e)))
 ]
 When linked with @racket[δ^] and @racket[alloc^], this interpreter is
 a sound, computable abstraction of the original definitional
