@@ -889,16 +889,36 @@ that point, the result is returned.
             (loop x′)))))
 ]}}
 
+With these peices in place, we can construct an interpreter as:
+@racketblock[
+(define (eval e)
+  (mrun ((fix-cache (ev-cache ev)) e)))
+]
+When linked with @racket[δ^] and @racket[alloc^], this interpreter is
+a sound, computable abstraction of the original definitional
+interpreter.  Note that the iterated evaluator always terminates: the
+cache resulting from each run of the evaluator contains @emph{at
+least} as much information as the prior cache, each run of the
+evaluator terminates, so the iterated evaluator terminates by the same
+principle as before: the cache monotonically grows and is finite in
+size.
 
+We have thus achieved our goal and can confirm it gives
+the expected answers on the previous examples:
 
 @interaction[#:eval the-pdcfa-eval
 (rec f (λ (x) (f x)) (f 0))
-(+ 1 2)
+(rec fact (λ (n)
+           (if0 n 1 (* n (fact (sub1 n)))))
+  (fact 5))
 (rec f (λ (x) 
          (if0 x 0 (if0 (f (sub1 x)) 2 3)))
    (f (add1 0)))
 
 ]
+Let us now take stock of what we've got.
+
+@include-section{reynolds.scrbl}
 
 @section[#:tag "symbolic"]{Symbolic Execution and Path-Sensitive Verification}
 
