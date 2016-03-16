@@ -2,19 +2,20 @@
 (require racket/set
          "../signatures.rkt"
          "../transformers.rkt"
+         "../unparse.rkt"
 	 "../map.rkt")
 (import)
 (export monad^ menv^ mstore^ mdead^)
 
 ;; M ρ σ θ a := ρ → σ → θ → (a × σ) × θ
-(define M (ReaderT (StateT #f (StateT #f (FailT ID)))))
+(define M (ReaderT (FailT (StateT #f (StateT #f ID)))))
 
 ;; mrun : (M ρ σ θ a) [→ ρ [→ σ [→ θ]]] → (a × σ) × θ
 (define (mrun m [ρ₀ ∅] [σ₀ ∅] [θ₀ {set}])
   (run-StateT θ₀ (run-StateT σ₀ (run-ReaderT ρ₀ m))))
 
 ;; placeholder
-(define (mret x) x)
+(define mret unparse-⟨⟨maybe-v⟩×σ⟩×⟨e⟩set)
 
 ;; env^ impl:
 (define ask-env   (with-monad M ask))
