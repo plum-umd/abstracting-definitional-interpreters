@@ -18,9 +18,12 @@
       ς ≔ (list e ρ σ)
       Σ ← get-$
       (if (∈ ς Σ)
-          (for/monad+ ([v (Σ ς)]) (return v))
+          (for/monad+ ([e.v.ρ.σ (Σ ς)])
+            (do (put-store (cadddr e.v.ρ.σ))
+                (return (cadr e.v.ρ.σ))))
           (do Σ⊥ ← ask-⊥
               (put-$ (Σ ς (if (∈ ς Σ⊥) (Σ⊥ ς) (set))))
               v  ← ((ev₀ ev) e)
-              (update-$ (λ (Σ) (Σ ς (set-add (Σ ς) v))))
+              σ  ← get-store
+              (update-$ (λ (Σ) (Σ ς (set-add (Σ ς) (list e v ρ σ)))))
               (return v)))))

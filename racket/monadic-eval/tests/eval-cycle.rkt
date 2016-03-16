@@ -11,12 +11,20 @@
   (define (get-v-σs x) x)
 
   (test eval (dd 0) get-v-σs
-        #:answer   22
-        #:bindings '("N" 0) '("x" 2) '("y" 11))
+        #:answer   2
+        #:bindings '("n" 0) '("x" 2) '("y" 11))
 
   (test eval (dd 1) get-v-σs
+        #:answer   13
+        #:bindings '("n" 1) '("x" 7) '("y" 13))
+
+  (test eval (dd* 0) get-v-σs
+        #:answer   22
+        #:bindings '("n" 0) '("x" 2) '("y" 11))
+
+  (test eval (dd* 1) get-v-σs
         #:answer   91
-        #:bindings '("N" 1) '("x" 7) '("y" 13))
+        #:bindings '("n" 1) '("x" 7) '("y" 13))
 
   (test eval (fact 5) get-v-σs
         #:answer   120

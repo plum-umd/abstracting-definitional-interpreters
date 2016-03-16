@@ -12,18 +12,25 @@
   (define get-as-σs list)
 
   (test eval (dd 0) get-as-σs
-        #:answer   22
-        #:bindings '("N" 0) '("x" 2) '("y" 11))
+        #:answer   2
+        #:bindings '("n" 0) '("x" 2) '("y" 11))
   
   (test eval (dd 1) get-as-σs
+        #:answer   13
+        #:bindings '("n" 1) '("x" 7) '("y" 13))
+
+  (test eval (dd* 0) get-as-σs
+        #:answer   22
+        #:bindings '("n" 0) '("x" 2) '("y" 11))
+  
+  (test eval (dd* 1) get-as-σs
         #:answer   91
-         #:bindings '("N" 1) '("x" 7) '("y" 13))
+        #:bindings '("n" 1) '("x" 7) '("y" 13))
   
   (test eval (fact 5) get-as-σs
         #:answer   120
-         #:bindings '("x" 5) '("x" 4) '("x" 3) '("x" 2) '("x" 1) '("x" 0)
-         `("f" ,(cons (parse '(λ (x) (if0 x 1 (* x (f (- x 1))))))
-                      (∅ 'f "f_6"))))
+        #:bindings '("x" 5) '("x" 4) '("x" 3) '("x" 2) '("x" 1) '("x" 0)
+        `("f" _))
   
   (test eval (fact -1) DIVERGES)
 

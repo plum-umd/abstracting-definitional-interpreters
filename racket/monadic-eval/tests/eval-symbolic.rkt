@@ -17,17 +17,31 @@
 
   (test eval (dd ''n) get-as-σs
         #:answer   91
-        #:bindings '("N" n) '("x" 7) '("y" 13)
+        #:bindings '("n" n) '("x" 7) '("y" 13)
         #:answer   22
-        #:bindings '("N" n) '("x" 2) '("y" 11))
+        #:bindings '("n" n) '("x" 2) '("y" 11))
 
   (test eval (dd 0) get-as-σs
         #:answer   22
-        #:bindings '("N" 0) '("x" 2) '("y" 11))
+        #:bindings '("n" 0) '("x" 2) '("y" 11))
   
   (test eval (dd 1) get-as-σs
         #:answer   91
-        #:bindings '("N" 1) '("x" 7) '("y" 13))
+        #:bindings '("n" 1) '("x" 7) '("y" 13))
+
+  (test eval (dd* ''n) get-as-σs
+        #:answer   91
+        #:bindings '("n" n) '("x" 7) '("y" 13)
+        #:answer   22
+        #:bindings '("n" n) '("x" 2) '("y" 11))
+
+  (test eval (dd* 0) get-as-σs
+        #:answer   22
+        #:bindings '("n" 0) '("x" 2) '("y" 11))
+  
+  (test eval (dd* 1) get-as-σs
+        #:answer   91
+        #:bindings '("n" 1) '("x" 7) '("y" 13))
   
   (test eval (fact 5) get-as-σs
         #:answer   120
