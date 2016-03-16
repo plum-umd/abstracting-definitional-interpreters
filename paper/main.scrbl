@@ -932,8 +932,9 @@ result @racket[3] and division-by-0 error are not feasible:
 Joining a symbolic number with another number produces an abstract number @racket['N].
 As seen in @racket[_δ] and @racket[_zero?], the different treatments of
 @racket['N] and symbolic values clarifies that abstract values are not
-symbolic values: it is unsound to make any assumption
-about @racket['N], because it stands for multiple values.
+symbolic values: the former stands for a set of multiple values,
+whereas the latter stands for an unknown but fixed single value.
+It is unsound to accumulate any assumption about @racket['N].
 
 A scaled up symbolic executor can have @racket[_zero?] calling out
 to an SMT solver for interesting arithmetics,
