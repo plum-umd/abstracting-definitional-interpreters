@@ -1047,7 +1047,7 @@ execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
         [v #:when (∈ v φ) (return #t)]
         [v #:when (∈ `(¬ ,v) φ) (return #f)]
         [`(¬ ,v′) (do a ← (zero? v′)
-                     (return (not a)))]
+                      (return (not a)))]
         [v (mplus (do (_refine v)
                       (return #t))
                   (do (_refine `(¬ ,v))
