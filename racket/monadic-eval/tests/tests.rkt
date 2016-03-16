@@ -10,19 +10,19 @@
 (provide test dd dd* fact omega omega-push ref-sref)
 
 (define (dd N)
-  ;; returns 22 if N=0, 91 otherwise
+  ;; returns 2 if N=0, 13 otherwise
   (parse
-   `(let n ,N
-      (let x (if0 n (if0 n 2 3) (if0 n 5 7))
-        (let y (if0 n 11 13)
-          (if0 n x y))))))
+   `(let input ,N
+      (let x (if0 input (if0 input 2 3) (if0 input 5 7))
+        (let y (if0 input 11 13)
+          (if0 input x y))))))
 
 (define (dd* N)
   ;; returns 22 if N=0, 91 otherwise
   (parse
-   `(let n ,N
-      (let x (if0 n (if0 n 2 3) (if0 n 5 7))
-        (let y (if0 n 11 13)
+   `(let input ,N
+      (let x (if0 input (if0 input 2 3) (if0 input 5 7))
+        (let y (if0 input 11 13)
           (* x y))))))
 
 (define (fact N)

@@ -19,17 +19,17 @@
 
   (test eval (dd* 0) get-as-σs
         #:answer   22
-        #:bindings '("n" 0) '("x" 2) '("y" 11)
+        #:bindings '("input" 0) '("x" 2) '("y" 11)
         #:preds
         (∈-θ (num 3)
-             (ifz (vbl 'n) (num 5) (num 7))
+             (ifz (vbl 'input) (num 5) (num 7))
              (num 13)))
   
   (test eval (dd* 1) get-as-σs
         #:answer   91
-        #:bindings '("n" 1) '("x" 7) '("y" 13)
+        #:bindings '("input" 1) '("x" 7) '("y" 13)
         #:preds
-        (∈-θ (ifz (vbl 'n) (num 2) (num 3))
+        (∈-θ (ifz (vbl 'input) (num 2) (num 3))
              (num 5)
              (num 11)))
   

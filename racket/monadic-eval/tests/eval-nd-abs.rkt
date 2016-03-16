@@ -14,44 +14,44 @@
 
   (test eval (dd* 0) get-as-σs
         #:answer   'N
-        #:bindings `("n" ,{set 0}) `("x" ,{set 2}) `("y" ,{set 11}))
+        #:bindings `("input" ,{set 0}) `("x" ,{set 2}) `("y" ,{set 11}))
   
   
   (test eval (dd* 1) get-as-σs
         #:answer   'N
-        #:bindings `("n" ,{set 1}) `("x" ,{set 7}) `("y" ,{set 13}))
+        #:bindings `("input" ,{set 1}) `("x" ,{set 7}) `("y" ,{set 13}))
   
   (test eval (dd* '(add1 0)) get-as-σs
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 7})
         `("y" ,{set 11})
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 5})
         `("y" ,{set 13})
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 2})
         `("y" ,{set 11})
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 3})
         `("y" ,{set 11})
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 5})
         `("y" ,{set 11})
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 2})
         `("y" ,{set 13})
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 3})
         `("y" ,{set 13})
         #:answer   'N
-        #:bindings `("n" ,{set 'N})
+        #:bindings `("input" ,{set 'N})
         `("x" ,{set 7})
         `("y" ,{set 13}))
   

@@ -14,37 +14,37 @@
 
   (test eval (dd '(add1 0)) get-as-σs
         #:answer   13
-        #:bindings `("n" ,{set 1})
+        #:bindings `("input" ,{set 1})
                    `("x" ,{set 7})
                    `("y" ,{set 13}))
 
   (test eval (dd 0) get-as-σs
         #:answer   2
-        #:bindings `("n" ,{set 0})
+        #:bindings `("input" ,{set 0})
                    `("x" ,{set 2})
                    `("y" ,{set 11}))
 
   (test eval (dd 1) get-as-σs
         #:answer   13
-        #:bindings `("n" ,{set 1})
+        #:bindings `("input" ,{set 1})
                    `("x" ,{set 7})
                    `("y" ,{set 13}))
 
   (test eval (dd* '(add1 0)) get-as-σs
         #:answer   91
-        #:bindings `("n" ,{set 1})
+        #:bindings `("input" ,{set 1})
                    `("x" ,{set 7})
                    `("y" ,{set 13}))
 
   (test eval (dd* 0) get-as-σs
         #:answer   22
-        #:bindings `("n" ,{set 0})
+        #:bindings `("input" ,{set 0})
                    `("x" ,{set 2})
                    `("y" ,{set 11}))
 
   (test eval (dd* 1) get-as-σs
         #:answer   91
-        #:bindings `("n" ,{set 1})
+        #:bindings `("input" ,{set 1})
                    `("x" ,{set 7})
                    `("y" ,{set 13}))
 
