@@ -14,5 +14,5 @@ Reynolds, the evaluator involves no explicit mechanics to achieve this
 property; it is simply inherited from the defining language.
 
 We believe this formulation of higher-order abstract interpretation
-offers a promising new foundation making re-usable components for the
-static analysis and verification of higher-order programs.
+offers a promising new foundation for making re-usable components for
+the static analysis and verification of higher-order programs.
