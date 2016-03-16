@@ -430,7 +430,7 @@ the complete skeleton for everything to come.  In particular, we will
 reuse @racket[ev@] in all of the remaining interpreters.  Now let's do
 something a bit more enchanting.
 
-@section{Collecting Variations}
+@section[#:tag "collecting"]{Collecting Variations}
 
 The formal development of abstract interpretation often starts from a
 so-called ``non-standard collecting semantics.''  A common form of
@@ -506,6 +506,7 @@ and the set of expressions that were not evaluated during the running
 of a program:
 @interaction[#:eval the-dead-eval
 (if0 0 1 2)
+(* (+ 3 4) 9)
 (λ (x) x)
 (if0 (quotient 1 0) 2 3)]
 
@@ -909,7 +910,8 @@ We are left with two remaining problems; we need to figure out: 1) how
 to pipe the cache from one run of the interpreter into the next and 2)
 when to stop.  The answer to both is given in @figure-ref{cache-fix}.
 
-The @racket[fix-cache] function takes a @emph{closed evaluator},
+The @racket[fix-cache] function takes a closed evaluator,
+just like @racket[eval-dead] from @secref{collecting},
 i.e. something of the form @racket[(fix ev)].  It iteratively runs the
 evaluator.  Each run of the evaluator resets the ``local'' cache to
 empty and uses the cache of the previous run as it's fallback cache
