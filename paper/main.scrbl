@@ -64,7 +64,7 @@ A common problem of past approaches to the control flow analysis of
 functional languages is the inability to properly match a function
 call with its return in the abstract semantics, leading to infeasible
 program (abstract) executions in which a return is made from one point
-in the program text, but control units to another.  The CFA2
+in the program text, but control returns to another.  The CFA2
 analysis of Vardoulakis and Shivers@~cite[cfa2-lmcs] was the first
 approach that overcame this shortcoming.  In essence, this kind of
 analysis can be viewed as replacing the traditional finite automata
