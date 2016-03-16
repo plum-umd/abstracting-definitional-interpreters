@@ -1,61 +1,12 @@
 #lang scribble/sigplan @nocopyright
-@(require scribble/manual)
-@(require scribble/decode)
-@(require scriblib/figure)
-@(require scriblib/footnote)
-@(require "bib.rkt")
-@(require scribble/eval)
-@(require racket/pretty
-	  racket/engine
-          racket/sandbox)
-
-@(define cols 45)
-
-@(define (make-monadic-eval link fix)
-  (parameterize [(pretty-print-columns cols)]
-    (define ev
-      (make-base-eval #:pretty-print? #t
-                      #:lang 'monadic-eval/lang 
-                      link
-                      fix))
-    (set-eval-limits ev 2 200)
-    ev))
-
-@(define the-pure-eval
-   (make-monadic-eval '(monad@ δ@ alloc@ state@ ev@)
-                      '(fix ev)))
-
-@(define the-pure-eval-alt
-   (make-monadic-eval '(monad-alt@ δ@ alloc@ state@ ev@)
-                      '(fix ev)))
-
-@(define the-trace-eval
-   (make-monadic-eval '(ListO@ monad-output@ δ@ alloc@ state@ ev-trace@ ev@)
-                      '(fix (ev-trace ev))))
-
-@(define the-reach-eval
-   (make-monadic-eval '(PowerO@ monad-output@ δ@ alloc@ state@ ev-reach@ ev@)
-                      '(fix (ev-reach ev))))
-
-@(define the-abs-delta-eval
-  (make-monadic-eval '(monad-nd@ δ-abs@ alloc@ state@ ev@)
-                     '(fix ev)))
-
-@(define the-0cfa-eval
-   (make-monadic-eval '(monad-nd@ alloc-x@ state-nd@ δ-abs@ ev@) 
-                      '(fix ev)))
-
-@(define the-simple-cache-eval
-   (make-monadic-eval '(monad-cache@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache0@)
-                      '(fix (ev-cache ev))))
-
-@(define the-pdcfa-eval
-   (make-monadic-eval '(monad-pdcfa@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache@ eval-coind@)
-                      '(eval-coind (fix (ev-cache ev)))))
-
-@(define the-symbolic-eval
-   (make-monadic-eval '(monad-symbolic@ δ-symbolic@ alloc@ state@ ev-symbolic@ ev@)
-                      '(fix (ev-symbolic ev))))
+@(require "bib.rkt"
+	  "evals.rkt")
+@(require scribble/manual
+	  scriblib/figure
+	  scribble/decode
+	  scriblib/footnote
+	  scribble/eval
+	  racket/pretty)
 
 @title{Abstracting Definitional Interpreters @subtitle{Functional Pearl}}
 
@@ -128,10 +79,10 @@ wide variety of concrete and abstract interpretations.
 In recent years, there has been considerable effort in the systematic
 construction of abstract interpreters for higher-order languages using
 abstract machines---first-order transition systems---as a semantic
-basis.  The so-called _abstracting abstract machines_ (AAM) approach
-to abstract interpretation is a recipe for transforming a machine
-semantics into an easily abstractable form.  There are a few essential
-elements to the transformation:
+basis.  The so-called @emph{abstracting abstract machines} (AAM)
+approach to abstract interpretation@~cite[aam] is a recipe for
+transforming a machine semantics into an easily abstractable form.
+There are a few essential elements to the transformation:
 
 @itemlist[
 @item{continuations are heap-allocated}
@@ -440,12 +391,12 @@ And the main entry-point for the interpreter:
 (define (eval e) (mrun ((fix ev) e)))
 ]
 
-By taking advantage of Racket's languages-as-libraries features, we
-can easily construct REPLs for interacting with this interpreter.
-Here are a few examples, which make use of a concrete syntax for more
-succinctly writing expressions.  The identity function evaluates to an
-answer consisting of a closure over the empty environment together
-with the empty store:
+By taking advantage of Racket's languages-as-libraries
+features@~cite[tobin-hochstadt-pldi11], we can easily construct REPLs
+for interacting with this interpreter.  Here are a few examples, which
+make use of a concrete syntax for more succinctly writing expressions.
+The identity function evaluates to an answer consisting of a closure
+over the empty environment together with the empty store:
 @interaction[#:eval the-pure-eval
   (λ (x) x)
 ]
@@ -530,98 +481,6 @@ states.
 So our setup makes it easy not only to express the run of the mill
 interpreter, but also different forms of collecting semantics.
 Let us now start to look at abstractions.
-
-
-@section[#:tag "symbolic"]{Symbolic Execution}
-
-@Figure-ref{symbolic} shows an extension to the monad stack
-and metafunctions to allow symbolic execution with unknown base values@~cite[king-76].
-We first extend the syntax with symbolic numbers @racket[(sym X)].
-Primitives such as @racket['quotient] now work with both regular
-and symbolic values, introduce non-determinism, and may return
-new symbolic values.
-As standard, symbolic execution employs a path-condition
-remembering assumptions made at each branch to allow eliminating infeasible
-paths and constructing test cases.
-We represent the path-condition @racket[φ] as a set of symbolic values
-known to have evaluated to @racket[0].
-This set is another state component provided by @racket[StateT].
-Monadic operations @racket[_get-path-cond]
-and @racket[_refine] reference and update the path-condition.
-Metafunction @racket[_zero?] determines and remembers a value's ``truthiness'',
-which relies on @racket[proves-0] for a result of
-{@racket['✓], @racket['✗], @racket['?]} indicating if
-its argument is definitely @racket[0], non-@racket[0], or uncertain, respectively.
-Operator @racket['flip] represents negation in our language.
-
-In the following example, the symbolic executor concludes that only results
-@racket[2] and @racket[7] are plausible:
-@interaction[
-  #:eval the-symbolic-eval 
-  (if0 'x (if0 'x 2 3) (if0 'x 5 7))
-]
-
-A scaled up symbolic executor can have @racket[_zero?] calling out
-to an SMT solver for interesting arithmetics,
-and extend the language with symbolic functions
-and blame semantics for sound higher-order symbolic
-execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
-
-@figure["symbolic" "Symbolic execution variant"]{
-@codeblock[#:keep-lang-line? #f]|{
-  #lang racket
-  E  ::= ...       
-         (sym X)  ; Symbolic number
-}|
-@filebox[@racket[symbolic-monad@]]{
-@racketblock[
-(define-monad
-  (ReaderT (FailT (StateT (StateT (NondetT ID))))))
-]}
-@filebox[@racket[ev-symbolic@]]{
-@racketblock[
-(define (((ev-symbolic ev₀) ev) e)
-  (match e
-    [(sym x) (_return x)]
-    [e       ((ev₀ ev) e)]))
-]}
-@filebox[@racket[δ-symbolic@]]{
-@racketblock[
-(define (δ . ovs)
-  (match ovs
-    ... ; TODO can't put comment in here...
-    [(list 'quotient v₀ v₁)
-     (do z? ← (_zero? v₁)
-         (cond
-          [z? _fail]
-          [(and (number? v₀) (number? v₁))
-           (_return (quotient v₀ v₁))]
-          [else (_return `(quotient ,v₀ ,v₁))]))]
-    [(list 'flip 0) 1]
-    ... ; TODO can't put comment in here...
-    ))
-(define (zero? v)
-  (do φ ← _get-path-cond
-      (match (proves-0 φ v)
-        ['✓ (_return #t)]
-        ['✗ (_return #f)]
-        ['? (_mplus (do (_refine v)
-                        (_return #t))
-                   (do (_refine (op1 'flip v))
-                       (_return #f)))])))
-(define (proves-0 φ v)
-  (match v
-    [(? number?) (if (= 0 v) '✓ '✗)]
-    [v #:when (∈ φ v) '✓]
-    [v #:when (∈ φ `(flip ,v)) '✗]
-    [`(flip ,v′) (match (proves-0 φ v′)
-                   ['✓ '✗]
-                   ['✗ '✓]
-                   ['? '?])]
-    [_ '?]))
-]}}
-
-
 
 @section[#:tag "base"]{Abstracting Base Values}
 
@@ -991,6 +850,15 @@ We are left with two remaining problems; we need to figure out: 1) how
 to pipe the cache from one run of the interpreter into the next and 2)
 when to stop.  The answer to both is given in @figure-ref{cache-fix}.
 
+The @racket[fix-cache] function takes a @emph{closed evaluator},
+i.e. something of the form @racket[(fix ev)].  It iteratively runs the
+evaluator.  Each run of the evaluator resets the ``local'' cache to
+empty and uses the cache of the previous run as it's fallback cache
+(initially it's empty).  The computation stops when a least
+fixed-point in the cache has been reached, that is, when running the
+evaluator with a prior gives no changes in the resulting cache.  At
+that point, the result is returned.
+
 @figure["cache-fix" "Finding fixed-points in the cache"]{
 @filebox[@racket[fix-cache@]]{
 @racketblock[
@@ -998,7 +866,7 @@ when to stop.  The answer to both is given in @figure-ref{cache-fix}.
   (do ρ ← _ask-env
       σ ← _get-store
       ς ≔ (list e ρ σ)
-      (mlfp (λ (Σ) (do (_put-$ ∅)
+      (mlfp (λ (Σ) (do (_put-$ ∅-map)
                        (_put-store σ)
                        (_local-⊥ Σ (eval e))
                        _get-$)))
@@ -1007,11 +875,11 @@ when to stop.  The answer to both is given in @figure-ref{cache-fix}.
         (_return v))))
 
 (define (mlfp f)
-  (let loop ([x ∅])
+  (let loop ([x ∅-map])
     (do x′ ← (f x)
-      (if (equal? x′ x)
-          (return (void))
-          (loop x′)))))
+        (if (equal? x′ x)
+            (return (void))
+            (loop x′)))))
 ]}}
 
 
@@ -1025,6 +893,106 @@ when to stop.  The answer to both is given in @figure-ref{cache-fix}.
 
 ]
 
+@section[#:tag "symbolic"]{Symbolic Execution and Path-Sensitive Verification}
+
+@Figure-ref{symbolic} shows an extension to the monad stack
+and metafunctions that gives rise to a symbolic execution
+with unknown base values@~cite[king-76].
+Although a symbolic executor typically serves as a bug-finding tool
+and provides no termination guarantee,
+we can apply base value abstraction, finite allocation, and
+caching as presented in the previous sections to enforce termination,
+turning a symbolic execution into a path-sensitive verification.
+
+We first extend the syntax with symbolic numbers @racket[(sym X)].
+Primitives such as @racket['quotient] now may also take as input
+and return symbolic values.
+As standard, symbolic execution employs a path-condition
+accumulating assumptions made at each branch,
+allowing the elimination of infeasible paths and construction of test cases.
+We represent the path-condition @racket[φ] as a set of symbolic values
+known to have evaluated to @racket[0].
+This set is another state component provided by @racket[StateT].
+Monadic operations @racket[_get-path-cond]
+and @racket[_refine] reference and update the path-condition.
+Metafunction @racket[_zero?] determines and remembers a value's ``truthiness''.
+If the value is concrete or can be proven to be @racket[0] or non-@racket[0]
+from the path-condition, @racket[_zero?] returns the appropriate boolean.
+In case of uncertainty, the metafunction returns both answers
+besides refining the path-condition with the assumption made.
+Operator @racket['¬] represents negation in our language.
+
+In the following example, the symbolic executor recognizes that
+result @racket[3] and division-by-0 error are not feasible:
+@interaction[
+  #:eval the-symbolic-eval 
+  (if0 'x (if0 'x 2 3) '(quotient 5 x))
+]
+
+Joining a symbolic number with another number produces an abstract number @racket['N].
+As seen in @racket[_δ] and @racket[_zero?], the different treatments of
+@racket['N] and symbolic values clarifies that abstract values are not
+symbolic values: the former stands for a set of multiple values,
+whereas the latter stands for an unknown but fixed single value.
+It is unsound to accumulate any assumption about @racket['N].
+
+A scaled up symbolic executor can have @racket[_zero?] calling out
+to an SMT solver for interesting arithmetics,
+and extend the language with symbolic functions
+and blame semantics for sound higher-order symbolic
+execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
+
+@figure["symbolic" "Symbolic execution variant"]{
+@codeblock[#:keep-lang-line? #f]|{
+  #lang racket
+  E  ::= ... (sym X)  ; Symbolic number
+}|
+@filebox[@racket[symbolic-monad@]]{
+@racketblock[
+(define-monad
+  (ReaderT (FailT (StateT (StateT (NondetT ID))))))
+]}
+@filebox[@racket[ev-symbolic@]]{
+@racketblock[
+(define (((ev-symbolic ev₀) ev) e)
+  (match e
+    [(sym x) (_return x)]
+    [e       ((ev₀ ev) e)]))
+]}
+@filebox[@racket[δ-symbolic@]]{
+@racketblock[
+(define (δ . ovs)
+  (match ovs
+    ... ; TODO can't put comment in here...
+    [(list 'quotient v₀ v₁)
+     (do z? ← (_zero? v₁)
+         (cond
+          [z? _fail]
+          [else
+           (match (list v₀ v₁)
+            [(list (? number? n₀) (? number? n₁))
+             (return (quotient n₀ n₁))]
+            [(list _ ... 'N _ ...)
+             (return 'N)]
+            [(list v₀ v₁)
+             (return `(quotient ,v₀ ,v₁))])]))]
+    [(list '¬ 0) 1]
+    ... ; TODO can't put comment in here...
+    ))
+(define (zero? v)
+  (do φ ← _get-path-cond
+      (match v
+        [(? number? n) (return (= 0 n))]
+        [v #:when (∈ v φ) (return #t)]
+        [v #:when (∈ v `(¬ ,v)) (return #f)]
+        [`(¬ ,v′) (do a ← (zero? v′)
+                     (not a))]
+        ['N (mplus (return #t) (return #f))]
+        [v (mplus (do (_refine v)
+                      (return #t))
+                  (do (_refine `(¬ ,v))
+                      (return #f)))])))
+]}}
 
 
 @;{
@@ -1176,22 +1144,6 @@ its symbol, which we take to stand for the value of an arbitrary
 }|
 
 
-@section{Related work}
-
-Danvy, monadic interpreters and abstract machines.
-
-@subsection{Monadic interpreters}
-
-@~cite[steele-popl94 liang-popl95]
-
-@subsection{Monadic abstract interpreters}
-
-PLDI 2013: small-step monad.
-
-@subsection{Big CFA2}
-
-@~cite[cfa2-diss]
-
 
 @section{Conclusion}
 
@@ -1199,6 +1151,9 @@ PLDI 2013: small-step monad.
 @url{https://github.com/dvanhorn/monadic-eval}}
 
 }
+
+@include-section{related-work.scrbl}
+
 
 @;{
 @bold{Acknowledgments}: Sam Tobin-Hochstadt, J. Ian Johnson, Olivier Danvy.

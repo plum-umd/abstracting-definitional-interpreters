@@ -15,8 +15,8 @@
      (ifz (parse e0)
           (parse e1)
           (parse e2))]
-    [(list 'flip e)
-     (op1 'flip (parse e))]
+    [(list '¬ e)
+     (op1 '¬ (parse e))]
     [(list 'add1 e)
      (op1 'add1 (parse e))]
     [(list 'sub1 e)

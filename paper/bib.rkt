@@ -5,6 +5,17 @@
 (define-cite ~cite citet generate-bibliography #:style number-style)
 
 (define dimvar (author-name "Dimitris" "Vardoulakis"))
+(define dvh (author-name "David" "Van Horn"))
+(define might (author-name "Matthew" "Might"))
+(define darais (author-name "David" "Darais"))
+(define pcn (author-name "Phúc C." "Nguyễn"))
+(define sth (author-name "Sam" "Tobin-Hochstadt"))
+                              
+(define aam
+  (make-bib #:title "Abstracting Abstract Machines"
+            #:author (authors dvh might)
+  	    #:date "2010"
+    	    #:location (proceedings-location "ACM International Conference on Functional Programming")))
 
 (define reynolds72
   (make-bib #:title "Definitional interpreters for higher-order programming languages"
@@ -45,7 +56,7 @@
   (make-bib #:title "Pushdown Control-Flow Analysis of Higher-Order Programs"
             #:author (authors (author-name "Christopher" "Earl")
 			      (author-name "Matthew" "Might")
-			      (author-name "David" "Van Horn"))
+			      dvh)
 	    #:date "2010"
 	    #:location (proceedings-location "Workshop on Scheme and Functional Programming")))
 
@@ -70,21 +81,77 @@
   (make-bib #:title "Symbolic Execution and Program Testing"
             #:author (authors (author-name "James C." "King"))
             #:date "1976"
-            ))
+            #:location (proceedings-location "Communications of the ACM")))
 
 (define vanhorn-oopsla12
   (make-bib #:title "Higher-order symbolic execution via contracts"
             #:author (authors (author-name "Sam" "Tobin-Hochstadt")
-                              (author-name "David" "Van Horn"))
-            #:date "2012"))
+                              dvh)
+            #:date "2012"
+            #:location (proceedings-location "ACM SIGPLAN International Conference on Object Oriented Programming, Systems, Languages, and Applications")))
 
 (define nguyen-pldi15
   (make-bib #:title "Relatively Complete Counterexamples for Higher-order Programs"
-            #:author (authors (author-name "Phúc C." "Nguyễn")
-                              (author-name "David" "Van Horn"))
-            #:date "2015"))
+            #:author (authors pcn dvh)
+            #:date "2015"
+            #:location (proceedings-location "36th ACM SIGPLAN Conference on Programming Language Design and Implementation")))
 
-#| Robert Glück. Simulation of two-way pushdown automata revisited. In
-Semantics, Abstract Interpretation, and Reasoning about Programs:
+(define glück-schmidtfest13
+  (make-bib #:title "Simulation of two-way pushdown automata revisited"
+            #:author (author-name "Robert" "Glück")
+            #:location (journal-location "Semantics, Abstract Interpretation, and Reasoning about Programs:
 Essays Dedicated to David A. Schmidt on the Occasion of his Sixtieth
-Birthday, 2013.  |#
+Birthday")
+	    #:date "2013"))
+
+
+(define sergey-pldi13
+  (make-bib #:title "Monadic Abstract Interpreters"
+            #:author (authors (author-name "Ilya" "Sergey")
+			      (author-name "Dominique" "Divriese")
+			      might
+			      (author-name "Jan" "Midtgaard")
+			      darais
+			      (author-name "Dave" "Clarke")
+			      (author-name "Frank" "Piessens"))
+	    #:location (proceedings-location "ACM SIGPLAN International Conference on Programming Language Design and Implementation")
+	    #:date "2013"))
+
+(define gilray-popl16
+  (make-bib #:title "Pushdown Control-Flow Analysis for Free"
+	    #:author (authors (author-name "Thomas" "Gilray")
+			      (author-name "Steven" "Lyde")
+			      (author-name "Michael D." "Adams")
+			      might
+			      dvh)
+	    #:location (proceedings-location "43rd ACM SIGPLAN-SIGACT Symposium on Principles in Programming Languages")
+	    #:date "2016"))
+
+(define darais-oopsla15
+  (make-bib #:title "Galois Transformers and Modular Abstract Interpreters"
+	    #:author (authors darais might dvh)
+	    #:location (proceedings-location "ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications")
+	    #:date "2015"))
+
+(define johnson-dls14
+  (make-bib #:title "Abstracting Abstract Control"
+	    #:author (authors (author-name "J. Ian" "Johnson")
+			      dvh)
+	    #:location (proceedings-location "10th ACM Symposium on Dynamic Languages")
+	    #:date "2014"))
+
+(define tobin-hochstadt-pldi11
+  (make-bib #:title "Languages as Libraries"
+	    #:author (authors sth
+			      (author-name "Vincent" "St-Amour")
+			      (author-name "Ryan" "Culpepper")
+			      (author-name "Matthew" "Flatt")
+			      (author-name "Matthias" "Felleisen"))
+	    #:location (proceedings-location "ACM SIGPLAN International Conference on Programming Language Design and Implementation")
+	    #:date "2011"))
+
+(define might-popl07
+  (make-bib #:title "Logic Flow Analysis of Higher-Order Programs"
+            #:author (authors might)
+            #:location (proceedings-location "34th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages")
+	    #:date "2007"))

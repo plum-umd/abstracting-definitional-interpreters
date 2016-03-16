@@ -38,7 +38,7 @@
         [('quotient (list s1 s2))
          (do b ← (truish? s2) ; relies on `s2`'s range being just numbers
            (if b fail (return `(quotient ,s1 ,s2))))]
-        [('flip (list v))
+        [('¬ (list v))
          (do b ← (truish? v)
            (return (if b 1 0)))])))
 
@@ -54,7 +54,7 @@
                [(?) (mplus
                      (do (refine v)
                          (return #t))
-                     (do (refine (op1 'flip v))
+                     (do (refine `(¬ ,v))
                          (return #f)))]))]))))
 
 ;; The proof relation is internal to `δ` for now (not part of any public interface)
@@ -64,11 +64,11 @@
     [(? number?) '✗]
     [(cons (lam _ _) _) '✗]
     [e #:when (set-member? φ e) '✓]
-    [e #:when (set-member? φ (op1 'flip e)) '✗]
-    [(op1 'flip e*) (flip-R (proves-0 φ e*))]
+    [e #:when (set-member? φ `(¬ ,e)) '✗]
+    [`(¬ ,e*) (¬-R (proves-0 φ e*))]
     [_ '?]))
 
-(define (flip-R R)
+(define (¬-R R)
   (case R
     [(✓) '✗]
     [(✗) '✓]
