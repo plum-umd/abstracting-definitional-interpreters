@@ -537,7 +537,7 @@ Let us now start to look at abstractions.
 
 @section[#:tag "base"]{Abstracting Base Values}
 
-One of things an abstract interpreter must do in order to become
+One of the things an abstract interpreter must do in order to become
 decidable is to have some form of abstraction for the base types of
 the language.  A very simple approach is to use a finite-element
 abstract domain.  We can do this for our sole base type of numbers by
@@ -978,7 +978,7 @@ Let us now take stock of what we've got.
 
 @section[#:tag "symbolic"]{Symbolic Execution and Path-Sensitive Verification}
 
-We first present an extension to the monad stack and metafunctions
+We present an extension to the monad stack and metafunctions
 that gives rise to a symbolic execution@~cite[king-76],
 then show how abstractions discussed in previous sections
 can be applied to enforce termination,
