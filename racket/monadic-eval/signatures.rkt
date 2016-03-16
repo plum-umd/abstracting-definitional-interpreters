@@ -19,7 +19,9 @@
   ;; extensions:
   [ev-ref^      : ev-ref]
   [ev-trace^    : ev-trace]
+  [ev-gc^       : ev-gc]
   [ev-reach^    : ev-reach]
+  [ev-echo^     : ev-echo]
   [ev-dead^     : ev-dead]
   [ev-symbolic^ : ev-symbolic]
   [ev-compile^  : ev-compile]
@@ -44,6 +46,7 @@
   ;; lifted effects for state-space components
   [mcache^    : ask-⊥ local-⊥ get-$ put-$ update-$]
   [mdead^     : get-dead put-dead update-dead]
+  [mlive^     : ask-live local-live]
   [menv^      : ask-env local-env]
   [mstore^    : get-store put-store update-store]
   [mcycle^    : ask-cycle local-cycle]

@@ -16,6 +16,8 @@
 
  ;; ext envs
  "evs/ev-ref.rkt"
+ "evs/ev-gc.rkt"
+ "evs/ev-echo.rkt"
  "evs/ev-cycle.rkt"
  "evs/ev-dead.rkt"
  "evs/ev-reach.rkt"
@@ -37,6 +39,7 @@
  "monad/monad-trace-nd.rkt"
  "monad/monad-cache.rkt"
  "monad/monad-pdcfa.rkt"
+ "monad/monad-pdcfa-gc.rkt"
  "monad/monad-pdcfa-widen.rkt"
  "monad/monad-symbolic.rkt"
 
