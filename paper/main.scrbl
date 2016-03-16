@@ -564,7 +564,7 @@ there's no way for the interpreter to detect when it sees a loop.  To
 make a terminating abstract interpreter requires tackling both.  Let's
 look next at abstracting closures.
 
-@section{Abstracting Closures}
+@section[#:tag "closures"]{Abstracting Closures}
 
 Closures consist of code---a lambda term---and an environment---a
 finite map from variables to addresses.  Since the set of lambda terms
@@ -784,7 +784,7 @@ Concretely, this program always returns @racket[2], however with the
 combination of loop detection and abstraction determines that this
 program always produces @racket[0].  That's clearly unsound.
 
-@section{Fixing the Cache}
+@section[#:tag "fix"]{Fixing the Cache}
 
 The basic problem with the caching solution of @secref{cache} is that
 it cuts short the exploration of the program's behavior.  In the
@@ -895,16 +895,17 @@ that point, the result is returned.
 
 @section[#:tag "symbolic"]{Symbolic Execution and Path-Sensitive Verification}
 
-@Figure-ref{symbolic} shows an extension to the monad stack
-and metafunctions that gives rise to a symbolic execution
-with unknown base values@~cite[king-76].
-Although a symbolic executor typically serves as a bug-finding tool
-and provides no termination guarantee,
-we can apply base value abstraction, finite allocation, and
-caching as presented in the previous sections to enforce termination,
-turning a symbolic execution into a path-sensitive verification.
+We first present an extension to the monad stack and metafunctions
+that gives rise to a symbolic execution@~cite[king-76],
+then show how abstractions discussed in previous sections
+can be applied to enforce termination,
+turning a traditional symbolic execution into a path-sensitive
+verification.
 
-We first extend the syntax with symbolic numbers @racket[(sym X)].
+@subsection{Symbolic Execution}
+@Figure-ref{symbolic} shows the units needed to turn the existing interpreter
+into a symbolic executor, in addition to adding symbolic numbers @racket[(sym X)]
+to the language syntax.
 Primitives such as @racket['quotient] now may also take as input
 and return symbolic values.
 As standard, symbolic execution employs a path-condition
@@ -915,10 +916,10 @@ known to have evaluated to @racket[0].
 This set is another state component provided by @racket[StateT].
 Monadic operations @racket[_get-path-cond]
 and @racket[_refine] reference and update the path-condition.
-Metafunction @racket[_zero?] determines and remembers a value's ``truthiness''.
-If the value is concrete or can be proven to be @racket[0] or non-@racket[0]
-from the path-condition, @racket[_zero?] returns the appropriate boolean.
-In case of uncertainty, the metafunction returns both answers
+Metafunction @racket[_zero?] works similarly to the concrete counterpart,
+but also uses the path-condition to prove that some symbolic numbers
+are definitely @racket[0] or non-@racket[0].
+In case of uncertainty, @racket[_zero?] returns both answers
 besides refining the path-condition with the assumption made.
 Operator @racket['¬] represents negation in our language.
 
@@ -928,13 +929,6 @@ result @racket[3] and division-by-0 error are not feasible:
   #:eval the-symbolic-eval 
   (if0 'x (if0 'x 2 3) '(quotient 5 x))
 ]
-
-Joining a symbolic number with another number produces an abstract number @racket['N].
-As seen in @racket[_δ] and @racket[_zero?], the different treatments of
-@racket['N] and symbolic values clarifies that abstract values are not
-symbolic values: the former stands for a set of multiple values,
-whereas the latter stands for an unknown but fixed single value.
-It is unsound to accumulate any assumption about @racket['N].
 
 A scaled up symbolic executor can have @racket[_zero?] calling out
 to an SMT solver for interesting arithmetics,
@@ -968,14 +962,10 @@ execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
      (do z? ← (_zero? v₁)
          (cond
           [z? _fail]
+          [(and (number? v₀) (number? v₁))
+           (return (quotient v₀ v₁))]
           [else
-           (match (list v₀ v₁)
-            [(list (? number? n₀) (? number? n₁))
-             (return (quotient n₀ n₁))]
-            [(list _ ... 'N _ ...)
-             (return 'N)]
-            [(list v₀ v₁)
-             (return `(quotient ,v₀ ,v₁))])]))]
+           (return `(quotient ,v₀ ,v₁))]))]
     [(list '¬ 0) 1]
     ... ; TODO can't put comment in here...
     ))
@@ -987,11 +977,59 @@ execution@~cite[vanhorn-oopsla12 nguyen-pldi15].
         [v #:when (∈ v `(¬ ,v)) (return #f)]
         [`(¬ ,v′) (do a ← (zero? v′)
                      (not a))]
-        ['N (mplus (return #t) (return #f))]
         [v (mplus (do (_refine v)
                       (return #t))
                   (do (_refine `(¬ ,v))
                       (return #f)))])))
+]}}
+
+@subsection{From Symbolic Execution to Verification}
+
+Traditional symbolic executors mainly aim to find bugs
+and provide no termination guarantee.
+We can apply abstracting units presented in previous sections,
+namely base value widening (@secref{base}), finite allocation (@secref{closures}),
+caching and fixing (@secref{cache} and @secref{fix}) to turn
+a symbolic execution into a sound, path-sensitive program verification.
+
+Operations on symbolic values introduce a new source of infinite configurations
+by building up new symbolic values.
+We therefore straightforwardly widen a symbolic value to the abstract
+number @racket['N] when it shares an address with a different number.
+@Figure-ref{symbolic-widen} shows extension to @racket[_δ] and @racket[_zero?]
+in the presence of @racket['N].
+The different treatments of @racket['N] and symbolic values
+clarifies that abstract values are not symbolic values:
+the former stands for a set of multiple values,
+whereas the latter stands for an single unknown value.
+Tests on abstract number @racket['N] do not strengthen the path-condition.
+It is unsound to accumulate any assumption about @racket['N].
+
+@figure["symbolic-widen" "Symbolic execution with abstract numbers"]{
+@filebox[@racket[δ-symbolic@]]{
+@racketblock[
+(define (δ . ovs)
+  (match ovs
+    ... ; TODO can't put comment in here...
+    [(list 'quotient v₀ v₁)
+     (do z? ← (_zero? v₁)
+         (cond
+          [z? _fail]
+          [else
+           (match (list v₀ v₁)
+            [(list (? number? n₀) (? number? n₁))
+             (return (quotient n₀ n₁))]
+            [(list _ ... 'N _ ...)
+             (return 'N)]
+            [(list v₀ v₁)
+             (return `(quotient ,v₀ ,v₁))])]))]
+    ... ; TODO can't put comment in here...
+    ))
+(define (zero? v)
+  (do φ ← _get-path-cond
+      (match v
+        ['N (mplus (return #t) (return #f))]
+        ...)))
 ]}}
 
 
