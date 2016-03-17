@@ -69,6 +69,7 @@
              (num 11)))
   
   (test eval (fact 5) get-as-σs
+        #:timeout 60
         #:answer   {set 5 'N}
         #:bindings
         #:preds (∈-θ))
