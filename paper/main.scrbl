@@ -1,12 +1,5 @@
 #lang scribble/sigplan @nocopyright
-@(require "bib.rkt"
-	  "evals.rkt")
-@(require scribble/manual
-	  scriblib/figure
-	  scribble/decode
-	  scriblib/footnote
-	  scribble/eval
-	  racket/pretty)
+@(require "bib.rkt")
 
 @title{Abstracting Definitional Interpreters @subtitle{Functional Pearl}}
 
