@@ -55,6 +55,7 @@
                    `("y" ,{set 13}))
   
   (test eval (fact 5) get-as-σs
+        #:timeout 60
         #:answer   {set 'N}
         #:bindings `("x" ,{set 'N 5})
                    `("f" _))

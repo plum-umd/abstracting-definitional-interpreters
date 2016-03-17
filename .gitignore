@@ -1,3 +1,8 @@
 *~
 compiled/
-
+paper/main.pdf
+paper/main.tex
+paper/*aux
+paper/*log
+paper/*out
+paper/sigplanconf.cls
