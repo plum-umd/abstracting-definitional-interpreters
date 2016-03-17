@@ -14,7 +14,7 @@ with (URL redacted for double-blind):
 @centered{
 @verbatim[#:indent 2]{
 raco pkg install \ 
-  https://github.com/<anon>/monadic-eval.git}}
+  https://github.com/plum-umd/monadic-eval.git}}
 
 A @smaller{@tt{#lang monadic-eval}} program starts with a list of
 components, which are linked together, and an expression producing an
