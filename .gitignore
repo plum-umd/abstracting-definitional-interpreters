@@ -5,4 +5,4 @@ paper/main.tex
 paper/*aux
 paper/*log
 paper/*out
-paper/sigplan.cls
+paper/sigplanconf.cls
