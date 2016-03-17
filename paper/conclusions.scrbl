@@ -16,3 +16,7 @@ property; it is simply inherited from the defining language.
 We believe this formulation of higher-order abstract interpretation
 offers a promising new foundation for making re-usable components for
 the static analysis and verification of higher-order programs.
+
+@bold{Acknowledgments}: We thank Sam Tobin-Hochstadt and Dionna Glaze
+for several fruitful conversations while developing the ideas in this
+work.
