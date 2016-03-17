@@ -21,6 +21,7 @@
           (andmap (λ (e) (set-member? θ e)) es))))
 
   (test eval (dd '(add1 0)) get-as-σs
+        #:timeout 60
         #:answer   {set 13}
         #:bindings
         #:preds
