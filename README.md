@@ -1,6 +1,8 @@
 monadic-eval
 ============
 
+[![Build Status](https://travis-ci.org/plum-umd/monadic-eval.png?branch=master)](https://travis-ci.org/plum-umd/monadic-eval)
+
 A monadic evaluator and several monads.
 
 Higher-order imperative language:
