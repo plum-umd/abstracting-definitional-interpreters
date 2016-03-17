@@ -26,18 +26,18 @@ is simply inherited from the defining language.}
 @keywords{definitional interpreters, abstract interpretation, pushdown
 control flow analysis, symbolic execution}
 
-@include-section{intro.scrbl}
-@include-section{aam.scrbl}
-@include-section{defn-interp.scrbl}
-@include-section{closures.scrbl}
-@include-section{cache.scrbl}
-@include-section{fixing-cache.scrbl}
-@include-section{reynolds.scrbl}
-@include-section{store-widen.scrbl}
-@include-section{alt-abstraction.scrbl}
-@include-section{symbolic-execution.scrbl}
-@include-section{try-it.scrbl}
-@include-section{related-work.scrbl}
-@include-section{conclusions.scrbl}
+@include-section{sec-intro.scrbl}
+@include-section{sec-aam.scrbl}
+@include-section{sec-defn-interp.scrbl}
+@include-section{sec-closures.scrbl}
+@include-section{sec-cache.scrbl}
+@include-section{sec-fixing-cache.scrbl}
+@include-section{sec-reynolds.scrbl}
+@include-section{sec-store-widen.scrbl}
+@include-section{sec-alt-abstraction.scrbl}
+@include-section{sec-symbolic-execution.scrbl}
+@include-section{sec-try-it.scrbl}
+@include-section{sec-related-work.scrbl}
+@include-section{sec-conclusions.scrbl}
 
 @(generate-bibliography)
