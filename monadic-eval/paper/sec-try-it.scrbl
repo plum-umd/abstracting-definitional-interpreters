@@ -24,6 +24,6 @@ DrRacket IDE.  For example, @figure-ref{screen} shows a screen shot of the PDCFA
 evaluator running the example from @secref{fixing-cache}.
 
 @figure["screen" "Screenshot of monadic language"]{
-@image[#:scale .29]{screen.pdf}}
+@image[#:suffixes '(".pdf" ".png")]{screen}}
 
 
