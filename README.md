@@ -21,9 +21,9 @@ Reynolds, the evaluator involves no explicit mechanics to achieve this
 property; it is simply inherited from the defining language.
 
 For more, see:
-```
-   monadic-eval/paper/
-```
+
+* WWW: https://plum-umd.github.io/monadic-eval/
+* PDF: https://plum-umd.github.io/monadic-eval/main.pdf
 
 Installation
 ------------

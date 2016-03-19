@@ -9,7 +9,7 @@
   (parameterize [(pretty-print-columns cols)]
     (define ev
       (make-base-eval #:pretty-print? #t
-                      #:lang 'monadic-eval/lang 
+                      #:lang 'monadic-eval
                       link
                       fix))
     (set-eval-limits ev 5 200)
