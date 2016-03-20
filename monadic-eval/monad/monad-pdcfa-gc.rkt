@@ -7,7 +7,7 @@
          "../transformers.rkt"
          "CacheT.rkt")
 (import)
-(export monad^ menv^ mstore^ mlive^ mcache^)
+(export monad^ menv^ mstore^ gc^ mcache^)
 
 ;; M ρ α σ Σ⊥ Σ a := ρ → α → σ → Σ⊥ → Σ → ℘(a × σ) × Σ
 (define M
@@ -49,11 +49,11 @@
   (do σ ← get-store
     (put-store (f σ))))
 
-;; mlive^ impl:
+;; gc^ impl:
 
-(define ask-live (bind ask (compose1 return cadr)))
+(define ask-roots (bind ask (compose1 return cadr)))
 
-(define (local-live α m)
+(define (local-roots α m)
   (do `(,ρ . (,_ . ,Σ⊥)) ← ask
     (local `(,ρ . (,α . ,Σ⊥)) m)))
 

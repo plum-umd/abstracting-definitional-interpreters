@@ -8,12 +8,19 @@
 (define ((gc as) σ)
   (restrict σ (reachable as σ)))
 
+;; Works on both set-based and value-based stores.
 (define (reachable as s)
   (define (R to-see seen)
     (match to-see
       [(set) seen]
       [(set a as ...)
-       (R (set-subtract (set-union (roots-v (s a)) as) seen)
+       (define sa (s a))
+       (define as* (if (set? sa)
+                       (for/fold ([as* (set)])
+                                 ([v (in-set sa)])
+                         (set-union as* (roots-v v)))                   
+                       (roots-v sa)))
+       (R (set-subtract (set-union as* as) seen)
           (set-add seen a))]))
   (R as (set)))
 
