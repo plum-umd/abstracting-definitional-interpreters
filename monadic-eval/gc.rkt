@@ -34,14 +34,6 @@
                   (rng (restrict r (fv e))))]
       [_ as])))
 
-(define (rng r)
-  (for/set ([(_ v) (∈ r)]) v))
-
-(define (restrict r xs)
-  (for/map ([(x _) (∈ r)]
-            #:when (set-member? xs x))
-    (values x (r x))))
-
 (define (map-remove m x)
   (for/map ([(y v) (∈ m)]
             #:when (not (equal? x y)))
