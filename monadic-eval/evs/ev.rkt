@@ -2,6 +2,8 @@
 (require racket/match
          "../transformers.rkt"
          "../syntax.rkt"
+	 "../map.rkt"
+	 "../fv.rkt"
          "../signatures.rkt")
 
 (import monad^ menv^ state^ δ^ alloc^)
@@ -38,9 +40,9 @@
          (ext a (cons e₀ (ρ f a)))
          (local-env (ρ f a) (ev e₁)))]
 
-    [(lam x e₀)
+    [(and (lam x e₀) l)
      (do ρ ← ask-env
-       (return (cons (lam x e₀) ρ)))]
+       (return (cons l (restrict ρ (fv l)))))]
 
     [(app e₀ e₁)
      (do (cons (lam x e₂) ρ) ← (ev e₀)
