@@ -1,7 +1,7 @@
 #lang racket
 ;; Finite map data structure
 (require racket/hash)
-(provide ∅ ⊔ ∈ size hash->map for/map rng restrict)
+(provide ∅ ⊔ ∈ size hash->map for/map rng restrict keys)
 
 (define (map-print m port mode)
   (let ([recur (case mode
@@ -38,6 +38,9 @@
     [(m)   (in-hash (map-to-hash m))]))
 
 (define (size m) (hash-count (map-to-hash m)))
+
+(define (keys m)
+  (hash-keys (map-to-hash m)))
 
 (define ∅ (map (hash)))
 

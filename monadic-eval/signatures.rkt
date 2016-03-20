@@ -27,7 +27,8 @@
   [ev-compile^  : ev-compile]
   [ev-cycle^    : ev-cycle]
   [ev-cache^    : ev-cache]
-  [ev-debug^    : ev-debug])
+  [ev-debug^    : ev-debug]
+  [ev-collect^  : ev-collect])
 
 ;; these are open monadic interpreters, or evals, where
 ;;   eval : (exp → M value) → exp → M value
@@ -50,7 +51,8 @@
   [menv^      : ask-env local-env]
   [mstore^    : get-store put-store update-store]
   [mcycle^    : ask-cycle local-cycle]
-  [msymbolic^ : refine get-path-cond])
+  [msymbolic^ : refine get-path-cond]
+  [gc^        : ask-roots local-roots])
 
 ;; metafunctions
 (define-signatures

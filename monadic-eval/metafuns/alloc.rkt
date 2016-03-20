@@ -9,7 +9,10 @@
 
 (define-monad M)
 
+(define (next σ)
+  (add1 (apply max -1 (keys σ))))
+
 (define (alloc _)
   (do σ ← get-store
-    (return (size σ))))
+    (return (next σ))))
 
