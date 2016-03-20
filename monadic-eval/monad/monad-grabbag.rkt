@@ -6,7 +6,7 @@
          "../unparse.rkt"
          "CacheT.rkt")
 (import)
-(export monad^ mlive^ mdead^ menv^ mstore^ mcache^)
+(export monad^ gc^ mdead^ menv^ mstore^ mcache^)
 
 ;; M ρ θ σ Σ⊥ Σ a := ρ → θ → σ → Σ⊥ → Σ → (℘((a ∪ (failure)) × θ) × σ) × Σ
 (define M
@@ -65,11 +65,11 @@
       θ ← get-dead
       (put-dead (f θ)))))
 
-;; mlive^ impl:
+;; gc^ impl:
 
-(define ask-live (bind ask (compose1 return cadr)))
+(define ask-roots (bind ask (compose1 return cadr)))
 
-(define (local-live α m)
+(define (local-roots α m)
   (do `(,ρ . (,_ . ,Σ⊥)) ← ask
     (local `(,ρ . (,α . ,Σ⊥)) m)))
 
