@@ -1,7 +1,7 @@
 #lang racket
 ;; Finite map data structure
 (require racket/hash)
-(provide ∅ ⊔ ∈ size hash->map for/map rng restrict keys
+(provide ∅ ⊔ ∈ size hash->map for/map rng keys restrict map-rem
          (rename-out [match-map ↦]))
 
 (define-match-expander match-map
@@ -49,6 +49,9 @@
 
 (define (keys m)
   (hash-keys (map-to-hash m)))
+
+(define (map-rem m j)
+  (hash->map (hash-remove (map-to-hash m) j)))
 
 (define ∅ (map (hash)))
 
