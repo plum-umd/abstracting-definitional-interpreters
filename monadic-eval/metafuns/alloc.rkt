@@ -1,15 +1,3 @@
-#lang racket/unit
-
-(require "../signatures.rkt"
-         "../transformers.rkt"
-	 "../map.rkt")
-
-(import monad^ mstore^)
-(export alloc^)
-
-(define-monad M)
-
-(define (alloc _)
-  (do σ ← get-store
-    (return (size σ))))
-
+#lang racket/base
+(require "alloc-max.rkt")
+(provide (rename-out [alloc-max@ alloc@]))

@@ -3,39 +3,33 @@
 (module+ test
   (require rackunit
            "../map.rkt"
+           "../set.rkt"
            "../fixed/eval-cycle.rkt"
-           "../syntax.rkt"
            "tests.rkt")
 
-  ;; eval : e → ℘(v × σ)  ; nondet only used as an option here
-  (define (get-v-σs x) x)
+  (check-match (eval (dd 0))
+               (set (cons 2 (↦ (i 0) (x 2) (y 11)))))
+  
+  (check-match (eval (dd 1))
+               (set (cons 13
+                          (↦ (i 1) (x 7) (y 13)))))
+  
+  (check-match (eval (dd* 0))
+               (set (cons 22
+                          (↦ (i 0) (x 2) (y 11)))))
+  
+  (check-match (eval (dd* 1))
+               (set (cons 91
+                          (↦ (i 1) (x 7) (y 13)))))
+  
+  (check-match (eval (fact 5))
+               (set (cons 120
+                          (↦ (f _) (x 0)))))
+      
+  (check-diverge (eval (fact -1)))
+  (check-match (eval omega) (set))
+  (check-match (eval omega-push) (set))
 
-  (test eval (dd 0) get-v-σs
-        #:answer   2
-        #:bindings '("input" 0) '("x" 2) '("y" 11))
-
-  (test eval (dd 1) get-v-σs
-        #:answer   13
-        #:bindings '("input" 1) '("x" 7) '("y" 13))
-
-  (test eval (dd* 0) get-v-σs
-        #:answer   22
-        #:bindings '("input" 0) '("x" 2) '("y" 11))
-
-  (test eval (dd* 1) get-v-σs
-        #:answer   91
-        #:bindings '("input" 1) '("x" 7) '("y" 13))
-
-  (test eval (fact 5) get-v-σs
-        #:answer   120
-        #:bindings '("x" 0) '("f" _))
-
-  (test eval (fact -1) DIVERGES)
-
-  (test eval omega get-v-σs)
-
-  (test eval omega-push get-v-σs)
-
-  (test eval ref-sref get-v-σs
-        #:answer   42
-        #:bindings '(_ 0)))
+  (check-match (eval ref-sref)
+               (set (cons  42
+                           (↦ (_ 0))))))

@@ -13,10 +13,10 @@
  ;; open evs
  "evs/ev.rkt"
  "evs/ev-bang.rkt"
+ "evs/ev-gc.rkt"
 
  ;; ext envs
  "evs/ev-ref.rkt"
- "evs/ev-gc.rkt"
  "evs/ev-echo.rkt"
  "evs/ev-cycle.rkt"
  "evs/ev-dead.rkt"
@@ -27,6 +27,7 @@
  "evs/ev-cache0.rkt"
  "evs/ev-compile.rkt"
  "evs/ev-debug.rkt"
+ "evs/ev-collect.rkt"
 
  ;; monads
  "monad/monad-by-hand.rkt"
@@ -38,16 +39,18 @@
  "monad/monad-nd.rkt"
  "monad/monad-trace-nd.rkt"
  "monad/monad-cache.rkt"
- "monad/monad-grabbag.rkt"
  "monad/monad-pdcfa.rkt"
  "monad/monad-pdcfa-show-store.rkt"
  "monad/monad-pdcfa-gc.rkt"
  "monad/monad-pdcfa-widen.rkt"
  "monad/monad-symbolic.rkt"
+ "monad/monad-gc.rkt"
 
  ;; alloc
  "metafuns/alloc.rkt"
  "metafuns/alloc-bang.rkt"
+ "metafuns/alloc-size.rkt"
+ "metafuns/alloc-max.rkt"
  "metafuns/alloc-0cfa.rkt"
  "metafuns/alloc-x.rkt"
 

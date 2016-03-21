@@ -7,37 +7,30 @@
            "../syntax.rkt"
            "../parser.rkt"
            "tests.rkt")
-
-  ;; eval : e → v × σ
-  (define get-as-σs list)
-
-  (test eval (dd 0) get-as-σs
-        #:answer   2
-        #:bindings '("input" 0) '("x" 2) '("y" 11))
   
-  (test eval (dd 1) get-as-σs
-        #:answer   13
-        #:bindings '("input" 1) '("x" 7) '("y" 13))
-
-  (test eval (dd* 0) get-as-σs
-        #:answer   22
-        #:bindings '("input" 0) '("x" 2) '("y" 11))
+  (check-match (eval (dd 0))
+               (cons 2 (↦ (i 0) (x 2) (y 11))))
   
-  (test eval (dd* 1) get-as-σs
-        #:answer   91
-        #:bindings '("input" 1) '("x" 7) '("y" 13))
+  (check-match (eval (dd 1))
+               (cons 13
+                     (↦ (i 1) (x 7) (y 13))))
   
-  (test eval (fact 5) get-as-σs
-        #:answer   120
-        #:bindings '("x" 5) '("x" 4) '("x" 3) '("x" 2) '("x" 1) '("x" 0)
-        `("f" _))
+  (check-match (eval (dd* 0))
+               (cons 22
+                     (↦ (i 0) (x 2) (y 11))))
   
-  (test eval (fact -1) DIVERGES)
+  (check-match (eval (dd* 1))
+               (cons 91
+                     (↦ (i 1) (x 7) (y 13))))
+  
+  (check-match (eval (fact 5))
+               (cons 120
+                     (↦ (f _) (x0 5) (x1 4) (x2 3) (x4 2) (x5 1) (x6 0))))
+  
+  (check-diverge (eval (fact -1)))
+  (check-diverge (eval omega))
+  (check-diverge (eval omega-push))
 
-  (test eval omega DIVERGES)
-
-  (test eval omega-push DIVERGES)
-
-  (test eval ref-sref get-as-σs
-        #:answer   42
-         #:bindings '(_ 0)))
+  (check-match (eval ref-sref)
+        (cons 42
+              (↦ (_ 0)))))

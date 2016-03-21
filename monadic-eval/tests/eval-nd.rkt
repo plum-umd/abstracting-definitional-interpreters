@@ -5,35 +5,30 @@
            "../map.rkt"
            "../set.rkt"
            "../fixed/eval-nd.rkt"
-           "../syntax.rkt"
-           "../transformers.rkt"
            "tests.rkt")
 
-  ;; eval : exp -> ℘((value ∪ (failure) × σ))
-  (define (get-as-σs x) x)
+  (check-match (eval (dd* 0))
+               (set (cons 22
+                          (↦ (i (set 0)) (x (set 2)) (y (set 11))))))
+ 
+  (check-match (eval (dd* 1))
+               (set (cons 91
+                          (↦ (i (set 1)) (x (set 7)) (y (set 13))))))
 
-  (test eval (dd* 0) get-as-σs
-        #:answer   22
-        #:bindings `("input" ,{set 0}) `("x" ,{set 2}) `("y" ,{set 11}))
+  (check-match (eval (fact 5))
+               (set (cons 120
+                          (↦ (x0 (set 5))
+                             (x1 (set 4))
+                             (x2 (set 3))
+                             (x3 (set 2))
+                             (x4 (set 1))
+                             (x5 (set 0))
+                             (f  (set _))))))
   
-  (test eval (dd* 1) get-as-σs
-        #:answer   91
-        #:bindings `("input" ,{set 1}) `("x" ,{set 7}) `("y" ,{set 13}))
-
-  (test eval (fact 5) get-as-σs
-        #:answer   120
-        #:bindings `("x" ,{set 5}) `("x" ,{set 4}) `("x" ,{set 3})
-                   `("x" ,{set 2}) `("x" ,{set 1}) `("x" ,{set 0})
-                   `("f" _))
+  (check-diverge (eval (fact -1)))
+  (check-diverge (eval omega))
+  (check-diverge (eval omega-push))
   
-  (test eval (fact -1) DIVERGES)
-
-  (test eval omega DIVERGES)
-
-  (test eval omega-push DIVERGES)
-
-  (test eval ref-sref get-as-σs
-        #:answer  (failure)
-        #:bindings `(_ ,{set 0 1})
-        #:answer  42
-        #:bindings `(_ ,{set 0 1})))
+  (check-match (eval ref-sref)
+               (set (cons 'failure (↦ (x (set 0 1))))
+                    (cons 42       (↦ (y (set 0 1)))))))
