@@ -20,7 +20,7 @@
 
 (define-monad M)
 
-(define (mrun m [ρ₀ ∅] [α₀ ∅] [σ₀ ∅] [Σ⊥₀ ∅] [Σ₀ ∅])
+(define (mrun m [ρ₀ ∅] [α₀ (set)] [σ₀ ∅] [Σ⊥₀ ∅] [Σ₀ ∅])
   (run-CacheT  Σ₀ Σ⊥₀
   (run-StateT  σ₀
   (run-ReaderT α₀
