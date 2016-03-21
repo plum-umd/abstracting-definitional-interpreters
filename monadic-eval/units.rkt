@@ -49,6 +49,8 @@
  ;; alloc
  "metafuns/alloc.rkt"
  "metafuns/alloc-bang.rkt"
+ "metafuns/alloc-size.rkt"
+ "metafuns/alloc-max.rkt"
  "metafuns/alloc-0cfa.rkt"
  "metafuns/alloc-x.rkt"
 
