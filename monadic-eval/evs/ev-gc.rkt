@@ -5,7 +5,6 @@
          "../syntax.rkt"
          "../gc.rkt"
          "../map.rkt"
-         "../fv.rkt"
          "../signatures.rkt")
 
 (import monad^ menv^ state^ δ^ alloc^ gc^)
