@@ -2,72 +2,58 @@
 
 (module+ test
   (require rackunit
-           racket/set
            "../map.rkt"
+           "../set.rkt"
            "../fixed/eval-pdcfa-widen-pres.rkt"
-           "../syntax.rkt"
-           "../transformers.rkt"
            "tests.rkt")
+ 
+  (check-match (eval (dd '(add1 0)))
+               (cons (cons (set 13)
+                           (↦ (i (set 1)) (x (set 7)) (y (set 13))))
+                     cache))
 
-  ;; eval : exp -> (℘(value ∪ (failure)) × σ) × Σ
-  (define (get-as-σs out) (set (cons (caar out) (cdar out))))
-
-  (test eval (dd '(add1 0)) get-as-σs
-        #:answer   {set 13}
-        #:bindings `("input" ,{set 1})
-                   `("x" ,{set 7})
-                   `("y" ,{set 13}))
-
-  (test eval (dd 0) get-as-σs
-        #:answer   {set 2}
-        #:bindings `("input" ,{set 0})
-                   `("x" ,{set 2})
-                   `("y" ,{set 11}))
-
-  (test eval (dd 1) get-as-σs
-        #:answer   {set 13}
-        #:bindings `("input" ,{set 1})
-                   `("x" ,{set 7})
-                   `("y" ,{set 13}))
-
-  (test eval (dd* '(add1 0)) get-as-σs
-        #:answer   {set 91}
-        #:bindings `("input" ,{set 1})
-                   `("x" ,{set 7})
-                   `("y" ,{set 13}))
-
-  (test eval (dd* 0) get-as-σs
-        #:answer   {set 22}
-        #:bindings `("input" ,{set 0})
-                   `("x" ,{set 2})
-                   `("y" ,{set 11}))
-
-  (test eval (dd* 1) get-as-σs
-        #:answer   {set 91}
-        #:bindings `("input" ,{set 1})
-                   `("x" ,{set 7})
-                   `("y" ,{set 13}))
+  (check-match (eval (dd 0))
+               (cons (cons (set 2)
+                           (↦ (i (set 0))
+                              (x (set 2))
+                              (y (set 11))))
+                     cache))
   
-  (test eval (fact 5) get-as-σs
-        #:answer   {set 'N 5}
-        #:bindings `("x" ,{set 'N})
-                   `("f" _))
+  (check-match (eval (dd 1))
+               (cons (cons (set 13)
+                           (↦ (i (set 1))
+                              (x (set 7))
+                              (y (set 13))))
+                     cache))
+
+  (check-match (eval (dd* '(add1 0)))
+               (cons (cons (set 91)
+                           (↦ (i (set 1)) (x (set 7)) (y (set 13))))
+                     cache))
   
-  (test eval (fact -1) get-as-σs
-        #:answer   {set 'N -1}
-        #:bindings `("x" ,{set 'N})
-                   `("f" _))
+  (check-match (eval (dd* 0))
+               (cons (cons (set 22)
+                           (↦ (i (set 0)) (x (set 2)) (y (set 11))))
+                     cache))
+  
+  (check-match (eval (dd* 1))
+               (cons (cons (set 91)
+                           (↦ (i (set 1)) (x (set 7)) (y (set 13))))
+                     cache))
+  
+  (check-match (eval (fact 5))
+               (cons (cons (set 'N 5)
+                           (↦ (x (set 'N)) (f _)))
+                     cache))
+  
+  (check-match (eval (fact -1))
+               (cons (cons (set 'N -1)
+                           (↦ (x (set 'N)) (f _)))
+                     cache))
 
-  (define U (lam (app (vbl 'f) (vbl 'f))))
-  (test eval omega get-as-σs
-        #:answer {set}
-        #:bindings)
+  (check-match (eval omega) (cons (cons (set) (↦))  cache))
+  (check-match (eval omega-push) (cons (cons (set) (↦)) cache))
 
-  (define Uₚ (lam (app (vbl 'f) (app (vbl 'f) (vbl 'f)))))
-  (test eval omega-push get-as-σs
-        #:answer {set}
-        #:bindings)
-
-  (test eval ref-sref get-as-σs
-        #:answer {set 42 (failure)}
-        #:bindings `(_ ,{set 'N})))
+  (check-match (eval ref-sref)
+               (cons (cons (set 42 'failure) (↦ (_ (set 'N))))
+                     cache)))
