@@ -3,7 +3,6 @@
          "../transformers.rkt"
          "../syntax.rkt"
 	 "../map.rkt"
-	 "../fv.rkt"
          "../signatures.rkt")
 
 (import monad^ menv^ state^ δ^ alloc^)

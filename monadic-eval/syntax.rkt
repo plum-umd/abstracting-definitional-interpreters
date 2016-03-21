@@ -27,19 +27,53 @@
 
 (struct sym (s)        #:symbolic)
 
-(define (pp s)
-  (match s
-    ['err "err"]
-    [(app (lam x b) a) (format "(let ~a ~a ~a)" x (pp a) (pp b))]
-    [(app e0 e1)       (format "(~a ~a)" (pp e0) (pp e1))]
-    [(lam x  e1)       (format "(λ (~a) ~a)" x (pp e1))]
-    [(vbl x)           (format "~a" x)]
-    [(num n)           (format "~a" n)]
-    [(ifz e0 e1 e2)    (format "(if0 ~a ~a ~a)" (pp e0) (pp e1) (pp e2))]
-    [(op1 op e)        (format "(~a ~a)" op (pp e))]
-    [(op2 op e0 e1)    (format "(~a ~a ~a)" op (pp e0) (pp e1))]
-    [(lrc f x e)       (format "(rec ~a ~a ~a)" f (pp x) (pp e))]
-    [(ref e)           (format "(ref ~a)" (pp e))]
-    [(drf e)           (format "(! ~a)" (pp e))]
-    [(srf e0 e1)       (format "(~a := ~a)" (pp e0) (pp e1))]
-    [(sym s)           (format "'~a" s)]))
+
+(define (fv e)
+  (match e
+    [(app e0 e1) (set-union (fv e0) (fv e1))]
+    [(lam x e) (set-remove (fv e) x)]
+    [(vbl x) (set x)]
+    [(num n) (set)]
+    [(ifz e0 e1 e2)
+     (set-union (fv e0)
+                (fv e1)
+                (fv e2))]
+    [(op1 o e)
+     (fv e)]
+    [(op2 o e0 e1)
+     (set-union (fv e0)
+                (fv e1))]
+    [(ref e)
+     (fv e)]
+    [(drf e)
+     (fv e)]
+    [(srf e0 e1)
+     (set-union (fv e0) (fv e1))]
+    [(sym s) (set)]
+    [(lrc f e0 e1)
+     (set-remove (set-union (fv e0) (fv e1)) f)]
+    [_ (set)]))
+
+(define (subexps e)
+  (set-add (match e
+             [(or 'err
+                  (vbl _)
+                  (sym _)
+                  (num _))
+              (set)]
+             [(or (op1 _ e)
+                  (ref e)
+                  (drf e)
+                  (lam _ e))
+              (subexps e)]
+             [(or (op2 _ e0 e1)
+                  (srf e0 e1)
+                  (lrc _ (lam _ e0) e1)
+                  (app e0 e1))
+              (set-union (subexps e0)
+                         (subexps e1))]
+             [(ifz e0 e1 e2)
+              (set-union (subexps e0)
+                         (subexps e1)
+                         (subexps e2))])
+           e))

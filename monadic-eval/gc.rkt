@@ -1,8 +1,7 @@
 #lang racket
 (require "syntax.rkt"
          "set.rkt"
-         "map.rkt"
-         "fv.rkt")
+         "map.rkt")
 (provide (all-defined-out))
 
 (define ((gc as) σ)

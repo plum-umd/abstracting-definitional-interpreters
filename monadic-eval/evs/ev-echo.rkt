@@ -1,6 +1,7 @@
 #lang racket/unit
 (require "../transformers.rkt"
          "../signatures.rkt"
+         "../unparse.rkt"
          "../syntax.rkt")
 
 (import monad^ menv^ mstore^)
@@ -12,5 +13,5 @@
 (define (((ev-echo ev0) ev) e)
   (do ρ ← ask-env
       σ ← get-store
-      (begin (printf "eval ~a ~a\n" (pp e) σ)
+      (begin (printf "eval ~a ~a\n" (unparse e) σ)
              ((ev0 ev) e))))

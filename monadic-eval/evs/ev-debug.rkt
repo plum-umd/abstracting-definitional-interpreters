@@ -2,7 +2,7 @@
 (require racket/match
          "../map.rkt"
          "../signatures.rkt"
-         "../syntax.rkt"
+         "../unparse.rkt"
          "../transformers.rkt")
 
 (import monad^ mstore^ menv^)
@@ -42,7 +42,7 @@
     (printf "[S]tep to the next subexp?\n")
     (printf "[E]valuate exp?\n")
     (printf "Print live [b]indings?\n"))
-  (printf "eval ~a\n" (pp e))
+  (printf "eval ~a\n" (unparse e))
   (printf "[Step,eval,binds]> ")
   (define inp (read-line))
   (if (eof-object? inp)
@@ -52,13 +52,13 @@
                   ""
                   (substring inp 0 1)))
         [(or "" "s") (do v ← ((ev0 ev) e)
-                       (begin (printf "eval ~a\n   ⇒ ~a\n" (pp e) v)
+                       (begin (printf "eval ~a\n   ⇒ ~a\n" (unparse e) v)
                               
                               (return v)))]
         ["b"         (binds e ev0 ev)]
         ["e"         (do ρ ← ask-env
                        v ← (local-env (ρ 'debug 'eval) (ev e))
-                       (begin (printf "eval ~a\n   ⇒ ~a\n" (pp e) v)
+                       (begin (printf "eval ~a\n   ⇒ ~a\n" (unparse e) v)
                               (return v)))]
         [unk
          (printf "Unknown input: ~a\n" unk)
