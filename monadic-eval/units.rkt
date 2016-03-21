@@ -9,6 +9,7 @@
  ;; evals
  "evals/eval-dead.rkt"
  "evals/eval-coind.rkt"
+ "evals/eval-coind-roots.rkt"
 
  ;; open evs
  "evs/ev.rkt"
@@ -24,6 +25,7 @@
  "evs/ev-symbolic.rkt"
  "evs/ev-trace.rkt"
  "evs/ev-cache.rkt"
+ "evs/ev-cache-roots.rkt"
  "evs/ev-cache0.rkt"
  "evs/ev-compile.rkt"
  "evs/ev-debug.rkt"
