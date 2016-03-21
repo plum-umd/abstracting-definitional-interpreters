@@ -9,8 +9,8 @@ init:
 	cd .. && raco link monadic-eval
 
 compile:
-	raco make -j 4 **/*.rkt
 	make init
+	raco make -j 4 **/*.rkt
 
 test: compile
 	@raco test transformers.rkt
