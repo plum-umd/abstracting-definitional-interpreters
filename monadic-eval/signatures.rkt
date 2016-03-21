@@ -21,6 +21,7 @@
   [ev-trace^    : ev-trace]
   [ev-gc^       : ev-gc]
   [ev-gc-count^ : ev-gc ev-count]
+  [ev-lazy!^    : ev-lazy!]
   [ev-reach^    : ev-reach]
   [ev-echo^     : ev-echo]
   [ev-dead^     : ev-dead]
@@ -38,7 +39,8 @@
 ;; to be given its own fixpoint
 (define-signatures
   [eval-dead^  : eval-dead]
-  [eval-coind^ : eval-coind])
+  [eval-coind^ : eval-coind]
+  [eval-lazy!^ : eval-lazy!])
 
 ;; monad, monoid, and component-specific effects
 (define-signatures
@@ -58,12 +60,14 @@
 ;; metafunctions
 (define-signatures
 
-  [gc-count^  : gc count]
+
+  [force^ : force]
+  [gc-count^ : gc count]
 
   [alloc^    : alloc]
   ;; alloc : any → M addr
   ;;   allocate an address in the heap
-  
+
   [state^    : find ext]
   ;; find : var → addr → M value
   ;;   finds the value bound to var @ addr in the heap

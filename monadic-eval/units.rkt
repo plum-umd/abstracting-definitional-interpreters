@@ -10,6 +10,7 @@
  "evals/eval-dead.rkt"
  "evals/eval-coind.rkt"
  "evals/eval-coind-roots.rkt"
+ "evals/eval-lazy-deref.rkt"
 
  ;; open evs
  "evs/ev.rkt"
@@ -31,6 +32,7 @@
  "evs/ev-debug.rkt"
  "evs/ev-collect.rkt"
  "evs/ev-gc-count.rkt"
+ "evs/ev-lazy-deref.rkt"
 
  ;; monads
  "monad/monad-by-hand.rkt"
@@ -62,10 +64,12 @@
  ;; state
  "metafuns/state.rkt"
  "metafuns/state-crush.rkt"
+ "metafuns/state-lazy.rkt"
  "metafuns/state-nd.rkt"
 
  ;; δ
  "metafuns/delta.rkt"
+ "metafuns/delta-force.rkt"
  "metafuns/delta-pres.rkt"
  "metafuns/delta-symbolic.rkt"
  "metafuns/delta-abs.rkt"
