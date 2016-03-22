@@ -48,6 +48,7 @@
  "monad/monad-pdcfa-show-store.rkt"
  "monad/monad-pdcfa-gc.rkt"
  "monad/monad-pdcfa-widen.rkt"
+ "monad/monad-pdcfa-widen-gc.rkt"
  "monad/monad-symbolic.rkt"
  "monad/monad-gc.rkt"
  "monad/monad-gc-count.rkt"
