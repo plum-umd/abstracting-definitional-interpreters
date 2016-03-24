@@ -60,7 +60,7 @@
     [(app e₀ e₁)
      (do ψ ← ask-roots
          ρ ← ask-env
-         v₀ ← (local-roots (set-union ψ (roots e₁ ρ)) (ev e₀))                                            
+         v₀ ← (local-roots (set-union ψ (roots e₁ ρ)) (ev e₀))
          v₁ ← (local-roots (set-union ψ (roots-v v₀)) (ev e₁))
          (cons (lam x e₂) ρ′) ≔ v₀
          a  ← (alloc x)
