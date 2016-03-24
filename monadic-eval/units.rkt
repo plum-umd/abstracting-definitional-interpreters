@@ -53,6 +53,7 @@
  "monad/monad-gc.rkt"
  "monad/monad-gc-count.rkt"
  "monad/monad-pdcfa-gc-count.rkt"
+ "monad/monad-pdcfa-widen-gc-count.rkt"
 
  ;; alloc
  "metafuns/alloc.rkt"
