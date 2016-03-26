@@ -33,4 +33,5 @@
 
   (check-evals eval/alloc-bang)  
   (check-evals eval/alloc-max)
-  (check-evals eval/alloc-size))
+  (check-evals eval/alloc-size)
+  (check-evals eval-apply/alloc-max))

@@ -3,7 +3,8 @@
          "../units.rkt"
          "../syntax.rkt"
          "../tests/tests.rkt")
-(provide eval eval/alloc-size eval/alloc-max eval/alloc-bang)
+(provide eval eval/alloc-size eval/alloc-max eval/alloc-bang
+         eval-apply/alloc-max)
 
 (define eval/alloc-size
   (let ()
@@ -26,5 +27,10 @@
     (lambda (e)
       (mrun ((fix ev) e)))))
 
-(define eval eval/alloc-bang)
+(define eval-apply/alloc-max
+  (let ()
+    (define-values/invoke-unit/infer
+      (link monad@ state@ alloc-max@ δ@ ev-ap@))
+    (λ (e) (mrun ((fix2 ev ap) e)))))
 
+(define eval eval/alloc-bang)

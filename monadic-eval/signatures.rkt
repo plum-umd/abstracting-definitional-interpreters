@@ -14,6 +14,7 @@
 (define-signatures
   ;; open:
   [ev^          : ev]
+  [ap^          : ap]
   [ev!^         : ev!]
 
   ;; extensions:

@@ -14,6 +14,7 @@
 
  ;; open evs
  "evs/ev.rkt"
+ "evs/ev-ap.rkt"
  "evs/ev-bang.rkt"
  "evs/ev-gc.rkt"
 
