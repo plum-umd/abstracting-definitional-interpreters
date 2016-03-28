@@ -10,6 +10,14 @@
   
   (define-syntax-rule (check-eval eval)
     (begin
+      ;; only testing soundness for tricky012
+      (check-match (eval (tricky012 '(sub1 1)))
+                   (cons (set (cons 0 _) _ (... ...)) cache))
+      (check-match (eval (tricky012 '(add1 0)))
+                   (cons (set (cons 1 _) _ (... ...)) cache))
+      (check-match (eval (tricky012 '(add1 1)))
+                   (cons (set (cons 2 _) _ (... ...)) cache))
+
       (check-match (eval (dd* '(add1 0)))
                    (cons (set (cons 'N (↦ (i0 (set 'N)) (x0 (set 2)) (y0 (set 11))))
                               (cons 'N (↦ (i1 (set 'N)) (x1 (set 3)) (y1 (set 11))))
