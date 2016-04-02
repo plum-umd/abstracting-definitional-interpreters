@@ -31,6 +31,7 @@
   [ev-cycle^    : ev-cycle]
   [ev-cache^    : ev-cache]
   [ev-debug^    : ev-debug]
+  [ev-roots^    : ev-roots]
   [ev-collect^  : ev-collect])
 
 ;; these are open monadic interpreters, or evals, where

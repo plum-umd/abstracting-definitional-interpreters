@@ -6,6 +6,6 @@
 (provide eval)
 
 (define-values/invoke-unit/infer
-  (link monad-gc@ state@ alloc@ δ@ ev-gc@ ev-collect@))
+  (link monad-gc@ state@ alloc@ δ@ ev@ ev-roots@ ev-collect@))
 
-(define (eval e) (mrun ((fix (ev-collect ev)) e)))
+(define (eval e) (mrun ((fix (ev-roots (ev-collect ev))) e)))
