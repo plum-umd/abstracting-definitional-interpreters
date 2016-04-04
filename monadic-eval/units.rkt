@@ -35,6 +35,7 @@
  "evs/ev-collect.rkt"
  "evs/ev-gc-count.rkt"
  "evs/ev-lazy-deref.rkt"
+ "evs/ev-loop.rkt"
 
  ;; monads
  "monad/monad-by-hand.rkt"
