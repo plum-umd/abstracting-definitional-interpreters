@@ -8,5 +8,4 @@
 
 (define-monad M)
 
-(define (alloc x)
-  (return (if (symbol? x) (symbol->string x) x)))
+(define (alloc x) (return x))

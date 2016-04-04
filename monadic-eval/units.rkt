@@ -14,8 +14,9 @@
 
  ;; open evs
  "evs/ev.rkt"
+ "evs/ev-ap.rkt"
  "evs/ev-bang.rkt"
- "evs/ev-gc.rkt"
+ "evs/ev-roots.rkt"
 
  ;; ext envs
  "evs/ev-ref.rkt"
@@ -26,6 +27,7 @@
  "evs/ev-symbolic.rkt"
  "evs/ev-trace.rkt"
  "evs/ev-cache.rkt"
+ "evs/ev-ap-cache.rkt"
  "evs/ev-cache-roots.rkt"
  "evs/ev-cache0.rkt"
  "evs/ev-compile.rkt"
