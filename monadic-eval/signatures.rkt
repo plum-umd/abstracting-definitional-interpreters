@@ -32,7 +32,7 @@
   [ev-cache^    : ev-cache]
   [ev-debug^    : ev-debug]
   [ev-collect^  : ev-collect]
-  [ev-loop^     : ev-loop])
+  [ev-loop^     : ev-loop]
   [ev-roots^    : ev-roots])
 
 ;; these are open monadic interpreters, or evals, where
