@@ -16,7 +16,7 @@
  "evs/ev.rkt"
  "evs/ev-ap.rkt"
  "evs/ev-bang.rkt"
- "evs/ev-gc.rkt"
+ "evs/ev-roots.rkt"
 
  ;; ext envs
  "evs/ev-ref.rkt"

@@ -2,7 +2,7 @@
 (require rackunit
          racket/engine
          "../parser.rkt")
-(provide dd dd* fact omega omega-push ref-sref check-diverge runs-for?)
+(provide tricky012 dd dd* fact omega omega-push ref-sref check-diverge runs-for?)
 
 (define-syntax-rule
   (check-diverge e)
@@ -11,6 +11,14 @@
 (define-syntax-rule
   (runs-for? seconds e)
   (not (engine-run (* 1000 seconds) (engine (λ (_) e)))))
+
+;; identity function on {0..2}, but triggers soundness bug
+;; in pushdown approaches that don't iterate to fixed-point properly.
+(define (tricky012 N)
+  (parse
+   `(rec f (λ (x)
+             (if0 x 0 (if0 (f (sub1 x)) 1 2)))
+      (f ,N))))
 
 (define (dd N)
   ;; returns 2 if N=0, 13 otherwise
