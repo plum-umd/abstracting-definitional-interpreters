@@ -31,8 +31,9 @@
   [ev-cycle^    : ev-cycle]
   [ev-cache^    : ev-cache]
   [ev-debug^    : ev-debug]
-  [ev-roots^    : ev-roots]
-  [ev-collect^  : ev-collect])
+  [ev-collect^  : ev-collect]
+  [ev-loop^     : ev-loop])
+  [ev-roots^    : ev-roots])
 
 ;; these are open monadic interpreters, or evals, where
 ;;   eval : (exp → M value) → exp → M value
@@ -57,6 +58,7 @@
   [mstore^    : get-store put-store update-store]
   [mcycle^    : ask-cycle local-cycle]
   [msymbolic^ : refine get-path-cond]
+  [mhistory^  : ask-call-history local-call]
   [gc^        : ask-roots local-roots])
 
 ;; metafunctions
@@ -81,6 +83,8 @@
   ;;   primitive operations on values
   ;; truish? : value → M bool
   ;;   does the value subsume 0?
+
+  [history^ : H∅ H+ H⁻¹]
   
   ;; 
   )
