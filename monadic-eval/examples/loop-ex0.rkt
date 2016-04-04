@@ -2,15 +2,6 @@
 (ev-loop@ state-crush@ δ-pres@ ev!@)
 (fix (ev-loop ev!))
 
-#|
-(let kons (λ (x)
-            (λ (y)
-              (λ (m) (if0 m x y))))
-  (let kar (λ (p) (p 0))
-    (let kdr (λ (p) (p 1))
-      (kar ((kons 1) ((kons 2) ((kons 3) 0)))))))
-|#
-
 (let try
     (λ (f) (if0 (f 1) 0 (f 0))) ; sat(f) ≡ ∃x.f(x) = 0
   (let sat-solve-7
