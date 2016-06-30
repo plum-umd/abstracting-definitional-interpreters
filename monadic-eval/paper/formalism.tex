@@ -1,0 +1,646 @@
+\newcommand{\lamif}{«λ⦑IF⦒» }
+
+\section{Formalism}
+
+In this section we formalize our approach to designing static analyzers via
+definitional interpreters. The development begins with a ``ground truth''
+big-step semantics and concludes with the fixpoint iteration strategy described
+in Section~\ref{TODO}, which we prove sound w.r.t. a synthesized abstract
+semantics. The design is systematic, and applies to arbitrary programming
+languages described via big-step operational semantics. We demonstrate the
+systematic process as applied to a subset of the language described in
+Figure~\ref{TODO}, which we call \lamif.
+
+\paragraph{Concrete Semantics}
+
+We begin with the concrete semantics of \lamif as a big-step relation
+«ρ,τ⊢e,σ⇓v,σ′», shown in Figures~\ref{TODO} and~\ref{TODO}. The definition is
+mostly standard: «ρ» and «σ» are the environment and store, «e» is the initial
+expression, and «v» is the resulting value. The argument «τ» represents
+``time'', which when abstracted supports modeling execution contexts like
+call-site sensitivity. Concretely time is modelled as a natural number and
+represents the number of steps of execution.
+
+\begin{figure} %{-{
+\begin{alignat*}{3}
+  n ∈ &&\mathrel{} lits \mathrel{\hphantom{≔}} & \\
+  x ∈ &&\mathrel{} vars \mathrel{\hphantom{≔}} & \\
+  b ∈ &&\mathrel{}  binop ≔ &\mathrel{} ❴⟬plus⟭, …❵ \\
+  e ∈ &&\mathrel{}    exp ⩴ &\mathrel{} n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,e) \\
+  ρ ∈ &&\mathrel{}    env ≔ &\mathrel{} var → addr⸤⊥⸥ \\
+  σ ∈ &&\mathrel{}  store ≔ &\mathrel{} addr → val⸤⊥⸥ \\
+  v ∈ &&\mathrel{}    val ⩴ &\mathrel{} n ∣ ⟨λx.e,ρ⟩ \\
+  ℓ ∈ &&\mathrel{}   addr ≔ &\mathrel{} var × time \\
+  τ ∈ &&\mathrel{}   time ≔ &\mathrel{} ℕ
+\end{alignat*}
+\caption{\lamif{} Syntactic Categories}
+\end{figure} %}-}
+
+\begin{figure} %{-{
+\begin{mathpar}
+
+  \inferrule*[left=(Lit)]{ }{ρ , τ ⊢ n , σ ⇓ n , σ}
+
+  \inferrule*[left=(Var)]{ }{ρ , τ ⊢ x , σ ⇓ σ(ρ(x)) , σ}
+
+  \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}
+
+  \inferrule*[left=(App),right={\begin{minipage}{2em}\ssmall
+    \begin{alignat*}{1}
+    \begin{alignedat}{2} 
+⟨λx.e′,ρ′⟩ = &\mathrel{} v₁ \\[-0.5em]
+        τ′ = &\mathrel{} τ+1 \\[-0.5em]
+        ℓ  = &\mathrel{} ⟨x,τ′⟩ \\
+      \end{alignedat}
+    \end{alignat*}
+  \end{minipage}}]{
+  ρ       , τ  ⊢ e₁    , σ        ⇓ v₁ , σ₁ \\
+  ρ       , τ  ⊢ e₂    , σ₁       ⇓ v₂ , σ₂ \\
+  ρ′[x↦ℓ] , τ′ ⊢ e′    , σ₂[ℓ↦v₂] ⇓ v′ , σ₃}
+  {ρ      , τ ⊢ e₁(e₂) , σ        ⇓ v′ , σ₃}
+
+  \inferrule*[left=(If-T),right={\ssmall «n=0»}]{
+  ρ , τ ⊢ e₁ , σ ⇓ n , σ₁ \\
+  ρ , τ ⊢ e₂ , σ₁ ⇓ v , σ₂}
+  {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
+
+  \inferrule*[left=(If-F),right={\ssmall «n≠0»}]{
+    ρ , τ ⊢ e₁ , σ  ⇓ n , σ₁ \\
+    ρ , τ ⊢ e₃ , σ₁ ⇓ v , σ₂}
+  {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
+
+  \inferrule*[left=(Bin)]{
+  ρ , τ ⊢ e₁ , σ  ⇓ v₁ , σ₁ \\
+  ρ , τ ⊢ e₂ , σ₁ ⇓ v₂ , σ₂}
+  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}
+\end{mathpar}
+\caption{\lamif{} Big-step Concrete Semantics}
+\end{figure} %}-}
+
+\paragraph{Reachability}
+
+The primary limitation of using big-step semantics as a starting point for
+abstraction is that intermediate computations are not represented in the model.
+For example, consider the program that applies the identity function to an
+expression that loops, which we notate «Ω»:
+\[ (λx.x)(Ω) \]
+A big-step semantics can only describe results of terminating computations, and
+because this program never terminates, our big-step semantics relation says
+nothing about the behavior of the program. A good static analyzer will explore
+the behavior of «Ω» to (possibly) discover that it loops, but more importantly,
+to provide analysis results (like data-flow or side-effects) for intermediate
+computation states.
+
+The need to analyze intermediate states is the primary reason that big-step
+semantics are overlooked as a starting point for abstract interpretation. To
+remedy the situation, while remaining in a big-step setting, we introduce a
+big-step \emph{reachability semantics}, described by the relation «ρ,τ⊢e,σ⇑ς»
+shown in Figure~\ref{TODO}. Configurations «ς» are tuples «⟨e,ρ,σ,τ⟩», and are
+reachable when evaluation passes through the configuration at any point on its
+way to a final value, or during an infinite loop.
+
+\begin{figure} %{-{
+\begin{mathpar}
+  \inferrule*[left=(Refl)]{ }{ρ,τ⊢e,σ⇑⟨e,ρ,σ,τ⟩}
+
+  \inferrule*[left=(RApp1)]
+   {ρ,τ⊢e₁,σ⇑ς}
+   {ρ,τ⊢e₁(e₂),σ⇑ς}
+
+   \inferrule*[left=(RApp2),right={\ssmall «⟨λx.e′,ρ′⟩=v₁»}]
+   {  ρ,τ⊢e₁,σ⇓v₁,σ₁
+   \\ ρ,τ⊢e₂,σ₁⇑ς}
+   {ρ,τ⊢e₁(e₂),σ⇑ς}
+
+   \inferrule*[left=(RApp3),right={\begin{minipage}{2em}\ssmall
+       \begin{alignat*}{1}
+       \begin{alignedat}{2} 
+    ⟨λx.e′,ρ′⟩ = &\mathrel{} v₁ \\[-0.5em]
+           τ′ = &\mathrel{} τ+1 \\[-0.5em]
+           ℓ  = &\mathrel{} ⟨x,τ′⟩ \\
+         \end{alignedat}
+       \end{alignat*}
+     \end{minipage}}]
+  {  ρ,τ⊢e₁,σ ⇓v₁,σ₁
+  \\ ρ,τ⊢e₂,σ₁⇓v₂,σ₂
+  \\ ρ′[x↦ℓ],τ′⊢e′,σ₂[ℓ↦v₂]⇑ς}
+  {ρ,τ⊢e₁(e₂),σ⇑ς}
+
+  \inferrule*[left=(RIf1)]
+  {ρ,τ⊢e₁,σ⇑ς}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
+
+  \inferrule*[left=(RIf-T),right={\ssmall «n=0»}]
+  {  ρ,τ⊢e₁,σ⇓n,σ₁
+  \\ ρ,τ⊢e₂,σ₁⇑ς}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
+
+  \inferrule*[left=(RIf-F),right={\ssmall «n≠0»}]
+  {  ρ,τ⊢e₁,σ⇓n,σ₁
+  \\ ρ,τ⊢e₃,σ₁⇑ς}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
+
+  \inferrule*[left=(RBin1)]
+  {ρ,τ⊢e₁,σ⇑ς}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
+
+  \inferrule*[left=(RBin2)]
+  {  ρ,τ⊢e₁,σ⇓v₁,σ₁
+  \\ ρ,τ⊢e₂,σ₁⇑ς}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
+
+\end{mathpar}
+\caption{\lamif{} Big-step Reachability Semantics}
+\end{figure} %}-}
+
+The complete concrete semantics of an expression («e») under environment («ρ»),
+store («σ») and time («τ»), which we notate «⟦e⟧⸢bs⸣(ρ,σ,τ)», is then a pairing
+of the set of resulting values and final stores («v,σ′»), and the reachable
+configurations («ς»):
+\begin{alignat*}{1}
+  & ⟦e⟧⸢bs⸣(ρ,σ,τ) ≔ \\
+  & \hspace{1em}⟨❴⟨v,σ′⟩ ∣ ρ,τ⊢e,σ⇓v,σ′❵,❴ς ∣ ρ,τ⊢e,σ⇑ς❵⟩
+\end{alignat*}
+We then construct a formal bridge between the complete concrete semantics
+(«⟦e⟧⸢bs⸣») and a complete small step semantics, which is traditionally used as
+the starting point of abstraction for program analysis:
+\begin{alignat*}{1}
+  & ⟦e⟧⸢ss⸣(ρ,σ,τ) ≔ \\
+  & \hspace{1em}⟨❴⟨v,σ′⟩ ∣ ∀κ. ⟨e,ρ,σ,τ,κ⟩ ↝⸢*⸣ ⟨v,ρ′,σ′,τ′,κ⟩❵ \\
+  & \hspace{1em},❴⟨e′,ρ′,σ′,τ′⟩ ∣ ∀κ. ⟨e,ρ,σ,τ,κ⟩ ↝⸢*⸣ ⟨e′,ρ′,σ′,τ′,κ′⧺κ⟩❵⟩
+\end{alignat*}
+We connect the complete big-step and small-step semantics through the following
+theorem:
+\begin{theorem}[Complete Big-step/Small-step Equivalence]
+  Forall «e», «ρ», «σ» and «τ», the complete big-step and
+  complete small-step semantics are equivalent, that is:
+  \[ ⟦e⟧⸢bs⸣(ρ,σ,τ) = ⟦e⟧⸢ss⸣(ρ,σ,τ) \]
+\end{theorem}
+The proof is a straightforward induction on the big-step derivation in the «⊆»
+direction, and on the transitive small-step derivation in the «⊇» direction.
+
+\paragraph{Collecting Semantics}
+
+Before abstracting the semantics—in pursuit of a sound static analysis
+algorithm—we pass through a big-step collecting and reachability semantics,
+«ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}» and «ρ,τ⊢e,∿{σ}⇑∿{ς}», shown in Figure~\ref{TODO}, where
+«∿{v}», «∿{σ}» and «∿{ς}» range over collecting state spaces:
+\begin{alignat*}{3}
+    ∿{v} ∈ &&\mathrel{} ∿{val}      &\mathrel{} ≔ ℘(val) \\
+    ∿{σ} ∈ &&\mathrel{} ∿{store}    &\mathrel{} ≔ addr ↦ ∿{val} \\
+    ∿{ς} ∈ &&\mathrel{} ∿{config}   &\mathrel{} ≔ exp × env × ∿{store} × time
+\end{alignat*}
+The denotation for binary operators («⟦b⟧») is lifted to a collecting
+denotation operator «∿{⟦b⟧}»:
+\[ ∿{⟦b⟧}(∿{v}₁,∿{v}₂) ≔ ❴⟦b⟧(v₁,v₂) ∣ v₁ ∈ ∿{v}₁ ∧ v₂ ∈ ∿{v}₂❵ \]
+
+\begin{figure} %{-{
+\begin{mathpar}
+  \inferrule*[left=(OLit)]{ }{ρ,τ⊢n,∿{σ}⇓❴n❵,∿{σ}}
+
+  \inferrule*[left=(OVar)]{ }{ρ,τ⊢x,∿{σ}⇓∿{σ}(ρ(x)),∿{σ}}
+
+  \inferrule*[left=(OLam)]{ }{ρ,τ⊢λx.e,∿{σ}⇓❴⟨λx.e,ρ⟩❵,∿{σ}}
+
+  \inferrule*[left=(OApp),right={\begin{minipage}{2em}\ssmall
+    \begin{alignat*}{1}
+    \begin{alignedat}{2} 
+              ⟨λx.e′,ρ′⟩ ∈ &\mathrel{} ∿{v}₁ \\[-0.5em]
+                      τ′ = &\mathrel{} τ+1 \\[-0.5em]
+                      ℓ  = &\mathrel{} ⟨x,τ′⟩
+      \end{alignedat}
+    \end{alignat*}
+  \end{minipage}}]
+  {  ρ      ,τ ⊢e₁    ,∿{σ} ⇓∿{v}₁,∿{σ}₁
+  \\ ρ      ,τ ⊢e₂    ,∿{σ}₁⇓∿{v}₂,∿{σ}₂
+  \\ ρ′[x↦ℓ],τ′⊢e′    ,∿{σ}₂⊔[ℓ↦∿{v}₂]⇓∿{v}′,∿{σ}₃}
+  {ρ      ,τ ⊢e₁(e₂),∿{σ} ⇓∿{v}′,∿{σ}₃}
+
+  \inferrule*[left=(OIf-T),right={\ssmall «0∈∿{v}₁»}]
+  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+  \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v},∿{σ}₂}
+  {  ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇓∿{v},∿{σ}₂}
+
+  \inferrule*[left=(OIf-F),right={\begin{minipage}{2em}\ssmall
+      \begin{alignat*}{2}
+        n ∈ &\mathrel{} ∿{v}₁ \\[-0.5em]
+        n ≠ &\mathrel{} 0
+      \end{alignat*}
+    \end{minipage}}]
+    {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+    \\ ρ,τ⊢e₃,∿{σ}₁⇓∿{v},∿{σ}₂}
+    {  ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇓∿{v},∿{σ}₂}
+
+    \inferrule*[left=(OBin)]
+  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+  \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂}
+  {  ρ,τ⊢b(e₁,e₂),∿{σ}⇓∿{⟦b⟧}(∿{v}₁,∿{v}₂),∿{σ}₂}
+
+  \inferrule*[left=(ORefl)]{ }{ρ,τ⊢e,∿{σ}⇑⟨e,ρ,∿{σ},τ⟩}
+
+  \inferrule*[left=(ORApp1)]
+   {ρ,τ⊢e₁,∿{σ}⇑∿{ς}}
+   {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}
+
+   \inferrule*[left=(ORApp2),right={\ssmall «⟨λx.e′,ρ′⟩∈∿{v}₁»}]
+   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+   \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
+   {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}
+
+   \inferrule*[left=(ORApp3),right={\begin{minipage}{2em}\ssmall
+       \begin{alignat*}{1}
+       \begin{alignedat}{2} 
+  ⟨λx.e′,ρ′⟩ ∈ &\mathrel{} ∿{v}₁ \\[-0.5em]
+           τ′ = &\mathrel{} τ+1 \\[-0.5em]
+           ℓ  = &\mathrel{} ⟨x,τ′⟩ \\
+         \end{alignedat}
+       \end{alignat*}
+     \end{minipage}}]
+  {  ρ,τ⊢e₁,∿{σ} ⇓∿{v}₁,∿{σ}₁
+  \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂
+  \\ ρ′[x↦ℓ],τ′⊢e′,∿{σ}₂⊔[ℓ↦∿{v}₂]⇑∿{ς}}
+  {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}
+
+  \inferrule*[left=(ORIf1)]
+  {ρ,τ⊢e₁,∿{σ}⇑∿{ς}}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}
+
+  \inferrule*[left=(ORIf-T),right={\ssmall «0∈∿{v}₁»}]
+  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+  \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}
+
+  \inferrule*[left=(ORIf-F),right={\begin{minipage}{2em}\ssmall 
+    \begin{alignat*}{2}
+      n ∈ &\mathrel{} ∿{v}₁ \\
+      n ≠ &\mathrel{} 0
+    \end{alignat*}
+    \end{minipage}}]
+    {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+    \\ ρ,τ⊢e₃,∿{σ}₁⇑∿{ς}}
+    {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}
+
+  \inferrule*[left=(ORBin1)]
+  {ρ,τ⊢e₁,∿{σ}⇑ς}
+  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}
+
+  \inferrule*[left=(ORBin2)]
+  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+  \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
+  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}
+
+\end{mathpar}
+\caption{Big-step Collecting Reachability Semantics}
+\end{figure} %}-}
+
+The big-step collecting and reachability relations are structurally similar to
+the concrete semantics. The primary differences are using set containment
+(«∈») in place of equality («=») when branching on application («⟨λx.e,ρ⟩» in
+\textsc{(OApp)}) and conditional («n≟0» in \textsc{(OIf-T)} and
+\textsc{(OIf-F)}) expressions, and updating the store with join
+(«∿{σ}⊔[ℓ↦∿{v}]») rather than strict replacement («σ[ℓ↦v]»).
+
+The big-step collecting and reachability semantics is a sound approximation of
+the big-step concrete and reachability semantics:
+\begin{theorem}[Collecting and Reachability Semantics Soundness]
+  Forall «e», «ρ», «σ», «τ», «v», «σ′» and «ς», if «ρ,τ⊢e,σ⇓v,σ′» then
+  «ρ,τ⊢e,η(σ)⇓∿{v},∿{σ}′» for some «∿{v}» and «∿{σ}′» s.t. «v∈∿{v}» and «η(σ′)
+  ⊑ ∿{σ}′»; and if «ρ,τ⊢e,σ⇑ς» then «ρ,τ⊢e,η(σ)⇑∿{ς}» for some «∿{ς}» s.t.
+  «η(ς) ⊑ ∿{ς}».
+\end{theorem}
+The proof is a straightforward induction on the concrete big-step derivation.
+The extraction function «η» is defined separately for stores («σ») and
+configurations («ς»):
+\begin{alignat*}{1}
+   & η(σ)(ℓ) ≔ ❴σ(ℓ)❵
+\\ & η(⟨e,ρ,σ,τ⟩) ≔ ⟨e,ρ,η(σ),τ⟩
+\end{alignat*}
+and the partial ordering on collecting stores and configurations is pointwise:
+\begin{alignat*}{1}
+  & ∿{σ}₁ ⊑ ∿{σ}₂ \quad \mathrel{⦑\emph{iff}⦒} \quad ∀ℓ.\mathrel{} ∿{σ}₁(ℓ) ⊆ ∿{σ}₂(ℓ)
+  \\ & ⟨e₁,ρ₁,∿{σ}₁,τ₁⟩ ⊑ ⟨e₂,ρ₂,∿{σ}₂,τ₂⟩ \quad \mathrel{⦑\emph{iff}⦒} 
+  \\ & \hspace{1em} e₁ = e₂ ∧ ρ₁ = ρ₂ ∧ ∿{σ}₁ ⊑ ∿{σ}₂ ∧ τ₁ = τ₂
+\end{alignat*}
+
+\paragraph{Finite Abstraction}
+
+The next step towards a computable static analysis is an abstract semantics
+with a finite state space that approximates the big-step collecting semantics,
+«♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}», shown in
+Figure~\ref{TODO}, where «♯{ρ}», «♯{τ}», «♯{v}», «♯{σ}» and «♯{ς}» are finite
+abstractions of their collecting counterparts:
+\begin{alignat*}{3}
+  ♯{ρ} ∈ &&\mathrel{} ♯{env}    &\mathrel{} ≔ var ↦ ♯{addr}⸤⊥⸥ \\
+  ♯{ℓ} ∈ &&\mathrel{} ♯{addr}   &\mathrel{} ≔ var × ♯{time} \\
+  ♯{τ} ∈ &&\mathrel{} ♯{time}   &\mathrel{} ≔ … \\
+  ♯{v} ∈ &&\mathrel{} ♯{val}    &\mathrel{} ≔ … \\
+  ♯{σ} ∈ &&\mathrel{} ♯{store}  &\mathrel{} ≔ ♯{addr} ↦ ♯{val} \\
+  ♯{ς} ∈ &&\mathrel{} ♯{config} &\mathrel{} ≔ exp × ♯{env} × ♯{store} × ♯{time}
+\end{alignat*}
+and the abstract denotation («♯{⟦b⟧}») is an overapproximation of the collecting
+denotation («∿{⟦b⟧}») w.r.t. a Galois connection «∿{val}⇄{α}{γ}♯{val}»:
+\[ ♯{⟦b⟧}(♯{v}₁,♯{v}₂) ⊒ α(∿{⟦b⟧}(γ(♯{v}₁),γ(♯{v}₂))) \]
+Concretization functions «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥» and «⌊γ⌋⸤¬0⸥» are computable
+finite subsets of the full concretization function «γ» s.t.:
+\begin{alignat*}{1}
+  & ⌊γ⌋⸤clo⸥(♯{v}) ≔ ❴⟨λx.e,♯{ρ}⟩ ∣ ⟨λx.e,♯{ρ}⟩ ∈ γ(♯{v})❵ \\
+  & ⌊γ⌋⸤0⸥(♯{v}) ≔ ❴0 ∣ 0 ∈ γ(♯{v})❵ \\
+  & ⌊γ⌋⸤¬0⸥(♯{v}) ≔ ❴¬0 ∣ n ∈ γ(♯{v}) ∧ n≠0❵
+\end{alignat*}
+Abstract sets «♯{time}» and «♯{val}» are left as parameters to the analysis
+along with their operations «♯{next}», «♯{⟦b⟧}», «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥»,
+«⌊γ⌋⸤¬0⸥» and «⊔⸢♯{val}⸣».
+
+\begin{figure} %{-{
+\begin{mathpar}
+  \inferrule*[left=(ALit)]{ }{♯{ρ},♯{τ}⊢n,♯{σ}⇓♯{η}(n),♯{σ}}
+
+  \inferrule*[left=(AVar)]{ }{♯{ρ},♯{τ}⊢x,♯{σ}⇓♯{σ}(♯{ρ}(x)),♯{σ}}
+
+  \inferrule*[left=(ALam)]{ }{♯{ρ},♯{τ}⊢λx.e,♯{σ}⇓♯{η}(⟨λx.e,♯{ρ}⟩),♯{σ}}
+
+  \inferrule*[left=(AApp),right={\begin{minipage}{2em}\ssmall
+    \begin{alignat*}{1}
+    \begin{alignedat}{2} 
+           ⟨λx.e′,♯{ρ}′⟩ ∈ &\mathrel{} ⌊γ⌋⸤clo⸥(♯{v}₁) \\[-0.5em]
+                   ♯{ς}  = &\mathrel{} ⟨e₁(e₂),♯{ρ},♯{σ},♯{τ}⟩ \\[-0.5em]
+                   ♯{τ}′ = &\mathrel{} ♯{next}(♯{τ},♯{ς}) \\[-0.5em]
+                   ♯{ℓ}  = &\mathrel{} ⟨x,♯{τ}′⟩
+      \end{alignedat}
+    \end{alignat*}
+  \end{minipage}}]
+  {  ♯{ρ}      ,♯{τ} ⊢e₁    ,♯{σ} ⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ}      ,♯{τ} ⊢e₂    ,♯{σ}₁⇓♯{v}₂,♯{σ}₂
+  \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′    ,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇓♯{v}′,♯{σ}₃}
+  {♯{ρ}      ,♯{τ} ⊢e₁(e₂),♯{σ} ⇓♯{v}′,♯{σ}₃}
+
+  \inferrule*[left=(AIf-T),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v},♯{σ}₂}
+  {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
+
+  \inferrule*[left=(AIf-F),right={\ssmall «¬0∈⌊γ⌋⸤¬0⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇓♯{v},♯{σ}₂}
+  {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
+
+    \inferrule*[left=(ABin)]
+    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+    \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂}
+    {  ♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇓♯{⟦b⟧}(♯{v}₁,♯{v}₂),♯{σ}₂}
+
+    \inferrule*[left=(ARefl)]{ }{♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩}
+
+  \inferrule*[left=(ARApp1)]
+  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARApp2),right={\ssmall «⟨λx.e′,♯{ρ}′⟩∈⌊γ⌋⸤clo⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}
+
+   \inferrule*[left=(ARApp3),right={\begin{minipage}{2em}\ssmall
+       \begin{alignat*}{1}
+       \begin{alignedat}{2} 
+         ⟨λx.e′,♯{ρ}′⟩ ∈ &\mathrel{} ⌊γ⌋⸤clo⸥(♯{v}₁) \\[-0.5em]
+            ♯{ς} = &\mathrel{} ⟨e₁(e₂),♯{ρ},♯{σ},♯{τ}⟩ \\[-0.5em]
+           ♯{τ}′ = &\mathrel{} ♯{next}(♯{τ},♯{ς}) \\[-0.5em]
+           ♯{ℓ}  = &\mathrel{} ⟨x,♯{τ}′⟩ \\
+         \end{alignedat}
+       \end{alignat*}
+     \end{minipage}}]
+     {  ♯{ρ},♯{τ}⊢e₁,♯{σ} ⇓♯{v}₁,♯{σ}₁
+       \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂
+     \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇑♯{ς}}
+     {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARIf1)]
+  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARIf-T),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARIf-F),right={\ssmall «¬0∈⌊γ⌋⸤¬0⸥(♯{v}₁)»}]
+    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+    \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇑♯{ς}}
+    {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARBin1)]
+  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑ς}
+  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARBin2)]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
+
+\end{mathpar}
+\caption{Big-step Abstract Reachability Semantics}
+\end{figure} %}-}
+
+\paragraph{Computing the Analysis}
+
+An analysis for the program «e₀» w.r.t. the abstract semantics is some cache
+«\$ ∈ ♯{config} ↦ ℘(♯{val} × ♯{store})» that maps all configurations reachable
+from the initial configuration «⟨e₀,♯{ρ}₀,♯{σ}₀,♯{τ}₀⟩» to their final values
+and stores «♯{v},♯{σ}», which we notate «\$ ⊨ e₀»:
+\begin{alignat*}{2}
+  \$ ⊨ e₀ \quad\quad \mathrel{⦑\emph{iff}⦒} \quad\quad & 
+    \begin{alignedat}{2}
+    ⦑\emph{forall}⦒ & \mathrel{} e,♯{ρ},♯{σ},♯{τ},♯{v},♯{σ}′: \\
+    ⦑\emph{if}⦒     & \mathrel{} ♯{ρ}₀,♯{τ}₀⊢e₀,♯{σ₀}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩ \\
+    ⦑\emph{and}⦒    & \mathrel{} ♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′  \\ 
+    ⦑\emph{then}⦒   & \mathrel{} ⟨♯{v},♯{σ}′⟩ ∈ \$(⟨e,♯{ρ},♯{σ},♯{τ}⟩)
+      \end{alignedat}
+\end{alignat*}
+The best cache «\$⁺» is then computed as the least fixed point of the
+functional «ℱ»:
+\begin{alignat*}{1}
+  & ℱ ∈ (♯{config} ↦ ℘(♯{val}×♯{store})) → (♯{config} ↦ ℘(♯{val}×♯{store})) \\
+  & ℱ ≔ λ\$.  \\
+  &  \hspace{1em} ⨆⸤⟨e,♯{ρ},♯{σ},♯{τ}⟩∈\$⸥ \begin{cases}
+     ❴ ⟨e,♯{ρ},♯{σ},♯{τ}⟩ ↦ ❴⟨♯{v},♯{σ}′⟩❵ ∣ ♯{ρ},♯{τ}⊢e,♯{σ}⇓⸢\$⸣♯{v},♯{σ}′ ❵ \\
+     ❴ ♯{ς} ↦ ❴❵ ∣ ♯{ρ},♯{τ}⊢e,♯{σ}⇑⸢\$⸣♯{ς}❵
+   \end{cases} \\
+\end{alignat*}
+and defined:
+\[ \$⁺ ≔ ⦑\emph{lfp}⦒ (λ\$.\mathrel{} ℱ(\$)  ⊔ ❴⟨e₀,♯{ρ}₀,♯{σ}₀,♯{τ}₀⟩ ↦ ❴❵❵) \]
+The relations «♯{ρ},♯{τ}⊢e,♯{σ}⇓⸢\$⸣♯{v},♯{σ}′» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑⸢\$⸣♯{ς}»
+are modified versions of the original abstract semantics, but with recursive
+judgements replaced by «⟨♯{v},♯{σ}⟩ ∈ \$(e,♯{ρ},♯{σ},♯{τ})» and «♯{ς} ∈
+\$(e,♯{ρ},♯{σ},♯{τ})» respectively. Therefore «ℱ» is not recursive; the
+recursion in the relations is lifted to the outer fixpoint of the analysis.
+Because the state space «♯{config} ↦ ℘(♯{val}×♯{store})» is finite and «ℱ» is
+monotonic, «\$⁺» can be computed algorithmically in finite time by a simple
+Kleene fixed-point iteration. See Nielson et al~\cite{TOOD} for more background
+and examples of static analyzers computed in this style, and from which the
+current development was largely inspired.
+
+\paragraph{Computing with Definitional Interpreters}
+
+The algorithm described in Section~\ref{TODO} is a more efficient strategy for
+computing «\$⁺» using an extensible open-recursive definitional interpreter.
+This technique is general, and bridges the gap between the big-step abstract
+semantics formalized in this section and the definitional interpreters we wish
+to execute to obtain analyses.
+
+An extensible open-recursive definitional interpreter for \lamif (the small
+language formalized in this section) has domain:
+\begin{alignat*}{1}
+  & ℰ ∈ Σ → Σ \quad ⦑\emph{where}⦒ \quad Σ ≔ ♯{config} → ℘(♯{val}×♯{store})
+\end{alignat*}
+and is defined such that its denotational-fixpoint («Y(ℰ)») recovers concrete
+interpretation when instantiated with the concrete state-space. For example,
+the recursive case for binary operator expressions is defined:
+\begin{alignat*}{1}
+  & ℰ(ℰ′)(⟨b(e₁,e₂),♯{ρ},♯{σ},♯{τ}) ≔  \\
+  & \hspace{1em} ❴\mathrel{} ♯{⟦b⟧}(♯{v}₁,♯{v₂}) \\
+  & \hspace{1em} ∣\mathrel{} ⟨♯{v}₁,♯{σ}₁⟩ ∈ ℰ′(⟨e₁,♯{ρ},♯{σ},♯{τ}⟩) ∧ ⟨♯{v}₂,♯{σ}₂⟩ ∈ ℰ′(⟨e₂,♯{ρ},♯{σ}₁,♯{τ}⟩) ❵
+\end{alignat*}
+The iteration strategy to analyze the program «e₀» is then to run «e₀» using
+«ℰ», but intercepting recursive calls to:
+\begin{enumerate}
+  \item cache results for all intermediate configurations «♯{ς}», and
+  \item cache seen states to prevent infinite loops.
+\end{enumerate}
+(1) is required to fulfill the specification that «\$⁺» include results for all
+reachable configurations from «e₀», and (2) is required to reach a fixed point
+of the analysis. To track this extra information we add functional state to the
+interpreter (which was done through a monad transformer in the tutorial
+development) of type:
+\[ ♯{cache} ≔ ♯{config} ↦ ℘(♯{val}×♯{store}) \]
+such that the open-recursive evaluator has type:
+\begin{alignat*}{1}
+  & ℰ ∈ Σ → Σ \quad ⦑\emph{where}⦒ \\
+  & \hspace{1em} Σ ≔ ♯{config}×♯{cache} → ℘(♯{val}×♯{store})×♯{cache}
+\end{alignat*}
+The iteration to compute «\$⁺» given «ℰ» is then defined:
+\begin{alignat*}{1}
+  & \hspace{0em} \$⁺ ≔ ⦑\emph{lfp}⦒(λ\$ᵒ. \\
+  & \hspace{1em} \mathrel{⟬let⟭} ℰ⋆ ≔ Y(λℰ′. \\
+  & \hspace{2em}    ℰ(λ⟨♯{ς},\$ⁱ⟩. \\
+  & \hspace{3em}      \mathrel{⟬if⟭} ♯{ς} ∈ \$ⁱ \mathrel{⟬then⟭} ⟨\$ⁱ(♯{ς}),\$ⁱ⟩ \mathrel{⟬else⟭} \\
+  & \hspace{3em}      \mathrel{⟬let⟭} ⟨♯{VS},\$⸢i\prime⸣⟩ ≔ ℰ′(♯{ς},\$ⁱ[♯{ς}↦\$ᵒ(♯{ς})]) \\
+  & \hspace{3em}      \mathrel{⟬in⟭} ⟨♯{VS},\$⸢i\prime⸣[♯{ς}↦♯{VS}]⟩)) \\
+  & \hspace{1em} \mathrel{⟬in⟭} π₂(ℰ⋆(⟨e₀,♯{ρ}₀,♯{σ}₀,♯{τ}₀⟩,❴❵)))
+\end{alignat*}
+The fixed interpreter «ℰ⋆» calls the unfixed interpreter «ℰ», but intercepts
+recursive calls to perform (1) and (2) described above. When loops are
+detected, the results from the previous complete result «\$ᵒ» is used, and the
+outer fixpoint of the algorithm computes the least fixed point of this «\$ᵒ».
+
+The end result is that, rather than compute analysis results and reachable
+states naively with Kleene fixpoint iteration, we are able to reuse the
+standard definitional interpreter—written in open-recursive form—to
+simultaneously explore reachable states, cache intermediate configurations, and
+iterate towards a least fixpoint solution for the analysis. This method is more
+efficient, and reuses an extensible definitional interpreter which can recover
+a wide range of analyses, including concrete interpretation.
+
+\paragraph{Widening}
+
+Two forms of widening can be employed to the semantics and iteration algorithm
+to achieve acceptable performance for the abstract interpreter.
+
+The first form of widening is to widen the store in the result set
+«℘(♯{val}×♯{store})» to «℘(♯{val})×♯{store}» in the evaluator «ℰ»:
+\begin{alignat*}{1}
+  & ℰ ∈ Σ → Σ \quad ⦑\emph{where}⦒ \\
+  & \hspace{1em} Σ ≔ ♯{config} × ♯{cache} → ℘(♯{val})×♯{store}×♯{cache}
+\end{alignat*}
+We perform this widening systematically and with no added effort through the
+use of Galois Transformers in Section~\ref{TODO}. The iteration strategy for
+this widened state space is the same as before, which computes a fixed point of
+the outer cache «\$ᵒ».
+
+The next form of widening is to pull the store out of the configuration space
+\emph{entirely}, that is:
+\begin{alignat*}{2}
+  ♯{ς} ∈ &\mathrel{} ♯{config} ≔ exp × ♯{env} × ♯{time} \\
+    \$ ∈ &\mathrel{} ♯{cache} ≔ ♯{config} ↦ ℘(♯{val})
+\end{alignat*}
+and
+\begin{alignat*}{1}
+  & ℰ ∈ Σ → Σ \quad ⦑\emph{where}⦒ \\
+  & \hspace{1em} Σ ≔ ♯{config}×♯{store}×♯{cache} → 𝒫(♯{val})×♯{store}×♯{cache}
+\end{alignat*}
+The fixed point iteration then finds a mutual least fixed-point of both the
+outer cache «\$ᵒ» \emph{and} the store «♯{σ}»:
+\begin{alignat*}{1}
+  & \hspace{0em} ⟨\$⁺,♯{σ}⁺⟩ ≔ ⦑\emph{lfp}⦒(λ⟨\$ᵒ,♯{σ}⟩. \\
+  & \hspace{1em} \mathrel{⟬let⟭} ℰ⋆ ≔ Y(λℰ′. \\
+  & \hspace{2em}    ℰ(λ⟨♯{ς},♯{σ}ⁱ,\$ⁱ⟩. \\
+  & \hspace{3em}      \mathrel{⟬if⟭} ♯{ς} ∈ \$ⁱ \mathrel{⟬then⟭} ⟨\$ⁱ(♯{ς}),σⁱ,\$ⁱ⟩ \mathrel{⟬else⟭} \\
+  & \hspace{3em}      \mathrel{⟬let⟭} ⟨♯{V},♯{σ}⸢i\prime⸣,\$⸢i\prime⸣⟩ ≔ ℰ′(♯{ς},♯{σ}ⁱ,\$ⁱ[♯{ς}↦\$ᵒ(♯{ς})]) \\
+  & \hspace{3em}      \mathrel{⟬in⟭} ⟨♯{V},♯{σ}⸢i\prime⸣,\$⸢i\prime⸣[♯{ς}↦♯{V}]⟩)) \\
+  & \hspace{1em} \mathrel{⟬in⟭} π⸤2×3⸥(ℰ⋆(⟨e₀,♯{ρ}₀,♯{τ}₀⟩,♯{σ},❴❵)))
+\end{alignat*}
+This second version of widening, which computes a fixpoint also over the store,
+recovers a so-called \emph{flow-insensitive} analysis. In this model, all
+program states are re-analyzed in the store resulting from execution. Also, the
+cache («\$») does not index over store states «♯{σ}» in its domain, greatly
+reducing its size, and leading to a much more efficient (although less precise)
+static analyzer.
+
+\paragraph{Recovering Classical 0CFA}
+
+From the fully widened static analyzer, which computes a mutual fixpoint
+between a cache and store, we can easily recover a classical 0CFA analysis. We
+do this by instantiating «♯{time}» to the singleton abstraction «❴•❵», as was
+shown in the original work on AAM~\cite{TODO}. In this setting, the lexical
+environment «ρ» is uniquely determined by the program expression «e», and can
+therefore be eliminated, resulting in the analysis state space:
+\begin{alignat*}{2}
+  ♯{ς} ∈ &\mathrel{} ♯{config} ≔ exp \\
+    \$ ∈ &\mathrel{} ♯{cache} ≔ exp ↦ ℘(♯{val})
+\end{alignat*}
+The specification for the analysis and the fully store-widened least
+fixed-point iteration for computing it recovers the constraint-based
+description of 0CFA given by Nielson \emph{et al} in~\cite{TODO}, where 0CFA is
+defined as the smallest cache («\$») and store («σ») which satisfy a
+co-inductively defined judgment:
+\[ \$,σ ⊨ e \]
+
+\paragraph{Recovering Pushdown Analysis}
+
+We borrow from the recent result in pushdown analysis~\cite{TODO} which shows
+that full pushdown precision can be achieved in a small-step store-widened
+abstract semantics by allocating continuations using the address space of
+program expressions paired with abstract environments («⟨e,♯{ρ}⟩»). In other
+words, «⟨e,♯{ρ}⟩» is sufficient to achieve full pushdown precision because
+the tuple uniquely identifies the evaluation context up to the final result of
+evaluation.
+
+Our fully widened semantics recovers this pushdown setting because the
+cache maps tuples «⟨e,♯{ρ},♯{τ}⟩», which trivially contains «⟨e,♯{ρ}⟩».
+Furthermore, we can immediately see that the abstract time component «♯{τ}» is
+redundant, and can eliminate it from the cache, resulting in analysis state
+space:
+\begin{alignat*}{2}
+  ♯{ς} ∈ &\mathrel{} ♯{config} ≔ exp × ♯{env} × ♯{time} \\
+  \$ ∈ &\mathrel{} ♯{cache} ≔ exp × ♯{env} ↦ ℘(♯{val})
+\end{alignat*}
+
+An advantage of our setting is that we recover pushdown analysis also for
+varying degrees of store-widening, which is not the case in Gilray \emph{et
+al}~\ref{TODO}, although pushdown precision for non-widened semantics has been
+shown before in Johnson and Van Horn~\ref{TODO:AAC}. Furthermore, the
+implementation of our analyzer achieves this precision by precise call-return
+matching in the defining metalanguage of a definitional interpreter, requiring
+no added instrumentation to the state-space of the analyzer.
+
+Going back to Nielson et al~\cite{TODO}, it would be interesting to redevelop
+their constraint-based analysis descriptions of kCFA in a form that
+recovers pushdown precision. Such an exercise would amount to translating our
+big-step abstract semantics instantiated to kCFA to a constraint system. The
+resulting system would differ from classical kCFA by the addition of
+environments «♯{ρ}» (which Nielson et al call context environments) to the
+domain of the cache. In this way our formal framework is able to bridge the gap
+between results in pushdown analysis described via small-step machines \emph{a
+la} Van Horn and Might~\cite{TODO}, and constraint-based systems \emph{a la}
+Nielson et al~\cite{TODO} for which pushdown analysis has yet to be described
+effectively.
