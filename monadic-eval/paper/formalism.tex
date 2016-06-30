@@ -172,12 +172,10 @@ the starting point of abstraction for program analysis:
 We connect the complete big-step and small-step semantics through the following
 theorem:
 \begin{theorem}[Complete Big-step/Small-step Equivalence]
-  Forall «e», «ρ», «σ» and «τ», the complete big-step and
-  complete small-step semantics are equivalent, that is:
   \[ ⟦e⟧⸢bs⸣(ρ,σ,τ) = ⟦e⟧⸢ss⸣(ρ,σ,τ) \]
 \end{theorem}
-The proof is a straightforward induction on the big-step derivation in the «⊆»
-direction, and on the transitive small-step derivation in the «⊇» direction.
+The proof is by induction on the big-step derivation in the «⊆» direction, and
+on the transitive small-step derivation in the «⊇» direction.
 
 \paragraph{Collecting Semantics}
 
@@ -213,7 +211,7 @@ denotation operator «∿{⟦b⟧}»:
   \end{minipage}}]
   {  ρ      ,τ ⊢e₁    ,∿{σ} ⇓∿{v}₁,∿{σ}₁
   \\ ρ      ,τ ⊢e₂    ,∿{σ}₁⇓∿{v}₂,∿{σ}₂
-  \\ ρ′[x↦ℓ],τ′⊢e′    ,∿{σ}₂⊔[ℓ↦∿{v}₂]⇓∿{v}′,∿{σ}₃}
+  \\ ρ′[x↦ℓ],τ′⊢e′    ,∿{σ}₂[ℓ↦∿{v}₂]⇓∿{v}′,∿{σ}₃}
   {ρ      ,τ ⊢e₁(e₂),∿{σ} ⇓∿{v}′,∿{σ}₃}
 
   \inferrule*[left=(OIf-T),right={\ssmall «0∈∿{v}₁»}]
@@ -258,7 +256,7 @@ denotation operator «∿{⟦b⟧}»:
      \end{minipage}}]
   {  ρ,τ⊢e₁,∿{σ} ⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂
-  \\ ρ′[x↦ℓ],τ′⊢e′,∿{σ}₂⊔[ℓ↦∿{v}₂]⇑∿{ς}}
+  \\ ρ′[x↦ℓ],τ′⊢e′,∿{σ}₂[ℓ↦∿{v}₂]⇑∿{ς}}
   {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}
 
   \inferrule*[left=(ORIf1)]
@@ -297,20 +295,20 @@ The big-step collecting and reachability relations are structurally similar to
 the concrete semantics. The primary differences are using set containment
 («∈») in place of equality («=») when branching on application («⟨λx.e,ρ⟩» in
 \textsc{(OApp)}) and conditional («n≟0» in \textsc{(OIf-T)} and
-\textsc{(OIf-F)}) expressions, and updating the store with join
-(«∿{σ}⊔[ℓ↦∿{v}]») rather than strict replacement («σ[ℓ↦v]»).
+\textsc{(OIf-F)}) expressions.
 
-The big-step collecting and reachability semantics is a sound approximation of
-the big-step concrete and reachability semantics:
-\begin{theorem}[Collecting and Reachability Semantics Soundness]
-  Forall «e», «ρ», «σ», «τ», «v», «σ′» and «ς», if «ρ,τ⊢e,σ⇓v,σ′» then
-  «ρ,τ⊢e,η(σ)⇓∿{v},∿{σ}′» for some «∿{v}» and «∿{σ}′» s.t. «v∈∿{v}» and «η(σ′)
-  ⊑ ∿{σ}′»; and if «ρ,τ⊢e,σ⇑ς» then «ρ,τ⊢e,η(σ)⇑∿{ς}» for some «∿{ς}» s.t.
-  «η(ς) ⊑ ∿{ς}».
+The big-step collecting reachability semantics is a sound approximation of the
+big-step concrete reachability semantics:
+\begin{theorem}[Collecting Reachability Semantics Soundness]
+  \begin{alignat*}{1}
+    & ⦑If:⦒\mathrel{} ρ,τ⊢e,σ⇓v,σ′ \;∧\; η(σ) ⊑ ∿{σ} \\
+    & ⦑then:⦒\mathrel{} \mathrel{∃}∿{v},∿{σ}′ \mathrel{⦑s.t.⦒} ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}′ \;∧\; v ∈ ∿{v} \;∧\; η(σ′) ⊑ ∿{σ}′ \\
+    & ⦑and if:⦒\mathrel{} ρ,τ⊢e,σ⇑ς \;∧\; η(σ) ⊑ ∿{σ} \\
+    & ⦑then:⦒\mathrel{} \mathrel{∃}∿{ς} \mathrel{⦑s.t.⦒} ρ,τ⊢e,∿{σ}⇑∿{ς} \;∧\; η(ς) ⊑ ∿{ς}
+  \end{alignat*}
 \end{theorem}
-The proof is a straightforward induction on the concrete big-step derivation.
-The extraction function «η» is defined separately for stores («σ») and
-configurations («ς»):
+The proof is by induction on the concrete big-step derivation. The extraction
+function «η» is defined separately for stores («σ») and configurations («ς»):
 \begin{alignat*}{1}
    & η(σ)(ℓ) ≔ ❴σ(ℓ)❵
 \\ & η(⟨e,ρ,σ,τ⟩) ≔ ⟨e,ρ,η(σ),τ⟩
@@ -337,7 +335,12 @@ abstractions of their collecting counterparts:
   ♯{σ} ∈ &&\mathrel{} ♯{store}  &\mathrel{} ≔ ♯{addr} ↦ ♯{val} \\
   ♯{ς} ∈ &&\mathrel{} ♯{config} &\mathrel{} ≔ exp × ♯{env} × ♯{store} × ♯{time}
 \end{alignat*}
-and the abstract denotation («♯{⟦b⟧}») is an overapproximation of the collecting
+The primary structural difference from the collecting semantics is updating the
+store with join («♯{σ}⊔[♯{ℓ}↦♯{v}]») rather than strict replacement
+(«∿{σ}[ℓ↦∿{v}]»). This is to preserve soundness in the presence of address
+reuse due to the finite size of the address space.
+
+The abstract denotation («♯{⟦b⟧}») is an overapproximation of the collecting
 denotation («∿{⟦b⟧}») w.r.t. a Galois connection «∿{val}⇄{α}{γ}♯{val}»:
 \[ ♯{⟦b⟧}(♯{v}₁,♯{v}₂) ⊒ α(∿{⟦b⟧}(γ(♯{v}₁),γ(♯{v}₂))) \]
 Concretization functions «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥» and «⌊γ⌋⸤¬0⸥» are computable
@@ -350,6 +353,27 @@ finite subsets of the full concretization function «γ» s.t.:
 Abstract sets «♯{time}» and «♯{val}» are left as parameters to the analysis
 along with their operations «♯{next}», «♯{⟦b⟧}», «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥»,
 «⌊γ⌋⸤¬0⸥» and «⊔⸢♯{val}⸣».
+
+The abstract semantics is a sound approximation of the collecting semantics,
+which we establish through the theorem:
+\begin{theorem}[Abstract Reachability Semantics Soundness]
+  \begin{alignat*}{1}
+    & ⦑If:⦒\mathrel{} ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}′ \;∧\; η(ρ) ⊑ ♯{ρ} \;∧\; η(τ) ⊑ ♯{τ} \;∧\; η(∿{σ}) ⊑ ♯{σ} \\
+    & ⦑then:⦒\mathrel{} \mathrel{∃}♯{v},♯{σ}′ \mathrel{⦑s.t.⦒} ♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′ \;∧\; η(∿{v}) ⊑ ♯{v} \;∧\; η(∿{σ}′) ⊑ ♯{σ}′ \\
+    & ⦑and if:⦒\mathrel{} ρ,τ⊢e,∿{σ}⇑∿{ς} \;∧\; η(ρ) ⊑ ♯{ρ} \;∧\; η(τ) ⊑ ♯{τ} \;∧\; η(∿{σ}) ⊑ ♯{σ} \\
+    & ⦑then:⦒\mathrel{} \mathrel{∃}♯{ς} \mathrel{⦑s.t.⦒} ♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς} \;∧\; η(∿{ς}) ⊑ ♯{ς}
+  \end{alignat*}
+\end{theorem}
+The proof is by induction on the big-step derivation. The extraction function
+«η» is defined separately for environments («ρ»), time («τ»), and collecting
+stores («∿{σ}»), values («∿{v}») and configurations («∿{ς}»). «η(τ)» and
+«η(∿{v})» are given with parameters «♯{time}» and «♯{val}». «η(ρ)», «η(∿{σ})»
+and «η(∿{ς})» are defined pointwise:
+\begin{alignat*}{1}
+  & η(ρ)(x) ≔ η(ρ(x)) \\
+  & η(∿{σ})(♯{ℓ}) ≔ ⨆⸤ℓ ∈ γ(♯{ℓ})⸥η(∿{σ}(ℓ)) \\
+  & η(⟨e,ρ,τ,∿{σ}⟩) ≔ ⟨e,η(ρ),η(τ),η(∿{σ})⟩
+\end{alignat*}
 
 \begin{figure} %{-{
 \begin{mathpar}
@@ -451,10 +475,10 @@ and stores «♯{v},♯{σ}», which we notate «\$ ⊨ e₀»:
 \begin{alignat*}{2}
   \$ ⊨ e₀ \quad\quad \mathrel{⦑\emph{iff}⦒} \quad\quad & 
     \begin{alignedat}{2}
-    ⦑\emph{forall}⦒ & \mathrel{} e,♯{ρ},♯{σ},♯{τ},♯{v},♯{σ}′: \\
-    ⦑\emph{if}⦒     & \mathrel{} ♯{ρ}₀,♯{τ}₀⊢e₀,♯{σ₀}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩ \\
-    ⦑\emph{and}⦒    & \mathrel{} ♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′  \\ 
-    ⦑\emph{then}⦒   & \mathrel{} ⟨♯{v},♯{σ}′⟩ ∈ \$(⟨e,♯{ρ},♯{σ},♯{τ}⟩)
+    %⦑\emph{forall}⦒ & \mathrel{} e,♯{ρ},♯{σ},♯{τ},♯{v},♯{σ}′: \\
+    ⦑\emph{If:}⦒     & \mathrel{} ♯{ρ}₀,♯{τ}₀⊢e₀,♯{σ₀}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩ \\
+    ⦑\emph{and:}⦒    & \mathrel{} ♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′  \\ 
+    ⦑\emph{then:}⦒   & \mathrel{} ⟨♯{v},♯{σ}′⟩ ∈ \$(⟨e,♯{ρ},♯{σ},♯{τ}⟩)
       \end{alignedat}
 \end{alignat*}
 The best cache «\$⁺» is then computed as the least fixed point of the
@@ -471,7 +495,7 @@ and defined:
 \[ \$⁺ ≔ ⦑\emph{lfp}⦒ (λ\$.\mathrel{} ℱ(\$)  ⊔ ❴⟨e₀,♯{ρ}₀,♯{σ}₀,♯{τ}₀⟩ ↦ ❴❵❵) \]
 The relations «♯{ρ},♯{τ}⊢e,♯{σ}⇓⸢\$⸣♯{v},♯{σ}′» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑⸢\$⸣♯{ς}»
 are modified versions of the original abstract semantics, but with recursive
-judgements replaced by «⟨♯{v},♯{σ}⟩ ∈ \$(e,♯{ρ},♯{σ},♯{τ})» and «♯{ς} ∈
+judgements replaced by «⟨♯{v},♯{σ}′⟩ ∈ \$(e,♯{ρ},♯{σ},♯{τ})» and «♯{ς} ∈
 \$(e,♯{ρ},♯{σ},♯{τ})» respectively. Therefore «ℱ» is not recursive; the
 recursion in the relations is lifted to the outer fixpoint of the analysis.
 Because the state space «♯{config} ↦ ℘(♯{val}×♯{store})» is finite and «ℱ» is
@@ -479,6 +503,25 @@ monotonic, «\$⁺» can be computed algorithmically in finite time by a simple
 Kleene fixed-point iteration. See Nielson et al~\cite{TOOD} for more background
 and examples of static analyzers computed in this style, and from which the
 current development was largely inspired.
+\begin{theorem}[Algorithm Correctness]
+  «\$⁺» is a valid analysis for «e₀», that is:
+  \[ \$⁺ ⊨ e₀ \]
+\end{theorem}
+The proof is by induction on the assumed derivations
+«♯{ρ}₀,♯{τ}₀⊢e₀,♯{σ}₀⇑⟨♯{e},♯{ρ},♯{σ},♯{τ}⟩» and «♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′»,
+and utilizes the fact that «\$⁺» is a fixed point, that is:
+\[ ℱ(\$⁺) = \$⁺ \]
+Our final theorem relates the analysis cache «\$⁺» back to the concrete
+semantics of the initial program as a sound approximation:
+\begin{theorem}[Algorithm Soundness]
+  \begin{alignat*}{1}
+    & ⦑If:⦒ \mathrel{} ρ₀,τ₀⊢e₀,σ₀⇑⟨e,ρ,σ,τ⟩ \;∧\; ρ,τ⊢e,σ⇓v,σ′  \\
+    & ⦑then:⦒ \mathrel{} ∃♯{ρ},♯{τ},♯{σ},♯{v},♯{σ}′ \mathrel{⦑s.t.⦒}  ⟨♯{v},♯{σ}′⟩ ∈ \$⁺(⟨e,♯{ρ},♯{σ},♯{τ}⟩)  \\
+    & \hspace{1em} ∧\; η(ρ) ⊑ ♯{ρ} \;∧\; η(τ) ⊑ ♯{τ} \;∧\; η(σ) ⊑ ♯{σ} \\
+    & \hspace{1em} ∧\; η(v) ⊑ ♯{v} \;∧\; η(σ′) ⊑ ♯{σ}′
+  \end{alignat*}
+\end{theorem}
+The proof follows by composing Theorems~\ref{TODO}-\ref{TODO}.
 
 \paragraph{Computing with Definitional Interpreters}
 
@@ -563,10 +606,10 @@ The next form of widening is to pull the store out of the configuration space
   ♯{ς} ∈ &\mathrel{} ♯{config} ≔ exp × ♯{env} × ♯{time} \\
     \$ ∈ &\mathrel{} ♯{cache} ≔ ♯{config} ↦ ℘(♯{val})
 \end{alignat*}
-and
+and:
 \begin{alignat*}{1}
   & ℰ ∈ Σ → Σ \quad ⦑\emph{where}⦒ \\
-  & \hspace{1em} Σ ≔ ♯{config}×♯{store}×♯{cache} → 𝒫(♯{val})×♯{store}×♯{cache}
+  & \hspace{1em} Σ ≔ ♯{config}×♯{store}×♯{cache} → ℘(♯{val})×♯{store}×♯{cache}
 \end{alignat*}
 The fixed point iteration then finds a mutual least fixed-point of both the
 outer cache «\$ᵒ» \emph{and} the store «♯{σ}»:
@@ -596,7 +639,8 @@ environment «ρ» is uniquely determined by the program expression «e», and c
 therefore be eliminated, resulting in the analysis state space:
 \begin{alignat*}{2}
   ♯{ς} ∈ &\mathrel{} ♯{config} ≔ exp \\
-    \$ ∈ &\mathrel{} ♯{cache} ≔ exp ↦ ℘(♯{val})
+    \$ ∈ &\mathrel{} ♯{cache} ≔ exp ↦ ℘(♯{val}) \\
+  ♯{σ} ∈ &\mathrel{} ♯{store} ≔ var ↦ ℘(♯{val})
 \end{alignat*}
 The specification for the analysis and the fully store-widened least
 fixed-point iteration for computing it recovers the constraint-based
@@ -622,7 +666,8 @@ redundant, and can eliminate it from the cache, resulting in analysis state
 space:
 \begin{alignat*}{2}
   ♯{ς} ∈ &\mathrel{} ♯{config} ≔ exp × ♯{env} × ♯{time} \\
-  \$ ∈ &\mathrel{} ♯{cache} ≔ exp × ♯{env} ↦ ℘(♯{val})
+    \$ ∈ &\mathrel{} ♯{cache} ≔ exp × ♯{env} ↦ ℘(♯{val}) \\
+  ♯{σ} ∈ &\mathrel{} ♯{store} ≔ var × ♯{addr} ↦ ℘(♯{val})
 \end{alignat*}
 
 An advantage of our setting is that we recover pushdown analysis also for
@@ -631,7 +676,8 @@ al}~\ref{TODO}, although pushdown precision for non-widened semantics has been
 shown before in Johnson and Van Horn~\ref{TODO:AAC}. Furthermore, the
 implementation of our analyzer achieves this precision by precise call-return
 matching in the defining metalanguage of a definitional interpreter, requiring
-no added instrumentation to the state-space of the analyzer.
+no added instrumentation to the state-space of the analyzer (although in the
+case of Gilray \emph{et al} the instrumentation is minor).
 
 Going back to Nielson et al~\cite{TODO}, it would be interesting to redevelop
 their constraint-based analysis descriptions of kCFA in a form that
