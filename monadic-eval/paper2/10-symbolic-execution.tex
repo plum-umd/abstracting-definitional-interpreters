@@ -1,0 +1,149 @@
+\section{Symbolic Execution and Path-sensitive Verification}\label{s:symbolic}
+
+As a final exercise in abstract interpretation component engineering, we
+develop a monadic view of symbolic execution.
+
+We present an extension to the monad stack and metafunctions that gives rise to
+a symbolic executor~\cite{dvanhorn:King1976Symbolic}, then show how
+abstractions discussed in previous sections can be applied to enforce
+termination, turning a traditional symbolic execution into a path-sensitive
+verification engine.
+
+\subsection{Symbolic Execution}
+Figure~\ref{s:symbolic} shows the units needed to turn the existing interpreter
+into a symbolic executor, in addition to adding symbolic numbers ⸨(sym X)⸩
+to the language syntax.
+Primitives such as ⸨'quotient⸩ now may also take as input
+and return symbolic values.
+As standard, symbolic execution employs a path-condition
+accumulating assumptions made at each branch,
+allowing the elimination of infeasible paths and construction of test cases.
+We represent the path-condition ⸨φ⸩ as a set of symbolic values
+known to have evaluated to ⸨0⸩.
+This set is another state component provided by ⸨StateT⸩.
+Monadic operations ⸨get-path-cond⸩
+and ⸨refine⸩ reference and update the path-condition.
+Metafunction ⸨zero?⸩ works similarly to the concrete counterpart,
+but also uses the path-condition to prove that some symbolic numbers
+are definitely ⸨0⸩ or non-⸨0⸩.
+In case of uncertainty, ⸨zero?⸩ returns both answers
+besides refining the path-condition with the assumption made.
+Operator ⸨'¬⸩ represents negation in our language.
+
+In the following example, the symbolic executor recognizes that
+result ⸨3⸩ and division-by-0 error are not feasible:
+ℑ⁅
+¦ > (if0 'x (if0 'x 2 3) (quotient 5 'x))
+ℑ,
+¦ (set
+¦    (cons '(quotient 5 x) (set '(¬ x)))
+¦    (cons 2 (set 'x)))
+ℑ⁆
+
+A scaled up symbolic executor can have ⸨zero?⸩ calling out
+to an SMT solver for interesting arithmetics,
+and extend the language with symbolic functions
+and blame semantics for sound higher-order symbolic
+execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relatively}.
+
+\begin{figure}
+\begin{alignat*}{4}
+   e ∈ &&\mathrel{}   exp ⩴ … ∣ &\mathrel{} 𝔥⸨(sym⸩\ x𝔥⸨)⸩             &\hspace{3em} [⦑\emph{symbolic number}⦒]
+\end{alignat*}
+\rfloat{⸨symbolic-monad@⸩}
+\begin{lstlisting}
+¦ (define-monad
+¦   (ReaderT (FailT (StateT (StateT (NondetT ID))))))
+\end{lstlisting}
+\figskip\rfloat{⸨ev-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (((ev-symbolic ev₀) ev) e)
+¦   (match e
+¦     [(sym x) (return x)]
+¦     [e       ((ev₀ ev) e)]))
+\end{lstlisting}
+\figskip\rfloat{⸨δ-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (δ . ovs)
+¦   (match ovs
+¦     ... ; TODO can't put comment in here...
+¦     [(list 'quotient v₀ v₁)
+¦      (do z? ← (zero? v₁)
+¦          (cond
+¦           [z? fail]
+¦           [(and (number? v₀) (number? v₁))
+¦            (return (quotient v₀ v₁))]
+¦           [else
+¦            (return `(quotient ,v₀ ,v₁))]))]
+¦     [(list '¬ 0) 1]
+¦     ... ; TODO can't put comment in here...
+¦     ))
+¦ (define (zero? v)
+¦   (do φ ← get-path-cond
+¦       (match v
+¦         [(? number? n) (return (= 0 n))]
+¦         [v #:when (∈ v φ) (return #t)]
+¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
+¦         [`(¬ ,v′) (do a ← (zero? v′)
+¦                       (return (not a)))]
+¦         [v (mplus (do (refine v)
+¦                       (return #t))
+¦                   (do (refine `(¬ ,v))
+¦                       (return #f)))])))
+\end{lstlisting}
+\caption{Symbolic Execution Variant}
+\label{f:symbolic}
+\end{figure}
+
+\subsection{From Symbolic Execution to Verification}
+
+Traditional symbolic executors mainly aim to find bugs
+and provide no termination guarantee.
+We can apply abstracting units presented in previous sections,
+namely base value widening (Section~\ref{s:base}), finite allocation
+(Section~\ref{s:closures}), caching and fixing (Sections~\ref{s:cache}
+and~\ref{s:fixing-cache}) to turn a symbolic execution into a sound,
+path-sensitive program verification.
+
+Operations on symbolic values introduce a new source of infinite configurations
+by building up new symbolic values.
+We therefore straightforwardly widen a symbolic value to the abstract
+number ⸨'N⸩ when it shares an address with a different number.
+Figure~\ref{f:symbolic-widen} shows extension to ⸨δ⸩ and ⸨zero?⸩
+in the presence of ⸨'N⸩.
+The different treatments of ⸨'N⸩ and symbolic values
+clarifies that abstract values are not symbolic values:
+the former stands for a set of multiple values,
+whereas the latter stands for an single unknown value.
+Tests on abstract number ⸨'N⸩ do not strengthen the path-condition.
+It is unsound to accumulate any assumption about ⸨'N⸩.
+
+\begin{figure}
+\rfloat{⸨δ-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (δ . ovs)
+¦   (match ovs
+¦     ... ; TODO can't put comment in here...
+¦     [(list 'quotient v₀ v₁)
+¦      (do z? ← (zero? v₁)
+¦          (cond
+¦           [z? _fail]
+¦           [else
+¦            (match (list v₀ v₁)
+¦             [(list (? number? n₀) (? number? n₁))
+¦              (return (quotient n₀ n₁))]
+¦             [(list _ ... 'N _ ...)
+¦              (return 'N)]
+¦             [(list v₀ v₁)
+¦              (return `(quotient ,v₀ ,v₁))])]))]
+¦     ... ; TODO can't put comment in here...
+¦     ))
+¦ (define (zero? v)
+¦   (do φ ← get-path-cond
+¦       (match v
+¦         ['N (mplus (return #t) (return #f))]
+¦         ...)))
+\end{lstlisting}
+\caption{Symbolic Execution with Abstract Numbers}
+\label{f:symbolic-widen}
+\end{figure}

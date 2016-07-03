@@ -1,0 +1,255 @@
+\documentclass[preprint]{sigplanconf}
+
+\usepackage{microtype}
+\usepackage{textcomp}
+\usepackage[scaled=0.9]{DejaVuSansMono}
+
+\usepackage{balance}
+\usepackage{moresize}
+\usepackage{csquotes}
+\usepackage{upgreek}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{stmaryrd}
+
+\usepackage{mathpartir}
+\usepackage{galois}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\usepackage[usenames,dvipsnames]{color}
+%\definecolor{PaleBlue}{rgb}{0.90,0.90,1.0}
+%\definecolor{LightGray}{rgb}{0.90,0.90,0.90}
+%\definecolor{CommentColor}{rgb}{0.76,0.45,0.12}
+%\definecolor{OutputColor}{rgb}{0.59,0.00,0.59}
+
+\definecolor{IdentifierColor}{rgb}{0.15,0.15,0.50}
+\newcommand{\ID}[1]{{\color{IdentifierColor}#1}}
+
+\definecolor{PuncColor}{rgb}{0.52,0.24,0.14}
+\newcommand{\PN}[1]{{\color{PuncColor}#1}}
+
+\definecolor{KeywordColor}{rgb}{0.52,0.24,0.14}
+\newcommand{\KY}[1]{{\color{KeywordColor}#1}}
+
+\definecolor{ValueColor}{rgb}{0.13,0.55,0.13}
+\newcommand{\VL}[1]{{\color{ValueColor}#1}}
+
+\definecolor{ResultColor}{rgb}{0.10,0.10,0.79}
+\newcommand{\RE}[1]{{\color{ResultColor}#1}}
+
+\definecolor{ErrorColor}{rgb}{0.75,0.10,0.10}
+\newcommand{\EO}[1]{{\color{ErrorColor}#1}}
+
+
+\usepackage{listings}
+\lstset%
+  {language=Lisp
+  ,upquote=true
+  ,mathescape=true
+  ,basicstyle=\ttfamily\color{PuncColor}
+  ,alsoletter=+-*/?'\#0123456789^:
+  ,identifierstyle=\color{IdentifierColor}
+  ,keywords=
+    {define,let,match,if
+    ,do,define-monad,for/monad+
+    ,\#lang
+    ,\#:when
+    }
+  ,keywordstyle=\color{KeywordColor}
+  ,emph=
+    {return,bind
+    ,zero?
+    ,ask-env,local-env
+    ,ext,find,alloc
+    ,get-store,put-store,update-store
+    ,tell
+    ,get-dead,put-dead,update-dead
+    ,fail,mplus
+    ,get-,put-,update-
+    ,ask-,local-
+    ,get-path-cond,refine
+    }
+  ,emphstyle=\color{IdentifierColor}\emph
+  ,literate=
+    {‹λ›}{{{\KY{«\uplambda»}}}}1
+    {‹δ›}{{{\ID{«\updelta»}}}}1
+    {‹σ›}{{{\ID{«\upsigma»}}}}1
+    {‹ς›}{{{\ID{«\upvarsigma»}}}}1
+    {‹ρ›}{{{\ID{«\uprho»}}}}1
+    {‹φ›}{{{\ID{«\upphi»}}}}1
+    {‹θ›}{{{\ID{«\uptheta»}}}}1
+    {‹Σ›}{{{\ssmall\ID{«Σ»}}}}1
+    {‹∅›}{{{\ID{«∅»}}}}1
+    {‹←›}{{{\scriptsize«←»}}}1
+    {‹≔›}{{{\scriptsize«≔»}}}1
+    {‹₀›}{{{\ID{«\,⸤⦑0⦒⸥»}}}}1
+    {‹₁›}{{{\ID{«\,⸤⦑1⦒⸥»}}}}1
+    {‹₂›}{{{\ID{«\,⸤⦑2⦒⸥»}}}}1
+    {‹′›}{{{\ID{«\,′»}}}}1
+    {‹¢›}{{{\ID{\$}}}}1
+    {‹∈›}{{{\ID{«∈»}}}}1
+    {‹×›}{{{\ssmall\ID{«×»}}}}1
+    {‹⊥›}{{{\ssmall\ID{«⊥»}}}}1
+    {‹¬›}{{{\ssmall\ID{«¬»}}}}1
+    {`}{{{\`{}}}}1
+    {get-‹¢›}{{{\ID{\emph{get-\$}}}}}5
+    {put-‹¢›}{{{\ID{\emph{put-\$}}}}}5
+    {update-‹¢›}{{{\ID{\emph{update-\$}}}}}8
+    {=}{{{\ID{=}}}}1
+  ,classoffset=1
+  ,keywords=
+    {'add1,'sub1,'+,'-,'*,'quotient,'failure,'N
+    ,\#t,\#f,0,1,2,3,4,5,6,7,8,9
+    }
+  ,keywordstyle=\color{ValueColor}
+  }
+\lstdefinestyle{result}
+  {basicstyle=\ttfamily\color{ResultColor}
+  ,keywordstyle=\color{ResultColor}
+  ,identifierstyle=\color{ResultColor}
+  ,literate=
+    {‹λ›}{{{«\uplambda»}}}1
+    {‹δ›}{{{«\updelta»}}}1
+    {‹σ›}{{{«\upsigma»}}}1
+    {‹ς›}{{{«\upvarsigma»}}}1
+    {‹ρ›}{{{«\uprho»}}}1
+    {‹φ›}{{{«\upphi»}}}1
+    {‹θ›}{{{«\uptheta»}}}1
+    {‹Σ›}{{{\ssmall«Σ»}}}1
+    {‹∅›}{{{«∅»}}}1
+    {‹←›}{{{«←»}}}1
+    {‹≔›}{{{«≔»}}}1
+    {‹₀›}{{{«\,⸤⦑0⦒⸥»}}}1
+    {‹₁›}{{{«\,⸤⦑1⦒⸥»}}}1
+    {‹₂›}{{{«\,⸤⦑2⦒⸥»}}}1
+    {‹′›}{{{«\,′»}}}1
+    {‹¢›}{{{\$}}}1
+    {‹∈›}{{{«∈»}}}1
+    {‹×›}{{{\ssmall«×»}}}1
+    {‹⊥›}{{{\ssmall«⊥»}}}1
+    {‹¬›}{{{\ssmall«¬»}}}1
+    {timeout}{{{\EO{\emph{\textbf{timeout}}}}}}7
+  }
+
+\newcommand{\rfloat}[1]{\begin{flushright}\fbox{#1}\end{flushright}\vspace{-2.1em}}
+\newcommand{\resultskip}{\vspace{-1.3em}}
+\newcommand{\figskip}{\vspace{-1.3em}}
+
+\begin{document}
+
+% <<From Sigplan Template
+
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+%\conferenceinfo{CONF 'yy}{Month d--d, 20yy, City, ST, Country}
+%\copyrightyear{20yy}
+%\copyrightdata{978-1-nnnn-nnnn-n/yy/mm}
+%\copyrightdoi{nnnnnnn.nnnnnnn}
+
+%\titlebanner{banner above paper title}        % These are ignored unless
+%\preprintfooter{short description of paper}   % 'preprint' option specified.
+
+% >>
+
+\title{Abstracting Definitional Interpreters}
+%\subtitle{Subtitle Text, if any}
+
+\authorinfo{}{}{}
+%\authorinfo{David Darais}
+%           {University of Maryland}
+%           {darais@cs.umd.edu}
+%\authorinfo{Nicholas Labich}
+%           {University of Maryland}
+%           {labichn@cs.umd.edu}
+%\authorinfo{Phúc C. Nguyễn}
+%           {University of Maryland}
+%           {pcn@cs.umd.edu}
+%\authorinfo{David Van Horn}
+%           {University of Maryland}
+%           {dvanhorn@cs.umd.edu}
+
+\maketitle
+
+\begin{abstract}
+In this paper, we show that a definitional interpreter written in monadic style
+can express not only the usual notion of interpretation, but also a wide
+variety of collecting semantics, abstract interpretations, symbolic execution,
+and their intermixings. We give a rational reconstruction of a definitional
+\emph{abstract} interpreter for a higher-order language by building a series of
+components implementing monadic operations.  The denouement of our story is a
+computable abstract interpreter that arises from the composition of simple,
+independent components.  Remarkably, this interpreter implements a form of
+pushdown control flow analysis (PDCFA) in which calls and returns are always
+properly matched in the abstract semantics.  True to the definitional style of
+Reynolds, the evaluator involves no explicit mechanics to achieve this
+property; it is simply inherited from the defining language.
+\end{abstract}
+
+%\category{CR-number}{subcategory}{third-level}
+%\terms term1, term2
+%\keywords keyword1, keyword2
+
+\input{01-intro.tex}
+\input{02-aam.tex}
+\input{03-interp.tex}
+\input{04-closures.tex}
+\input{05-cache.tex}
+\input{06-fixing.tex}
+\input{07-reynolds.tex}
+\input{08-widening.tex}
+\input{09-alt-abstraction.tex}
+\input{10-symbolic-execution.tex}
+\input{11-try-it.tex}
+\input{12-formalism.tex}
+\input{13-related-work.tex}
+\input{14-conclusions.tex}
+
+%\appendix
+%\section{Appendix Title}
+
+%\acks
+% We thank Sam Tobin-Hochstadt and Dionna Glaze for several fruitful
+% conversations while developing the ideas in this work.
+
+\balance
+\bibliographystyle{abbrvnat}
+\bibliography{davdar,dvanhorn,local}
+
+\end{document}
+
+%\lstset
+% {language=Lisp
+% ,extendedchars=true
+% ,inputencoding=utf8
+% ,mathescape=true
+% ,escapechar=`
+% ,upquote=true
+% ,basicstyle=\ttfamily\color{ParenColor}
+% ,commentstyle=\color{CommentColor}
+% ,alsoletter=+-*/?'\#0123456789^
+% ,identifierstyle=\color{IdentifierColor}
+% ,emph=%
+%  {return,bind
+%  ,zero?
+%  ,ask-env,local-env
+%  ,ext,find,alloc
+%  ,get-store,put-store,update-store
+%  ,tell
+%  ,get-dead,put-dead,update-dead
+%  ,fail,mplus
+%  ,get-,put-,update-
+%  ,ask-,local-
+%  }
+% ,emphstyle=\color{IdentifierColor}\emph
+% ,classoffset=1
+% ,keywords={'add1,'sub1,'+,'-,'*,'quotient,'failure,'N,\#t,\#f,0,1,2,3,4,5,6,7,8,9}
+% ,keywordstyle=\color{ValueColor}
+% }
+

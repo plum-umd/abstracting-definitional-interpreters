@@ -1,0 +1,506 @@
+\section{A Definitional Interpreter}
+
+We begin by first constructing a definitional interpreter for a small but
+representative higher-order, functional language.  As our defining language, we
+use an applicative subset of Racket, a dialect of Scheme.\footnote{This choice
+is largely immaterial: any functional language would do.}
+
+The abstract syntax of the language is defined in Figure~\ref{f:syntax}; it
+includes variables, numbers, unary and binary operations on numbers,
+conditionals, {\tt letrec} expressions, functions, and applications.
+
+\begin{figure}
+\begin{alignat*}{4}
+   e ∈ &&\mathrel{}   exp ⩴ &\mathrel{} 𝔥⸨(vbl⸩\ x𝔥⸨)⸩             &\hspace{3em} [⦑\emph{variable}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩             &\hspace{3em} [⦑\emph{number}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(lam⸩\ x\ 𝔥⸨)⸩       &\hspace{3em} [⦑\emph{lambda}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(ifz⸩\ e\ e\ e𝔥⸨)⸩    &\hspace{3em} [⦑\emph{conditional}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op1⸩\ u\ e𝔥⸨)⸩       &\hspace{3em} [⦑\emph{unary op}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩ &\hspace{3em} [⦑\emph{binary op}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩       &\hspace{3em} [⦑\emph{application}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(lrc⸩\ x\ e\ e𝔥⸨)⸩ &\hspace{3em} [⦑\emph{letrec}⦒]
+\\ x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵
+\\ u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵
+\\ b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵
+\end{alignat*}
+\caption{Syntax}
+\label{f:syntax}
+\end{figure}
+
+\begin{figure}
+\rfloat{⸨ev@⸩}
+\begin{lstlisting}
+¦ (define ((ev ev) e)
+¦   (match e
+¦     [(num n) (return n)]
+¦     [(vbl x)
+¦      (do ρ ← ask-env
+¦          (find (ρ x)))]    
+¦     [(ifz e₀ e₁ e₂) 
+¦      (do v  ← (ev e₀)
+¦          z? ← (zero? v)
+¦          (ev (if z? e₁ e₂)))]
+¦     [(op1 o e₀)
+¦      (do v ← (ev e₀)
+¦          (δ o v))]   
+¦     [(op2 o e₀ e₁)
+¦      (do v₀ ← (ev e₀)
+¦          v₁ ← (ev e₁)
+¦          (δ o v₀ v₁))]
+¦     [(lrc f e₀ e₁) 
+¦      (do ρ  ← ask-env
+¦          a  ← (alloc f)
+¦          ρ′ ≔ (ρ f a)
+¦          (ext a (cons e₀ ρ′))
+¦          (local-env ρ′
+¦            (ev e₁)))]
+¦     [(lam x e₀)
+¦      (do ρ ← ask-env
+¦          (return (cons (lam x e₀) ρ)))]
+¦     [(app e₀ e₁)
+¦      (do (cons (lam x e₂) ρ) ← (ev e₀)
+¦          v₁ ← (ev e₁)
+¦          a  ← (alloc x)         
+¦          (ext a v₁)
+¦          (local-env (ρ x a) 
+¦            (ev e₂)))]))
+\end{lstlisting}
+\caption{Definitional Interpreter}
+\label{f:interpreter}
+\end{figure}
+
+The interpreter for the language is defined in Figure~\ref{f:interpreter}. At
+first glance, it has many conventional aspects:
+\begin{itemize}
+\item it is compositionally defined by structural recursion on the syntax of
+expressions,
+\item it represents functions with a closure data structure that pairs together
+the code with the environment in which a function definition was evaluated,
+\item it is structured monadically and uses monad operations to interact with
+the environment and store, and
+\item it relies on a helper function ⸨δ⸩ to interpret primitive operations.
+\end{itemize}
+
+There are a few superficial aspects that deserve a quick note:
+environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
+«ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
+⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
+\begin{alignat*}{2}
+   𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
+\\ 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
+\\           𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
+\\               𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
+\end{alignat*}
+
+Finally, there are two unconvential aspects worth noting.  First, the
+interpreter is written in an \emph{open recursive style}; the evaluator does
+not call itself recursively, instead it takes as an argument a function
+⸨ev⸩ which it calls in order to recur.  (We have employed a bit of
+cuteness by naming the first parameter ⸨ev⸩, thereby shadowing the outer
+⸨ev⸩ and making subsequent calls look like recursive calls.)  This is a
+standard encoding for recursive functions in a setting without recursive
+binding.  It is up to an external function, such as the Y-combinator, to close
+the recursive loop.  As we will see, this open recursive form will be crucial
+for interposition to collect information about the intensional properties of
+evaluation.
+
+Second, the code is clearly \emph{incomplete}.  There are a number
+of free variables, noted in italics.  These free variables fall into
+a few roles:
+\begin{itemize}
+\item providing the underlying monad of the interpreter:
+⸨return⸩ and ⸨bind⸩,
+
+\item providing an interpretation of primitives: ⸨δ⸩ and
+⸨zero?⸩,
+
+\item providing environment operations: ⸨ask-env⸩ for
+retreiving the environment and ⸨local-env⸩ for installing an
+environment,
+
+\item providing store operations: ⸨ext⸩ for updating
+the store, and ⸨find⸩ for dereferencing locations, and
+
+\item a remaining operation for ⸨alloc⸩ating store locations,
+used to bind variables.
+\end{itemize}
+
+Going forward, we make frequent use of sets of definitions involving free
+variables, so we call such a collection a \emph{component}. We assume
+components can be named (in this case, we've named the component ⸨ev@⸩,
+indicated by the box in the upper-right corner) and linked together to
+eliminate free variables.\footnote{We use Racket
+\emph{units}~\cite{local:flatt-pldi98} to model components in our
+implementation.}
+
+\begin{figure}
+\rfloat{⸨monad@⸩}
+\begin{lstlisting}
+¦ (define-monad 
+¦   (ReaderT (FailT (StateT ID))))
+\end{lstlisting}
+\figskip\rfloat{⸨δ@⸩}
+\begin{lstlisting}
+¦ (define (δ . ovs)
+¦   (match ovs
+¦     [(list 'add1 n)  (return (add1 n))]
+¦     [(list 'sub1 n)  (return (sub1 n))]
+¦     [(list '- n)     (return (- n))]
+¦     [(list '+ n₀ n₁) (return (+ n₀ n₁))]
+¦     [(list '- n₀ n₁) (return (- n₀ n₁))]
+¦     [(list '* n₀ n₁) (return (* n₀ n₁))]
+¦     [(list 'quotient n₀ n₁)
+¦      (if (= 0 n₁)
+¦          fail
+¦          (return (quotient n₀ n₁)))]))
+¦ (define (zero? v)
+¦   (return (= 0 v)))
+\end{lstlisting}
+\figskip\rfloat{⸨store@⸩}
+\begin{lstlisting}
+¦ (define (find a)
+¦   (do σ ← get-store
+¦       (return (σ a))))
+¦ (define (ext a v) 
+¦   (update-store (λ (σ) (σ a v))))
+\end{lstlisting}
+\figskip\rfloat{⸨alloc@⸩}
+\begin{lstlisting}
+¦ (define (alloc x)
+¦   (do σ ← get-store
+¦       (return (size σ))))
+\end{lstlisting}
+\caption{Components for Definitional Interpreters}
+\label{f:concrete-components}
+\end{figure}
+
+Let us now examine a set of components for completing the definitional
+interpreter.  Figure~\ref{f:concrete-components} gives the definition
+for a series of components that complete the interpreter.  The first
+and most magical component is ⸨monad@⸩, which uses our
+⸨define-monad⸩ macro to generate a set of bindings based on a
+monad transformer stack.  For this interpreter, we use a failure monad
+to model divide-by-zero errors, a state monad to model the store, and
+a reader monad to model the environment.  The ⸨define-monad⸩
+form generates bindings for ⸨return⸩, ⸨bind⸩,
+⸨ask-env⸩, ⸨local-env⸩, ⸨get-store⸩ and
+⸨update-store⸩. 
+
+We also add a ⸨mrun⸩ operation for running computations, which
+kicks off the computation by providing the empty environment and
+store:
+\begin{lstlisting}
+¦ (define (mrun m)
+¦   (run-StateT ∅ (run-ReaderT ∅ m)))
+\end{lstlisting}
+While the ⸨define-monad⸩ form is hiding some details, this
+component could have equivalently been written out explicitly. For
+example, ⸨return⸩ and ⸨bind⸩ can be defined as:
+\begin{lstlisting}
+¦ (define (((return a) r) s) (cons a s))
+¦ (define (((bind ma f) r) s)
+¦   (match ((ma r) s)
+¦     [(cons a s′) (((f a) r) s′)]
+¦     ['failure 'failure]))
+\end{lstlisting}
+And the remaining operations are straightforward, too.  So the use of
+monad transformers can be seen as a mere convenience, but as we will
+see moving to more and more involved monad stacks, it's a useful one.
+
+The ⸨δ@⸩ component defines the interpretation of primitives,
+which is given in terms of the underlying monad.  Finally the
+⸨alloc@⸩ component provides a definition of ⸨alloc⸩,
+which fetches the store and uses its size to return a fresh address.
+
+The ⸨store@⸩ component defines the derived operations on stores
+of ⸨find⸩ and ⸨ext⸩ for finding and extending the store
+in terms of the monadic operations.
+
+The only remaing pieces of the puzzle are a fixed-point combinator,
+which is straightforward to define:
+\begin{lstlisting}
+¦ (define ((fix f) x) ((f (fix f)) x))
+\end{lstlisting}
+And the main entry-point for the interpreter:
+\begin{lstlisting}
+¦ (define (eval e) (mrun ((fix ev) e)))
+\end{lstlisting}
+
+By taking advantage of Racket's languages-as-libraries
+features~\cite{dvanhorn:TobinHochstadt2011Languages}, we can easily construct
+REPLs for interacting with this interpreter.  Here are a few examples, which
+make use of a concrete syntax for more succinctly writing expressions. The
+identity function evaluates to an answer consisting of a closure over the empty
+environment together with the empty store:
+ℑ⁅
+¦ > (λ (x) x)
+ℑ,
+¦ '(((λ (x) x) . ()) . ())
+ℑ⁆
+Here's an example showing a non-empty environment and store:
+ℑ⁅
+¦ > ((λ (x) (λ (y) x)) 4)
+ℑ,
+¦ '(((λ (y) x) . ((x . 0))) . ((0 . 4)))
+ℑ⁆
+Primitive operations work as expected:
+ℑ⁅
+¦ > (* (+ 3 4) 9)
+ℑ,
+¦ '(63 . ())
+ℑ⁆
+And divide-by-zero errors result in failures:
+ℑ⁅
+¦ > (quotient 5 (- 3 3))
+ℑ,
+¦ '(failure . ())
+ℑ⁆
+Because our monad stack places ⸨FailT⸩ above ⸨StateT⸩,
+the answer includes the (empty) store at the point of the error.
+Had we changed ⸨monad@⸩ to use:
+\begin{lstlisting}
+(define-monad 
+  (ReaderT (StateT (FailT ID))))
+\end{lstlisting}
+failures would not include the store:
+ℑ⁅
+¦ > (quotient 5 (- 3 3))
+ℑ,
+¦ '(failure . ())
+ℑ⁆
+
+At this point, we've defined a fairly run of the mill definitional
+interpreter.  Despite these pedestrian beginnings, we essentially have
+the complete skeleton for everything to come.  In particular, we will
+reuse ⸨ev@⸩ in all of the remaining interpreters.  Now let's do
+something a bit more enchanting.
+
+\subsection{Collecting Variations}\label{s:collecting}
+
+The formal development of abstract interpretation often starts from a
+so-called ``non-standard collecting semantics.''  A common form of
+collecting semantics is a trace semantics, which collects streams of
+states the interpreter reaches.  Figure~\ref{f:trace} shows the monad
+stack for a tracing interpreter and a kind of ``mix-in'' for the
+evaluator.  The monad stack adds ⸨WriterT⸩ using
+⸨List⸩, which provides a new operation named ⸨tell⸩ for
+writing items to the stream of reached states.  The ⸨ev-trace⸩
+function is a wrapper around an underlying ⸨ev⸩ function which
+interposes itself between each recursive call by telling the current
+state of the evaluator, that is the current expression, environment,
+and store.  The top-level evaluation function is then:
+\begin{lstlisting}
+¦ (define (eval e) 
+¦   (mrun ((fix (ev-tell ev)) e)))
+\end{lstlisting}
+
+\begin{figure}
+\rfloat{⸨trace-monad@⸩}
+\begin{lstlisting}
+¦ (define-monad
+¦   (ReaderT (FailT (StateT (WriterT List ID)))))
+\end{lstlisting}
+\figskip\rfloat{⸨ev-tell@⸩}
+\begin{lstlisting}
+¦ (define (((ev-tell ev₀) ev) e)
+¦   (do ρ ← ask-env
+¦       σ ← get-store
+¦       (tell (list e ρ σ))
+¦       ((ev₀ ev) e)))
+\end{lstlisting}
+\caption{Trace Collecting Semantics}
+\label{f:trace}
+\end{figure}
+
+Now when an expression is evaluated, we get the resulting answer and a list of
+all the states seen by the evaluator, in the order in which they were seen.
+For example:
+ℑ⁅
+¦ > (* (+ 3 4) 9)
+ℑ,
+¦ '((63 . ())
+¦   ((* (+ 3 4) 9)()())
+¦   ((+ 3 4) () ())
+¦   (3 () ())
+¦   (4 () ())
+¦   (9 () ()))
+ℑ;
+¦ > ((λ (x) (λ (y) x)) 4)
+ℑ,
+¦ '((((λ (y) x) . ((x . 0))) . ((0 . 4)))
+¦   (((λ (x) (λ (y) x)) 4) () ())
+¦   ((λ (x) (λ (y) x)) () ())
+¦   (4 () ())
+¦   ((λ (y) x) ((x . 0)) ((0 . 4))))
+ℑ⁆
+
+Were we to swap ⸨List⸩ with ⸨Set⸩ in the monad stack, we would obtain a
+\emph{reachable} state semantics, another common form of collecting semantics,
+that loses the order and repetition of states.
+
+As another collecting semantics variant, we can also consider collecting the
+\emph{dead code} in a program.  Here we use a monad stack that has an addition
+state component (with operations named ⸨put-dead⸩ and ⸨get-dead⸩), which will
+the set of dead expressions.  Initially, this will contain all of the
+subexpressions of the program.  As the interpreter recurs through expressions,
+it will remove them from the dead set.
+
+Figure~\ref{f:dead} defines the monad stack for the dead code collecting
+semantics and the ⸨ev-dead@⸩ component which interposes itself on an ⸨ev⸩
+function to remove the given subexpression before recurring.  Since computing
+the dead code requires an outer wrapper that sets the initial set of dead code
+to be all of the subexpressions in the program, it requires a ⸨eval-dead@⸩
+component which consumes a \emph{closed evaluator}, i.e. something of the form
+⸨(fix ev)⸩.
+
+Putting these pieces together, the dead code collecting semantics can be
+defined as:
+\begin{lstlisting}
+¦ (define (eval e)
+¦   (mrun ((eval-dead (fix (ev-dead ev))) e)))
+\end{lstlisting}
+
+Running a program with the dead code interpreter produces an answer
+and the set of expressions that were not evaluated during the running
+of a program:
+ℑ⁅
+¦ > (if0 0 1 2)
+ℑ,
+¦ (cons '(1 . ()) (set 2)
+ℑ;
+¦ > (* (+ 3 4) 9)
+ℑ,
+¦ (cons '(63 . ()) (set))
+ℑ;
+¦ > (λ (x) x)
+ℑ,
+¦ (cons '(((λ (x) x) . ()) . ()) (set 'x))
+ℑ;
+¦ > (if0 (quotient 1 0) 2 3)]
+ℑ,
+¦ (cons '(failure . ()) (set 3 2))
+ℑ⁆
+
+\begin{figure}
+\rfloat{⸨dead-monad@⸩}
+\begin{lstlisting}
+¦ (define-monad
+¦   (ReaderT (StateT (StateT (FailT ID)))))
+\end{lstlisting}
+\figskip\rfloat{⸨ev-dead@⸩}
+\begin{lstlisting}
+¦ (define (((ev-dead ev₀) ev) e)
+¦   (do θ  ← get-dead       
+¦       (put-dead (set-remove θ e))
+¦       ((ev₀ ev) e)))
+\end{lstlisting}
+\figskip\rfloat{⸨eval-dead@⸩}
+\begin{lstlisting}
+¦ (define ((eval-dead eval) e₀)
+¦   (do (put-dead (subexps e₀))
+¦       (eval e₀)))
+\end{lstlisting}
+\caption{Dead Code Collecting Semantics}
+\label{f:dead}
+\end{figure}
+
+So our setup makes it easy not only to express the run of the mill
+interpreter, but also different forms of collecting semantics.
+Let us now start to look at abstractions.
+
+\subsection{Abstracting Base Values}\label{s:base}
+
+One of the things an abstract interpreter must do in order to become
+decidable is to have some form of abstraction for the base types of
+the language.  A very simple approach is to use a finite-element
+abstract domain.  We can do this for our sole base type of numbers by
+introducing a new kind of number, written ⸨'N⸩, which is an
+abstract value that stands for all numbers.  Abstract values will be
+introduced by alternative interpretation of the primitive operations,
+given in Figure~\ref{f:abs-delta}, which simply produces ⸨'N⸩ in
+all cases.  Some care must be taken in the interpretation of
+⸨'quotient⸩ since if the denominator is an abstract value, the
+result must include a failure since ⸨0⸩ is in the set of values
+abstracted by ⸨'N⸩.  This means that dividing a number by an
+abstract value must produce \emph{two answers}: ⸨'N⸩ and
+⸨'failure⸩.  This is done by adding non-determinism to the
+monad stack,
+
+\begin{lstlisting}
+¦ (ReaderT (FailT (StateT (NondetT ID))))
+\end{lstlisting}
+which provides a ⸨mplus⸩ operation for combining multiple
+answers.  Non-determinism is also used in the implementation of
+⸨zero?⸩, which returns both true and false on ⸨'N⸩.
+
+\begin{figure}
+\rfloat{⸨δ^@⸩}
+\begin{lstlisting}
+¦ (define (δ . ovs)
+¦   (match ovs
+¦     [(list 'add1 n)  (return 'N)]
+¦     [(list 'sub1 n)  (return 'N)]
+¦     [(list '+ n₀ n₁) (return 'N)]
+¦     [(list '- n₀ n₁) (return 'N)]
+¦     [(list '* n₀ n₁) (return 'N)]
+¦     [(list 'quotient n₀ (? number? n₁))
+¦      (if (= 0 n₁) fail (return 'N))]
+¦     [(list 'quotient n₀ n₁)
+¦      (mplus (return 'N) fail)]))
+¦ (define (zero? v)
+¦   (match v
+¦     ['N (mplus (return #t) (return #f))]
+¦     [_  (return (= 0 v))]))
+\end{lstlisting}
+\caption{Abstracting Primitive Operations}
+\label{f:abs-delta}
+\end{figure}
+
+By linking together the abstract variant of ⸨δ⸩ and the monad
+stack with non-determinism, we can obtain an evaluator that produces a
+set of results:
+ℑ⁅
+¦ > (* (+ 3 4) 9)
+ℑ,
+¦ '((N . ()))
+ℑ;
+¦ > (quotient 5 (add1 2))
+ℑ,
+¦ '((failure . ()) (N . ()))
+ℑ;
+¦ > (if0 (add1 0) 3 4)
+ℑ,
+¦ '((3 . ()) (4 . ()))
+ℑ⁆
+
+If we were to link together the abstract variant of ⸨δ⸩ with
+the \emph{tracing} monad stack with non-determinism added in,
+\begin{lstlisting}
+¦ (ReaderT (FailT (StateT 
+¦   (WriterT List (NondetT ID)))))
+\end{lstlisting}
+we would get an evaluator that produces sets of traces:
+ℑ⁅
+¦ > (if0 (add1 0) 3 4)
+ℑ,
+¦ (set
+¦  '((3 . ())
+¦    ((if0 (add1 0) 3 4) () ())
+¦    ((add1 0) () ())
+¦    (0 () ())
+¦    (3 () ()))
+¦  '((4 . ())
+¦    ((if0 (add1 0) 3 4) () ())
+¦    ((add1 0) () ())
+¦    (0 () ())
+¦    (4 () ())))
+ℑ⁆
+
+
+It should be clear that the interepreter will only ever see a finite
+set of numbers (including ⸨'N⸩), but it's definitly not true
+that the interpreter halts on all inputs.  Firstly, it's still
+possible to generate an infinite number of closures.  Secondly,
+there's no way for the interpreter to detect when it sees a loop.  To
+make a terminating abstract interpreter requires tackling both.  Let's
+look next at abstracting closures.
