@@ -1,6 +1,6 @@
 \newcommand{\lamif}{«λ⦑IF⦒» }
 
-\section{Formalism}
+\section{Formalism}\label{s:formalism}
 
 In this section we formalize our approach to designing static analyzers via
 definitional interpreters. The development begins with a ``ground truth''
@@ -197,7 +197,7 @@ The denotation for binary operators («⟦b⟧») is lifted to a collecting
 denotation operator «∿{⟦b⟧}»:
 \[ ∿{⟦b⟧}(∿{v}₁,∿{v}₂) ≔ ❴⟦b⟧(v₁,v₂) ∣ v₁ ∈ ∿{v}₁ ∧ v₂ ∈ ∿{v}₂❵ \]
 
-\begin{figure} %{-{
+\begin{figure*} %{-{
 \begin{mathpar}
   \inferrule*[left=(OLit)]{ }{ρ,τ⊢n,∿{σ}⇓❴n❵,∿{σ}}
 
@@ -295,7 +295,7 @@ denotation operator «∿{⟦b⟧}»:
 \end{mathpar}
 \caption{Big-step Collecting Reachability Semantics}
 \label{f:lamif-collecting}
-\end{figure} %}-}
+\end{figure*} %}-}
 
 The big-step collecting and reachability relations are structurally similar to
 the concrete semantics. The primary differences are using set containment
@@ -381,7 +381,7 @@ and «η(∿{ς})» are defined pointwise:
   & η(⟨e,ρ,τ,∿{σ}⟩) ≔ ⟨e,η(ρ),η(τ),η(∿{σ})⟩
 \end{alignat*}
 
-\begin{figure} %{-{
+\begin{figure*} %{-{
 \begin{mathpar}
   \inferrule*[left=(ALit)]{ }{♯{ρ},♯{τ}⊢n,♯{σ}⇓♯{η}(n),♯{σ}}
 
@@ -471,7 +471,7 @@ and «η(∿{ς})» are defined pointwise:
 \end{mathpar}
 \caption{Big-step Abstract Reachability Semantics}
 \label{f:lamif-abstract}
-\end{figure} %}-}
+\end{figure*} %}-}
 
 \paragraph{Computing the Analysis}
 
