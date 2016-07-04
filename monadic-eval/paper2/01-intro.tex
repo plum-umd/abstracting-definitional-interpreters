@@ -35,29 +35,29 @@ and constraint systems~\cite{dvanhorn:Neilson:1999}. Other foundations exist
 for designing program analyzers, but no approach to-date utilizes big-step
 operational semantics or definitional interpreters for program analysis of
 higher-order languages. This is unfortunate because big-step semantics and
-definitional interpreters are more compositional and high-level than low-level
-state machines or constraint systems. Big-step and denotational approaches
-exist for first-order programming languages; the gap is in extending these
-ideas to the higher-order setting.
+definitional interpreters are more compositional and high-level than state
+machines or constraint systems. Big-step and denotational approaches exist for
+first-order programming languages; the gap is in extending these ideas to the
+higher-order setting.
 
 We bridge this gap, providing the first framework for program analysis of
 higher-order languages which builds upon big-step semantics and their
-corresponding definitional interpreters, which are compositional by nature. Our
-key insights are to design definitional interpreters in monadic, open-recursive
-style (§~\ref{s:interp} and~\ref{s:closures}), as well as the design of a novel fixpoint
-algorithm tailored specifically to the setting of higher-order definitional
-interpreters (§~\ref{s:cache} and~\ref{s:fixing-cache}). The extensible
-nature of the interpreter allows us to recover a wide-range of analyses through
-its instantiation, including widening techniques (§~\ref{s:widening}),
-precision preserving abstractions (§~\ref{s:alt-abstraction}), and
-symbolic execution for program verification (§~\ref{s:symbolic}).
-Our implementation is freely available through a suite of embedded languages in
-Racket (§~\ref{s:try-it}). Finally, we prove the approach sound w.r.t. a
-derived big-step collecting and abstract semantics (§~\ref{s:formalism}), where
-the key insight in the formalism is to model not only standard big-step
-\emph{evaluation} relations, but also big-step \emph{reachability}
-relations, which we identify as the missing ingredient for the higher-order
-setting.
+corresponding definitional interpreters, which are compositional by nature. 
+
+Our key insights are 1) to design definitional interpreters in monadic,
+open-recursive style (§~\ref{s:interp} and~\ref{s:closures}), and 2) the design
+of a novel fixpoint algorithm tailored specifically to the setting of
+higher-order definitional interpreters (§~\ref{s:cache}
+and~\ref{s:fixing-cache}). The extensible nature of the interpreter allows us
+to recover a wide-range of analyses through its instantiation, including
+widening techniques (§~\ref{s:widening}), precision preserving abstractions
+(§~\ref{s:alt-abstraction}), and symbolic execution for program verification
+(§~\ref{s:symbolic}). Our implementation is freely available through a suite of
+embedded languages in Racket (§~\ref{s:try-it}). Finally, we prove the approach
+sound w.r.t. a derived big-step collecting and abstract semantics
+(§~\ref{s:formalism}), where the key insight in the formalism is to model not
+only standard big-step \emph{evaluation} relations, but also big-step
+\emph{reachability} relations.
 
 \paragraph{Pushdown Precision in Program Analysis}
 A common problem with traditional approaches to control flow analysis is the
@@ -75,10 +75,11 @@ We realize a new technique for defining abstract interpreters with pushdown
 precision, meaning the analysis precisely matches function calls to returns. In
 the setting of definitional interpreters, this property is inherited from the
 defining metalanguage and requires no instrumentation to the analysis \emph{at
-all} (§~\ref{s:reynolds}). A technical difference between small-step and
-big-step approaches to semantics are that small-step methods are required to
-model the execution context of evaluation, whether through evaluation
-contexts~\cite{local:felleisen-TCS1992} or stack
+all} (§~\ref{s:reynolds}).
+
+A technical difference between small-step and big-step approaches to semantics
+are that small-step methods must model the execution context of evaluation,
+whether through evaluation contexts~\cite{local:felleisen-TCS1992} or stack
 frames~\cite{dvanhorn:Felleisen1987Calculus}. In big-step methods, there is no
 model for the context; it is implicit in the definition of evaluation rules, or
 in the case of definitional interpreters, implicit in the call-and-return
