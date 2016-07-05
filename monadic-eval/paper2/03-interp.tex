@@ -8,7 +8,7 @@ of the language is defined in Figure~\ref{f:syntax}; it includes variables,
 numbers, unary and binary operations on numbers, conditionals, {\tt letrec}
 expressions, functions and applications.
 
-\begin{figure}
+\begin{figure} %{-{
 \rfloat{⸨ev@⸩}
 \begin{lstlisting}
 ¦ (define ((ev ev) e)
@@ -48,7 +48,7 @@ expressions, functions and applications.
 \end{lstlisting}
 \caption{The Extensible Definitional Interpreter}
 \label{f:interpreter}
-\end{figure}
+\end{figure} %}-}
 
 The interpreter for the language is defined in Figure~\ref{f:interpreter}. At
 first glance, it has many conventional aspects:
@@ -104,11 +104,11 @@ eliminate free variables.\footnote{We use Racket
 \emph{units}~\cite{local:flatt-pldi98} to model components in our
 implementation.}
 
-\begin{figure}
+\begin{figure} %{-{
 \rfloat{⸨monad@⸩}
 \begin{alignat*}{1}
-  & 𝔥⸨(define-monad⸩
-\\& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣␣𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣␣𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣␣𝔥⸨ID))))⸩
+          & 𝔥⸨(define-monad⸩
+\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩
 \end{alignat*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
@@ -143,7 +143,7 @@ implementation.}
 \end{lstlisting}
 \caption{Components for Definitional Interpreters}
 \label{f:concrete-components}
-\end{figure}
+\end{figure} %}-}
 
 \subsection{Instantiating the Interpreter}
 
@@ -224,10 +224,10 @@ And divide-by-zero errors result in failures:
 ℑ⁆
 Because our monad stack places ⸨FailT⸩ above ⸨StateT⸩, the answer includes the
 (empty) store at the point of the error. Had we changed ⸨monad@⸩ to use:
-\begin{lstlisting}
-(define-monad 
-  (ReaderT (StateT (FailT ID))))
-\end{lstlisting}
+\begin{alignat*}{1}
+          & 𝔥⸨(define-monad⸩
+\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID⸩))))
+\end{alignat*}
 failures would not include the store:
 ℑ⁅
 ¦ > (quotient 5 (- 3 3))
@@ -244,24 +244,24 @@ abstract interpretations.
 The formal development of abstract interpretation often starts from a so-called
 ``non-standard collecting semantics.''  A common form of collecting semantics
 is a trace semantics, which collects streams of states the interpreter reaches.
-Figure~\ref{f:trace} shows the monad stack for a tracing interpreter and a kind
-of ``mix-in'' for the evaluator.  The monad stack adds ⸨WriterT⸩ using ⸨List⸩,
-which provides a new operation named ⸨tell⸩ for writing items to the stream of
-reached states.  The ⸨ev-trace⸩ function is a wrapper around an underlying ⸨ev⸩
-function which interposes itself between each recursive call by telling the
-current state of the evaluator, that is the current expression, environment,
-and store.  The top-level evaluation function is then:
+Figure~\ref{f:trace} shows the monad stack for a tracing interpreter and a
+``mix-in'' for the evaluator.  The monad stack adds ⸨WriterT⸩ using ⸨List⸩,
+which provides a new operation ⸨tell⸩ for writing items to the stream of
+reached states.  The ⸨ev-trace⸩ function is a wrapper around an underlying
+⸨ev₀⸩ unfixed evaluator, and interposes itself between each recursive call by
+⸨tell⸩ing the current state of the evaluator, that is the current expression,
+environment, and store.  The top-level evaluation function is then:
 \begin{lstlisting}
 ¦ (define (eval e) 
 ¦   (mrun ((fix (ev-tell ev)) e)))
 \end{lstlisting}
 
-\begin{figure}
+\begin{figure} %{-{
 \rfloat{⸨trace-monad@⸩}
-\begin{lstlisting}
-¦ (define-monad
-¦   (ReaderT (FailT (StateT (WriterT List ID)))))
-\end{lstlisting}
+\begin{alignat*}{1}
+          & 𝔥⸨(define-monad⸩
+\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
+\end{alignat*}
 \figskip\rfloat{⸨ev-tell@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-tell ev₀) ev) e)
@@ -272,7 +272,7 @@ and store.  The top-level evaluation function is then:
 \end{lstlisting}
 \caption{Trace Collecting Semantics}
 \label{f:trace}
-\end{figure}
+\end{figure} %}-}
 
 Now when an expression is evaluated, we get the resulting answer and a list of
 all the states seen by the evaluator, in the order in which they were seen. For
@@ -286,47 +286,45 @@ example:
 ¦   (3 () ())
 ¦   (4 () ())
 ¦   (9 () ()))
-ℑ;
-¦ > ((λ (x) (λ (y) x)) 4)
-ℑ,
-¦ '((((λ (y) x) . ((x . 0))) . ((0 . 4)))
-¦   (((λ (x) (λ (y) x)) 4) () ())
-¦   ((λ (x) (λ (y) x)) () ())
-¦   (4 () ())
-¦   ((λ (y) x) ((x . 0)) ((0 . 4))))
 ℑ⁆
+% ℑ⁅
+% ¦ > ((λ (x) (λ (y) x)) 4)
+% ℑ,
+% ¦ '((((λ (y) x) . ((x . 0))) . ((0 . 4)))
+% ¦   (((λ (x) (λ (y) x)) 4) () ())
+% ¦   ((λ (x) (λ (y) x)) () ())
+% ¦   (4 () ())
+% ¦   ((λ (y) x) ((x . 0)) ((0 . 4))))
+% ℑ⁆
 Were we to swap ⸨List⸩ with ⸨Set⸩ in the monad stack, we would obtain a
 \emph{reachable} state semantics, another common form of collecting semantics,
 that loses the order and repetition of states.
 
-As another collecting semantics variant, we can also consider collecting the
-\emph{dead code} in a program.  Here we use a monad stack that has an addition
-state component (with operations named ⸨put-dead⸩ and ⸨get-dead⸩), which will
-the set of dead expressions.  Initially, this will contain all of the
-subexpressions of the program.  As the interpreter recurs through expressions,
-it will remove them from the dead set.
+As another collecting semantics variant, we show how to collect the \emph{dead
+code} in a program.  Here we use a monad stack that has an additional state
+component (with operations named ⸨put-dead⸩ and ⸨get-dead⸩) which stores the
+set of dead expressions.  Initially this will contain all of the subexpressions
+of the program.  As the interpreter recurs through expressions it will remove
+them from the dead set.
 
 Figure~\ref{f:dead} defines the monad stack for the dead code collecting
-semantics and the ⸨ev-dead@⸩ component which interposes itself on an ⸨ev⸩
-function to remove the given subexpression before recurring.  Since computing
-the dead code requires an outer wrapper that sets the initial set of dead code
-to be all of the subexpressions in the program, it requires a ⸨eval-dead@⸩
-component which consumes a \emph{closed evaluator}, i.e. something of the form
-⸨(fix ev)⸩.
+semantics and the ⸨ev-dead@⸩ component, another mix-in for an ⸨ev₀⸩ evaluator
+to remove the given subexpression before recurring.  Since computing the dead
+code requires an outer wrapper that sets the initial set of dead code to be all
+of the subexpressions in the program, we define ⸨eval-dead@⸩ which consumes a
+\emph{closed evaluator}, i.e. something of the form ⸨(fix ev)⸩.
 
-Putting these pieces together, the dead code collecting semantics can be
-defined as:
+Putting these pieces together, the dead code collecting semantics is defined:
 \begin{lstlisting}
 ¦ (define (eval e)
 ¦   (mrun ((eval-dead (fix (ev-dead ev))) e)))
 \end{lstlisting}
-
 Running a program with the dead code interpreter produces an answer and the set
 of expressions that were not evaluated during the running of a program:
 ℑ⁅
 ¦ > (if0 0 1 2)
 ℑ,
-¦ (cons '(1 . ()) (set 2)
+¦ (cons '(1 . ()) (set 2))
 ℑ;
 ¦ > (* (+ 3 4) 9)
 ℑ,
@@ -341,12 +339,12 @@ of expressions that were not evaluated during the running of a program:
 ¦ (cons '(failure . ()) (set 3 2))
 ℑ⁆
 
-\begin{figure}
+\begin{figure} %{-{
 \rfloat{⸨dead-monad@⸩}
-\begin{lstlisting}
-¦ (define-monad
-¦   (ReaderT (StateT (StateT (FailT ID)))))
-\end{lstlisting}
+\begin{alignat*}{1}
+          & 𝔥⸨(define-monad⸩
+\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
+\end{alignat*}
 \figskip\rfloat{⸨ev-dead@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-dead ev₀) ev) e)
@@ -362,10 +360,10 @@ of expressions that were not evaluated during the running of a program:
 \end{lstlisting}
 \caption{Dead Code Collecting Semantics}
 \label{f:dead}
-\end{figure}
+\end{figure} %}-}
 
-So our setup makes it easy not only to express the run of the mill interpreter,
-but also different forms of collecting semantics. Let us now start to look at
+Our setup makes it easy not only to express the concrete interpreter, but also
+different forms of collecting semantics. Let us now start to look at
 abstractions.
 
 \subsection{Abstracting Base Values}\label{s:base}
@@ -390,7 +388,7 @@ which provides a ⸨mplus⸩ operation for combining multiple answers.
 Non-determinism is also used in the implementation of ⸨zero?⸩, which returns
 both true and false on ⸨'N⸩.
 
-\begin{figure}
+\begin{figure} %{-{
 \rfloat{⸨δ^@⸩}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
@@ -411,7 +409,7 @@ both true and false on ⸨'N⸩.
 \end{lstlisting}
 \caption{Abstracting Primitive Operations}
 \label{f:abs-delta}
-\end{figure}
+\end{figure} %}-}
 
 By linking together the abstract variant of ⸨δ⸩ and the monad stack with
 non-determinism, we can obtain an evaluator that produces a set of results:
