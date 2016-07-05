@@ -11,11 +11,11 @@ CLS_FILES = $(wildcard *.cls)
 out/%.tex: %.tex $(SED_FILES)
 	mkdir -p out
 	cp $< $@
-	sed -f latex-unicode-pre.sed      -i "" $@
-	sed -f latex-unicode-escape.sed   -i "" $@
-	sed -f latex-unicode.sed          -i "" $@
-	sed -f latex-unicode-unescape.sed -i "" $@
-	sed -f latex-unicode-post.sed     -i "" $@
+	sed -f latex-unicode-pre.sed      -i.bak $@
+	sed -f latex-unicode-escape.sed   -i.bak $@
+	sed -f latex-unicode.sed          -i.bak $@
+	sed -f latex-unicode-unescape.sed -i.bak $@
+	sed -f latex-unicode-post.sed     -i.bak $@
 
 out/%.bib: %.bib
 	bibclean $< > $@

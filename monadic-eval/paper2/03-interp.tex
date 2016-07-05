@@ -73,7 +73,7 @@ environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
 \\ 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
 \\            𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
 \end{alignat*}
-Finally, there are two unconvential aspects worth noting.
+Finally, there are two unconventional aspects worth noting.
 
 First, the interpreter is written in an \emph{open recursive style}; the
 evaluator does not call itself recursively, instead it takes as an argument a
@@ -90,7 +90,7 @@ variables, noted in italics, which must implement the following:
 \begin{itemize}
 \item The underlying monad of the interpreter: ⸨return⸩ and ⸨bind⸩;
 \item An interpretation of primitives: ⸨δ⸩ and ⸨zero?⸩;
-\item Environment operations: ⸨ask-env⸩ for retreiving the
+\item Environment operations: ⸨ask-env⸩ for retrieving the
 environment and ⸨local-env⸩ for installing an environment;
 \item Store operations: ⸨ext⸩ for updating the store, and ⸨find⸩ for
 dereferencing locations; and
@@ -106,10 +106,10 @@ implementation.}
 
 \begin{figure}
 \rfloat{⸨monad@⸩}
-\begin{lstlisting}
-¦ (define-monad 
-¦   (ReaderT (FailT (StateT ID))))
-\end{lstlisting}
+\begin{alignat*}{1}
+  & 𝔥⸨(define-monad⸩
+\\& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣␣𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣␣𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣␣𝔥⸨ID))))⸩
+\end{alignat*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
@@ -147,18 +147,18 @@ implementation.}
 
 \subsection{Instantiating the Interpreter}
 
-Next we examine a set of components for completing the definitional
-interpreter.  Figure~\ref{f:concrete-components} gives the definition for a
-series of components that complete the interpreter.  The first and most magical
-component is ⸨monad@⸩, which uses our ⸨define-monad⸩ macro to generate a set of
-bindings based on a monad transformer stack.  For this interpreter, we use a
-failure monad to model divide-by-zero errors, a state monad to model the store,
-and a reader monad to model the environment.  The ⸨define-monad⸩ form generates
+Next we examine a set of components which complete the definitional
+interpreter, defined in Figure~\ref{f:concrete-components}. The first component
+is ⸨monad@⸩, which uses our ⸨define-monad⸩ macro to generate a set of bindings
+based on a monad transformer stack.  For this interpreter, we use a failure
+monad to model divide-by-zero errors, a state monad to model the store, and a
+reader monad to model the environment.  The ⸨define-monad⸩ form generates
 bindings for ⸨return⸩, ⸨bind⸩, ⸨ask-env⸩, ⸨local-env⸩, ⸨get-store⸩ and
-⸨update-store⸩. 
+⸨update-store⸩, and their definitions are
+standard~\cite{dvanhorn:Liang1995Monad}. 
 
-We also add a ⸨mrun⸩ operation for running computations, which kicks off the
-computation by providing the empty environment and store:
+We also add the ⸨mrun⸩ operation for running monadic computations, starting
+with the empty environment and store ⸨∅⸩:
 \begin{lstlisting}
 ¦ (define (mrun m)
 ¦   (run-StateT ∅ (run-ReaderT ∅ m)))
@@ -173,32 +173,31 @@ be defined as:
 ¦     [(cons a s′) (((f a) r) s′)]
 ¦     ['failure 'failure]))
 \end{lstlisting}
-And the remaining operations are straightforward, too.  So the use of monad
-transformers can be seen as a mere convenience, but as we will see moving to
-more and more involved monad stacks, it's a useful one.
+The remaining operations are similarly straightforward.  So far our use of
+monad transformers can be seen as a mere convenience, but the monad abstraction
+will become essential for deriving new analyses later on.
 
 The ⸨δ@⸩ component defines the interpretation of primitives, which is given in
 terms of the underlying monad.  Finally the ⸨alloc@⸩ component provides a
 definition of ⸨alloc⸩, which fetches the store and uses its size to return a
-fresh address.
-
-The ⸨store@⸩ component defines the derived operations on stores of ⸨find⸩ and
-⸨ext⸩ for finding and extending the store in terms of the monadic operations.
+fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a⸩ < 𝔥⸨(size σ)⸩».
+The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending the
+store in terms of the monadic operations.
 
 The only remaing pieces of the puzzle are a fixed-point combinator, which is
 straightforward to define:
 \begin{lstlisting}
 ¦ (define ((fix f) x) ((f (fix f)) x))
 \end{lstlisting}
-And the main entry-point for the interpreter:
+and the main entry-point for the interpreter:
 \begin{lstlisting}
 ¦ (define (eval e) (mrun ((fix ev) e)))
 \end{lstlisting}
 By taking advantage of Racket's languages-as-libraries
-features~\cite{dvanhorn:TobinHochstadt2011Languages}, we can easily construct
-REPLs for interacting with this interpreter.  Here are a few examples, which
-make use of a concrete syntax for more succinctly writing expressions. The
-identity function evaluates to an answer consisting of a closure over the empty
+features~\cite{dvanhorn:TobinHochstadt2011Languages}, we construct REPLs for
+interacting with this interpreter.  Here are a few examples, which make use of
+a concrete syntax for more succinctly writing expressions. The identity
+function evaluates to an answer consisting of a closure over the empty
 environment together with the empty store:
 ℑ⁅
 ¦ > (λ (x) x)
@@ -235,10 +234,10 @@ failures would not include the store:
 ℑ,
 ¦ 'failure
 ℑ⁆
-At this point, we've defined a fairly run of the mill definitional interpreter.
-Despite these pedestrian beginnings, we essentially have the complete skeleton
-for everything to come.  In particular, we will reuse ⸨ev@⸩ in all of the
-remaining interpreters.  Now let's do something a bit more enchanting.
+At this point we've defined a simple definitional interpreter, although the
+extensible components involved—monadic operations and open recursion—will allow
+us to instantiate the same interpreter to achieve a wide range of useful
+abstract interpretations.
 
 \subsection{Collecting Variations}\label{s:collecting}
 
