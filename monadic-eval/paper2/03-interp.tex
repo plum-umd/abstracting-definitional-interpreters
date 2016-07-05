@@ -54,11 +54,11 @@ The interpreter for the language is defined in Figure~\ref{f:interpreter}. At
 first glance, it has many conventional aspects:
 \begin{itemize}
 \item It is compositionally defined by structural recursion on the syntax of
-expressions;
+expressions.
 \item It represents function values as a closure data structure which pairs the
-function body with the evaluation environment;
+function body with the evaluation environment.
 \item It is structured monadically and uses monad operations to interact with
-the environment and store; and
+the environment and store.
 \item It relies on a helper function ⸨δ⸩ to interpret primitive operations.
 \end{itemize}
 There are a few superficial aspects that deserve a quick note:
@@ -108,7 +108,7 @@ implementation.}
 \rfloat{⸨monad@⸩}
 \begin{alignat*}{1}
           & 𝔥⸨(define-monad⸩
-\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩
+\\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩
 \end{alignat*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
@@ -180,7 +180,7 @@ will become essential for deriving new analyses later on.
 The ⸨δ@⸩ component defines the interpretation of primitives, which is given in
 terms of the underlying monad.  Finally the ⸨alloc@⸩ component provides a
 definition of ⸨alloc⸩, which fetches the store and uses its size to return a
-fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a⸩ < 𝔥⸨(size σ)⸩».
+fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a⸩ < 𝔥⸨(size σ)⸩»).
 The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending the
 store in terms of the monadic operations.
 
@@ -225,8 +225,7 @@ And divide-by-zero errors result in failures:
 Because our monad stack places ⸨FailT⸩ above ⸨StateT⸩, the answer includes the
 (empty) store at the point of the error. Had we changed ⸨monad@⸩ to use:
 \begin{alignat*}{1}
-          & 𝔥⸨(define-monad⸩
-\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID⸩))))
+& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID⸩))))
 \end{alignat*}
 failures would not include the store:
 ℑ⁅
@@ -260,7 +259,7 @@ environment, and store.  The top-level evaluation function is then:
 \rfloat{⸨trace-monad@⸩}
 \begin{alignat*}{1}
           & 𝔥⸨(define-monad⸩
-\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
+\\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
 \end{alignat*}
 \figskip\rfloat{⸨ev-tell@⸩}
 \begin{lstlisting}
@@ -343,7 +342,7 @@ of expressions that were not evaluated during the running of a program:
 \rfloat{⸨dead-monad@⸩}
 \begin{alignat*}{1}
           & 𝔥⸨(define-monad⸩
-\\[-0.5em]& ␣␣𝔥⸨(⸩\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
+\\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
 \end{alignat*}
 \figskip\rfloat{⸨ev-dead@⸩}
 \begin{lstlisting}
@@ -363,30 +362,30 @@ of expressions that were not evaluated during the running of a program:
 \end{figure} %}-}
 
 Our setup makes it easy not only to express the concrete interpreter, but also
-different forms of collecting semantics. Let us now start to look at
-abstractions.
+different forms of collecting semantics. Let us now look at abstractions.
 
 \subsection{Abstracting Base Values}\label{s:base}
 
-One of the things an abstract interpreter must do in order to become decidable
-is to have some form of abstraction for the base types of the language.  A very
-simple approach is to use a finite-element abstract domain.  We can do this for
-our sole base type of numbers by introducing a new kind of number, written
-⸨'N⸩, which is an abstract value that stands for all numbers.  Abstract values
-will be introduced by alternative interpretation of the primitive operations,
-given in Figure~\ref{f:abs-delta}, which simply produces ⸨'N⸩ in all cases.
-Some care must be taken in the interpretation of ⸨'quotient⸩ since if the
-denominator is an abstract value, the result must include a failure since ⸨0⸩
-is in the set of values abstracted by ⸨'N⸩.  This means that dividing a number
-by an abstract value must produce \emph{two answers}: ⸨'N⸩ and ⸨'failure⸩.
-This is done by adding non-determinism to the monad stack,
+Our interpreter must become decidable before it can be considered an analysis,
+and the first step towards decidability is to abstract the base types of the
+language to something finite. We do this for our number base type by
+introducing a new \emph{abstract} number, written ⸨'N⸩, which represents the
+set of all numbers. Abstract numbers are introduced by an alternative
+interpretation of primitive operations, given in Figure~\ref{f:abs-delta},
+which simply produces ⸨'N⸩ in all cases. 
 
-\begin{lstlisting}
-¦ (ReaderT (FailT (StateT (NondetT ID))))
-\end{lstlisting}
-which provides a ⸨mplus⸩ operation for combining multiple answers.
-Non-determinism is also used in the implementation of ⸨zero?⸩, which returns
-both true and false on ⸨'N⸩.
+Some care must be taken in the abstract interpretation of ⸨'quotient⸩. If the
+denominator is the abstract number ⸨'N⸩, then it is possible the program could
+fail as a result of divide-by-zero, since ⸨0⸩ is contained in the
+representation of ⸨'N⸩. Therefore there are \emph{two} possible answers when
+the denominator is ⸨'N⸩: ⸨'N⸩ and ⸨'failure⸩. Both answers are ⸨return⸩ed by
+introducing non-determinism ⸨NondetT⸩ into the monad stack:
+\begin{alignat*}{1}
+& 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID))))⸩
+\end{alignat*}
+Adding non-determinism provides the ⸨mplus⸩ operation for combining multiple
+answers. Non-determinism is also used in the implementation of ⸨zero?⸩, which
+returns both true and false on ⸨'N⸩.
 
 \begin{figure} %{-{
 \rfloat{⸨δ^@⸩}
@@ -400,8 +399,8 @@ both true and false on ⸨'N⸩.
 ¦     [(list '* n₀ n₁) (return 'N)]
 ¦     [(list 'quotient n₀ (? number? n₁))
 ¦      (if (= 0 n₁) fail (return 'N))]
-¦     [(list 'quotient n₀ n₁)
-¦      (mplus (return 'N) fail)]))
+¦     [(list 'quotient n₀ 'N)
+¦      (mplus fail (return 'N))]))
 ¦ (define (zero? v)
 ¦   (match v
 ¦     ['N (mplus (return #t) (return #f))]
@@ -411,8 +410,8 @@ both true and false on ⸨'N⸩.
 \label{f:abs-delta}
 \end{figure} %}-}
 
-By linking together the abstract variant of ⸨δ⸩ and the monad stack with
-non-determinism, we can obtain an evaluator that produces a set of results:
+By linking together ⸨δ^@⸩ and the monad stack with non-determinism, we obtain
+an evaluator that produces a set of results:
 ℑ⁅
 ¦ > (* (+ 3 4) 9)
 ℑ,
@@ -427,13 +426,12 @@ non-determinism, we can obtain an evaluator that produces a set of results:
 ¦ '((3 . ()) (4 . ()))
 ℑ⁆
 
-If we were to link together the abstract variant of ⸨δ⸩ with the \emph{tracing}
-monad stack with non-determinism added in,
-\begin{lstlisting}
-¦ (ReaderT (FailT (StateT 
-¦   (WriterT List (NondetT ID)))))
-\end{lstlisting}
-we would get an evaluator that produces sets of traces:
+If we link ⸨δ^@⸩ with the \emph{tracing} monad stack plus non-determinism:
+\begin{alignat*}{1}
+  & 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣
+    𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)⸩\!…\!𝔥⸨)⸩
+\end{alignat*}
+we get an evaluator that produces sets of traces:
 ℑ⁅
 ¦ > (if0 (add1 0) 3 4)
 ℑ,
@@ -450,9 +448,77 @@ we would get an evaluator that produces sets of traces:
 ¦    (4 () ())))
 ℑ⁆
 
-It should be clear that the interepreter will only ever see a finite set of
-numbers (including ⸨'N⸩), but it's definitly not true that the interpreter
-halts on all inputs.  Firstly, it's still possible to generate an infinite
-number of closures.  Secondly, there's no way for the interpreter to detect
-when it sees a loop.  To make a terminating abstract interpreter requires
-tackling both.  Let's look next at abstracting closures.
+It should be clear that the interpreter will only ever see a finite set of
+numbers (including ⸨'N⸩), but it's definitely not true that the interpreter
+halts on all inputs.  First, it's still possible to generate an infinite number
+of closures.  Second, there's no way for the interpreter to detect when it sees
+a loop.  To make a terminating abstract interpreter requires tackling both.  We
+look next at abstracting closures.
+
+\subsection{Abstracting Closures}
+
+Closures consist of code---a lambda term---and an environment---a finite map
+from variables to addresses.  Since the set of lambda terms and variables is
+bounded by the program text, it suffices to abstract closures by abstracting
+the set of addresses.  Following the AAM approach, we can do this by modifying
+the allocation function to always produce elements drawn from a finite set.  In
+order to retain soundness in the semantics, we will need to modify the store to
+map addresses to \emph{sets} of values and model store update as a join and
+dereference as a non-deterministic choice.
+
+Any abstraction of the allocation function that produces a finite set will do,
+but the choice of abstraction will determine the precision of the resulting
+analysis.  A simple choice is to allocate variable bindings by using a
+variable's name as its address.  This gives a monomorphic, or 0CFA-like,
+abstraction.
+
+Figure~\ref{f:0cfa-abs} shows an alternative component for finite
+allocation that uses variables names as the notion of addresses and a
+component for the derived operations ⸨find⸩ and ⸨ext⸩
+when the store uses a \emph{set} as its range.  The
+⸨for/monad+⸩ form is just a convenience for combining a set of
+computations with ⸨mplus⸩; in other words, ⸨find⸩
+returns \emph{all} of the values in the store at a given address.  The
+⸨ext⸩ function joins whenever an address is already allocated,
+otherwise it maps the address to a singleton set.
+
+\begin{figure}
+\rfloat{⸨alloc^@⸩}
+\begin{lstlisting}
+(define (alloc x)
+  (return x))
+\end{lstlisting}
+\figskip\rfloat{⸨store-nd@⸩}
+\begin{lstlisting}
+¦ (define (find a)
+¦   (do σ ← get-store
+¦       (for/monad+ ([v (σ a)])
+¦         (return v))))
+¦ (define (ext a v)
+¦   (update-store
+¦     (λ (σ) (σ a (if (∈ a σ) 
+¦                     (set-add (σ a) v) 
+¦                     (set v))))))
+\end{lstlisting}
+\caption{Abstracting Allocation: 0CFA}
+\label{f:0cfa-abs}
+\end{figure}
+
+By linking these components together with the same monad stack from
+Section~\ref{s:base}, we obtain an interpreter that loses precision whenever
+variables are bound to multiple values.  For example, this program
+binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and therefore
+produces both answers when run:
+ℑ⁅
+¦ > (let f (λ (x) x)
+¦     (let _ (f 0) (f 1)))]
+ℑ,
+¦ '((0 . ((x 1 0) (f ((λ (x) x) . ()))))
+¦   (1 . ((x 1 0) (f ((λ (x) x) . ())))))
+ℑ⁆
+
+We've now taken care of making a sound, finite abstraction of the
+space of all closures that arise during evaluation.  It would seem we
+are very close to having a sound, total abstract interpretation
+function.
+
