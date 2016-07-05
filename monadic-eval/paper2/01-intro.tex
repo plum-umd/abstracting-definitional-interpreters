@@ -1,7 +1,7 @@
 \section{Introduction}
 
-In his landmark paper, \emph{Definitional interpreters for higher-order
-programming languages}~\cite{dvanhorn:reynolds-acm72}, Reynolds observed that
+In his landmark paper, \emph{Definitional Interpreters for Higher-order
+Programming Languages}~\cite{dvanhorn:reynolds-acm72}, Reynolds observed that
 when a programming language is defined by way of an interpreter, it is possible
 to inherit semantic characteristics of the defining metalanguage. For example,
 it is possible to define a definitional interpreter which is call-by-value when
@@ -21,9 +21,9 @@ discover the following:
 \end{itemize}
 Furthermore, we contribute:
 \begin{itemize}
-\item a systematic methodology for designing abstract interpreters via
+\item A systematic methodology for designing abstract interpreters via
   definitional interpreters; and
-\item a soundness framework establishing the correctness of abstract
+\item A soundness framework establishing the correctness of abstract
   interpreters defined in definitional style.
 \end{itemize}
 
@@ -44,13 +44,13 @@ We bridge this gap, providing the first framework for program analysis of
 higher-order languages which builds upon big-step semantics and their
 corresponding definitional interpreters, which are compositional by nature. 
 
-Our key insights are 1) to design definitional interpreters in monadic,
-open-recursive style (§~\ref{s:interp} and~\ref{s:closures}), and 2) the design
-of a novel fixpoint algorithm tailored specifically to the setting of
-higher-order definitional interpreters (§~\ref{s:cache}
-and~\ref{s:fixing-cache}). The extensible nature of the interpreter allows us
-to recover a wide-range of analyses through its instantiation, including
-widening techniques (§~\ref{s:widening}), precision preserving abstractions
+Our key insights are to design definitional interpreters in monadic,
+open-recursive style (§~\ref{s:interp} and~\ref{s:closures}), and to design a
+novel fixpoint algorithm tailored specifically to the setting of higher-order
+definitional interpreters (§~\ref{s:cache} and~\ref{s:fixing-cache}). The
+extensible nature of the interpreter allows us to recover a wide-range of
+analyses through its instantiation, including widening techniques
+(§~\ref{s:widening}), precision preserving abstractions
 (§~\ref{s:alt-abstraction}), and symbolic execution for program verification
 (§~\ref{s:symbolic}). Our implementation is freely available through a suite of
 embedded languages in Racket (§~\ref{s:try-it}). Finally, we prove the approach

@@ -3,61 +3,61 @@
 In recent years, there has been considerable effort in the systematic
 construction of abstract interpreters for higher-order languages using abstract
 machines---first-order transition systems---as a semantic basis.  The so-called
-\emph{abstracting abstract machines} (AAM) approach to abstract
+\emph{Abstracting Abstract Machines} (AAM) approach to abstract
 interpretation~\cite{dvanhorn:VanHorn2010Abstracting} is a recipe for
-transforming a machine semantics into an easily abstractable form. There are a
-few essential elements to the transformation:
-
+transforming a machine semantics into an easily abstractable form. The
+transformation includes the following ingredients:
 \begin{itemize}
-\item allocating continuations in the store
-\item allocated variable bindings in the store
-\item using a store that maps addresses to \emph{sets} of values
-\item interpreting store updates as a join
-\item interpreting store dereference as a non-deterministic choice
+\item Allocating continuations in the store;
+\item Allocated variable bindings in the store;
+\item Using a store that maps addresses to \emph{sets} of values;
+\item Interpreting store updates as a join; and
+\item Interpreting store dereference as a non-deterministic choice.
 \end{itemize}
-
-These transformations are semantics-preserving as the original and derived
-machines operate in a lock-step correspondence.  But the real value of the
-derived semantics stems from the fact that it's possible to turn the derived
-machine into an abstract interpreter with two simple steps:
-
+These transformations are semantics-preserving due to the original and derived
+machines operating in a lock-step correspondence.  After transforming the
+semantics in this way, a \emph{computable} abstract interpreter is achieved by:
 \begin{itemize}
-\item bounding store allocation to a finite set of addresses
-\item widening base values to some abstract domain
+\item Bounding store allocation to a finite set of addresses; and
+\item Widening base values to some abstract domain.
 \end{itemize}
-
-Moreover, the soundness of the resulting abstraction is self-evident and easily
-proved.
+After performing these transformation, the soundness and computability of the
+resulting abstract interpreter are then self-evident and easily proved.
 
 The AAM approach has been applied to a wide variety of languages and
-applications, and given the success of the AAM approach, it's natural to wonder
-what is essential about the low-level machine basis of the semantics and
-whether a similar approach is possible with a higher-level formulation of the
-semantics such as a compositional evaluation function.
+applications, and given the success of the AAM approach it's natural to wonder
+what is essential about the low-level machine basis of the approach. It is not
+at all clear whether a similar approach is possible with a higher-level
+formulation of the semantics, such as a compositional evaluation function, or
+so-called big-step semantics.
 
-This paper shows that the essence of the AAM approach can be put on a
-high-level semantic basis.  We show that compositional evaluators, written in
-monadic style can express similar abstractions to that of AAM.  Moreover, we
-show that the high-level semantics offers a number of benefits not available to
-the machine model.  
+This paper shows that the essence of the AAM approach can be applied to a
+high-level semantic basis.  We show that compositional evaluators written in
+monadic style can express similar abstractions to that of AAM, and like AAM,
+the design remains systematic.  Moreover, we show that the high-level semantics
+offers a number of benefits not available to the machine model.  
 
-First, as we will see, the definitional interpreter approach is not formulated
-as a transformation on the semantics itself, but rather uses alternative
-notions of a monad to express the ``abstracting'' transformations.  This means
-the concrete and abstract interpreters for a language can share large parts of
-their implementation; there is just one interpreter with a multiplicity of
-interpretations.
+\begin{figure} %{-{ f:syntax
+\begin{alignat*}{4}
+   e ∈ &&\mathrel{}   exp ⩴ &\mathrel{} 𝔥⸨(vbl⸩\ x𝔥⸨)⸩         &\hspace{3em} [⦑\emph{variable}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩         &\hspace{3em} [⦑\emph{number}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(lam⸩\ x\ 𝔥⸨)⸩       &\hspace{3em} [⦑\emph{lambda}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(ifz⸩\ e\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{conditional}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op1⸩\ u\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{unary op}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{binary op}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{application}⦒]
+\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(lrc⸩\ x\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{letrec}⦒]
+\\ x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵        &\hspace{3em} [⦑\emph{variable names}⦒]
+\\ u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵           &\hspace{3em} [⦑\emph{unary prim}⦒]
+\\ b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵        &\hspace{3em} [⦑\emph{binary prim}⦒]
+\end{alignat*}
+\caption{Programming Language Syntax}
+\label{f:syntax}
+\end{figure} %}-}
 
-Second, there is a rich body of work and many tools and techniques for
-constructing \emph{extensible} interpreters, all of which applies to high-level
-semantics, not machines.  By putting abstract interpretation for higher-order
-languages on a high-level semantic basis, we can bring these results to bear on
-the construction of extensible abstract interpreters.  In particular, we use
-\emph{monad transformers} to build re-usable components for mixing and matching
-the constiuent parts of an abstract interpreter.
-
-Finally, using definitional interpreters for abstract interpretation satisfies
-an intellectual itch that asks whether it can be done at all.  In solving this
-technical challenge, we discover a pleasant surprise about the definitional
-interpreter approach: it is inherently ``pushdown.''  Under the interpreter
-approach, the property follows for free as a gift from the metalanguage.
+There is a rich body of work concerning tools and techniques for
+\emph{extensible} interpreters, all of which applies to high-level semantics.
+By putting abstract interpretation for higher-order languages on a high-level
+semantic basis, we can bring these results to bear on the construction of
+extensible abstract interpreters in ways that were not available to the
+small-step machine world.
