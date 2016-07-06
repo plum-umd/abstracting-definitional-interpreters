@@ -120,7 +120,7 @@ implementation.}
 ¦     [(list '+ n₀ n₁) (return (+ n₀ n₁))]
 ¦     [(list '- n₀ n₁) (return (- n₀ n₁))]
 ¦     [(list '* n₀ n₁) (return (* n₀ n₁))]
-¦     [(list 'quotient n₀ n₁)
+¦     [(list '/ n₀ n₁)
 ¦      (if (= 0 n₁)
 ¦          fail
 ¦          (return (quotient n₀ n₁)))]))
@@ -374,7 +374,7 @@ set of all numbers. Abstract numbers are introduced by an alternative
 interpretation of primitive operations, given in Figure~\ref{f:abs-delta},
 which simply produces ⸨'N⸩ in all cases. 
 
-Some care must be taken in the abstract interpretation of ⸨'quotient⸩. If the
+Some care must be taken in the abstract interpretation of ⸨'/⸩. If the
 denominator is the abstract number ⸨'N⸩, then it is possible the program could
 fail as a result of divide-by-zero, since ⸨0⸩ is contained in the
 representation of ⸨'N⸩. Therefore there are \emph{two} possible answers when
@@ -399,9 +399,9 @@ returns both true and false on ⸨'N⸩.
 ¦     [(list '+ n₀ n₁) (return 'N)]
 ¦     [(list '- n₀ n₁) (return 'N)]
 ¦     [(list '* n₀ n₁) (return 'N)]
-¦     [(list 'quotient n₀ (? number? n₁))
+¦     [(list '/ n₀ (? number? n₁))
 ¦      (if (= 0 n₁) fail (return 'N))]
-¦     [(list 'quotient n₀ 'N)
+¦     [(list '/ n₀ 'N)
 ¦      (mplus fail (return 'N))]))
 ¦ (define (zero? v)
 ¦   (match v
