@@ -14,7 +14,7 @@
 ¦             ,(? number? n₂)) (return (- n₁ n₂))]
 ¦     [`(*    ,(? number? n₁)
 ¦             ,(? number? n₂)) (return (* n₁ n₂))]
-¦     [`(quotient ,(? number? n₁) ,(? number? n₂))
+¦     [`(/ ,(? number? n₁) ,(? number? n₂))
 ¦      (if (= 0 n₂)
 ¦          fail
 ¦          (return (quotient n₁ n₂)))]
@@ -23,9 +23,9 @@
 ¦     [`(+ ,_ ,_) (return 'N)]
 ¦     [`(- ,_ ,_) (return 'N)]
 ¦     [`(* ,_ ,_) (return 'N)]
-¦     [`(quotient ,_ ,(? number? n₂))
+¦     [`(/ ,_ ,(? number? n₂))
 ¦      (if (= 0 n₂) fail (return 'N))]
-¦     [`(quotient ,_ ,_)
+¦     [`(/ ,_ ,_)
 ¦      (mplus (return 'N) fail)]))
 ¦ (define (zero? v)
 ¦   (match v
@@ -66,7 +66,7 @@ of primitive operations and store joins.
 Figure~\ref{f:pres-delta} defines two new components:
 ⸨precise-δ@⸩ and ⸨store-crush@⸩.  The first is yet
 another interpretation of the primitive operations.  The
-distinguishing feature of this varaint of ⸨δ⸩ is that it is
+distinguishing feature of this variant of ⸨δ⸩ is that it is
 \emph{precision preserving}.  Unlike ⸨δ^@⸩, it does not
 introduce abstraction, it merely propagates it.  So if you add two
 concrete numbers together, you will get a concrete number.  But if you
@@ -84,10 +84,10 @@ strategy for joining values into the store.  Using the precise
 an infinite number of base values could be written into a single store
 set.  What ⸨store-crush@⸩ does is widen base values to
 ⸨'N⸩ whevener there are multiple concrete numbers in a store
-location.  Used together, it should be clear that termination is
-ensured since there's no way to write an infinite set of values in a
+location.  Used together, this seems to ensure termination
+since there is no way to write an infinite set of values in a
 store location (and there are still a finite number of addresses due
-to ⸨alloc^⸩).  While still decidable, this abstraction offers a
+to ⸨alloc^⸩).  This abstraction offers a
 high-level of precision.  For example, ``straight-line'' arithmetic
 operations are computed with full precision:
 ℑ⁅
@@ -105,15 +105,47 @@ It's only when the approximation of binding structure comes in to
 contact with base values that we see a loss in precision:
 ℑ⁅
 ¦ > (let f (λ (x) x)
-¦     (* (f 5) (f 5)))]
+¦     (* (f 5) (f 5)))
 ℑ,
 '(N)
 ℑ⁆
+This combination of ⸨precise-δ@⸩ and ⸨store-crush@⸩ allows termination
+for most programs, but still not all.
+In the following example, ⸨id⸩ is eventually applied to a widened argument ⸨'N⸩,
+which makes both conditional branches reachable.
+The function returns ⸨0⸩ in the base case,
+which is propagated to the recursive call and given to ⸨add1⸩,
+which yields the concrete answer ⸨1⸩.
+This results in a cycle where ⸨add1⸩ returns ⸨2⸩, ⸨3⸩, ⸨4⸩
+when applied to ⸨1⸩, ⸨2⸩, ⸨3⸩, etc.
+ℑ⁅
+¦ > (rec id (λ (n)
+¦             (if0 n 0 (add1 (id (sub1 n)))))
+¦     (id 3))]
+ℑ,
+¦ timeout
+ℑ⁆
+To ensure termination for all programs, we assume all references
+to primitive operations are $η$-expanded, so that store-allocations also take place
+at primitive applications, ensuring widening at repeated bindings.
+The above program terminates with this desugaring:
+ℑ⁅
+¦ > (rec id
+¦        (λ (n)
+¦         (if0 n
+¦              0
+¦              ((λ (i) (add1 i))
+¦               (id ((λ (j) (sub1 j)) n)))))
+¦     (id 3))]
+ℑ,
+¦ '(0 N)
+ℑ⁆
+
 
 If this sets off worries about non-termination, try to construct a
 program that computes an infinite set of numbers with a finite number
 of variable bindings over the life of the program.  Hint: you won't be
-able to.  (This last example suggests an easy refinement to the
+able to.  (The second last example suggests an easy refinement to the
 ⸨store-crush@⸩ strategy: only widen when \emph{different} base
 values are written to a shared location.  We leave this as an easy
 exercise for the reader.)
