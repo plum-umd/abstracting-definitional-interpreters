@@ -383,7 +383,7 @@ returns both true and false on ⸨'N⸩.
 \rfloat{⸨monad^@⸩}
 \begin{flalign*}
                   & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)))))⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨δ^@⸩}
 \begin{lstlisting}
@@ -425,7 +425,7 @@ an evaluator that produces a set of results:
 If we link ⸨δ^@⸩ with the \emph{tracing} monad stack plus non-determinism:
 \begin{alignat*}{1}
                  & 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣
-\\[\monadgobble] & ␣␣𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)))))⸩
+\\[\monadgobble] & ␣␣𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
 \end{alignat*}
 we get an evaluator that produces sets of traces:
 ℑ⁅
@@ -439,11 +439,11 @@ we get an evaluator that produces sets of traces:
 ¦        ((add1 0) () ())    (0 () ())    (4 () ())))
 ℑ⁆
 
-It should be clear that the interpreter will only ever see a finite set of
-numbers (including ⸨'N⸩), but it's definitely not true that the interpreter
-halts on all inputs.  First, it's still possible to generate an infinite number
-of closures.  Second, there's no way for the interpreter to detect when it sees
-a loop.  To make a terminating abstract interpreter requires tackling both.  We
+It is clear that the interpreter will only ever see a finite set of numbers
+(including ⸨'N⸩), but it's definitely not true that the interpreter halts on
+all inputs.  First, it's still possible to generate an infinite number of
+closures.  Second, there's no way for the interpreter to detect when it sees a
+loop.  To make a terminating abstract interpreter requires tackling both.  We
 look next at abstracting closures.
 
 \subsection{Abstracting Closures}
@@ -473,8 +473,7 @@ allocated, otherwise it maps the address to a singleton set.
 \begin{figure} %{-{
 \rfloat{⸨alloc^@⸩}
 \begin{lstlisting}
-(define (alloc x)
-  (return x))
+¦ (define (alloc x) (return x))
 \end{lstlisting}
 \figskip\rfloat{⸨store-nd@⸩}
 \begin{lstlisting}

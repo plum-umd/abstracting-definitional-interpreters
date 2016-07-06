@@ -8,11 +8,8 @@
 ¦     [`(add1 ,(? number? n))  (return (add1 n))]
 ¦     [`(+    ,(? number? n₁)
 ¦             ,(? number? n₂)) (return (+ n₁ n₂))]
-¦     ...
 ¦     [`(add1 ,_) (return 'N)]
-¦     [`(+ ,_ ,_) (return 'N)]
-¦     ...
-¦     ))
+¦     [`(+ ,_ ,_) (return 'N)] ... ))
 ¦ (define (zero? v)
 ¦   (match v
 ¦     ['N (mplus (return #t) (return #f))]
@@ -27,17 +24,14 @@
 ¦ (define (number*? n) (or (eq? 'N n) (number? n)))
 ¦ (define (crush v vs)
 ¦   (if (number*? v)
-¦       (set-add 
-¦         (for/set ([v* vs] #:unless (number*? v*)) 
-¦           v*) 
-¦         'N)
+¦       (set-add (for/set ([v* vs] #:unless (number*? v*)) 
+¦                  v*) 
+¦                'N)
 ¦       (set-add vs v)))
 ¦ (define (ext a v)
-¦   (update-store
-¦    (λ (σ)
-¦      (if (∈ a σ)
-¦          (σ a (crush v (σ a)))
-¦          (σ a (set v))))))
+¦   (update-store (λ (σ) (if (∈ a σ)
+¦                            (σ a (crush v (σ a)))
+¦                            (σ a (set v))))))
 \end{lstlisting}
 \caption{An Alternative Abstraction for Precise Primitives}
 \label{f:pres-delta}
@@ -112,45 +106,36 @@ uniquely precise abstract interpreter.
 
 \begin{figure} %{-{
 \rfloat{⸨symbolic-monad@⸩}
-\begin{lstlisting}
-¦ (define-monad
-¦   (ReaderT (FailT (StateT (StateT (NondetT ID))))))
-\end{lstlisting}
+\begin{flalign*}
+                  & 𝔥⸨(define-monad⸩
+  & \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩
+\end{flalign*}
 \figskip\rfloat{⸨ev-symbolic@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-symbolic ev₀) ev) e)
-¦   (match e
-¦     [(sym x) (return x)]
-¦     [e       ((ev₀ ev) e)]))
+¦   (match e [(sym x) (return x)]
+¦            [e       ((ev₀ ev) e)]))
 \end{lstlisting}
 \figskip\rfloat{⸨δ-symbolic@⸩}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
-¦     ...
 ¦     [(list '/ v₀ v₁)
 ¦      (do z? ← (zero? v₁)
-¦          (cond
-¦           [z? fail]
-¦           [(and (number? v₀) (number? v₁))
-¦            (return (/ v₀ v₁))]
-¦           [else
-¦            (return `(/ ,v₀ ,v₁))]))]
-¦     [(list '¬ 0) 1]
-¦     ...
-¦     ))
+¦          (cond [z? fail]
+¦                [(and (number? v₀) (number? v₁))
+¦                 (return (/ v₀ v₁))]
+¦                [else (return `(/ ,v₀ ,v₁))]))]
+¦     [(list '¬ 0) 1] ... ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
 ¦       (match v
-¦         [(? number? n) (return (= 0 n))]
-¦         [v #:when (∈ v φ) (return #t)]
+¦         [(? number? n)          (return (= 0 n))]
+¦         [v #:when (∈ v φ)       (return #t)]
 ¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
-¦         [`(¬ ,v′) (do a ← (zero? v′)
-¦                       (return (not a)))]
-¦         [v (mplus (do (refine v)
-¦                       (return #t))
-¦                   (do (refine `(¬ ,v))
-¦                       (return #f)))])))
+¦         [`(¬ ,v′) (do a ← (zero? v′) (return (not a)))]
+¦         [v (mplus (do (refine v)       (return #t))
+¦                   (do (refine `(¬ ,v)) (return #f)))])))
 \end{lstlisting}
 \caption{Symbolic Execution Variant}
 \label{f:symbolic}

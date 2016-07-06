@@ -39,13 +39,12 @@ the algorithm.
 \rfloat{⸨monad-cache@⸩}
 \begin{flalign*}
                   & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-cache⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-cache⸣\ 𝔥⸨ID)))))))⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID)))))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨ev-cache@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-cache ev₀) ev) e)
-¦   (do ρ ← ask-env
-¦       σ ← get-store
+¦   (do ρ ← ask-env  σ ← get-store
 ¦       ς ≔ (list e ρ σ)
 ¦       ¢⸢out⸣ ← get-cache-out
 ¦       (if (∈ ς ¢⸢out⸣)
@@ -58,9 +57,8 @@ the algorithm.
 ¦               v  ← ((ev₀ ev) e)
 ¦               σ′ ← get-store
 ¦               v×σ′ ≔ (cons v σ′)
-¦               (update-cache-out
-¦                 (λ (¢⸢out⸣) 
-¦                   (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
+¦               (update-cache-out (λ (¢⸢out⸣) 
+¦                 (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
 ¦               (return v)))))
 \end{lstlisting}
 \caption{Co-inductive Caching Algorithm}
@@ -106,8 +104,7 @@ all of which are finite.
 \rfloat{⸨fix-cache@⸩}
 \begin{lstlisting}
 ¦ (define ((fix-cache eval) e)  
-¦   (do ρ ← ask-env
-¦       σ ← get-store
+¦   (do ρ ← ask-env  σ ← get-store
 ¦       ς ≔ (list e ρ σ)
 ¦       ¢⁺ ← (mlfp (λ (¢) 
 ¦              (do (put-cache-out ∅-map)

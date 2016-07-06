@@ -46,20 +46,15 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
-¦     ...
 ¦     [(list '/ v₀ v₁)
 ¦      (do z? ← (zero? v₁)
 ¦          (cond [z? fail]
 ¦                [(member 'N (list v₀ v₁))
-¦                 (return 'N)]
-¦                ...))])]
-¦     ...
-¦     ))
+¦                 (return 'N)] ... ))])] ... ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
-¦       (match v
-¦         ['N (mplus (return #t) (return #f))]
-¦         ...)))
+¦       (match v 
+¦         ['N (mplus (return #t) (return #f))] ... )))
 \end{lstlisting}
 \caption{Symbolic Execution with Abstract Numbers}
 \label{f:symbolic-widen}
