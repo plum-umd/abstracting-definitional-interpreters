@@ -5,7 +5,7 @@
 In this section we formalize our approach to designing static analyzers via
 definitional interpreters. The development begins with a ``ground truth''
 big-step semantics and concludes with the fixpoint iteration strategy described
-in Section~\ref{s:fixing-cache}, which we prove sound w.r.t. a synthesized
+in Section~\ref{s:cache}, which we prove sound w.r.t. a synthesized
 abstract semantics. The design is systematic, and applies to arbitrary
 programming languages described via big-step operational semantics. We
 demonstrate the systematic process as applied to a subset of the language
@@ -532,11 +532,11 @@ The proof follows by composing Theorems~1-4.
 
 \paragraph{Computing with Definitional Interpreters}
 
-The algorithm described in Section~\ref{s:fixing-cache} is a more efficient strategy for
-computing «\$⁺» using an extensible open-recursive definitional interpreter.
-This technique is general, and bridges the gap between the big-step abstract
-semantics formalized in this section and the definitional interpreters we wish
-to execute to obtain analyses.
+The algorithm described in Section~\ref{s:cache} is a more efficient strategy
+for computing «\$⁺» using an extensible open-recursive definitional
+interpreter. This technique is general, and bridges the gap between the
+big-step abstract semantics formalized in this section and the definitional
+interpreters we wish to execute to obtain analyses.
 
 An extensible open-recursive definitional interpreter for \lamif (the small
 language formalized in this section) has domain:

@@ -258,7 +258,7 @@ environment, and store.  The top-level evaluation function is then:
 \begin{figure} %{-{
 \rfloat{⸨trace-monad@⸩}
 \begin{flalign*}
-          & 𝔥⸨(define-monad⸩
+            & 𝔥⸨(define-monad⸩
 & \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨ev-tell@⸩}

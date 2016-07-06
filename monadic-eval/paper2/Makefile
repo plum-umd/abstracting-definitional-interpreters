@@ -36,9 +36,12 @@ again:
 
 .PHONY: much
 much:
-	make again 
-	make again 
-	make again
+	touch main.tex
+	make
+	touch main.tex
+	make
+	touch main.tex
+	make
 
 .PHONY: clean
 clean:

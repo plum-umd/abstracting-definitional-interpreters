@@ -605,7 +605,13 @@ s/ᴠ/\\textsc{v}/g
 s/ᴡ/\\textsc{w}/g
 s/ʏ/\\textsc{y}/g
 s/ᴢ/\\textsc{z}/g
-s/é/\\'e/g
+s/À/\\`A/g
+s/Á/\\'A/g
+s/È/\\`E/g
+s/É/\\'E/g
+s/à/\\`a/g
+s/á/\\'a/g
 s/è/\\`e/g
+s/é/\\'e/g
 s/ö/\\"o/g
 s/æ/\\ae/g

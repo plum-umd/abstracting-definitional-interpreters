@@ -47,17 +47,16 @@ corresponding definitional interpreters, which are compositional by nature.
 Our key insights are to design definitional interpreters in monadic,
 open-recursive style (§~\ref{s:interp}), and to design a
 novel fixpoint algorithm tailored specifically to the setting of higher-order
-definitional interpreters (§~\ref{s:cache} and~\ref{s:fixing-cache}). The
-extensible nature of the interpreter allows us to recover a wide-range of
-analyses through its instantiation, including widening techniques
-(§~\ref{s:widening}), precision preserving abstractions
-(§~\ref{s:alt-abstraction}), and symbolic execution for program verification
-(§~\ref{s:symbolic}). Our implementation is freely available through a suite of
-embedded languages in Racket (§~\ref{s:try-it}). Finally, we prove the approach
-sound w.r.t. a derived big-step collecting and abstract semantics
-(§~\ref{s:formalism}), where the key insight in the formalism is to model not
-only standard big-step \emph{evaluation} relations, but also big-step
-\emph{reachability} relations.
+definitional interpreters (§~\ref{s:cache}). The extensible nature of the
+interpreter allows us to recover a wide-range of analyses through its
+instantiation, including widening techniques (§~\ref{s:widening}), precision
+preserving abstractions (§~\ref{s:alt-abstraction}), and symbolic execution for
+program verification (§~\ref{s:symbolic}). Our implementation is freely
+available through a suite of embedded languages in Racket (§~\ref{s:try-it}).
+Finally, we prove the approach sound w.r.t. a derived big-step collecting and
+abstract semantics (§~\ref{s:formalism}), where the key insight in the
+formalism is to model not only standard big-step \emph{evaluation} relations,
+but also big-step \emph{reachability} relations.
 
 \paragraph{Pushdown Precision in Program Analysis}
 A common problem with traditional approaches to control flow analysis is the

@@ -42,9 +42,8 @@ semantics for doing pushdown analysis quite similar in spirit to the approach
 presented here.  One key difference is that Big CFA2 fixes a particular coarse
 abstraction of base values and closures---for example, both branches of a
 conditional are always evaluated.  Consequently, it only uses a single
-iteration of the abstract evaluation function, similar to the \emph{unsound}
-approach of Section~\ref{s:cache} and avoids the need for the cache-based
-fixed-point of Section~\ref{s:fixing-cache}.  We don't believe Big CFA2 as
+iteration of the abstract evaluation function, and avoids the need for the
+cache-based fixed-point of Section~\ref{s:cache}.  We don't believe Big CFA2 as
 stated is unsound, however if the underlying abstractions were tightened, it
 appears it would run in to the same issues identified here.
 

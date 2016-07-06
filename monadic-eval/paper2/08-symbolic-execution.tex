@@ -97,13 +97,11 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 
 \subsection{From Symbolic Execution to Verification}
 
-Traditional symbolic executors mainly aim to find bugs
-and provide no termination guarantee.
-We can apply abstracting units presented in previous sections,
-namely base value widening (Section~\ref{s:base}), finite allocation
-(Section~\ref{s:closures}), caching and fixing (Sections~\ref{s:cache}
-and~\ref{s:fixing-cache}) to turn a symbolic execution into a sound,
-path-sensitive program verification.
+Traditional symbolic executors mainly aim to find bugs and provide no
+termination guarantee. We can apply abstracting units presented in previous
+sections, namely base value widening and finite allocation
+(Section~\ref{s:base}), and caching and fixing (Section~\ref{s:cache}) to turn
+a symbolic execution into a sound, path-sensitive program verification.
 
 Operations on symbolic values introduce a new source of infinite configurations
 by building up new symbolic values.
