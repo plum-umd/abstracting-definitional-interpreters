@@ -104,8 +104,7 @@ which yields the concrete answer ⸨1⸩.
 This results in a cycle where ⸨add1⸩ returns ⸨2⸩, ⸨3⸩, ⸨4⸩
 when applied to ⸨1⸩, ⸨2⸩, ⸨3⸩, etc.
 ℑ⁅
-¦ > (rec id (λ (n)
-¦             (if0 n 0 (add1 (id (sub1 n)))))
+¦ > (rec id (λ (n) (if0 n 0 (add1 (id (sub1 n)))))
 ¦     (id 3))
 ℑ,
 ¦ timeout
@@ -115,12 +114,9 @@ to primitive operations are $η$-expanded, so that store-allocations also take p
 at primitive applications, ensuring widening at repeated bindings.
 The above program terminates with this desugaring:
 ℑ⁅
-¦ > (rec id (λ (n)
-¦             (if0 n
-¦                  0
-¦                  ((λ (i) (add1 i))
-¦                   (id ((λ (j) (sub1 j)) n)))))
-¦     (id 3))]
+¦ > (rec id (λ (n) (if0 n 0 ((λ (i) (add1 i))
+¦                            (id ((λ (j) (sub1 j)) n)))))
+¦     (id 3))
 ℑ,
 ¦ '(0 N)
 ℑ⁆

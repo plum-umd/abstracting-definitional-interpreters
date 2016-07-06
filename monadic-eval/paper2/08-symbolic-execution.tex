@@ -35,9 +35,8 @@ result ⸨3⸩ and division-by-0 error are not feasible:
 ℑ⁅
 ¦ > (if0 'x (if0 'x 2 3) (/ 5 'x))
 ℑ,
-¦ (set
-¦    (cons '(/ 5 x) (set '(¬ x)))
-¦    (cons 2 (set 'x)))
+¦ (set (cons '(/ 5 x) (set '(¬ x)))
+¦      (cons 2 (set 'x)))
 ℑ⁆
 
 A scaled up symbolic executor can have ⸨zero?⸩ calling out
