@@ -35,27 +35,6 @@ formalize this co-inductive process in Section~\ref{s:formalism} and prove it
 sound; in this section we instead focus on the intuition and implementation for
 the algorithm.
 
-The co-inductive caching algorithm is shown in Figure~\ref{f:caching}, along
-with the monad transformer stack ⸨monad-cache@⸩ which has two new components:
-⸨ReaderT⸩ for the input cache ⸨¢⸢in⸣⸩, and ⸨StateT+⸩ for the output cache
-⸨¢⸢out⸣⸩. We use a ⸨StateT+⸩ instead of ⸨WriterT⸩ monad transformer in the
-output cache so it can double as tracking the set of seen states. The ⸨+⸩ in
-⸨StateT+⸩ signifies that caches for multiple non-deterministic branches will be
-merged automatically, producing a set of results and a single cache, rather
-than a set of results paired with individual caches.
-
-In the algorithm, when a configuration ⸨ς⸩ is first encountered, we place an
-entry in the output cache mapping ⸨ς⸩ to «𝔥⸨(¢⸢in⸣⸩\ 𝔥⸨ς)⸩», which is the
-“oracle” result. Also, whenever we finish computing the result ⸨v×σ⸩ of
-evaluating a configuration ⸨ς⸩, we place an entry in the output cache mapping
-⸨ς⸩ to ⸨v×σ′⸩. Finally, whenever we reach a configuration ⸨ς⸩ for which a
-mapping in the output cache exists, we use it immediately, ⸨return⸩ing each
-result using the ⸨for/monad+⸩ iterator. Therefore, every “cache hit” on
-⸨¢⸢out⸣⸩ is in one of two possible states: 1) we have already seen the
-configuration, and the result is the oracle result, as desired; or 2) we have
-already computed the “improved” result (w.r.t. the oracle), and need not
-recompute it.
-
 \begin{figure} %{-{
 \rfloat{⸨monad-cache@⸩}
 \begin{flalign*}
@@ -88,39 +67,92 @@ recompute it.
 \label{f:caching}
 \end{figure} %}-}
 
-To compute the least fixed-point ⸨¢⁺⸩ for the evaluator ⸨ev-cache⸩ we perform a
-standard Kleene fixpoint iteration starting from «∅», the bottom element for
-the cache, as shown in Figure~\ref{f:fixing}. Termination of the least
-fixed-point is justified by the monotonicity of the evaluator (it always
-returns an “improved” oracle), and the finite domain of the cache, which maps
-abstract configurations to pairs of values and stores, all of which are finite.
+The co-inductive caching algorithm is shown in Figure~\ref{f:caching}, along
+with the monad transformer stack ⸨monad-cache@⸩ which has two new components:
+⸨ReaderT⸩ for the input cache ⸨¢⸢in⸣⸩, and ⸨StateT+⸩ for the output cache
+⸨¢⸢out⸣⸩. We use a ⸨StateT+⸩ instead of ⸨WriterT⸩ monad transformer in the
+output cache so it can double as tracking the set of seen states. The ⸨+⸩ in
+⸨StateT+⸩ signifies that caches for multiple non-deterministic branches will be
+merged automatically, producing a set of results and a single cache, rather
+than a set of results paired with individual caches.
 
-\begin{figure}
+In the algorithm, when a configuration ⸨ς⸩ is first encountered, we place an
+entry in the output cache mapping ⸨ς⸩ to «𝔥⸨(¢⸢in⸣⸩\ 𝔥⸨ς)⸩», which is the
+“oracle” result. Also, whenever we finish computing the result ⸨v×σ⸩ of
+evaluating a configuration ⸨ς⸩, we place an entry in the output cache mapping
+⸨ς⸩ to ⸨v×σ′⸩. Finally, whenever we reach a configuration ⸨ς⸩ for which a
+mapping in the output cache exists, we use it immediately, ⸨return⸩ing each
+result using the ⸨for/monad+⸩ iterator. Therefore, every “cache hit” on
+⸨¢⸢out⸣⸩ is in one of two possible states: 1) we have already seen the
+configuration, and the result is the oracle result, as desired; or 2) we have
+already computed the “improved” result (w.r.t. the oracle), and need not
+recompute it.
+
+To compute the least fixed-point ⸨¢⁺⸩ for the evaluator ⸨ev-cache⸩ we perform a
+standard Kleene fixpoint iteration starting from the empty map, the bottom
+element for the cache, as shown in Figure~\ref{f:fixing}.
+
+The algorithm runs the caching evaluator ⸨eval⸩ on the given program ⸨e⸩ from
+the initial environment and store. This is done inside of ⸨mlfp⸩, a monadic
+least fixed-point finder. After finding the least fixed-point, the final values
+and store for the initial configuration ⸨ς⸩ are extracted and returned.
+
+Termination of the least fixed-point is justified by the monotonicity of the
+evaluator (it always returns an “improved” oracle), and the finite domain of
+the cache, which maps abstract configurations to pairs of values and stores,
+all of which are finite.
+
+\begin{figure} %{-{
 \rfloat{⸨fix-cache@⸩}
 \begin{lstlisting}
 ¦ (define ((fix-cache eval) e)  
 ¦   (do ρ ← ask-env
 ¦       σ ← get-store
 ¦       ς ≔ (list e ρ σ)
-¦       (mlfp (λ (Σ) (do (put-¢ ∅-map)
-¦                        (put-store σ)
-¦                        (local-⊥ Σ (eval e))
-¦                        get-¢)))
-¦       Σ ← get-¢
-¦       (for/monad+ ([v×σ (Σ ς)])
+¦       ¢⁺ ← (mlfp (λ (¢) 
+¦              (do (put-cache-out ∅-map)
+¦                  (put-store σ)
+¦                  (local-cache-in ¢ (eval e))
+¦                  get-cache-out)))
+¦       (for/monad+ ([v×σ (¢⁺ ς)])
 ¦         (do (put-store (cdr v×σ))
 ¦             (return (car v×σ))))))
 ¦ (define (mlfp f)
 ¦   (let loop ([x ∅-map])
 ¦     (do x′ ← (f x)
 ¦         (if (equal? x′ x)
-¦             (return (void))
+¦             (return x)
 ¦             (loop x′)))))
 \end{lstlisting}
 \caption{Finding Fixpoints in the Cache}
-\label{f:cache-fix}
-\end{figure}
+\label{f:fixing}
+\end{figure} %}-}
 
+With these peices in place we construct a complete interpreter:
+\begin{lstlisting}
+¦ (define (eval e)
+¦   (mrun ((fix-cache (fix (ev-cache ev))) e)))
+\end{lstlisting}
+When linked with ⸨δ^⸩ and ⸨alloc^⸩, this interpreter is
+a computable and sound abstraction of the original definitional interpreter:
+ℑ⁅
+¦ > (rec f (λ (x) (f x))
+¦     (f 0))
+ℑ,
+¦ '()
+ℑ;
+¦ > (rec f (λ (n) (if0 n 1 (* n (f (sub1 n)))))
+¦     (fact 5))
+ℑ,
+¦ '(N)
+ℑ;
+¦ > (rec f (λ (x) (if0 x 0 (if0 (f (sub1 x)) 2 3)))
+¦      (f (add1 0)))
+ℑ,
+¦ '(0 2 3)
+ℑ⁆
+
+% Let us now take stock of what we've got.
 % We use the following monad stack, which adds a ``cache'' component,
 % which will be a finite map from states to sets of values:
 % \begin{lstlisting}
