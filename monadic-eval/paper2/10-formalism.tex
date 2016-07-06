@@ -5,11 +5,11 @@
 In this section we formalize our approach to designing static analyzers via
 definitional interpreters. The development begins with a ``ground truth''
 big-step semantics and concludes with the fixpoint iteration strategy described
-in Section~\ref{s:cache}, which we prove sound w.r.t. a synthesized
-abstract semantics. The design is systematic, and applies to arbitrary
-programming languages described via big-step operational semantics. We
-demonstrate the systematic process as applied to a subset of the language
-described in Figure~\ref{f:syntax}, which we call \lamif.
+in Section~\ref{s:cache}, which we prove sound w.r.t. a synthesized abstract
+semantics and computable. The design is systematic, and applies to arbitrary
+developments using big-step operational semantics. We demonstrate the
+systematic process as applied to a subset of the language described in
+Figure~\ref{f:syntax}, which we call \lamif.
 
 \paragraph{Concrete Semantics}
 
@@ -23,29 +23,32 @@ time is modelled as a natural number and represents the number of steps of
 execution.
 
 \begin{figure} %{-{
-\begin{alignat*}{3}
-                n ∈ &&\mathrel{} lits \mathrel{\hphantom{≔}} & 
-\\[\mathgobble] x ∈ &&\mathrel{} vars \mathrel{\hphantom{≔}} & 
-\\[\mathgobble] b ∈ &&\mathrel{}  binop ≔ &\mathrel{} ❴⟬plus⟭, …❵ 
-\\[\mathgobble] e ∈ &&\mathrel{}    exp ⩴ &\mathrel{} n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,e) 
-\\[\mathgobble] ρ ∈ &&\mathrel{}    env ≔ &\mathrel{} var → addr⸤⊥⸥ 
-\\[\mathgobble] σ ∈ &&\mathrel{}  store ≔ &\mathrel{} addr → val⸤⊥⸥ 
-\\[\mathgobble] v ∈ &&\mathrel{}    val ⩴ &\mathrel{} n ∣ ⟨λx.e,ρ⟩ 
-\\[\mathgobble] ℓ ∈ &&\mathrel{}   addr ≔ &\mathrel{} var × time 
-\\[\mathgobble] τ ∈ &&\mathrel{}   time ≔ &\mathrel{} ℕ
+\begin{alignat*}{1}
+e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,e) 
+\end{alignat*}
+\begin{alignat*}{6}
+                n ∈&&\mathrel{} nums  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad ℓ ∈ &&\mathrel{}  addr ≔ &\mathrel{} var × time 
+\\[\mathgobble] x ∈&&\mathrel{} vars  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad σ ∈ &&\mathrel{} store ≔ &\mathrel{} addr → val⸤⊥⸥ 
+\\[\mathgobble] b ∈&&\mathrel{} binop                    ≔   &\mathrel{} ❴plus,…❵    &\quad\quad v ∈ &&\mathrel{}   val ⩴ &\mathrel{} n ∣ ⟨λx.e,ρ⟩ 
+\\[\mathgobble] τ ∈&&\mathrel{}  time                    ≔   &\mathrel{} ℕ           &\quad\quad ρ ∈ &&\mathrel{}   env ≔ &\mathrel{} var → addr⸤⊥⸥ 
 \end{alignat*}
 \caption{\lamif{} Syntactic Categories}
 \label{f:lamif-syntax}
 \end{figure} %}-}
 
-\begin{figure} %{-{
+\begin{figure*} %{-{
+\begin{flushright}[\emph{Concrete Evaluation}]\quad\fbox{«ρ,τ⊢e,σ⇓v,σ′»}\end{flushright}
 \begin{mathpar}
-
   \inferrule*[left=(Lit)]{ }{ρ , τ ⊢ n , σ ⇓ n , σ}
 
   \inferrule*[left=(Var)]{ }{ρ , τ ⊢ x , σ ⇓ σ(ρ(x)) , σ}
 
   \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}
+
+  \inferrule*[left=(Bin)]{
+  ρ , τ ⊢ e₁ , σ  ⇓ v₁ , σ₁ \\
+  ρ , τ ⊢ e₂ , σ₁ ⇓ v₂ , σ₂}
+  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}
 
   \inferrule*[left=(App),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -70,41 +73,19 @@ execution.
     ρ , τ ⊢ e₁ , σ  ⇓ n , σ₁ \\
     ρ , τ ⊢ e₃ , σ₁ ⇓ v , σ₂}
   {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
-
-  \inferrule*[left=(Bin)]{
-  ρ , τ ⊢ e₁ , σ  ⇓ v₁ , σ₁ \\
-  ρ , τ ⊢ e₂ , σ₁ ⇓ v₂ , σ₂}
-  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}
 \end{mathpar}
-\caption{\lamif{} Big-step Concrete Semantics}
-\label{f:lamif-concrete}
-\end{figure} %}-}
-
-\paragraph{Reachability}
-
-The primary limitation of using big-step semantics as a starting point for
-abstraction is that intermediate computations are not represented in the model.
-For example, consider the program that applies the identity function to an
-expression that loops, which we notate «Ω»:
-\[ (λx.x)(Ω) \]
-A big-step semantics can only describe results of terminating computations, and
-because this program never terminates, our big-step semantics relation says
-nothing about the behavior of the program. A good static analyzer will explore
-the behavior of «Ω» to (possibly) discover that it loops, but more importantly,
-to provide analysis results (like data-flow or side-effects) for intermediate
-computation states.
-
-The need to analyze intermediate states is the primary reason that big-step
-semantics are overlooked as a starting point for abstract interpretation. To
-remedy the situation, while remaining in a big-step setting, we introduce a
-big-step \emph{reachability semantics}, described by the relation «ρ,τ⊢e,σ⇑ς»
-shown in Figure~\ref{f:lamif-reachability}. Configurations «ς» are tuples
-«⟨e,ρ,σ,τ⟩», and are reachable when evaluation passes through the configuration
-at any point on its way to a final value, or during an infinite loop.
-
-\begin{figure} %{-{
+\begin{flushright}[\emph{Concrete Reachability}]\quad\fbox{«ρ,τ⊢e,σ⇑ς»}\end{flushright}
 \begin{mathpar}
   \inferrule*[left=(Refl)]{ }{ρ,τ⊢e,σ⇑⟨e,ρ,σ,τ⟩}
+
+  \inferrule*[left=(RBin1)]
+  {ρ,τ⊢e₁,σ⇑ς}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
+
+  \inferrule*[left=(RBin2)]
+  {  ρ,τ⊢e₁,σ⇓v₁,σ₁
+  \\ ρ,τ⊢e₂,σ₁⇑ς}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
 
   \inferrule*[left=(RApp1)]
    {ρ,τ⊢e₁,σ⇑ς}
@@ -142,20 +123,32 @@ at any point on its way to a final value, or during an infinite loop.
   {  ρ,τ⊢e₁,σ⇓n,σ₁
   \\ ρ,τ⊢e₃,σ₁⇑ς}
   {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
-
-  \inferrule*[left=(RBin1)]
-  {ρ,τ⊢e₁,σ⇑ς}
-  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
-
-  \inferrule*[left=(RBin2)]
-  {  ρ,τ⊢e₁,σ⇓v₁,σ₁
-  \\ ρ,τ⊢e₂,σ₁⇑ς}
-  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
-
 \end{mathpar}
-\caption{\lamif{} Big-step Reachability Semantics}
-\label{f:lamif-reachability}
-\end{figure} %}-}
+\caption{\lamif{} Big-step Concrete Evaluation and Reachability Semantics}
+\label{f:lamif-concrete}
+\end{figure*} %}-}
+
+\paragraph{Reachability}
+
+The primary limitation of using big-step semantics as a starting point for
+abstraction is that intermediate computations are not represented in the model.
+For example, consider the program that applies the identity function to an
+expression that loops, which we notate «Ω»:
+\[ (λx.x)(Ω) \]
+A big-step semantics can only describe results of terminating computations, and
+because this program never terminates, our big-step semantics relation says
+nothing about the behavior of the program. A good static analyzer will explore
+the behavior of «Ω» to (possibly) discover that it loops, but more importantly,
+to provide analysis results (like data-flow or side-effects) for intermediate
+computation states.
+
+The need to analyze intermediate states is the primary reason that big-step
+semantics are overlooked as a starting point for abstract interpretation. To
+remedy the situation, while remaining in a big-step setting, we introduce a
+big-step \emph{reachability semantics}, described by the relation «ρ,τ⊢e,σ⇑ς»
+shown in Figure~\ref{f:lamif-reachability}. Configurations «ς» are tuples
+«⟨e,ρ,σ,τ⟩», and are reachable when evaluation passes through the configuration
+at any point on its way to a final value, or during an infinite loop.
 
 The complete concrete semantics of an expression («e») under environment («ρ»),
 store («σ») and time («τ»), which we notate «⟦e⟧⸢bs⸣(ρ,σ,τ)», is then a pairing
@@ -197,12 +190,18 @@ denotation operator «∿{⟦b⟧}»:
 \[ ∿{⟦b⟧}(∿{v}₁,∿{v}₂) ≔ ❴⟦b⟧(v₁,v₂) ∣ v₁ ∈ ∿{v}₁ ∧ v₂ ∈ ∿{v}₂❵ \]
 
 \begin{figure*} %{-{
+\begin{flushright}[\emph{Collecting Evaluation}]\quad\fbox{«ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}′»}\end{flushright}
 \begin{mathpar}
   \inferrule*[left=(OLit)]{ }{ρ,τ⊢n,∿{σ}⇓❴n❵,∿{σ}}
 
   \inferrule*[left=(OVar)]{ }{ρ,τ⊢x,∿{σ}⇓∿{σ}(ρ(x)),∿{σ}}
 
   \inferrule*[left=(OLam)]{ }{ρ,τ⊢λx.e,∿{σ}⇓❴⟨λx.e,ρ⟩❵,∿{σ}}
+
+    \inferrule*[left=(OBin)]
+  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+  \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂}
+  {  ρ,τ⊢b(e₁,e₂),∿{σ}⇓∿{⟦b⟧}(∿{v}₁,∿{v}₂),∿{σ}₂}
 
   \inferrule*[left=(OApp),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -232,13 +231,19 @@ denotation operator «∿{⟦b⟧}»:
     {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
     \\ ρ,τ⊢e₃,∿{σ}₁⇓∿{v},∿{σ}₂}
     {  ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇓∿{v},∿{σ}₂}
-
-    \inferrule*[left=(OBin)]
-  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
-  \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂}
-  {  ρ,τ⊢b(e₁,e₂),∿{σ}⇓∿{⟦b⟧}(∿{v}₁,∿{v}₂),∿{σ}₂}
-
+\end{mathpar}
+\begin{flushright}[\emph{Collecting Reachability}]\quad\fbox{«ρ,τ⊢e,∿{σ}⇑∿{ς}»}\end{flushright}
+\begin{mathpar}
   \inferrule*[left=(ORefl)]{ }{ρ,τ⊢e,∿{σ}⇑⟨e,ρ,∿{σ},τ⟩}
+
+  \inferrule*[left=(ORBin1)]
+  {ρ,τ⊢e₁,∿{σ}⇑ς}
+  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}
+
+  \inferrule*[left=(ORBin2)]
+  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
+  \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
+  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}
 
   \inferrule*[left=(ORApp1)]
    {ρ,τ⊢e₁,∿{σ}⇑∿{ς}}
@@ -281,16 +286,6 @@ denotation operator «∿{⟦b⟧}»:
     {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
     \\ ρ,τ⊢e₃,∿{σ}₁⇑∿{ς}}
     {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}
-
-  \inferrule*[left=(ORBin1)]
-  {ρ,τ⊢e₁,∿{σ}⇑ς}
-  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}
-
-  \inferrule*[left=(ORBin2)]
-  {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
-  \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
-  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}
-
 \end{mathpar}
 \caption{Big-step Collecting Reachability Semantics}
 \label{f:lamif-collecting}
@@ -381,12 +376,18 @@ and «η(∿{ς})» are defined pointwise:
 \end{alignat*}
 
 \begin{figure*} %{-{
+\begin{flushright}[\emph{Abstract Evaluation}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′»}\end{flushright}
 \begin{mathpar}
   \inferrule*[left=(ALit)]{ }{♯{ρ},♯{τ}⊢n,♯{σ}⇓♯{η}(n),♯{σ}}
 
   \inferrule*[left=(AVar)]{ }{♯{ρ},♯{τ}⊢x,♯{σ}⇓♯{σ}(♯{ρ}(x)),♯{σ}}
 
   \inferrule*[left=(ALam)]{ }{♯{ρ},♯{τ}⊢λx.e,♯{σ}⇓♯{η}(⟨λx.e,♯{ρ}⟩),♯{σ}}
+
+    \inferrule*[left=(ABin)]
+    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+    \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂}
+    {  ♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇓♯{⟦b⟧}(♯{v}₁,♯{v}₂),♯{σ}₂}
 
   \inferrule*[left=(AApp),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -412,13 +413,19 @@ and «η(∿{ς})» are defined pointwise:
   {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
   \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇓♯{v},♯{σ}₂}
   {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
+\end{mathpar}
+\begin{flushright}[\emph{Abstract Reachability}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}»}\end{flushright}
+\begin{mathpar}
+  \inferrule*[left=(ARefl)]{ }{♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩}
 
-    \inferrule*[left=(ABin)]
-    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-    \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂}
-    {  ♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇓♯{⟦b⟧}(♯{v}₁,♯{v}₂),♯{σ}₂}
+  \inferrule*[left=(ARBin1)]
+  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑ς}
+  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
 
-    \inferrule*[left=(ARefl)]{ }{♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩}
+  \inferrule*[left=(ARBin2)]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
 
   \inferrule*[left=(ARApp1)]
   {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
@@ -457,16 +464,6 @@ and «η(∿{ς})» are defined pointwise:
     {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
     \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇑♯{ς}}
     {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARBin1)]
-  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑ς}
-  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARBin2)]
-  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
-
 \end{mathpar}
 \caption{Big-step Abstract Reachability Semantics}
 \label{f:lamif-abstract}

@@ -110,6 +110,52 @@ In fact, all programs terminate when using ⸨precise-δ@⸩, ⸨store-crush@⸩
 «η»-expanded primitives, which means we have a achieved a computable and
 uniquely precise abstract interpreter.
 
+\begin{figure} %{-{
+\rfloat{⸨symbolic-monad@⸩}
+\begin{lstlisting}
+¦ (define-monad
+¦   (ReaderT (FailT (StateT (StateT (NondetT ID))))))
+\end{lstlisting}
+\figskip\rfloat{⸨ev-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (((ev-symbolic ev₀) ev) e)
+¦   (match e
+¦     [(sym x) (return x)]
+¦     [e       ((ev₀ ev) e)]))
+\end{lstlisting}
+\figskip\rfloat{⸨δ-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (δ . ovs)
+¦   (match ovs
+¦     ...
+¦     [(list '/ v₀ v₁)
+¦      (do z? ← (zero? v₁)
+¦          (cond
+¦           [z? fail]
+¦           [(and (number? v₀) (number? v₁))
+¦            (return (/ v₀ v₁))]
+¦           [else
+¦            (return `(/ ,v₀ ,v₁))]))]
+¦     [(list '¬ 0) 1]
+¦     ...
+¦     ))
+¦ (define (zero? v)
+¦   (do φ ← get-path-cond
+¦       (match v
+¦         [(? number? n) (return (= 0 n))]
+¦         [v #:when (∈ v φ) (return #t)]
+¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
+¦         [`(¬ ,v′) (do a ← (zero? v′)
+¦                       (return (not a)))]
+¦         [v (mplus (do (refine v)
+¦                       (return #t))
+¦                   (do (refine `(¬ ,v))
+¦                       (return #f)))])))
+\end{lstlisting}
+\caption{Symbolic Execution Variant}
+\label{f:symbolic}
+\end{figure} %}-}
+
 Here we see one of the strengths of the extensible, definitional approach to
 abstract interpreters. The combination of added precision and widening is
 encoded quite naturally. In contrast, it's hard to imagine how such a
