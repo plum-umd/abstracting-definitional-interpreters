@@ -66,7 +66,7 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
-¦     ... ; TODO can't put comment in here...
+¦     ...
 ¦     [(list '/ v₀ v₁)
 ¦      (do z? ← (zero? v₁)
 ¦          (cond
@@ -76,7 +76,7 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 ¦           [else
 ¦            (return `(/ ,v₀ ,v₁))]))]
 ¦     [(list '¬ 0) 1]
-¦     ... ; TODO can't put comment in here...
+¦     ...
 ¦     ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
@@ -119,24 +119,20 @@ Tests on abstract number ⸨'N⸩ do not strengthen the path-condition.
 It is unsound to accumulate any assumption about ⸨'N⸩.
 
 \begin{figure}
-\rfloat{⸨δ-symbolic@⸩}
+\rfloat{⸨δ^-symbolic@⸩}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
-¦     ... ; TODO can't put comment in here...
+¦     ...
 ¦     [(list '/ v₀ v₁)
 ¦      (do z? ← (zero? v₁)
 ¦          (cond
 ¦           [z? fail]
 ¦           [else
 ¦            (match (list v₀ v₁)
-¦             [(list (? number? n₀) (? number? n₁))
-¦              (return (/ n₀ n₁))]
-¦             [(list _ ... 'N _ ...)
-¦              (return 'N)]
-¦             [(list v₀ v₁)
-¦              (return `(/ ,v₀ ,v₁))])]))]
-¦     ... ; TODO can't put comment in here...
+¦             [(list _ ... 'N _ ...) (return 'N)]
+¦             ...)]))]
+¦     ...
 ¦     ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
