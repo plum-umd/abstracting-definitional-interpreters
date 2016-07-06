@@ -40,16 +40,16 @@ offers a number of benefits not available to the machine model.
 \begin{figure} %{-{ f:syntax
 \begin{alignat*}{4}
    e ∈ &&\mathrel{}   exp ⩴ &\mathrel{} 𝔥⸨(vbl⸩\ x𝔥⸨)⸩         &\hspace{3em} [⦑\emph{variable}⦒]
-\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩         &\hspace{3em} [⦑\emph{number}⦒]
-\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(lam⸩\ x\ 𝔥⸨)⸩       &\hspace{3em} [⦑\emph{lambda}⦒]
-\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(ifz⸩\ e\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{conditional}⦒]
-\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op1⸩\ u\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{unary op}⦒]
-\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{binary op}⦒]
-\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{application}⦒]
-\\     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(rec⸩\ x\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{letrec}⦒]
-\\ x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵        &\hspace{3em} [⦑\emph{variable names}⦒]
-\\ u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵           &\hspace{3em} [⦑\emph{unary prim}⦒]
-\\ b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵        &\hspace{3em} [⦑\emph{binary prim}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩         &\hspace{3em} [⦑\emph{number}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(lam⸩\ x\ 𝔥⸨)⸩       &\hspace{3em} [⦑\emph{lambda}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(ifz⸩\ e\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{conditional}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op1⸩\ u\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{unary op}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{binary op}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{application}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(rec⸩\ x\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{letrec}⦒]
+\\[\mathgobble] x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵        &\hspace{3em} [⦑\emph{variable names}⦒]
+\\[\mathgobble] u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵           &\hspace{3em} [⦑\emph{unary prim}⦒]
+\\[\mathgobble] b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵        &\hspace{3em} [⦑\emph{binary prim}⦒]
 \end{alignat*}
 \caption{Programming Language Syntax}
 \label{f:syntax}

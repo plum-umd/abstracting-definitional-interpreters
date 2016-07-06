@@ -65,13 +65,11 @@ There are a few superficial aspects that deserve a quick note:
 environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
-
-% LAYOUT
 \begin{alignat*}{2}
-   𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
-\\        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
-\\ 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
-\\            𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
+                𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
+\\[\mathgobble]        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
+\\[\mathgobble] 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
+\\[\mathgobble]            𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
 \end{alignat*}
 Finally, there are two unconventional aspects worth noting.
 
