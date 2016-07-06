@@ -38,8 +38,8 @@ the algorithm.
 \begin{figure} %{-{
 \rfloat{⸨monad-cache@⸩}
 \begin{flalign*}
-            & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣
-& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-cache⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-cache⸣\ 𝔥⸨ID)))))))⸩
+                  & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-cache⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-cache⸣\ 𝔥⸨ID)))))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨ev-cache@⸩}
 \begin{lstlisting}

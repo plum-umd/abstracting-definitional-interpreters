@@ -105,8 +105,8 @@ implementation.}
 \begin{figure} %{-{
 \rfloat{⸨monad@⸩}
 \begin{flalign*}
-            & 𝔥⸨(define-monad⸩ 
-& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩ 
+                  & 𝔥⸨(define-monad⸩ 
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩ 
 & \end{flalign*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
@@ -256,8 +256,8 @@ environment, and store.  The top-level evaluation function is then:
 \begin{figure} %{-{
 \rfloat{⸨trace-monad@⸩}
 \begin{flalign*}
-            & 𝔥⸨(define-monad⸩
-& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
+                  & 𝔥⸨(define-monad⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨ev-tell@⸩}
 \begin{lstlisting}
@@ -340,7 +340,7 @@ of expressions that were not evaluated during the running of a program:
 \rfloat{⸨dead-monad@⸩}
 \begin{flalign*}
           & 𝔥⸨(define-monad⸩
-& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨ev-dead@⸩}
 \begin{lstlisting}
@@ -385,8 +385,8 @@ returns both true and false on ⸨'N⸩.
 \begin{figure} %{-{
 \rfloat{⸨monad^@⸩}
 \begin{flalign*}
-            & 𝔥⸨(define-monad⸩
-& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)))))⸩
+                  & 𝔥⸨(define-monad⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨δ^@⸩}
 \begin{lstlisting}
@@ -427,8 +427,8 @@ an evaluator that produces a set of results:
 ℑ⁆
 If we link ⸨δ^@⸩ with the \emph{tracing} monad stack plus non-determinism:
 \begin{alignat*}{1}
-           & 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣
-\\[-0.5em] & ␣␣𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)))))⸩
+                 & 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣
+\\[\monadgobble] & ␣␣𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)))))⸩
 \end{alignat*}
 we get an evaluator that produces sets of traces:
 ℑ⁅
