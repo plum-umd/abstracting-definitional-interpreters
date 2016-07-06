@@ -33,6 +33,22 @@ a pushdown abstract interpreter.  This mechanism is in turn reminiscent of
 Glück's use of memoization in an interpreter for two-way non-deterministic
 pushdown automata~\cite{local:gluck-schmidtfest13}.
 
+Caching recursive, non-deterministic functions is a well-studied problem in the
+functional logic programming community (there termed
+``tabling'')~\cite{local:tamaki1986old, local:bol1993tabulated,
+  local:chen1996tabled, local:swift2012xsb}, and has been usefully applied to
+program verification and analysis~\cite{local:dawson1996practical,
+  local:janssens1998use}. Unlike these systems, our approach uses a shallow
+embedding of cached non-determinism that can be applied in general-purpose
+functional languages.
+%
+Monad transformers that enable shallow embedding of cached non-determinism are
+of continued interest since Hinze's \emph{Deriving Backtracking Monad
+  Transformers} ~\cite{local:hinze2000deriving, local:kiselyov2005backtracking,
+  local:fischer2011purely}, and recent work~\cite{ploeg2014reflection,
+  local:vandenbroucke2016fixing} points to potential optimizations and
+specializations that can be applied to our relatively naive iteration strategy.
+
 Vardoulakis, who was the first to develop the idea of a pushdown abstraction
 for higher-order flow analysis~\cite{dvanhorn:Vardoulakis2011CFA2}, formalized
 CFA2 using a CPS model, which is similar in spirit to a machine-based model.
