@@ -17,7 +17,7 @@
 ¦     [`(/ ,(? number? n₁) ,(? number? n₂))
 ¦      (if (= 0 n₂)
 ¦          fail
-¦          (return (quotient n₁ n₂)))]
+¦          (return (/ n₁ n₂)))]
 ¦     [`(add1 ,_) (return 'N)]
 ¦     [`(sub1 ,_) (return 'N)]
 ¦     [`(+ ,_ ,_) (return 'N)]

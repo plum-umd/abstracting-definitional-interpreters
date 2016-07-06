@@ -33,10 +33,10 @@ Operator ⸨'¬⸩ represents negation in our language.
 In the following example, the symbolic executor recognizes that
 result ⸨3⸩ and division-by-0 error are not feasible:
 ℑ⁅
-¦ > (if0 'x (if0 'x 2 3) (quotient 5 'x))
+¦ > (if0 'x (if0 'x 2 3) (/ 5 'x))
 ℑ,
 ¦ (set
-¦    (cons '(quotient 5 x) (set '(¬ x)))
+¦    (cons '(/ 5 x) (set '(¬ x)))
 ¦    (cons 2 (set 'x)))
 ℑ⁆
 
@@ -72,9 +72,9 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 ¦          (cond
 ¦           [z? fail]
 ¦           [(and (number? v₀) (number? v₁))
-¦            (return (quotient v₀ v₁))]
+¦            (return (/ v₀ v₁))]
 ¦           [else
-¦            (return `(quotient ,v₀ ,v₁))]))]
+¦            (return `(/ ,v₀ ,v₁))]))]
 ¦     [(list '¬ 0) 1]
 ¦     ... ; TODO can't put comment in here...
 ¦     ))
@@ -131,11 +131,11 @@ It is unsound to accumulate any assumption about ⸨'N⸩.
 ¦           [else
 ¦            (match (list v₀ v₁)
 ¦             [(list (? number? n₀) (? number? n₁))
-¦              (return (quotient n₀ n₁))]
+¦              (return (/ n₀ n₁))]
 ¦             [(list _ ... 'N _ ...)
 ¦              (return 'N)]
 ¦             [(list v₀ v₁)
-¦              (return `(quotient ,v₀ ,v₁))])]))]
+¦              (return `(/ ,v₀ ,v₁))])]))]
 ¦     ... ; TODO can't put comment in here...
 ¦     ))
 ¦ (define (zero? v)

@@ -123,7 +123,7 @@ implementation.}
 ¦     [(list '/ n₀ n₁)
 ¦      (if (= 0 n₁)
 ¦          fail
-¦          (return (quotient n₀ n₁)))]))
+¦          (return (/ n₀ n₁)))]))
 ¦ (define (zero? v)
 ¦   (return (= 0 v)))
 \end{lstlisting}
@@ -218,7 +218,7 @@ Primitive operations work as expected:
 ℑ⁆
 And divide-by-zero errors result in failures:
 ℑ⁅
-¦ > (quotient 5 (- 3 3))
+¦ > (/ 5 (- 3 3))
 ℑ,
 ¦ '(failure . ())
 ℑ⁆
@@ -229,7 +229,7 @@ Because our monad stack places ⸨FailT⸩ above ⸨StateT⸩, the answer includ
 \end{alignat*}
 failures would not include the store:
 ℑ⁅
-¦ > (quotient 5 (- 3 3))
+¦ > (/ 5 (- 3 3))
 ℑ,
 ¦ 'failure
 ℑ⁆
@@ -333,7 +333,7 @@ of expressions that were not evaluated during the running of a program:
 ℑ,
 ¦ (cons '(((λ (x) x) . ()) . ()) (set 'x))
 ℑ;
-¦ > (if0 (quotient 1 0) 2 3)]
+¦ > (if0 (/ 1 0) 2 3)]
 ℑ,
 ¦ (cons '(failure . ()) (set 3 2))
 ℑ⁆
@@ -419,7 +419,7 @@ an evaluator that produces a set of results:
 ℑ,
 ¦ '((N . ()))
 ℑ;
-¦ > (quotient 5 (add1 2))
+¦ > (/ 5 (add1 2))
 ℑ,
 ¦ '((failure . ()) (N . ()))
 ℑ;
