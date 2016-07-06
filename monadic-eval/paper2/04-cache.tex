@@ -1,36 +1,29 @@
 \section{Detecting Cycles with a Cache}\label{s:cache}
 
-At this point, it's worth observing that the interpreter obtained by
-linking together ⸨δ^@⸩ and ⸨alloc^@⸩ components will
-only ever visit a finite number of states for a given program.  The
-state consists of an expression, environment, and store mapping
-addresses to sets of values.  To see that this is a finite set is
-pretty straightforward: expressions (in the given program) are finite,
-environments are maps from variables (again, finite in a program) to
-address.  The addresses are finite thanks to ⸨alloc^⸩, so
-environments are finite.  The store maps addresses (finite by
-⸨alloc^⸩) to sets of values.  The values are base values, which
-are finite by ⸨δ^⸩, or closures which consist of expressions
-(in the given program) and an environment, which we just seen are
-finite.  Since the elements of the sets are finite, the sets
-themselves are finite, and therefore stores, and finally states, are
-all finite sets.
+At this point, the interpreter obtained by linking together ⸨monad^@⸩, ⸨δ^@⸩,
+⸨alloc^@⸩ and ⸨store-nd@⸩ components will only ever visit a finite number of
+configurations for a given program.  The configuration consists of an
+expression, environment, and store mapping addresses to sets of values.  This
+configuration is finite because: expressions (in the given program) are finite;
+environments are maps from variables (again, finite in a program) to addresses;
+the addresses are finite thanks to ⸨alloc^⸩; the store maps addresses (finite
+by ⸨alloc^⸩) to sets of values; base values are abstracted to a finite set by
+⸨δ^⸩; closures consist of expressions (in the given program) and an
+environment, which are both finite.
 
-The problem is that while the interpreter only ever see a finite set
-of inputs, it \emph{doesn't know it}.  So even a simple loop will
-cause the interpreter to diverge:
+Although the interpreter will only ever see a finite set of inputs, it
+\emph{doesn't know it}.  A simple loop will cause the interpreter to diverge:
 ℑ⁅
 ¦ > (rec f (λ (x) (f x)) (f 0))
 ℑ,
 ¦ timeout
 ℑ⁆
 
-To solve this problem, let's introduce a notion of a \emph{cache} which is a
-mapping from states to sets of value, store pairs.  The basic idea is that we
-will use the cache to do a form of co-inductive programming. While evaluating a
-state ⸨ς⸩ for the first time, we may at some point be asked to evaluate
-exactly ⸨ς⸩ again.  Should this happen, we can return the empty set of
-results.  We will use the cache to track the encountered states and the results
+To solve this problem, we introduce a \emph{cache} which maps from
+configurations to sets of value-and-store pairs. While evaluating a
+configuration ⸨ς⸩ for the first time, we may at some point be asked to evaluate
+exactly ⸨ς⸩ again. Should this happen, we can return the empty set of results.
+We will use the cache to track the encountered configurations and the results
 they produce.  By maintaining the cache, we avoid the possibility of diverging.
 
 \begin{figure}

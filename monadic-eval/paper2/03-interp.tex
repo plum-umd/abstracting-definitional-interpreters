@@ -28,7 +28,7 @@ expressions, functions and applications.
 ¦      (do v₀ ← (ev e₀)
 ¦          v₁ ← (ev e₁)
 ¦          (δ o v₀ v₁))]
-¦     [(lrc f e₀ e₁) 
+¦     [(rec f e₀ e₁) 
 ¦      (do ρ  ← ask-env
 ¦          a  ← (alloc f)
 ¦          ρ′ ≔ (ρ f a)
@@ -56,7 +56,7 @@ first glance, it has many conventional aspects:
 \item It is compositionally defined by structural recursion on the syntax of
 expressions.
 \item It represents function values as a closure data structure which pairs the
-function body with the evaluation environment.
+lambda term with the evaluation environment.
 \item It is structured monadically and uses monad operations to interact with
 the environment and store.
 \item It relies on a helper function ⸨δ⸩ to interpret primitive operations.
@@ -106,10 +106,10 @@ implementation.}
 
 \begin{figure} %{-{
 \rfloat{⸨monad@⸩}
-\begin{alignat*}{1}
-          & 𝔥⸨(define-monad⸩
-\\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩
-\end{alignat*}
+\begin{flalign*}
+            & 𝔥⸨(define-monad⸩ 
+& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩ 
+& \end{flalign*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
@@ -257,10 +257,10 @@ environment, and store.  The top-level evaluation function is then:
 
 \begin{figure} %{-{
 \rfloat{⸨trace-monad@⸩}
-\begin{alignat*}{1}
+\begin{flalign*}
           & 𝔥⸨(define-monad⸩
-\\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
-\end{alignat*}
+& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
 \figskip\rfloat{⸨ev-tell@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-tell ev₀) ev) e)
@@ -340,10 +340,10 @@ of expressions that were not evaluated during the running of a program:
 
 \begin{figure} %{-{
 \rfloat{⸨dead-monad@⸩}
-\begin{alignat*}{1}
+\begin{flalign*}
           & 𝔥⸨(define-monad⸩
-\\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
-\end{alignat*}
+& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
 \figskip\rfloat{⸨ev-dead@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-dead ev₀) ev) e)
@@ -379,16 +379,18 @@ denominator is the abstract number ⸨'N⸩, then it is possible the program cou
 fail as a result of divide-by-zero, since ⸨0⸩ is contained in the
 representation of ⸨'N⸩. Therefore there are \emph{two} possible answers when
 the denominator is ⸨'N⸩: ⸨'N⸩ and ⸨'failure⸩. Both answers are ⸨return⸩ed by
-introducing non-determinism ⸨NondetT⸩ into the monad stack:
-\begin{alignat*}{1}
-& 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID))))⸩
-\end{alignat*}
+introducing non-determinism ⸨NondetT⸩ into the monad stack ⸨monad^@⸩.
 Adding non-determinism provides the ⸨mplus⸩ operation for combining multiple
 answers. Non-determinism is also used in the implementation of ⸨zero?⸩, which
 returns both true and false on ⸨'N⸩.
 
 \begin{figure} %{-{
-\rfloat{⸨δ^@⸩}
+\rfloat{⸨monad^@⸩}
+\begin{flalign*}
+            & 𝔥⸨(define-monad⸩
+& \\[-0.5em]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢branching⸣\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨δ^@⸩}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
@@ -459,30 +461,27 @@ look next at abstracting closures.
 
 Closures consist of code---a lambda term---and an environment---a finite map
 from variables to addresses.  Since the set of lambda terms and variables is
-bounded by the program text, it suffices to abstract closures by abstracting
-the set of addresses.  Following the AAM approach, we can do this by modifying
-the allocation function to always produce elements drawn from a finite set.  In
-order to retain soundness in the semantics, we will need to modify the store to
-map addresses to \emph{sets} of values and model store update as a join and
-dereference as a non-deterministic choice.
+bounded by the program text, it suffices to finitize closures by finitizing the
+set of addresses.  Following the AAM approach, we do this by modifying the
+allocation function produce elements drawn from a finite set.  In order to
+retain soundness in the semantics, we modify the store to map addresses to
+\emph{sets} of values, model store update as a join, and model dereference as a
+non-deterministic choice.
 
 Any abstraction of the allocation function that produces a finite set will do,
 but the choice of abstraction will determine the precision of the resulting
-analysis.  A simple choice is to allocate variable bindings by using a
-variable's name as its address.  This gives a monomorphic, or 0CFA-like,
-abstraction.
+analysis.  A simple choice is to allocate variables using the variable's name
+as its address.  This gives a monomorphic, or 0CFA-like, abstraction.
 
-Figure~\ref{f:0cfa-abs} shows an alternative component for finite
-allocation that uses variables names as the notion of addresses and a
-component for the derived operations ⸨find⸩ and ⸨ext⸩
-when the store uses a \emph{set} as its range.  The
-⸨for/monad+⸩ form is just a convenience for combining a set of
-computations with ⸨mplus⸩; in other words, ⸨find⸩
-returns \emph{all} of the values in the store at a given address.  The
-⸨ext⸩ function joins whenever an address is already allocated,
-otherwise it maps the address to a singleton set.
+Figure~\ref{f:0cfa-abs} shows the component ⸨alloc^@⸩ which implements
+monomorphic allocation, and the component ⸨store-nd@⸩ for implementing ⸨find⸩
+and ⸨ext⸩ which interact with a store mapping to \emph{sets} of values. The
+⸨for/monad+⸩ form is a convenience for combining a set of computations with
+⸨mplus⸩, and is used so ⸨find⸩ returns \emph{all} of the values in the store at
+a given address.  The ⸨ext⸩ function joins whenever an address is already
+allocated, otherwise it maps the address to a singleton set.
 
-\begin{figure}
+\begin{figure} %{-{
 \rfloat{⸨alloc^@⸩}
 \begin{lstlisting}
 (define (alloc x)
@@ -502,12 +501,11 @@ otherwise it maps the address to a singleton set.
 \end{lstlisting}
 \caption{Abstracting Allocation: 0CFA}
 \label{f:0cfa-abs}
-\end{figure}
+\end{figure} %}-}
 
-By linking these components together with the same monad stack from
-Section~\ref{s:base}, we obtain an interpreter that loses precision whenever
-variables are bound to multiple values.  For example, this program
-binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and therefore
+By linking these components with the same monad stack from before, we obtain an
+interpreter that loses precision whenever variables are bound to multiple
+values.  For example, this program binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and therefore
 produces both answers when run:
 ℑ⁅
 ¦ > (let f (λ (x) x)
@@ -516,9 +514,5 @@ produces both answers when run:
 ¦ '((0 . ((x 1 0) (f ((λ (x) x) . ()))))
 ¦   (1 . ((x 1 0) (f ((λ (x) x) . ())))))
 ℑ⁆
-
-We've now taken care of making a sound, finite abstraction of the
-space of all closures that arise during evaluation.  It would seem we
-are very close to having a sound, total abstract interpretation
-function.
-
+Our abstract interpreter now has a truly finite domain; the next step is to
+detect loops in the state-space to achieve termination.
