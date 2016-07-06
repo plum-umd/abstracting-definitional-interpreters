@@ -1,54 +1,47 @@
 \section{Symbolic Execution and Path-sensitive Verification}\label{s:symbolic}
 
-As a final exercise in abstract interpretation component engineering, we
-develop a monadic view of symbolic execution.
-
-We present an extension to the monad stack and metafunctions that gives rise to
-a symbolic executor~\cite{dvanhorn:King1976Symbolic}, then show how
+As a final exercise in applying our definitional abstract interpretation
+framework, we develop a symbolic execution engine, and use it to perform sound
+program verification. First we describe the monad stack and metafunctions that
+implement a symbolic executor~\cite{dvanhorn:King1976Symbolic}, then show how
 abstractions discussed in previous sections can be applied to enforce
 termination, turning a traditional symbolic execution into a path-sensitive
 verification engine.
 
 \subsection{Symbolic Execution}
+To support symbolic execution, first we extend the syntax of the language to
+support symbolic numbers:
+\begin{alignat*}{4}
+   e ∈ &&\mathrel{}   exp ⩴ … ∣ &\mathrel{} 𝔥⸨(sym⸩\ x𝔥⸨)⸩ &\hspace{3em} [⦑\emph{symbolic number}⦒]
+\end{alignat*}
 Figure~\ref{s:symbolic} shows the units needed to turn the existing interpreter
-into a symbolic executor, in addition to adding symbolic numbers ⸨(sym X)⸩
-to the language syntax.
-Primitives such as ⸨'/⸩ now may also take as input
-and return symbolic values.
-As standard, symbolic execution employs a path-condition
-accumulating assumptions made at each branch,
-allowing the elimination of infeasible paths and construction of test cases.
-We represent the path-condition ⸨φ⸩ as a set of symbolic values
-known to have evaluated to ⸨0⸩.
-This set is another state component provided by ⸨StateT⸩.
-Monadic operations ⸨get-path-cond⸩
-and ⸨refine⸩ reference and update the path-condition.
-Metafunction ⸨zero?⸩ works similarly to the concrete counterpart,
-but also uses the path-condition to prove that some symbolic numbers
-are definitely ⸨0⸩ or non-⸨0⸩.
-In case of uncertainty, ⸨zero?⸩ returns both answers
-besides refining the path-condition with the assumption made.
-Operator ⸨'¬⸩ represents negation in our language.
+into a symbolic executor. Primitives such as ⸨'/⸩ now also take as input and
+return symbolic values. As standard, symbolic execution employs a
+path-condition accumulating assumptions made at each branch, allowing the
+elimination of infeasible paths and construction of test cases. We represent
+the path-condition ⸨φ⸩ as a set of symbolic values known to have evaluated to
+⸨0⸩. This set is another state component provided by ⸨StateT⸩ in the monad
+transformer stack. Monadic operations ⸨get-path-cond⸩ and ⸨refine⸩ reference
+and update the path-condition. The metafunction ⸨zero?⸩ works similarly to the
+concrete counterpart, but also uses the path-condition to prove that some
+symbolic numbers are definitely ⸨0⸩ or non-⸨0⸩. In case of uncertainty, ⸨zero?⸩
+returns both answers instead of refining the path-condition with the assumption
+made. Operator ⸨'¬⸩ represents negation in our language.
 
-In the following example, the symbolic executor recognizes that
-result ⸨3⸩ and division-by-0 error are not feasible:
+In the following example, the symbolic executor recognizes that result ⸨3⸩ and
+division-by-0 error are not feasible:
 ℑ⁅
 ¦ > (if0 'x (if0 'x 2 3) (/ 5 'x))
 ℑ,
 ¦ (set (cons '(/ 5 x) (set '(¬ x)))
 ¦      (cons 2 (set 'x)))
 ℑ⁆
-
-A scaled up symbolic executor can have ⸨zero?⸩ calling out
-to an SMT solver for interesting arithmetics,
-and extend the language with symbolic functions
-and blame semantics for sound higher-order symbolic
+A scaled up symbolic executor could implement ⸨zero?⸩ by calling out to an SMT
+solver for interesting arithmetics, or extend the language with symbolic
+functions and blame semantics for sound higher-order symbolic
 execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relatively}.
 
-\begin{figure}
-\begin{alignat*}{4}
-   e ∈ &&\mathrel{}   exp ⩴ … ∣ &\mathrel{} 𝔥⸨(sym⸩\ x𝔥⸨)⸩             &\hspace{3em} [⦑\emph{symbolic number}⦒]
-\end{alignat*}
+\begin{figure} %{-{
 \rfloat{⸨symbolic-monad@⸩}
 \begin{lstlisting}
 ¦ (define-monad
@@ -92,30 +85,30 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 \end{lstlisting}
 \caption{Symbolic Execution Variant}
 \label{f:symbolic}
-\end{figure}
+\end{figure} %}-}
 
 \subsection{From Symbolic Execution to Verification}
 
-Traditional symbolic executors mainly aim to find bugs and provide no
-termination guarantee. We can apply abstracting units presented in previous
-sections, namely base value widening and finite allocation
-(Section~\ref{s:base}), and caching and fixing (Section~\ref{s:cache}) to turn
-a symbolic execution into a sound, path-sensitive program verification.
+Traditional symbolic executors mainly aim to find bugs and do not provide
+termination guarantee. However, when we apply to this symbolic executor the
+finite abstractions presented in previous sections, namely base value widening
+and finite allocation (Section~\ref{s:base}), and caching and fixing
+(Section~\ref{s:cache}), we turn the symbolic execution into a sound,
+path-sensitive program verification.
 
-Operations on symbolic values introduce a new source of infinite configurations
-by building up new symbolic values.
-We therefore straightforwardly widen a symbolic value to the abstract
-number ⸨'N⸩ when it shares an address with a different number.
-Figure~\ref{f:symbolic-widen} shows extension to ⸨δ⸩ and ⸨zero?⸩
-in the presence of ⸨'N⸩.
-The different treatments of ⸨'N⸩ and symbolic values
-clarifies that abstract values are not symbolic values:
-the former stands for a set of multiple values,
-whereas the latter stands for an single unknown value.
-Tests on abstract number ⸨'N⸩ do not strengthen the path-condition.
-It is unsound to accumulate any assumption about ⸨'N⸩.
+Operations on symbolic values introduce a new source of infinity in the
+state-space, because the space of symbolic values is not finite. We therefore
+widen a symbolic value to the abstract number ⸨'N⸩ when it shares an address
+with a different number, similarly to the widening defined for
+precision-preserving abstraction from Section~\ref{s:alt-abstraction}.
+Figure~\ref{f:symbolic-widen} shows extension to ⸨δ⸩ and ⸨zero?⸩ in the
+presence of ⸨'N⸩. The different treatments of ⸨'N⸩ and symbolic values
+clarifies that abstract values are not symbolic values: the former stands for a
+set of multiple values, whereas the latter stands for an single unknown value.
+Tests on abstract number ⸨'N⸩ do not strengthen the path-condition; it is
+unsound to accumulate any assumption about ⸨'N⸩.
 
-\begin{figure}
+\begin{figure} %{-{
 \rfloat{⸨δ^-symbolic@⸩}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
@@ -137,4 +130,4 @@ It is unsound to accumulate any assumption about ⸨'N⸩.
 \end{lstlisting}
 \caption{Symbolic Execution with Abstract Numbers}
 \label{f:symbolic-widen}
-\end{figure}
+\end{figure} %}-}
