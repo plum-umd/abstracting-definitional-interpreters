@@ -34,6 +34,12 @@ again:
 	touch main.tex
 	make
 
+.PHONY: much
+much:
+	make again 
+	make again 
+	make again
+
 .PHONY: clean
 clean:
 	rm -r out/

@@ -1,3 +1,7 @@
+s/‹‹tl››/⸢/g
+s/‹‹tr››/⸣/g
+s/‹‹cent››/¢/g
+
 s/λ/<lambda>/g
 s/δ/<delta>/g
 s/σ/<sigma>/g
@@ -19,3 +23,8 @@ s/∈/<in>/g
 s/×/<times>/g
 s/⊥/<bot>/g
 s/¬/<not>/g
+s/⸢/<tl>/g
+s/⸣/<tr>/g
+s/ᴵ/<supI>/g
+s/ᴼ/<supO>/g
+s/⁺/<supplus>/g

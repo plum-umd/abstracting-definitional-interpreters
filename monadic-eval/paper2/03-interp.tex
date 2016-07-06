@@ -184,7 +184,7 @@ fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a�
 The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending the
 store in terms of the monadic operations.
 
-The only remaing pieces of the puzzle are a fixed-point combinator, which is
+The only remaining pieces of the puzzle are a fixed-point combinator, which is
 straightforward to define:
 \begin{lstlisting}
 ¦ (define ((fix f) x) ((f (fix f)) x))
