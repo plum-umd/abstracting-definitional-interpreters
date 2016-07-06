@@ -1,4 +1,4 @@
-\section{Detecting Cycles with a Cache}\label{s:cache}
+\section{Caching and Finding Fixpoints}\label{s:cache}
 
 At this point, the interpreter obtained by linking together ⸨monad^@⸩, ⸨δ^@⸩,
 ⸨alloc^@⸩ and ⸨store-nd@⸩ components will only ever visit a finite number of
@@ -133,8 +133,8 @@ With these peices in place we construct a complete interpreter:
 ¦ (define (eval e)
 ¦   (mrun ((fix-cache (fix (ev-cache ev))) e)))
 \end{lstlisting}
-When linked with ⸨δ^⸩ and ⸨alloc^⸩, this interpreter is
-a computable and sound abstraction of the original definitional interpreter:
+When linked with ⸨δ^⸩ and ⸨alloc^⸩, this abstract interpreter is sound and
+computable, as demonstrated on the following examples:
 ℑ⁅
 ¦ > (rec f (λ (x) (f x))
 ¦     (f 0))

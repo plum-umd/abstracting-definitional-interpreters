@@ -127,7 +127,7 @@ It is unsound to accumulate any assumption about ⸨'N⸩.
 ¦     [(list '/ v₀ v₁)
 ¦      (do z? ← (zero? v₁)
 ¦          (cond
-¦           [z? _fail]
+¦           [z? fail]
 ¦           [else
 ¦            (match (list v₀ v₁)
 ¦             [(list (? number? n₀) (? number? n₁))
