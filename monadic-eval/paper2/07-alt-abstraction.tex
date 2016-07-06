@@ -58,7 +58,7 @@ concrete numbers together, you will get a concrete number.  But if you
 add a concrete and abstract number, you will get an abstract number.
 
 This interpretation of primitive operations clearly doesn't impose a
-finite abstraction on it's own.  And if used in concert with the
+finite abstraction on its own.  And if used in concert with the
 ⸨store-nd@⸩ implementation of the store, termination is not
 guaranteed.  
 
@@ -106,7 +106,7 @@ when applied to ⸨1⸩, ⸨2⸩, ⸨3⸩, etc.
 ℑ⁅
 ¦ > (rec id (λ (n)
 ¦             (if0 n 0 (add1 (id (sub1 n)))))
-¦     (id 3))]
+¦     (id 3))
 ℑ,
 ¦ timeout
 ℑ⁆
