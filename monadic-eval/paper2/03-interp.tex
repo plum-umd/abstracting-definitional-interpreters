@@ -223,7 +223,7 @@ And divide-by-zero errors result in failures:
 Because our monad stack places ⸨FailT⸩ above ⸨StateT⸩, the answer includes the
 (empty) store at the point of the error. Had we changed ⸨monad@⸩ to use:
 \begin{alignat*}{1}
-& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID⸩))))
+& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID))))⸩
 \end{alignat*}
 failures would not include the store:
 ℑ⁅
