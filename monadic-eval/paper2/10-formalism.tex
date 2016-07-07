@@ -139,11 +139,11 @@ for evaluation. For example, consider the program that applies the identity
 function to an expression that loops, which we notate «Ω»:
 \[ (λx.x)(Ω) \]
 A big-step evaluation relation can only describe results of terminating
-computations, and because this program never terminates, an evaluation relation
-says nothing about the behavior of the program. A good static analyzer will
-explore the behavior of «Ω» to (possibly) discover that it loops, or more
-importantly, to provide analysis results (like data-flow or side-effects) for
-intermediate computation states.
+computations, and because this program never terminates, such a relation says
+nothing about the behavior of the program. A good static analyzer will explore
+the behavior of «Ω» to (possibly) discover that it loops, or more importantly,
+to provide analysis results (like data-flow or side-effects) for intermediate
+computation states.
 
 The need to analyze intermediate states is the primary reason that big-step
 semantics are overlooked as a starting point for abstract interpretation. To

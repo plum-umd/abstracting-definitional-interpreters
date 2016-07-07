@@ -18,33 +18,6 @@ closures, the AAM trick is to thread them through the store and then finitize
 the store.  But in the definitional interpreter approach, the stack is implicit
 and inherited from the meta-language.
 
-\begin{figure} %{-{
-\rfloat{⸨fix-cache@⸩}
-\begin{lstlisting}
-¦ (define ((fix-cache eval) e)  
-¦   (do ρ ← ask-env  σ ← get-store
-¦       ς ≔ (list e ρ σ)
-¦       ¢⁺ ← (mlfp (λ (¢) 
-¦              (do (put-cache-out ∅)
-¦                  (put-store σ)
-¦                  (local-cache-in ¢ (eval e))
-¦                  get-cache-out)))
-¦       (for/monad+ ([v×σ (¢⁺ ς)])
-¦         (do (put-store (cdr v×σ))
-¦             (return (car v×σ))))))
-¦ (define (mlfp f)
-¦   (let loop ([x ∅])
-¦     (do x′ ← (f x)
-¦         (if (equal? x′ x)
-¦             (return x)
-¦             (loop x′)))))
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{Finding Fixpoints in the Cache}
-\label{f:fixing}
-\vspace{-1em}
-\end{figure} %}-}
-
 But here is the remarkable thing: since the stack is inherited from the
 meta-language, the abstract interpreter inherits the ``call-return matching''
 of the meta-language, which is to say there is no loss of precision of in the
@@ -63,6 +36,31 @@ dissertation~\cite%
 ,local:p4f%
 }. Yet when formulated in the definitional interpreter style, the pushdown
 property requires no mechanics and is simply inherited from the meta-language.
+
+\begin{figure} %{-{
+\rfloat{⸨fix-cache@⸩}
+\begin{lstlisting}
+¦ (define ((fix-cache eval) e)  
+¦   (do ρ ← ask-env  σ ← get-store
+¦       ς ≔ (list e ρ σ)
+¦       ¢⁺ ← (mlfp (λ (¢) 
+¦              (do (put-cache-out ∅)
+¦                  (put-store σ)
+¦                  (local-cache-in ¢ (eval e))
+¦                  get-cache-out)))
+¦       (for/monad+ ([v×σ (¢⁺ ς)])
+¦         (do (put-store (cdr v×σ))
+¦             (return (car v×σ))))))
+¦ (define (mlfp f)
+¦   (let loop ([x ∅])
+¦     (do x′ ← (f x)
+¦         (if (equal? x′ x) (return x) (loop x′)))))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Finding Fixpoints in the Cache}
+\label{f:fixing}
+\vspace{-1em}
+\end{figure} %}-}
 
 Reynolds, in his celebrated paper \emph{Definitional Interpreters for
 Higher-order Programming Languages}~\cite{dvanhorn:reynolds-acm72}, first
