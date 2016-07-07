@@ -39,17 +39,18 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
 
 \begin{figure*} %{-{
 \begin{flushright}[\emph{Concrete Evaluation}]\quad\fbox{«ρ,τ⊢e,σ⇓v,σ′»}\end{flushright}
+\vspace{-0.75em}
 \begin{mathpar}
   \inferrule*[left=(Lit)]{ }{ρ , τ ⊢ n , σ ⇓ n , σ}
 
   \inferrule*[left=(Var)]{ }{ρ , τ ⊢ x , σ ⇓ σ(ρ(x)) , σ}
 
-  \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}
+  \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}\vspace{-0.75em}
 
   \inferrule*[left=(Bin)]{
   ρ , τ ⊢ e₁ , σ  ⇓ v₁ , σ₁ \\
   ρ , τ ⊢ e₂ , σ₁ ⇓ v₂ , σ₂}
-  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}
+  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}\vspace{-0.75em}
 
   \inferrule*[left=(App),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -63,7 +64,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   ρ       , τ  ⊢ e₁    , σ        ⇓ v₁ , σ₁ \\
   ρ       , τ  ⊢ e₂    , σ₁       ⇓ v₂ , σ₂ \\
   ρ′[x↦ℓ] , τ′ ⊢ e′    , σ₂[ℓ↦v₂] ⇓ v′ , σ₃}
-  {ρ      , τ ⊢ e₁(e₂) , σ        ⇓ v′ , σ₃}
+  {ρ      , τ ⊢ e₁(e₂) , σ        ⇓ v′ , σ₃}\vspace{-0.75em}
 
   \inferrule*[left=(IfT),right={\ssmall «n=0»}]{
   ρ , τ ⊢ e₁ , σ ⇓ n , σ₁ \\
@@ -76,6 +77,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
 \end{mathpar}
 \begin{flushright}[\emph{Concrete Reachability}]\quad\fbox{«ρ,τ⊢e,σ⇑ς»}\end{flushright}
+\vspace{-0.25em}
 \begin{mathpar}
   \inferrule*[left=(Refl)]{ }{ρ,τ⊢e,σ⇑⟨e,ρ,σ,τ⟩}
 
@@ -86,7 +88,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   \inferrule*[left=(RBin2)]
   {  ρ,τ⊢e₁,σ⇓v₁,σ₁
   \\ ρ,τ⊢e₂,σ₁⇑ς}
-  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}\vspace{-0.75em}
 
   \inferrule*[left=(RApp1)]
    {ρ,τ⊢e₁,σ⇑ς}
@@ -95,7 +97,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
    \inferrule*[left=(RApp2),right={\ssmall «⟨λx.e′,ρ′⟩=v₁»}]
    {  ρ,τ⊢e₁,σ⇓v₁,σ₁
    \\ ρ,τ⊢e₂,σ₁⇑ς}
-   {ρ,τ⊢e₁(e₂),σ⇑ς}
+   {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
 
    \inferrule*[left=(RApp3),right={\begin{minipage}{2em}\ssmall
        \begin{alignat*}{1}
@@ -109,7 +111,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   {  ρ,τ⊢e₁,σ ⇓v₁,σ₁
   \\ ρ,τ⊢e₂,σ₁⇓v₂,σ₂
   \\ ρ′[x↦ℓ],τ′⊢e′,σ₂[ℓ↦v₂]⇑ς}
-  {ρ,τ⊢e₁(e₂),σ⇑ς}
+  {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
 
   \inferrule*[left=(RIf1)]
   {ρ,τ⊢e₁,σ⇑ς}
@@ -118,7 +120,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   \inferrule*[left=(RIfT),right={\ssmall «n=0»}]
   {  ρ,τ⊢e₁,σ⇓n,σ₁
   \\ ρ,τ⊢e₂,σ₁⇑ς}
-  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}\vspace{-0.75em}
 
   \inferrule*[left=(RIfF),right={\ssmall «n≠0»}]
   {  ρ,τ⊢e₁,σ⇓n,σ₁
@@ -194,17 +196,18 @@ denotation operator «∿{⟦b⟧}»:
 
 \begin{figure*} %{-{
 \begin{flushright}[\emph{Collecting Evaluation}]\quad\fbox{«ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}′»}\end{flushright}
+\vspace{-0.75em}
 \begin{mathpar}
   \inferrule*[left=(OLit)]{ }{ρ,τ⊢n,∿{σ}⇓❴n❵,∿{σ}}
 
   \inferrule*[left=(OVar)]{ }{ρ,τ⊢x,∿{σ}⇓∿{σ}(ρ(x)),∿{σ}}
 
-  \inferrule*[left=(OLam)]{ }{ρ,τ⊢λx.e,∿{σ}⇓❴⟨λx.e,ρ⟩❵,∿{σ}}
+  \inferrule*[left=(OLam)]{ }{ρ,τ⊢λx.e,∿{σ}⇓❴⟨λx.e,ρ⟩❵,∿{σ}}\vspace{-0.75em}
 
     \inferrule*[left=(OBin)]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂}
-  {  ρ,τ⊢b(e₁,e₂),∿{σ}⇓∿{⟦b⟧}(∿{v}₁,∿{v}₂),∿{σ}₂}
+  {  ρ,τ⊢b(e₁,e₂),∿{σ}⇓∿{⟦b⟧}(∿{v}₁,∿{v}₂),∿{σ}₂}\vspace{-0.75em}
 
   \inferrule*[left=(OApp),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -218,7 +221,7 @@ denotation operator «∿{⟦b⟧}»:
   {  ρ      ,τ ⊢e₁    ,∿{σ} ⇓∿{v}₁,∿{σ}₁
   \\ ρ      ,τ ⊢e₂    ,∿{σ}₁⇓∿{v}₂,∿{σ}₂
   \\ ρ′[x↦ℓ],τ′⊢e′    ,∿{σ}₂[ℓ↦∿{v}₂]⇓∿{v}′,∿{σ}₃}
-  {ρ      ,τ ⊢e₁(e₂),∿{σ} ⇓∿{v}′,∿{σ}₃}
+  {ρ      ,τ ⊢e₁(e₂),∿{σ} ⇓∿{v}′,∿{σ}₃}\vspace{-0.75em}
 
   \inferrule*[left=(OIfT),right={\ssmall «0∈∿{v}₁»}]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
@@ -236,6 +239,7 @@ denotation operator «∿{⟦b⟧}»:
     {  ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇓∿{v},∿{σ}₂}
 \end{mathpar}
 \begin{flushright}[\emph{Collecting Reachability}]\quad\fbox{«ρ,τ⊢e,∿{σ}⇑∿{ς}»}\end{flushright}
+\vspace{-0.25em}
 \begin{mathpar}
   \inferrule*[left=(ORefl)]{ }{ρ,τ⊢e,∿{σ}⇑⟨e,ρ,∿{σ},τ⟩}
 
@@ -246,7 +250,7 @@ denotation operator «∿{⟦b⟧}»:
   \inferrule*[left=(ORBin2)]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
-  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}
+  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}\vspace{-0.75em}
 
   \inferrule*[left=(ORApp1)]
    {ρ,τ⊢e₁,∿{σ}⇑∿{ς}}
@@ -255,7 +259,7 @@ denotation operator «∿{⟦b⟧}»:
    \inferrule*[left=(ORApp2),right={\ssmall «⟨λx.e′,ρ′⟩∈∿{v}₁»}]
    {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
    \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
-   {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}
+   {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}\vspace{-0.75em}
 
    \inferrule*[left=(ORApp3),right={\begin{minipage}{2em}\ssmall
        \begin{alignat*}{1}
@@ -269,7 +273,7 @@ denotation operator «∿{⟦b⟧}»:
   {  ρ,τ⊢e₁,∿{σ} ⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂
   \\ ρ′[x↦ℓ],τ′⊢e′,∿{σ}₂[ℓ↦∿{v}₂]⇑∿{ς}}
-  {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}
+  {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}\vspace{-0.75em}
 
   \inferrule*[left=(ORIf1)]
   {ρ,τ⊢e₁,∿{σ}⇑∿{ς}}
@@ -278,7 +282,7 @@ denotation operator «∿{⟦b⟧}»:
   \inferrule*[left=(ORIfT),right={\ssmall «0∈∿{v}₁»}]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
-  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}\vspace{-0.75em}
 
   \inferrule*[left=(ORIfF),right={\begin{minipage}{2em}\ssmall 
     \begin{alignat*}{2}
@@ -323,100 +327,6 @@ and the partial ordering on stores and configurations is pointwise:
 
 \paragraph{Finite Abstraction}
 
-\begin{figure*} %{-{
-\begin{flushright}[\emph{Abstract Evaluation}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′»}\end{flushright}
-\begin{mathpar}
-  \inferrule*[left=(ALit)]{ }{♯{ρ},♯{τ}⊢n,♯{σ}⇓♯{η}(n),♯{σ}}
-
-  \inferrule*[left=(AVar)]{ }{♯{ρ},♯{τ}⊢x,♯{σ}⇓♯{σ}(♯{ρ}(x)),♯{σ}}
-
-  \inferrule*[left=(ALam)]{ }{♯{ρ},♯{τ}⊢λx.e,♯{σ}⇓♯{η}(⟨λx.e,♯{ρ}⟩),♯{σ}}
-
-    \inferrule*[left=(ABin)]
-    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-    \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂}
-    {  ♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇓♯{⟦b⟧}(♯{v}₁,♯{v}₂),♯{σ}₂}
-
-  \inferrule*[left=(AApp),right={\begin{minipage}{2em}\ssmall
-    \begin{alignat*}{1}
-    \begin{alignedat}{2} 
-           ⟨λx.e′,♯{ρ}′⟩ ∈ &\mathrel{} ⌊γ⌋⸤clo⸥(♯{v}₁) \\[-0.5em]
-                   ♯{ς}  = &\mathrel{} ⟨e₁(e₂),♯{ρ},♯{σ},♯{τ}⟩ \\[-0.5em]
-                   ♯{ℓ}  = &\mathrel{} ⟨x,♯{τ}′⟩ \\[-0.5em]
-                   ♯{τ}′ = &\mathrel{} ♯{next}(♯{τ},♯{ς})
-      \end{alignedat}
-    \end{alignat*}
-  \end{minipage}}]
-  {  ♯{ρ}      ,♯{τ} ⊢e₁    ,♯{σ} ⇓♯{v}₁,♯{σ}₁
-  \\ ♯{ρ}      ,♯{τ} ⊢e₂    ,♯{σ}₁⇓♯{v}₂,♯{σ}₂
-  \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′    ,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇓♯{v}′,♯{σ}₃}
-  {♯{ρ}      ,♯{τ} ⊢e₁(e₂),♯{σ} ⇓♯{v}′,♯{σ}₃}
-
-  \inferrule*[left=(AIfT),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
-  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v},♯{σ}₂}
-  {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
-
-  \inferrule*[left=(AIfF),right={\ssmall «¬0∈⌊γ⌋⸤¬0⸥(♯{v}₁)»}]
-  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-  \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇓♯{v},♯{σ}₂}
-  {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
-\end{mathpar}
-\begin{flushright}[\emph{Abstract Reachability}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}»}\end{flushright}
-\begin{mathpar}
-  \inferrule*[left=(ARefl)]{ }{♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩}
-
-  \inferrule*[left=(ARBin1)]
-  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑ς}
-  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARBin2)]
-  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARApp1)]
-  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARApp2),right={\ssmall «⟨λx.e′,♯{ρ}′⟩∈⌊γ⌋⸤clo⸥(♯{v}₁)»}]
-  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}
-
-   \inferrule*[left=(ARApp3),right={\begin{minipage}{2em}\ssmall
-       \begin{alignat*}{1}
-       \begin{alignedat}{2} 
-         ⟨λx.e′,♯{ρ}′⟩ ∈ &\mathrel{} ⌊γ⌋⸤clo⸥(♯{v}₁) \\[-0.5em]
-            ♯{ς} = &\mathrel{} ⟨e₁(e₂),♯{ρ},♯{σ},♯{τ}⟩ \\[-0.5em]
-           ♯{ℓ}  = &\mathrel{} ⟨x,♯{τ}′⟩ \\[-0.5em]
-           ♯{τ}′ = &\mathrel{} ♯{next}(♯{τ},♯{ς})
-         \end{alignedat}
-       \end{alignat*}
-     \end{minipage}}]
-     {  ♯{ρ},♯{τ}⊢e₁,♯{σ} ⇓♯{v}₁,♯{σ}₁
-       \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂
-     \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇑♯{ς}}
-     {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARIf1)]
-  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARIfT),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
-  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
-
-  \inferrule*[left=(ARIfF),right={\ssmall «¬0∈⌊γ⌋⸤¬0⸥(♯{v}₁)»}]
-    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
-    \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇑♯{ς}}
-    {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
-\end{mathpar}
-\caption{Big-step Abstract Reachability Semantics}
-\label{f:lamif-abstract}
-\end{figure*} %}-}
-
 The next step towards a computable static analysis is an abstract semantics
 with a finite state space that approximates the big-step collecting semantics,
 notated «♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}» and shown in
@@ -448,6 +358,102 @@ finite subsets of the full concretization function «γ» s.t.:
 Abstract sets «♯{time}» and «♯{val}» are left as parameters to the analysis
 along with their operations «♯{next}», «♯{⟦b⟧}», «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥»,
 «⌊γ⌋⸤¬0⸥» and «⊔⸢♯{val}⸣».
+
+\begin{figure*} %{-{
+\begin{flushright}[\emph{Abstract Evaluation}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′»}\end{flushright}
+\vspace{-0.75em}
+\begin{mathpar}
+  \inferrule*[left=(ALit)]{ }{♯{ρ},♯{τ}⊢n,♯{σ}⇓♯{η}(n),♯{σ}}
+
+  \inferrule*[left=(AVar)]{ }{♯{ρ},♯{τ}⊢x,♯{σ}⇓♯{σ}(♯{ρ}(x)),♯{σ}}
+
+  \inferrule*[left=(ALam)]{ }{♯{ρ},♯{τ}⊢λx.e,♯{σ}⇓♯{η}(⟨λx.e,♯{ρ}⟩),♯{σ}}\vspace{-0.75em}
+
+    \inferrule*[left=(ABin)]
+    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+    \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂}
+    {  ♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇓♯{⟦b⟧}(♯{v}₁,♯{v}₂),♯{σ}₂}\vspace{-0.75em}
+
+  \inferrule*[left=(AApp),right={\begin{minipage}{2em}\ssmall
+    \begin{alignat*}{1}
+    \begin{alignedat}{2} 
+           ⟨λx.e′,♯{ρ}′⟩ ∈ &\mathrel{} ⌊γ⌋⸤clo⸥(♯{v}₁) \\[-0.5em]
+                   ♯{ς}  = &\mathrel{} ⟨e₁(e₂),♯{ρ},♯{σ},♯{τ}⟩ \\[-0.5em]
+                   ♯{ℓ}  = &\mathrel{} ⟨x,♯{τ}′⟩ \\[-0.5em]
+                   ♯{τ}′ = &\mathrel{} ♯{next}(♯{τ},♯{ς})
+      \end{alignedat}
+    \end{alignat*}
+  \end{minipage}}]
+  {  ♯{ρ}      ,♯{τ} ⊢e₁    ,♯{σ} ⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ}      ,♯{τ} ⊢e₂    ,♯{σ}₁⇓♯{v}₂,♯{σ}₂
+  \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′    ,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇓♯{v}′,♯{σ}₃}
+  {♯{ρ}      ,♯{τ} ⊢e₁(e₂),♯{σ} ⇓♯{v}′,♯{σ}₃}\vspace{-0.75em}
+
+  \inferrule*[left=(AIfT),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v},♯{σ}₂}
+  {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
+  \;
+  \inferrule*[left=(AIfF),right={\ssmall «¬0∈⌊γ⌋⸤¬0⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇓♯{v},♯{σ}₂}
+  {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
+\end{mathpar}
+\begin{flushright}[\emph{Abstract Reachability}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}»}\end{flushright}
+\vspace{-0.25em}
+\begin{mathpar}
+  \inferrule*[left=(ARefl)]{ }{♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩}
+
+  \inferrule*[left=(ARBin1)]
+  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑ς}
+  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARBin2)]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}\vspace{-0.75em}
+
+  \inferrule*[left=(ARApp1)]
+  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARApp2),right={\ssmall «⟨λx.e′,♯{ρ}′⟩∈⌊γ⌋⸤clo⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}\vspace{-0.75em}
+
+   \inferrule*[left=(ARApp3),right={\begin{minipage}{2em}\ssmall
+       \begin{alignat*}{1}
+       \begin{alignedat}{2} 
+         ⟨λx.e′,♯{ρ}′⟩ ∈ &\mathrel{} ⌊γ⌋⸤clo⸥(♯{v}₁) \\[-0.5em]
+            ♯{ς} = &\mathrel{} ⟨e₁(e₂),♯{ρ},♯{σ},♯{τ}⟩ \\[-0.5em]
+           ♯{ℓ}  = &\mathrel{} ⟨x,♯{τ}′⟩ \\[-0.5em]
+           ♯{τ}′ = &\mathrel{} ♯{next}(♯{τ},♯{ς})
+         \end{alignedat}
+       \end{alignat*}
+     \end{minipage}}]
+     {  ♯{ρ},♯{τ}⊢e₁,♯{σ} ⇓♯{v}₁,♯{σ}₁
+       \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂
+     \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇑♯{ς}}
+     {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}\vspace{-0.75em}
+
+  \inferrule*[left=(ARIf1)]
+  {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
+
+  \inferrule*[left=(ARIfT),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
+  {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+  \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
+  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}\vspace{-0.75em}
+
+  \inferrule*[left=(ARIfF),right={\ssmall «¬0∈⌊γ⌋⸤¬0⸥(♯{v}₁)»}]
+    {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
+    \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇑♯{ς}}
+    {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
+\end{mathpar}
+\caption{Big-step Abstract Reachability Semantics}
+\label{f:lamif-abstract}
+\end{figure*} %}-}
 
 The abstract semantics is a sound approximation of the collecting semantics,
 which we establish through the theorem:
