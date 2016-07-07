@@ -102,13 +102,12 @@ implementation.}
 & \end{flalign*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
-¦ (define (δ . ovs)
-¦   (match ovs
-¦     [(list '+ n₀ n₁) (return (+ n₀ n₁))]
-¦     [(list '- n₀ n₁) (return (- n₀ n₁))]
-¦     [(list '* n₀ n₁) (return (* n₀ n₁))]
-¦     [(list '/ n₀ n₁)
-¦      (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
+¦ (define (δ o v₀ v₁)
+¦   (match* (o v₀ v₁)
+¦     [('+ n₀ n₁) (return (+ n₀ n₁))]
+¦     [('- n₀ n₁) (return (- n₀ n₁))]
+¦     [('* n₀ n₁) (return (* n₀ n₁))]
+¦     [('/ n₀ n₁) (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
 ¦ (define (zero? v) (return (= 0 v)))
 \end{lstlisting}
 \figskip\rfloat{⸨store@⸩}
