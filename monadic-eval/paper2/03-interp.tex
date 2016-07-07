@@ -102,12 +102,12 @@ implementation.}
 & \end{flalign*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
-¦ (define (δ o v₀ v₁)
-¦   (match* (o v₀ v₁)
-¦     [('+ n₀ n₁) (return (+ n₀ n₁))]
-¦     [('- n₀ n₁) (return (- n₀ n₁))]
-¦     [('* n₀ n₁) (return (* n₀ n₁))]
-¦     [('/ n₀ n₁) (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
+¦ (define (δ o n₀ n₁)
+¦   (match o
+¦     ['+ (return (+ n₀ n₁))]
+¦     ['- (return (- n₀ n₁))]
+¦     ['* (return (* n₀ n₁))]
+¦     ['/ (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
 ¦ (define (zero? v) (return (= 0 v)))
 \end{lstlisting}
 \figskip\rfloat{⸨store@⸩}
@@ -389,13 +389,11 @@ in the results):
 & \end{flalign*}
 \figskip\rfloat{⸨δ^@⸩}
 \begin{lstlisting}
-¦ (define (δ . ovs)
-¦   (match ovs
-¦     [(list '+ n₀ n₁) (return 'N)]
-¦     [(list '/ n₀ (? num? n₁))
-¦      (if (= 0 n₁) fail (return 'N))]
-¦     [(list '/ n₀ 'N)
-¦      (mplus fail (return 'N))] ... ))
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('+ _ _       ) (return 'N)]
+¦     [('/ _ (? num?)) (if (= 0 n₁) fail (return 'N))]
+¦     [('/ _ 'N      ) (mplus fail (return 'N))] ... ))
 ¦ (define (zero? v)
 ¦   (match v
 ¦     ['N (mplus (return #t) (return #f))]
