@@ -43,6 +43,9 @@ again:
 	touch main.tex
 	make
 
+fixpoint:
+	make again && make again && make again && make again && make again
+
 .PHONY: much
 much:
 	touch main.tex
