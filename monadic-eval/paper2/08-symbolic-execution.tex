@@ -14,7 +14,7 @@ support symbolic numbers:
 \begin{alignat*}{4}
    e ∈ &&\mathrel{}     exp ⩴ &\mathrel{} … ∣ 𝔥⸨(sym⸩\ x𝔥⸨)⸩ &\hspace{1em} [⦑\emph{symbolic number}⦒]
 \\ ε ∈ &&\mathrel{}    pexp ⩴ &\mathrel{} e ∣ ¬e             &\hspace{1em} [⦑\emph{path expression}⦒]
-\\ φ ∈ &&\mathrel{}    pcon ≔ &\mathrel{} ℘(exp ∪ pc\ exp)   &\hspace{1em} [⦑\emph{path condition}⦒]
+\\ φ ∈ &&\mathrel{}    pcon ≔ &\mathrel{} ℘(pexp)   &\hspace{1em} [⦑\emph{path condition}⦒]
 \end{alignat*}
 Figure~\ref{s:symbolic} shows the units needed to turn the existing interpreter
 into a symbolic executor. Primitives such as ⸨'/⸩ now also take as input and
