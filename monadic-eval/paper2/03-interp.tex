@@ -141,8 +141,7 @@ standard~\cite{dvanhorn:Liang1995Monad}.
 We also define ⸨mrun⸩ for running monadic computations, starting with the empty
 environment and store ⸨∅⸩:
 \begin{lstlisting}
-¦ (define (mrun m)
-¦   (run-StateT ∅ (run-ReaderT ∅ m)))
+¦ (define (mrun m) (run-StateT ∅ (run-ReaderT ∅ m)))
 \end{lstlisting}
 While the ⸨define-monad⸩ form is hiding some details, this component could have
 equivalently been written out explicitly. For example, ⸨return⸩ and ⸨bind⸩ can
@@ -228,8 +227,7 @@ reached states.  The ⸨ev-trace⸩ function is a wrapper around an underlying
 ⸨tell⸩ing the current state of the evaluator: the current expression,
 environment and store.  The top-level evaluation function is then:
 \begin{lstlisting}
-¦ (define (eval e) 
-¦   (mrun ((fix (ev-tell ev)) e)))
+¦ (define (eval e) (mrun ((fix (ev-tell ev)) e)))
 \end{lstlisting}
 
 \begin{figure} %{-{
