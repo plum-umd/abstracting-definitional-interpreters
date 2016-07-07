@@ -26,16 +26,14 @@ functions and applications.
 ¦                         a  ← (alloc f)
 ¦                         ρ′ ≔ (ρ f a)
 ¦                         (ext a (cons e₀ ρ′))
-¦                         (local-env ρ′
-¦                           (ev e₁)))]
+¦                         (local-env ρ′ (ev e₁)))]
 ¦     [(lam x e₀)     (do ρ ← ask-env
 ¦                         (return (cons (lam x e₀) ρ)))]
 ¦     [(app e₀ e₁)    (do (cons (lam x e₂) ρ) ← (ev e₀)
 ¦                         v₁ ← (ev e₁)
 ¦                         a  ← (alloc x)         
 ¦                         (ext a v₁)
-¦                         (local-env (ρ x a) 
-¦                           (ev e₂)))]))
+¦                         (local-env (ρ x a) (ev e₂)))]))
 \end{lstlisting}
 \vspace{-0.75em}
 \caption{The Extensible Definitional Interpreter}
