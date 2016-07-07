@@ -117,7 +117,6 @@ achieved a computable and uniquely precise abstract interpreter.
 ¦         [(? num? n)             (return (= 0 n))]
 ¦         [v #:when (∈ v φ)       (return #t)]
 ¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
-¦         [`(¬ ,v′) (do a ← (zero? v′) (return (not a)))]
 ¦         [v (mplus (do (refine v)       (return #t))
 ¦                   (do (refine `(¬ ,v)) (return #f)))])))
 \end{lstlisting}
