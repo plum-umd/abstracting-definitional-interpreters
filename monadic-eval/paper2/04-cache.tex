@@ -141,9 +141,7 @@ computable, as demonstrated on the following examples:
 ¦ (define (mlfp f)
 ¦   (let loop ([x ∅])
 ¦     (do x′ ← (f x)
-¦         (if (equal? x′ x)
-¦             (return x)
-¦             (loop x′)))))
+¦         (if (equal? x′ x) (return x) (loop x′)))))
 \end{lstlisting}
 \caption{Finding Fixpoints in the Cache}
 \label{f:fixing}
