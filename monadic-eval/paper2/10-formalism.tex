@@ -323,58 +323,6 @@ and the partial ordering on stores and configurations is pointwise:
 
 \paragraph{Finite Abstraction}
 
-The next step towards a computable static analysis is an abstract semantics
-with a finite state space that approximates the big-step collecting semantics,
-notated «♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}» and shown in
-Figure~\ref{f:lamif-abstract}, where «♯{ρ}», «♯{τ}», «♯{v}», «♯{σ}» and «♯{ς}»
-are finite abstractions of their collecting counterparts:
-\begin{alignat*}{3}
-                ♯{ρ} ∈ &&\mathrel{} ♯{env}    &\mathrel{} ≔ var ↦ ♯{addr}⸤⊥⸥ 
-\\[\mathgobble] ♯{ℓ} ∈ &&\mathrel{} ♯{addr}   &\mathrel{} ≔ var × ♯{time} 
-\\[\mathgobble] ♯{τ} ∈ &&\mathrel{} ♯{time}   &\mathrel{} ≔ … 
-\\[\mathgobble] ♯{v} ∈ &&\mathrel{} ♯{val}    &\mathrel{} ≔ … 
-\\[\mathgobble] ♯{σ} ∈ &&\mathrel{} ♯{store}  &\mathrel{} ≔ ♯{addr} ↦ ♯{val} 
-\\[\mathgobble] ♯{ς} ∈ &&\mathrel{} ♯{config} &\mathrel{} ≔ exp × ♯{env} × ♯{store} × ♯{time}
-\end{alignat*}
-The primary structural difference from the collecting semantics is the use of
-join when updating the store («♯{σ}⊔[♯{ℓ}↦♯{v}]») rather than strict
-replacement («∿{σ}[ℓ↦∿{v}]»). This is to preserve soundness in the presence of
-address reuse, which occurs from the finite size of the address space.
-
-The abstract denotation («♯{⟦b⟧}») is any over-approximation of the collecting
-denotation («∿{⟦b⟧}») w.r.t. a Galois connection «∿{val}⇄{α}{γ}♯{val}»:
-\[ ♯{⟦b⟧}(♯{v}₁,♯{v}₂) ⊒ α(∿{⟦b⟧}(γ(♯{v}₁),γ(♯{v}₂))) \]
-Concretization functions «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥» and «⌊γ⌋⸤¬0⸥» are computable
-finite subsets of the full concretization function «γ» s.t.:
-\begin{alignat*}{2}
-                ⌊γ⌋⸤clo⸥(♯{v}) ≔ &\mathrel{} ❴⟨λx.e,♯{ρ}⟩ ∣ ⟨λx.e,♯{ρ}⟩ ∈ γ(♯{v})❵ 
-\\[\mathgobble] ⌊γ⌋⸤0⸥(♯{v})   ≔ &\mathrel{} ❴0 ∣ 0 ∈ γ(♯{v})❵ 
-\\[\mathgobble] ⌊γ⌋⸤¬0⸥(♯{v})  ≔ &\mathrel{} ❴¬0 ∣ n ∈ γ(♯{v}) ∧ n≠0❵
-\end{alignat*}
-Abstract sets «♯{time}» and «♯{val}» are left as parameters to the analysis
-along with their operations «♯{next}», «♯{⟦b⟧}», «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥»,
-«⌊γ⌋⸤¬0⸥» and «⊔⸢♯{val}⸣».
-
-The abstract semantics is a sound approximation of the collecting semantics,
-which we establish through the theorem:
-\begin{theorem}[Abstract Reachability Semantics Soundness]
-\begin{alignat*}{2}
-               & ⦑If⦒    &&\quad ρ,τ⊢e,∿{σ}⇑⟨e′,ρ′,∿{σ}′,τ′⟩ \quad ⦑and⦒ \quad ρ′,τ′⊢e′,∿{σ}′⇓∿{v},∿{σ}″
-\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ) ⊑ ♯{ρ} \quad ⦑and⦒ \quad η(τ) ⊑ ♯{τ} \quad ⦑and⦒ \quad η(∿{σ}) ⊑ ♯{σ}
-\\[\mathgobble]& ⦑then⦒  &&\quad ♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e′,♯{ρ}′,♯{σ}′,♯{τ}′⟩ \quad ⦑and⦒ \quad ♯{ρ}′,♯{τ}′⊢e,♯{σ}′⇓♯{v},♯{σ}″ 
-\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ′) ⊑ ♯{ρ}′⦑,⦒\ η(τ′) ⊑ ♯{τ}′⦑,⦒\ η(∿{σ}′) ⊑ ♯{σ}′⦑,⦒\ v ∈ ∿{v}⦑,⦒\ η(σ″) ⊑ ∿{σ}″
-\end{alignat*}
-\end{theorem}
-The proof is by induction on the big-step derivation. The extraction function
-«η» is defined separately for environments («ρ»), time («τ»), collecting stores
-(«∿{σ}»), values («∿{v}») and configurations («∿{ς}»). «η(τ)» and «η(∿{v})» are
-given with parameters «♯{time}» and «♯{val}». «η(ρ)», «η(∿{σ})» and «η(∿{ς})»
-are defined pointwise:
-\begin{alignat*}{1}
-  & η(ρ)(x) ≔ η(ρ(x)) \quad\quad η(∿{σ})(♯{ℓ}) ≔ ⨆⸤ℓ ∈ γ(♯{ℓ})⸥η(∿{σ}(ℓ)) 
-\\[\mathgobble] & η(⟨e,ρ,τ,∿{σ}⟩) ≔ ⟨e,η(ρ),η(τ),η(∿{σ})⟩
-\end{alignat*}
-
 \begin{figure*} %{-{
 \begin{flushright}[\emph{Abstract Evaluation}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′»}\end{flushright}
 \begin{mathpar}
@@ -468,6 +416,58 @@ are defined pointwise:
 \caption{Big-step Abstract Reachability Semantics}
 \label{f:lamif-abstract}
 \end{figure*} %}-}
+
+The next step towards a computable static analysis is an abstract semantics
+with a finite state space that approximates the big-step collecting semantics,
+notated «♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}» and shown in
+Figure~\ref{f:lamif-abstract}, where «♯{ρ}», «♯{τ}», «♯{v}», «♯{σ}» and «♯{ς}»
+are finite abstractions of their collecting counterparts:
+\begin{alignat*}{3}
+                ♯{ρ} ∈ &&\mathrel{} ♯{env}    &\mathrel{} ≔ var ↦ ♯{addr}⸤⊥⸥ 
+\\[\mathgobble] ♯{ℓ} ∈ &&\mathrel{} ♯{addr}   &\mathrel{} ≔ var × ♯{time} 
+\\[\mathgobble] ♯{τ} ∈ &&\mathrel{} ♯{time}   &\mathrel{} ≔ … 
+\\[\mathgobble] ♯{v} ∈ &&\mathrel{} ♯{val}    &\mathrel{} ≔ … 
+\\[\mathgobble] ♯{σ} ∈ &&\mathrel{} ♯{store}  &\mathrel{} ≔ ♯{addr} ↦ ♯{val} 
+\\[\mathgobble] ♯{ς} ∈ &&\mathrel{} ♯{config} &\mathrel{} ≔ exp × ♯{env} × ♯{store} × ♯{time}
+\end{alignat*}
+The primary structural difference from the collecting semantics is the use of
+join when updating the store («♯{σ}⊔[♯{ℓ}↦♯{v}]») rather than strict
+replacement («∿{σ}[ℓ↦∿{v}]»). This is to preserve soundness in the presence of
+address reuse, which occurs from the finite size of the address space.
+
+The abstract denotation («♯{⟦b⟧}») is any over-approximation of the collecting
+denotation («∿{⟦b⟧}») w.r.t. a Galois connection «∿{val}⇄{α}{γ}♯{val}»:
+\[ ♯{⟦b⟧}(♯{v}₁,♯{v}₂) ⊒ α(∿{⟦b⟧}(γ(♯{v}₁),γ(♯{v}₂))) \]
+Concretization functions «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥» and «⌊γ⌋⸤¬0⸥» are computable
+finite subsets of the full concretization function «γ» s.t.:
+\begin{alignat*}{2}
+                ⌊γ⌋⸤clo⸥(♯{v}) ≔ &\mathrel{} ❴⟨λx.e,♯{ρ}⟩ ∣ ⟨λx.e,♯{ρ}⟩ ∈ γ(♯{v})❵ 
+\\[\mathgobble] ⌊γ⌋⸤0⸥(♯{v})   ≔ &\mathrel{} ❴0 ∣ 0 ∈ γ(♯{v})❵ 
+\\[\mathgobble] ⌊γ⌋⸤¬0⸥(♯{v})  ≔ &\mathrel{} ❴¬0 ∣ n ∈ γ(♯{v}) ∧ n≠0❵
+\end{alignat*}
+Abstract sets «♯{time}» and «♯{val}» are left as parameters to the analysis
+along with their operations «♯{next}», «♯{⟦b⟧}», «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥»,
+«⌊γ⌋⸤¬0⸥» and «⊔⸢♯{val}⸣».
+
+The abstract semantics is a sound approximation of the collecting semantics,
+which we establish through the theorem:
+\begin{theorem}[Abstract Reachability Semantics Soundness]
+\begin{alignat*}{2}
+               & ⦑If⦒    &&\quad ρ,τ⊢e,∿{σ}⇑⟨e′,ρ′,∿{σ}′,τ′⟩ \quad ⦑and⦒ \quad ρ′,τ′⊢e′,∿{σ}′⇓∿{v},∿{σ}″
+\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ) ⊑ ♯{ρ} \quad ⦑and⦒ \quad η(τ) ⊑ ♯{τ} \quad ⦑and⦒ \quad η(∿{σ}) ⊑ ♯{σ}
+\\[\mathgobble]& ⦑then⦒  &&\quad ♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e′,♯{ρ}′,♯{σ}′,♯{τ}′⟩ \quad ⦑and⦒ \quad ♯{ρ}′,♯{τ}′⊢e,♯{σ}′⇓♯{v},♯{σ}″ 
+\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ′) ⊑ ♯{ρ}′⦑,⦒\ η(τ′) ⊑ ♯{τ}′⦑,⦒\ η(∿{σ}′) ⊑ ♯{σ}′⦑,⦒\ v ∈ ∿{v}⦑,⦒\ η(σ″) ⊑ ∿{σ}″
+\end{alignat*}
+\end{theorem}
+The proof is by induction on the big-step derivation. The extraction function
+«η» is defined separately for environments («ρ»), time («τ»), collecting stores
+(«∿{σ}»), values («∿{v}») and configurations («∿{ς}»). «η(τ)» and «η(∿{v})» are
+given with parameters «♯{time}» and «♯{val}». «η(ρ)», «η(∿{σ})» and «η(∿{ς})»
+are defined pointwise:
+\begin{alignat*}{1}
+  & η(ρ)(x) ≔ η(ρ(x)) \quad\quad η(∿{σ})(♯{ℓ}) ≔ ⨆⸤ℓ ∈ γ(♯{ℓ})⸥η(∿{σ}(ℓ)) 
+\\[\mathgobble] & η(⟨e,ρ,τ,∿{σ}⟩) ≔ ⟨e,η(ρ),η(τ),η(∿{σ})⟩
+\end{alignat*}
 
 \paragraph{Computing the Analysis}
 

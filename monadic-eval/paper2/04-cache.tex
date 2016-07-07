@@ -100,6 +100,30 @@ evaluator (it always returns an “improved” oracle), and the finite domain of
 the cache, which maps abstract configurations to pairs of values and stores,
 all of which are finite.
 
+With these peices in place we construct a complete interpreter:
+\begin{lstlisting}
+¦ (define (eval e)
+¦   (mrun ((fix-cache (fix (ev-cache ev))) e)))
+\end{lstlisting}
+When linked with ⸨δ^⸩ and ⸨alloc^⸩, this abstract interpreter is sound and
+computable, as demonstrated on the following examples:
+ℑ⁅
+¦ > (rec f (λ (x) (f x))
+¦     (f 0))
+ℑ,
+¦ '()
+ℑ;
+¦ > (rec f (λ (n) (if0 n 1 (* n (f (- n 1)))))
+¦     (f 5))
+ℑ,
+¦ '(N)
+ℑ;
+¦ > (rec f (λ (x) (if0 x 0 (if0 (f (- x 1)) 2 3)))
+¦      (f (+ 1 0)))
+ℑ,
+¦ '(0 2 3)
+ℑ⁆
+
 \begin{figure} %{-{
 \rfloat{⸨fix-cache@⸩}
 \begin{lstlisting}
@@ -125,26 +149,3 @@ all of which are finite.
 \label{f:fixing}
 \end{figure} %}-}
 
-With these peices in place we construct a complete interpreter:
-\begin{lstlisting}
-¦ (define (eval e)
-¦   (mrun ((fix-cache (fix (ev-cache ev))) e)))
-\end{lstlisting}
-When linked with ⸨δ^⸩ and ⸨alloc^⸩, this abstract interpreter is sound and
-computable, as demonstrated on the following examples:
-ℑ⁅
-¦ > (rec f (λ (x) (f x))
-¦     (f 0))
-ℑ,
-¦ '()
-ℑ;
-¦ > (rec f (λ (n) (if0 n 1 (* n (f (- n 1)))))
-¦     (f 5))
-ℑ,
-¦ '(N)
-ℑ;
-¦ > (rec f (λ (x) (if0 x 0 (if0 (f (- x 1)) 2 3)))
-¦      (f (+ 1 0)))
-ℑ,
-¦ '(0 2 3)
-ℑ⁆

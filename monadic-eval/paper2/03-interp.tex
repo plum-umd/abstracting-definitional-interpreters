@@ -356,30 +356,6 @@ there are \emph{two} possible answers when the denominator is ⸨'N⸩: ⸨'N⸩
 operation for combining multiple answers. Non-determinism is also used in
 ⸨zero?⸩, which returns both true and false on ⸨'N⸩.
 
-\begin{figure} %{-{
-\rfloat{⸨monad^@⸩}
-\begin{flalign*}
-                  & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
-& \end{flalign*}
-\figskip\rfloat{⸨δ^@⸩}
-\begin{lstlisting}
-¦ (define (δ . ovs)
-¦   (match ovs
-¦     [(list '+ n₀ n₁) (return 'N)]
-¦     [(list '/ n₀ (? num? n₁))
-¦      (if (= 0 n₁) fail (return 'N))]
-¦     [(list '/ n₀ 'N)
-¦      (mplus fail (return 'N))] ... ))
-¦ (define (zero? v)
-¦   (match v
-¦     ['N (mplus (return #t) (return #f))]
-¦     [_  (return (= 0 v))]))
-\end{lstlisting}
-\caption{Abstracting Primitive Operations}
-\label{f:abs-delta}
-\end{figure} %}-}
-
 By linking together ⸨δ^@⸩ and the monad stack with non-determinism, we obtain
 an evaluator that produces a set of results:
 ℑ⁅
@@ -408,6 +384,30 @@ in the results):
 ¦ (set '((3 . ()) (if0 (+ 1 0) 3 4) (+ 1 0) 0 3)
 ¦      '((4 . ()) (if0 (+ 1 0) 3 4) (+ 1 0) 0 4))
 ℑ⁆
+
+\begin{figure} %{-{
+\rfloat{⸨monad^@⸩}
+\begin{flalign*}
+                  & 𝔥⸨(define-monad⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨δ^@⸩}
+\begin{lstlisting}
+¦ (define (δ . ovs)
+¦   (match ovs
+¦     [(list '+ n₀ n₁) (return 'N)]
+¦     [(list '/ n₀ (? num? n₁))
+¦      (if (= 0 n₁) fail (return 'N))]
+¦     [(list '/ n₀ 'N)
+¦      (mplus fail (return 'N))] ... ))
+¦ (define (zero? v)
+¦   (match v
+¦     ['N (mplus (return #t) (return #f))]
+¦     [_  (return (= 0 v))]))
+\end{lstlisting}
+\caption{Abstracting Primitive Operations}
+\label{f:abs-delta}
+\end{figure} %}-}
 
 It is clear that the interpreter will only ever see a finite set of numbers
 (including ⸨'N⸩), but it's definitely not true that the interpreter halts on
@@ -440,6 +440,20 @@ and ⸨ext⸩ which interact with a store mapping to \emph{sets} of values. The
 a given address.  The ⸨ext⸩ function joins whenever an address is already
 allocated, otherwise it maps the address to a singleton set.
 
+By linking these components with the same monad stack from before, we obtain an
+interpreter that loses precision whenever variables are bound to multiple
+values.  For example, this program binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and therefore
+produces both answers when run:
+ℑ⁅
+¦ > (let f (λ (x) x)
+¦     (let _ (f 0) (f 1)))]
+ℑ,
+¦ '((0 . ((x 1 0) (f ((λ (x) x) . ()))))
+¦   (1 . ((x 1 0) (f ((λ (x) x) . ())))))
+ℑ⁆
+Our abstract interpreter now has a truly finite domain; the next step is to
+detect loops in the state-space to achieve termination.
+
 \begin{figure} %{-{
 \rfloat{⸨alloc^@⸩}
 \begin{lstlisting}
@@ -461,16 +475,3 @@ allocated, otherwise it maps the address to a singleton set.
 \label{f:0cfa-abs}
 \end{figure} %}-}
 
-By linking these components with the same monad stack from before, we obtain an
-interpreter that loses precision whenever variables are bound to multiple
-values.  For example, this program binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and therefore
-produces both answers when run:
-ℑ⁅
-¦ > (let f (λ (x) x)
-¦     (let _ (f 0) (f 1)))]
-ℑ,
-¦ '((0 . ((x 1 0) (f ((λ (x) x) . ()))))
-¦   (1 . ((x 1 0) (f ((λ (x) x) . ())))))
-ℑ⁆
-Our abstract interpreter now has a truly finite domain; the next step is to
-detect loops in the state-space to achieve termination.
