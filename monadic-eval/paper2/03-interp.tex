@@ -13,35 +13,29 @@ functions and applications.
 \begin{lstlisting}
 ¦ (define ((ev ev) e)
 ¦   (match e
-¦     [(num n) (return n)]
-¦     [(vbl x)
-¦      (do ρ ← ask-env
-¦          (find (ρ x)))]    
-¦     [(ifz e₀ e₁ e₂) 
-¦      (do v  ← (ev e₀)
-¦          z? ← (zero? v)
-¦          (ev (if z? e₁ e₂)))]
-¦     [(op2 o e₀ e₁)
-¦      (do v₀ ← (ev e₀)
-¦          v₁ ← (ev e₁)
-¦          (δ o v₀ v₁))]
-¦     [(rec f e₀ e₁) 
-¦      (do ρ  ← ask-env
-¦          a  ← (alloc f)
-¦          ρ′ ≔ (ρ f a)
-¦          (ext a (cons e₀ ρ′))
-¦          (local-env ρ′
-¦            (ev e₁)))]
-¦     [(lam x e₀)
-¦      (do ρ ← ask-env
-¦          (return (cons (lam x e₀) ρ)))]
-¦     [(app e₀ e₁)
-¦      (do (cons (lam x e₂) ρ) ← (ev e₀)
-¦          v₁ ← (ev e₁)
-¦          a  ← (alloc x)         
-¦          (ext a v₁)
-¦          (local-env (ρ x a) 
-¦            (ev e₂)))]))
+¦     [(num n)        (return n)]
+¦     [(vbl x)        (do ρ ← ask-env
+¦                         (find (ρ x)))]    
+¦     [(ifz e₀ e₁ e₂) (do v  ← (ev e₀)
+¦                         z? ← (zero? v)
+¦                         (ev (if z? e₁ e₂)))]
+¦     [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)
+¦                         v₁ ← (ev e₁)
+¦                         (δ o v₀ v₁))]
+¦     [(rec f e₀ e₁)  (do ρ  ← ask-env
+¦                         a  ← (alloc f)
+¦                         ρ′ ≔ (ρ f a)
+¦                         (ext a (cons e₀ ρ′))
+¦                         (local-env ρ′
+¦                           (ev e₁)))]
+¦     [(lam x e₀)     (do ρ ← ask-env
+¦                         (return (cons (lam x e₀) ρ)))]
+¦     [(app e₀ e₁)    (do (cons (lam x e₂) ρ) ← (ev e₀)
+¦                         v₁ ← (ev e₁)
+¦                         a  ← (alloc x)         
+¦                         (ext a v₁)
+¦                         (local-env (ρ x a) 
+¦                           (ev e₂)))]))
 \end{lstlisting}
 \caption{The Extensible Definitional Interpreter}
 \label{f:interpreter}
