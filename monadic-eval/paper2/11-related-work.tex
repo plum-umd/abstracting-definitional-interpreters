@@ -1,16 +1,15 @@
 \section{Related Work}
 
-This work draws upon and re-presents many existing ideas from the literature on
-abstract interpretation for higher-order languages.  In particular, it closely
-follows the abstracting abstract
-machine~\cite{dvanhorn:VanHorn2010Abstracting,dvanhorn:VanHorn2012Systematic}
-approach to deriving abstract interpreters from semantics for higher-order
-languages.  The key difference here is that we have done it in the setting of a
-monadic definitional interpreter instead of an abstract machine.  This involved
-a novel caching mechanism and fixed-point algorithm, but otherwise followed the
-same recipe.  Remarkably, the pushdown property is simply inherited from the
-meta-language rather than require explicit mechanisms within the abstract
-interpreter.
+This work draws upon and re-presents many ideas from the literature on abstract
+interpretation for higher-order languages.  In particular, it closely follows
+the abstracting abstract
+machines~\cite{dvanhorn:VanHorn2010Abstracting,dvanhorn:VanHorn2012Systematic}
+approach to deriving abstract interpreters from a small-step machine. The key
+difference here is that we operate in the setting of a monadic definitional
+interpreter instead of an abstract machine.  This involved a novel caching
+mechanism and fixed-point algorithm, but otherwise followed the same recipe.
+Remarkably, the pushdown property is simply inherited from the meta-language
+rather than require explicit mechanisms within the abstract interpreter.
 
 The use of monads and monad transformers to make extensible (concrete)
 interpreters is a well-known

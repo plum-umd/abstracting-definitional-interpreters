@@ -573,12 +573,11 @@ from the cache, resulting in a smaller cache domain for the same analysis:
 An advantage of our setting is that we recover pushdown analysis also for
 varying degrees of store-widening, which is not the case in Gilray \emph{et
 al}~\cite{local:p4f}, although pushdown precision for non-widened semantics has
-been shown before in Johnson and Van
-Horn~\cite{dvanhorn:Johnson2014Abstracting}. Furthermore, the implementation of
-our analyzer achieves this precision by precise call-return matching in the
-defining metalanguage of a definitional interpreter, requiring no added
-instrumentation to the state-space of the analyzer (although in the case of
-Gilray \emph{et al} the instrumentation is minor).
+been achieved by Johnson and Van Horn~\cite{dvanhorn:Johnson2014Abstracting}.
+Furthermore, the implementation of our analyzer achieves this precision through
+precise call-return matching in the defining metalanguage of a definitional
+interpreter, requiring no added instrumentation to the state-space of the
+analyzer.
 
 Going back to Nielson et al~\cite{dvanhorn:Neilson:1999}, it would be
 interesting to redevelop their constraint-based analysis descriptions of kCFA
