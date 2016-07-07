@@ -12,21 +12,24 @@ verification engine.
 To support symbolic execution, first we extend the syntax of the language to
 support symbolic numbers:
 \begin{alignat*}{4}
-   e ∈ &&\mathrel{}   exp ⩴ … ∣ &\mathrel{} 𝔥⸨(sym⸩\ x𝔥⸨)⸩ &\hspace{3em} [⦑\emph{symbolic number}⦒]
+   e ∈ &&\mathrel{}   exp ⩴ … ∣ &\mathrel{} 𝔥⸨(sym⸩\ x𝔥⸨)⸩ &\hspace{3em} [⦑\emph{symbolic number}⦒]\\
+   φ ∈ &&\mathrel{}   pc  = ℘(e + (¬ e)) ∣ &\mathrel{} 𝔥⸨(sym⸩\ x𝔥⸨)⸩ &\hspace{3em} [⦑\emph{path condition}⦒]
 \end{alignat*}
 Figure~\ref{s:symbolic} shows the units needed to turn the existing interpreter
 into a symbolic executor. Primitives such as ⸨'/⸩ now also take as input and
 return symbolic values. As standard, symbolic execution employs a
 path-condition accumulating assumptions made at each branch, allowing the
 elimination of infeasible paths and construction of test cases. We represent
-the path-condition ⸨φ⸩ as a set of symbolic values known to have evaluated to
-⸨0⸩. This set is another state component provided by ⸨StateT⸩ in the monad
+the path-condition ⸨φ⸩ as a set of symbolic values or their negations.
+If ⸨e⸩ is in ⸨φ⸩, ⸨e⸩ is assumed to evaluate to ⸨0⸩;
+if ⸨¬ e⸩ is in ⸨φ⸩, ⸨e⸩ is assumed to evaluate to non-⸨0⸩.
+This set is another state component provided by ⸨StateT⸩ in the monad
 transformer stack. Monadic operations ⸨get-path-cond⸩ and ⸨refine⸩ reference
 and update the path-condition. The metafunction ⸨zero?⸩ works similarly to the
 concrete counterpart, but also uses the path-condition to prove that some
 symbolic numbers are definitely ⸨0⸩ or non-⸨0⸩. In case of uncertainty, ⸨zero?⸩
 returns both answers instead of refining the path-condition with the assumption
-made. Operator ⸨'¬⸩ represents negation in our language.
+made.
 
 In the following example, the symbolic executor recognizes that result ⸨3⸩ and
 division-by-0 error are not feasible:
@@ -44,12 +47,12 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 \begin{figure} %{-{
 \rfloat{⸨δ^-symbolic@⸩}
 \begin{lstlisting}
-¦ (define (δ . ovs)
-¦   (match ovs
-¦     [(list '/ v₀ v₁)
-¦      (do z? ← (zero? v₁)
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('/ n₀ n₁)
+¦      (do z? ← (zero? n₁)
 ¦          (cond [z? fail]
-¦                [(member 'N (list v₀ v₁))
+¦                [(member 'N (list n₀ n₁))
 ¦                 (return 'N)] ... ))])] ... ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond

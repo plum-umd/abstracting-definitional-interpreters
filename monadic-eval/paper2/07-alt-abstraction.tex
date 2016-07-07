@@ -3,10 +3,10 @@
 \begin{figure} %{-{
 \rfloat{⸨precise-δ@⸩}
 \begin{lstlisting}
-¦ (define (δ . ovs)
-¦   (match ovs
-¦     [`(+ ,(? num? n₁) ,(? num? n₂)) (return (+ n₁ n₂))]
-¦     [`(+ ,_ ,_) (return 'N)] ... ))
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('+ (? num?) (? num?)) (return (+ n₀ n₁))]
+¦     [('+ _        _       ) (return 'N)] ... ))
 ¦ (define (zero? v)
 ¦   (match v
 ¦     ['N (mplus (return #t) (return #f))]
@@ -103,15 +103,14 @@ achieved a computable and uniquely precise abstract interpreter.
 \end{lstlisting}
 \figskip\rfloat{⸨δ-symbolic@⸩}
 \begin{lstlisting}
-¦ (define (δ . ovs)
-¦   (match ovs
-¦     [(list '/ v₀ v₁)
-¦      (do z? ← (zero? v₁)
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('/ n₀ n₁)
+¦      (do z? ← (zero? n₁)
 ¦          (cond [z? fail]
-¦                [(and (num? v₀) (num? v₁))
-¦                 (return (/ v₀ v₁))]
-¦                [else (return `(/ ,v₀ ,v₁))]))]
-¦     [(list '¬ 0) 1] ... ))
+¦                [(and (num? n₀) (num? n₁))
+¦                 (return (/ n₀ n₁))]
+¦                [else (return `(/ ,n₀ ,n₁))]))] ... ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
 ¦       (match v
