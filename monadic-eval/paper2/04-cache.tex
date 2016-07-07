@@ -107,7 +107,7 @@ all of which are finite.
 ¦   (do ρ ← ask-env  σ ← get-store
 ¦       ς ≔ (list e ρ σ)
 ¦       ¢⁺ ← (mlfp (λ (¢) 
-¦              (do (put-cache-out ∅-map)
+¦              (do (put-cache-out ∅)
 ¦                  (put-store σ)
 ¦                  (local-cache-in ¢ (eval e))
 ¦                  get-cache-out)))
@@ -115,7 +115,7 @@ all of which are finite.
 ¦         (do (put-store (cdr v×σ))
 ¦             (return (car v×σ))))))
 ¦ (define (mlfp f)
-¦   (let loop ([x ∅-map])
+¦   (let loop ([x ∅])
 ¦     (do x′ ← (f x)
 ¦         (if (equal? x′ x)
 ¦             (return x)

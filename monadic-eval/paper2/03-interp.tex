@@ -449,7 +449,7 @@ Closures consist of code---a lambda term---and an environment---a finite map
 from variables to addresses.  Since the set of lambda terms and variables is
 bounded by the program text, it suffices to finitize closures by finitizing the
 set of addresses.  Following the AAM approach, we do this by modifying the
-allocation function produce elements drawn from a finite set.  In order to
+allocation function to produce elements drawn from a finite set.  In order to
 retain soundness in the semantics, we modify the store to map addresses to
 \emph{sets} of values, model store update as a join, and model dereference as a
 non-deterministic choice.
