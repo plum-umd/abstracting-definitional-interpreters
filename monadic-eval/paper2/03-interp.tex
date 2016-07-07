@@ -296,10 +296,6 @@ of expressions that were not evaluated during the running of a program:
 ℑ,
 ¦ (cons '(1 . ()) (set 2))
 ℑ;
-¦ > (* (+ 3 4) 9)
-ℑ,
-¦ (cons '(63 . ()) (set))
-ℑ;
 ¦ > (λ (x) x)
 ℑ,
 ¦ (cons '(((λ (x) x) . ()) . ()) (set 'x))
@@ -311,25 +307,6 @@ of expressions that were not evaluated during the running of a program:
 
 Our setup makes it easy not only to express the concrete interpreter, but also
 these useful forms of collecting semantics.
-
-\subsection{Abstracting Base Values}\label{s:base}
-
-Our interpreter must become decidable before it can be considered an analysis,
-and the first step towards decidability is to abstract the base types of the
-language to something finite. We do this for our number base type by
-introducing a new \emph{abstract} number, written ⸨'N⸩, which represents the
-set of all numbers. Abstract numbers are introduced by an alternative
-interpretation of primitive operations, given in Figure~\ref{f:abs-delta},
-which simply produces ⸨'N⸩ in all cases. 
-
-Some care must be taken in the abstraction of ⸨'/⸩. If the denominator is the
-abstract number ⸨'N⸩, then it is possible the program could fail as a result of
-divide-by-zero, since ⸨0⸩ is contained in the representation of ⸨'N⸩. Therefore
-there are \emph{two} possible answers when the denominator is ⸨'N⸩: ⸨'N⸩ and
-⸨'failure⸩. Both answers are ⸨return⸩ed by introducing non-determinism
-⸨NondetT⸩ into the monad stack. Adding non-determinism provides the ⸨mplus⸩
-operation for combining multiple answers. Non-determinism is also used in
-⸨zero?⸩, which returns both true and false on ⸨'N⸩.
 
 \begin{figure} %{-{
 \rfloat{⸨dead-monad@⸩}
@@ -355,6 +332,25 @@ operation for combining multiple answers. Non-determinism is also used in
 \label{f:dead}
 \vspace{-1em}
 \end{figure} %}-}
+
+\subsection{Abstracting Base Values}\label{s:base}
+
+Our interpreter must become decidable before it can be considered an analysis,
+and the first step towards decidability is to abstract the base types of the
+language to something finite. We do this for our number base type by
+introducing a new \emph{abstract} number, written ⸨'N⸩, which represents the
+set of all numbers. Abstract numbers are introduced by an alternative
+interpretation of primitive operations, given in Figure~\ref{f:abs-delta},
+which simply produces ⸨'N⸩ in all cases. 
+
+Some care must be taken in the abstraction of ⸨'/⸩. If the denominator is the
+abstract number ⸨'N⸩, then it is possible the program could fail as a result of
+divide-by-zero, since ⸨0⸩ is contained in the representation of ⸨'N⸩. Therefore
+there are \emph{two} possible answers when the denominator is ⸨'N⸩: ⸨'N⸩ and
+⸨'failure⸩. Both answers are ⸨return⸩ed by introducing non-determinism
+⸨NondetT⸩ into the monad stack. Adding non-determinism provides the ⸨mplus⸩
+operation for combining multiple answers. Non-determinism is also used in
+⸨zero?⸩, which returns both true and false on ⸨'N⸩.
 
 By linking together ⸨δ^@⸩ and the monad stack with non-determinism, we obtain
 an evaluator that produces a set of results:
@@ -392,30 +388,6 @@ closures.  Second, there's no way for the interpreter to detect when it sees a
 loop.  To make a terminating abstract interpreter requires tackling both.  We
 look next at abstracting closures.
 
-\subsection{Abstracting Closures}
-
-Closures consist of code---a lambda term---and an environment---a finite map
-from variables to addresses.  Since the set of lambda terms and variables is
-bounded by the program text, it suffices to finitize closures by finitizing the
-set of addresses.  Following the AAM approach, we do this by modifying the
-allocation function to produce elements drawn from a finite set.  In order to
-retain soundness in the semantics, we modify the store to map addresses to
-\emph{sets} of values, model store update as a join, and model dereference as a
-non-deterministic choice.
-
-Any abstraction of the allocation function that produces a finite set will do,
-but the choice of abstraction will determine the precision of the resulting
-analysis.  A simple choice is to allocate variables using the variable's name
-as its address.  This gives a monomorphic, or 0CFA-like, abstraction.
-
-Figure~\ref{f:0cfa-abs} shows the component ⸨alloc^@⸩ which implements
-monomorphic allocation, and the component ⸨store-nd@⸩ for implementing ⸨find⸩
-and ⸨ext⸩ which interact with a store mapping to \emph{sets} of values. The
-⸨for/monad+⸩ form is a convenience for combining a set of computations with
-⸨mplus⸩, and is used so ⸨find⸩ returns \emph{all} of the values in the store at
-a given address.  The ⸨ext⸩ function joins whenever an address is already
-allocated, otherwise it maps the address to a singleton set.
-
 \begin{figure} %{-{
 \rfloat{⸨monad^@⸩}
 \begin{flalign*}
@@ -439,6 +411,30 @@ allocated, otherwise it maps the address to a singleton set.
 \label{f:abs-delta}
 \vspace{-1em}
 \end{figure} %}-}
+
+\subsection{Abstracting Closures}
+
+Closures consist of code---a lambda term---and an environment---a finite map
+from variables to addresses.  Since the set of lambda terms and variables is
+bounded by the program text, it suffices to finitize closures by finitizing the
+set of addresses.  Following the AAM approach, we do this by modifying the
+allocation function to produce elements drawn from a finite set.  In order to
+retain soundness in the semantics, we modify the store to map addresses to
+\emph{sets} of values, model store update as a join, and model dereference as a
+non-deterministic choice.
+
+Any abstraction of the allocation function that produces a finite set will do,
+but the choice of abstraction will determine the precision of the resulting
+analysis.  A simple choice is to allocate variables using the variable's name
+as its address.  This gives a monomorphic, or 0CFA-like, abstraction.
+
+Figure~\ref{f:0cfa-abs} shows the component ⸨alloc^@⸩ which implements
+monomorphic allocation, and the component ⸨store-nd@⸩ for implementing ⸨find⸩
+and ⸨ext⸩ which interact with a store mapping to \emph{sets} of values. The
+⸨for/monad+⸩ form is a convenience for combining a set of computations with
+⸨mplus⸩, and is used so ⸨find⸩ returns \emph{all} of the values in the store at
+a given address.  The ⸨ext⸩ function joins whenever an address is already
+allocated, otherwise it maps the address to a singleton set.
 
 By linking these components with the same monad stack from before, we obtain an
 interpreter that loses precision whenever variables are bound to multiple

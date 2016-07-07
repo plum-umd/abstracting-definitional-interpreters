@@ -1,16 +1,23 @@
-\newcommand{\lamif}{«λ⦑IF⦒» }
-
 \section{Formalism}\label{s:formalism}
 
-In this section we formalize our approach to designing static analyzers via
-definitional interpreters. The development begins with a ``ground truth''
-big-step semantics and concludes with the fixpoint iteration strategy described
-in Section~\ref{s:cache}, which we prove sound and computable w.r.t. a
-synthesized abstract semantics. The design is systematic, and applies to
-arbitrary developments which use big-step operational semantics. We demonstrate
-the systematic process as applied to a subset of the language described in
-Figure~\ref{f:syntax}, which we call \lamif and display in
-Figure~\ref{f:lamif-syntax}.
+In this section we formalize our approach to designing definitional abstract
+interpreters. We begin with a ``ground truth'' big-step semantics and concludes
+with the fixpoint iteration strategy described in Section~\ref{s:cache}, which
+we prove sound and computable w.r.t. a synthesized abstract semantics. The
+design is systematic, and applies to arbitrary developments which use big-step
+operational semantics. We demonstrate the systematic process as applied to a
+subset of the language described in Figure~\ref{f:syntax}, which we call
+\lamif:
+\begin{alignat*}{1}
+e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,e) 
+\end{alignat*}
+\vspace{-2.0em}
+\begin{alignat*}{6}
+                n ∈&&\mathrel{} nums  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad ℓ ∈ &&\mathrel{}  addr ≔ &\mathrel{} var × time 
+\\[\mathgobble] x ∈&&\mathrel{} vars  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad σ ∈ &&\mathrel{} store ≔ &\mathrel{} addr → val⸤⊥⸥ 
+\\[\mathgobble] b ∈&&\mathrel{} binop                    ≔   &\mathrel{} ❴plus,…❵    &\quad\quad v ∈ &&\mathrel{}   val ⩴ &\mathrel{} n ∣ ⟨λx.e,ρ⟩ 
+\\[\mathgobble] τ ∈&&\mathrel{}  time                    ≔   &\mathrel{} ℕ           &\quad\quad ρ ∈ &&\mathrel{}   env ≔ &\mathrel{} var → addr⸤⊥⸥ 
+\end{alignat*}
 
 \paragraph{Concrete Semantics}
 
@@ -22,177 +29,6 @@ initial expression, and «v» is the resulting value. The argument «τ» repres
 call-site sensitivity. Concretely time is modelled as a natural number, and all
 that is required is that ``fresh'' numbers are available for allocating values
 in the store.
-
-\begin{figure} %{-{
-\begin{alignat*}{1}
-e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,e) 
-\end{alignat*}
-\begin{alignat*}{6}
-                n ∈&&\mathrel{} nums  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad ℓ ∈ &&\mathrel{}  addr ≔ &\mathrel{} var × time 
-\\[\mathgobble] x ∈&&\mathrel{} vars  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad σ ∈ &&\mathrel{} store ≔ &\mathrel{} addr → val⸤⊥⸥ 
-\\[\mathgobble] b ∈&&\mathrel{} binop                    ≔   &\mathrel{} ❴plus,…❵    &\quad\quad v ∈ &&\mathrel{}   val ⩴ &\mathrel{} n ∣ ⟨λx.e,ρ⟩ 
-\\[\mathgobble] τ ∈&&\mathrel{}  time                    ≔   &\mathrel{} ℕ           &\quad\quad ρ ∈ &&\mathrel{}   env ≔ &\mathrel{} var → addr⸤⊥⸥ 
-\end{alignat*}
-\caption{\lamif{} Syntactic Categories}
-\label{f:lamif-syntax}
-\end{figure} %}-}
-
-\begin{figure*} %{-{
-\begin{flushright}[\emph{Concrete Evaluation}]\quad\fbox{«ρ,τ⊢e,σ⇓v,σ′»}\end{flushright}
-\vspace{-0.75em}
-\begin{mathpar}
-  \inferrule*[left=(Lit)]{ }{ρ , τ ⊢ n , σ ⇓ n , σ}
-
-  \inferrule*[left=(Var)]{ }{ρ , τ ⊢ x , σ ⇓ σ(ρ(x)) , σ}
-
-  \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}\vspace{-0.75em}
-
-  \inferrule*[left=(Bin)]{
-  ρ , τ ⊢ e₁ , σ  ⇓ v₁ , σ₁ \\
-  ρ , τ ⊢ e₂ , σ₁ ⇓ v₂ , σ₂}
-  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}\vspace{-0.75em}
-
-  \inferrule*[left=(App),right={\begin{minipage}{2em}\ssmall
-    \begin{alignat*}{1}
-    \begin{alignedat}{2} 
-⟨λx.e′,ρ′⟩ = &\mathrel{} v₁ \\[-0.5em]
-        ℓ  = &\mathrel{} ⟨x,τ′⟩ \\[-0.5em]
-        τ′ \mathrel{\hphantom{=}} &\mathrel{} ⦑\emph{fresh}⦒
-      \end{alignedat}
-    \end{alignat*}
-  \end{minipage}}]{
-  ρ       , τ  ⊢ e₁    , σ        ⇓ v₁ , σ₁ \\
-  ρ       , τ  ⊢ e₂    , σ₁       ⇓ v₂ , σ₂ \\
-  ρ′[x↦ℓ] , τ′ ⊢ e′    , σ₂[ℓ↦v₂] ⇓ v′ , σ₃}
-  {ρ      , τ ⊢ e₁(e₂) , σ        ⇓ v′ , σ₃}\vspace{-0.75em}
-
-  \inferrule*[left=(IfT),right={\ssmall «n=0»}]{
-  ρ , τ ⊢ e₁ , σ ⇓ n , σ₁ \\
-  ρ , τ ⊢ e₂ , σ₁ ⇓ v , σ₂}
-  {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
-
-  \inferrule*[left=(IfF),right={\ssmall «n≠0»}]{
-    ρ , τ ⊢ e₁ , σ  ⇓ n , σ₁ \\
-    ρ , τ ⊢ e₃ , σ₁ ⇓ v , σ₂}
-  {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
-\end{mathpar}
-\begin{flushright}[\emph{Concrete Reachability}]\quad\fbox{«ρ,τ⊢e,σ⇑ς»}\end{flushright}
-\vspace{-0.25em}
-\begin{mathpar}
-  \inferrule*[left=(Refl)]{ }{ρ,τ⊢e,σ⇑⟨e,ρ,σ,τ⟩}
-
-  \inferrule*[left=(RBin1)]
-  {ρ,τ⊢e₁,σ⇑ς}
-  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
-
-  \inferrule*[left=(RBin2)]
-  {  ρ,τ⊢e₁,σ⇓v₁,σ₁
-  \\ ρ,τ⊢e₂,σ₁⇑ς}
-  {ρ,τ⊢b(e₁,e₂),σ⇑ς}\vspace{-0.75em}
-
-  \inferrule*[left=(RApp1)]
-   {ρ,τ⊢e₁,σ⇑ς}
-   {ρ,τ⊢e₁(e₂),σ⇑ς}
-
-   \inferrule*[left=(RApp2),right={\ssmall «⟨λx.e′,ρ′⟩=v₁»}]
-   {  ρ,τ⊢e₁,σ⇓v₁,σ₁
-   \\ ρ,τ⊢e₂,σ₁⇑ς}
-   {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
-
-   \inferrule*[left=(RApp3),right={\begin{minipage}{2em}\ssmall
-       \begin{alignat*}{1}
-       \begin{alignedat}{2} 
-    ⟨λx.e′,ρ′⟩ = &\mathrel{} v₁ \\[-0.5em]
-           ℓ  = &\mathrel{} ⟨x,τ′⟩ \\[-0.5em]
-           τ′ \mathrel{\hphantom{=}} &\mathrel{} ⦑\emph{fresh}⦒
-         \end{alignedat}
-       \end{alignat*}
-     \end{minipage}}]
-  {  ρ,τ⊢e₁,σ ⇓v₁,σ₁
-  \\ ρ,τ⊢e₂,σ₁⇓v₂,σ₂
-  \\ ρ′[x↦ℓ],τ′⊢e′,σ₂[ℓ↦v₂]⇑ς}
-  {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
-
-  \inferrule*[left=(RIf1)]
-  {ρ,τ⊢e₁,σ⇑ς}
-  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
-
-  \inferrule*[left=(RIfT),right={\ssmall «n=0»}]
-  {  ρ,τ⊢e₁,σ⇓n,σ₁
-  \\ ρ,τ⊢e₂,σ₁⇑ς}
-  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}\vspace{-0.75em}
-
-  \inferrule*[left=(RIfF),right={\ssmall «n≠0»}]
-  {  ρ,τ⊢e₁,σ⇓n,σ₁
-  \\ ρ,τ⊢e₃,σ₁⇑ς}
-  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
-\end{mathpar}
-\caption{\lamif{} Big-step Concrete Evaluation and Reachability Semantics}
-\label{f:lamif-concrete}
-\end{figure*} %}-}
-
-\paragraph{Reachability}
-
-The primary limitation of using big-step semantics as a starting point for
-abstraction is that intermediate computations are not represented in the model
-for evaluation. For example, consider the program that applies the identity
-function to an expression that loops, which we notate «Ω»:
-\[ (λx.x)(Ω) \]
-A big-step evaluation relation can only describe results of terminating
-computations, and because this program never terminates, such a relation says
-nothing about the behavior of the program. A good static analyzer will explore
-the behavior of «Ω» to (possibly) discover that it loops, or more importantly,
-to provide analysis results (like data-flow or side-effects) for intermediate
-computation states.
-
-The need to analyze intermediate states is the primary reason that big-step
-semantics are overlooked as a starting point for abstract interpretation. To
-remedy the situation, while remaining in a big-step setting, we introduce a
-big-step \emph{reachability} relation, notated «ρ,τ⊢e,σ⇑ς» and also shown in
-Figure~\ref{f:lamif-reachability}. Configurations «ς» are tuples «⟨e,ρ,σ,τ⟩»,
-and are reachable when evaluation passes through the configuration at any point
-on its way to a final value, or during an infinite loop.
-
-The complete big-step semantics of an expression («e») under environment («ρ»),
-store («σ») and time («τ»), which we notate «⟦e⟧⸢bs⸣(ρ,σ,τ)», is then the set
-of all \emph{reachable evaluations}:
-\begin{alignat*}{2}
-                ⟦e⟧⸢bs⸣(ρ,σ,τ) ≔ ❴⟨v,σ″⟩ ∣ &\mathrel{} ρ,σ,τ⇑⟨e′,ρ′,σ′,τ′⟩ 
-\\[\mathgobble]                          ∧ &\mathrel{} ρ′,τ′⊢e′,σ′⇓v,σ″❵
-\end{alignat*}
-We construct a formal bridge between the big-step and small-step worlds through
-the complete big-step semantics («⟦e⟧⸢bs⸣») and a complete small-step semantics
-«↝⸢*⸣», which is traditionally used as the starting point of abstraction for
-program analysis:
-\begin{alignat*}{1}
-                & ⟦e⟧⸢ss⸣(ρ,σ,τ) ≔ 
-\\[\mathgobble] & ␣\begin{alignedat}{2} ❴⟨v,σ″⟩ ∣ &\mathrel{} ∀κ. ⟨e,ρ,σ,τ,κ⟩ ↝⸢*⸣ ⟨e′,ρ′,σ′,τ′,κ′\!⧺\!κ⟩ 
-                   \\[\mathgobble]              ∧ &\mathrel{} ⟨e′,ρ′,σ′,τ′,κ′⧺κ⟩ ↝⸢*⸣ ⟨v,ρ″,σ″,τ″,κ′\!⧺\!κ⟩❵
-                   \end{alignedat}
-\end{alignat*}
-We connect the complete big-step and small-step semantics through the following
-theorem:
-\begin{theorem}[Complete Big-step/Small-step Equivalence]
-  \[ ⟦e⟧⸢bs⸣(ρ,σ,τ) = ⟦e⟧⸢ss⸣(ρ,σ,τ) \]
-\end{theorem}
-The proof is by induction on the big-step derivation for «⊆», and on the
-transitive small-step derivation for «⊇».
-
-\paragraph{Collecting Semantics}
-
-Before abstracting the semantics—in pursuit of a sound static analysis
-algorithm—we pass through a big-step collecting evaluation and reachability
-semantics, notated «ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}» and «ρ,τ⊢e,∿{σ}⇑∿{ς}» and shown in
-Figure~\ref{f:lamif-collecting}, where «∿{v}», «∿{σ}» and «∿{ς}» range over
-collecting state spaces:
-\begin{alignat*}{3}
-                ∿{v} ∈ &&\mathrel{} ∿{val}      &\mathrel{} ≔ ℘(val) 
-\\[\mathgobble] ∿{σ} ∈ &&\mathrel{} ∿{store}    &\mathrel{} ≔ addr ↦ ∿{val} 
-\\[\mathgobble] ∿{ς} ∈ &&\mathrel{} ∿{config}   &\mathrel{} ≔ exp × env × ∿{store} × time
-\end{alignat*}
-and the denotation for binary operators («⟦b⟧») is lifted to a collecting
-denotation operator «∿{⟦b⟧}»:
-\[ ∿{⟦b⟧}(∿{v}₁,∿{v}₂) ≔ ❴⟦b⟧(v₁,v₂) ∣ v₁ ∈ ∿{v}₁ ∧ v₂ ∈ ∿{v}₂❵ \]
 
 \begin{figure*} %{-{
 \begin{flushright}[\emph{Collecting Evaluation}]\quad\fbox{«ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}′»}\end{flushright}
@@ -294,9 +130,72 @@ denotation operator «∿{⟦b⟧}»:
     \\ ρ,τ⊢e₃,∿{σ}₁⇑∿{ς}}
     {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}
 \end{mathpar}
-\caption{Big-step Collecting Reachability Semantics}
+\caption{Big-step Collecting Evaluation and Reachability Semantics}
 \label{f:lamif-collecting}
 \end{figure*} %}-}
+
+\paragraph{Reachability}
+
+The primary limitation of using big-step semantics as a starting point for
+abstraction is that intermediate computations are not represented in the model
+for evaluation. For example, consider the program that applies the identity
+function to an expression that loops, which we notate «Ω»:
+\[ (λx.x)(Ω) \]
+A big-step evaluation relation can only describe results of terminating
+computations, and because this program never terminates, such a relation says
+nothing about the behavior of the program. A good static analyzer will explore
+the behavior of «Ω» to (possibly) discover that it loops, or more importantly,
+to provide analysis results (like data-flow or side-effects) for intermediate
+computation states.
+
+The need to analyze intermediate states is the primary reason that big-step
+semantics are overlooked as a starting point for abstract interpretation. To
+remedy the situation, while remaining in a big-step setting, we introduce a
+big-step \emph{reachability} relation, notated «ρ,τ⊢e,σ⇑ς» and also shown in
+Figure~\ref{f:lamif-reachability}. Configurations «ς» are tuples «⟨e,ρ,σ,τ⟩»,
+and are reachable when evaluation passes through the configuration at any point
+on its way to a final value, or during an infinite loop.
+
+The complete big-step semantics of an expression («e») under environment («ρ»),
+store («σ») and time («τ»), which we notate «⟦e⟧⸢bs⸣(ρ,σ,τ)», is then the set
+of all \emph{reachable evaluations}:
+\begin{alignat*}{2}
+                ⟦e⟧⸢bs⸣(ρ,σ,τ) ≔ ❴⟨v,σ″⟩ ∣ &\mathrel{} ρ,σ,τ⇑⟨e′,ρ′,σ′,τ′⟩ 
+\\[\mathgobble]                          ∧ &\mathrel{} ρ′,τ′⊢e′,σ′⇓v,σ″❵
+\end{alignat*}
+We construct a formal bridge between the big-step and small-step worlds through
+the complete big-step semantics («⟦e⟧⸢bs⸣») and a complete small-step semantics
+«↝⸢*⸣», which is traditionally used as the starting point of abstraction for
+program analysis:
+\begin{alignat*}{1}
+                & ⟦e⟧⸢ss⸣(ρ,σ,τ) ≔ 
+\\[\mathgobble] & ␣\begin{alignedat}{2} ❴⟨v,σ″⟩ ∣ &\mathrel{} ∀κ. ⟨e,ρ,σ,τ,κ⟩ ↝⸢*⸣ ⟨e′,ρ′,σ′,τ′,κ′\!⧺\!κ⟩ 
+                   \\[\mathgobble]              ∧ &\mathrel{} ⟨e′,ρ′,σ′,τ′,κ′⧺κ⟩ ↝⸢*⸣ ⟨v,ρ″,σ″,τ″,κ′\!⧺\!κ⟩❵
+                   \end{alignedat}
+\end{alignat*}
+We connect the complete big-step and small-step semantics through the following
+theorem:
+\begin{theorem}[Complete Big-step/Small-step Equivalence]
+  \[ ⟦e⟧⸢bs⸣(ρ,σ,τ) = ⟦e⟧⸢ss⸣(ρ,σ,τ) \]
+\end{theorem}
+The proof is by induction on the big-step derivation for «⊆», and on the
+transitive small-step derivation for «⊇».
+
+\paragraph{Collecting Semantics}
+
+Before abstracting the semantics—in pursuit of a sound static analysis
+algorithm—we pass through a big-step collecting evaluation and reachability
+semantics, notated «ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}» and «ρ,τ⊢e,∿{σ}⇑∿{ς}» and shown in
+Figure~\ref{f:lamif-collecting}, where «∿{v}», «∿{σ}» and «∿{ς}» range over
+collecting state spaces:
+\begin{alignat*}{3}
+                ∿{v} ∈ &&\mathrel{} ∿{val}      &\mathrel{} ≔ ℘(val) 
+\\[\mathgobble] ∿{σ} ∈ &&\mathrel{} ∿{store}    &\mathrel{} ≔ addr ↦ ∿{val} 
+\\[\mathgobble] ∿{ς} ∈ &&\mathrel{} ∿{config}   &\mathrel{} ≔ exp × env × ∿{store} × time
+\end{alignat*}
+and the denotation for binary operators («⟦b⟧») is lifted to a collecting
+denotation operator «∿{⟦b⟧}»:
+\[ ∿{⟦b⟧}(∿{v}₁,∿{v}₂) ≔ ❴⟦b⟧(v₁,v₂) ∣ v₁ ∈ ∿{v}₁ ∧ v₂ ∈ ∿{v}₂❵ \]
 
 The big-step collecting and reachability relations are structurally similar to
 the concrete semantics. The primary differences are the use of set containment
@@ -326,60 +225,6 @@ and the partial ordering on stores and configurations is pointwise:
 \end{alignat*}
 
 \paragraph{Finite Abstraction}
-
-The next step towards a computable static analysis is an abstract semantics
-with a finite state space that approximates the big-step collecting semantics,
-notated «♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}» and shown in
-Figure~\ref{f:lamif-abstract}, where «♯{ρ}», «♯{τ}», «♯{v}», «♯{σ}» and «♯{ς}»
-are finite abstractions of their collecting counterparts:
-\begin{alignat*}{3}
-                ♯{ρ} ∈ &&\mathrel{} ♯{env}    &\mathrel{} ≔ var ↦ ♯{addr}⸤⊥⸥ 
-\\[\mathgobble] ♯{ℓ} ∈ &&\mathrel{} ♯{addr}   &\mathrel{} ≔ var × ♯{time} 
-\\[\mathgobble] ♯{τ} ∈ &&\mathrel{} ♯{time}   &\mathrel{} ≔ … 
-\\[\mathgobble] ♯{v} ∈ &&\mathrel{} ♯{val}    &\mathrel{} ≔ … 
-\\[\mathgobble] ♯{σ} ∈ &&\mathrel{} ♯{store}  &\mathrel{} ≔ ♯{addr} ↦ ♯{val} 
-\\[\mathgobble] ♯{ς} ∈ &&\mathrel{} ♯{config} &\mathrel{} ≔ exp × ♯{env} × ♯{store} × ♯{time}
-\end{alignat*}
-The primary structural difference from the collecting semantics is the use of
-join when updating the store («♯{σ}⊔[♯{ℓ}↦♯{v}]») rather than strict
-replacement («∿{σ}[ℓ↦∿{v}]»). This is to preserve soundness in the presence of
-address reuse, which occurs from the finite size of the address space.
-
-The abstract denotation («♯{⟦b⟧}») is any over-approximation of the collecting
-denotation («∿{⟦b⟧}») w.r.t. a Galois connection «∿{val}⇄{α}{γ}♯{val}»:
-\[ ♯{⟦b⟧}(♯{v}₁,♯{v}₂) ⊒ α(∿{⟦b⟧}(γ(♯{v}₁),γ(♯{v}₂))) \]
-Concretization functions «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥» and «⌊γ⌋⸤¬0⸥» are computable
-finite subsets of the full concretization function «γ» s.t.:
-\begin{alignat*}{2}
-                ⌊γ⌋⸤clo⸥(♯{v}) ≔ &\mathrel{} ❴⟨λx.e,♯{ρ}⟩ ∣ ⟨λx.e,♯{ρ}⟩ ∈ γ(♯{v})❵ 
-\\[\mathgobble] ⌊γ⌋⸤0⸥(♯{v})   ≔ &\mathrel{} ❴0 ∣ 0 ∈ γ(♯{v})❵ 
-\\[\mathgobble] ⌊γ⌋⸤¬0⸥(♯{v})  ≔ &\mathrel{} ❴¬0 ∣ n ∈ γ(♯{v}) ∧ n≠0❵
-\end{alignat*}
-Abstract sets «♯{time}» and «♯{val}» are left as parameters to the analysis
-along with their operations «♯{next}», «♯{⟦b⟧}», «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥»,
-«⌊γ⌋⸤¬0⸥» and «⊔⸢♯{val}⸣».
-
-The abstract semantics is a sound approximation of the collecting semantics,
-which we establish through the theorem:
-\begin{theorem}[Abstract Reachability Semantics Soundness]
-\begin{alignat*}{2}
-               & ⦑If⦒    &&\quad ρ,τ⊢e,∿{σ}⇑⟨e′,ρ′,∿{σ}′,τ′⟩ \quad ⦑and⦒ \quad ρ′,τ′⊢e′,∿{σ}′⇓∿{v},∿{σ}″
-\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ) ⊑ ♯{ρ} \quad ⦑and⦒ \quad η(τ) ⊑ ♯{τ} \quad ⦑and⦒ \quad η(∿{σ}) ⊑ ♯{σ}
-\\[\mathgobble]& ⦑then⦒  &&\quad ♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e′,♯{ρ}′,♯{σ}′,♯{τ}′⟩ \quad ⦑and⦒ \quad ♯{ρ}′,♯{τ}′⊢e,♯{σ}′⇓♯{v},♯{σ}″ 
-\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ′) ⊑ ♯{ρ}′⦑,⦒\ η(τ′) ⊑ ♯{τ}′⦑,⦒\ η(∿{σ}′) ⊑ ♯{σ}′⦑,⦒\ v ∈ ∿{v}⦑,⦒\ η(σ″) ⊑ ∿{σ}″
-\end{alignat*}
-\end{theorem}
-The proof is by induction on the big-step derivation. The extraction function
-«η» is defined separately for environments («ρ»), time («τ»), collecting stores
-(«∿{σ}»), values («∿{v}») and configurations («∿{ς}»). «η(τ)» and «η(∿{v})» are
-given with parameters «♯{time}» and «♯{val}». «η(ρ)», «η(∿{σ})» and «η(∿{ς})»
-are defined pointwise:
-\begin{alignat*}{1}
-  & η(ρ)(x) ≔ η(ρ(x)) \quad\quad η(∿{σ})(♯{ℓ}) ≔ ⨆⸤ℓ ∈ γ(♯{ℓ})⸥η(∿{σ}(ℓ)) 
-\\[\mathgobble] & η(⟨e,ρ,τ,∿{σ}⟩) ≔ ⟨e,η(ρ),η(τ),η(∿{σ})⟩
-\end{alignat*}
-
-\paragraph{Computing the Analysis}
 
 \begin{figure*} %{-{
 \begin{flushright}[\emph{Abstract Evaluation}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′»}\end{flushright}
@@ -473,9 +318,63 @@ are defined pointwise:
     \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇑♯{ς}}
     {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
 \end{mathpar}
-\caption{Big-step Abstract Reachability Semantics}
+\caption{Big-step Abstract Evaluation and Reachability Semantics}
 \label{f:lamif-abstract}
 \end{figure*} %}-}
+
+The next step towards a computable static analysis is an abstract semantics
+with a finite state space that approximates the big-step collecting semantics,
+notated «♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}» and «♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}» and shown in
+Figure~\ref{f:lamif-abstract}, where «♯{ρ}», «♯{τ}», «♯{v}», «♯{σ}» and «♯{ς}»
+are finite abstractions of their collecting counterparts:
+\begin{alignat*}{3}
+                ♯{ρ} ∈ &&\mathrel{} ♯{env}    &\mathrel{} ≔ var ↦ ♯{addr}⸤⊥⸥ 
+\\[\mathgobble] ♯{ℓ} ∈ &&\mathrel{} ♯{addr}   &\mathrel{} ≔ var × ♯{time} 
+\\[\mathgobble] ♯{τ} ∈ &&\mathrel{} ♯{time}   &\mathrel{} ≔ … 
+\\[\mathgobble] ♯{v} ∈ &&\mathrel{} ♯{val}    &\mathrel{} ≔ … 
+\\[\mathgobble] ♯{σ} ∈ &&\mathrel{} ♯{store}  &\mathrel{} ≔ ♯{addr} ↦ ♯{val} 
+\\[\mathgobble] ♯{ς} ∈ &&\mathrel{} ♯{config} &\mathrel{} ≔ exp × ♯{env} × ♯{store} × ♯{time}
+\end{alignat*}
+The primary structural difference from the collecting semantics is the use of
+join when updating the store («♯{σ}⊔[♯{ℓ}↦♯{v}]») rather than strict
+replacement («∿{σ}[ℓ↦∿{v}]»). This is to preserve soundness in the presence of
+address reuse, which occurs from the finite size of the address space.
+
+The abstract denotation («♯{⟦b⟧}») is any over-approximation of the collecting
+denotation («∿{⟦b⟧}») w.r.t. a Galois connection «∿{val}⇄{α}{γ}♯{val}»:
+\[ ♯{⟦b⟧}(♯{v}₁,♯{v}₂) ⊒ α(∿{⟦b⟧}(γ(♯{v}₁),γ(♯{v}₂))) \]
+Concretization functions «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥» and «⌊γ⌋⸤¬0⸥» are computable
+finite subsets of the full concretization function «γ» s.t.:
+\begin{alignat*}{2}
+                ⌊γ⌋⸤clo⸥(♯{v}) ≔ &\mathrel{} ❴⟨λx.e,♯{ρ}⟩ ∣ ⟨λx.e,♯{ρ}⟩ ∈ γ(♯{v})❵ 
+\\[\mathgobble] ⌊γ⌋⸤0⸥(♯{v})   ≔ &\mathrel{} ❴0 ∣ 0 ∈ γ(♯{v})❵ 
+\\[\mathgobble] ⌊γ⌋⸤¬0⸥(♯{v})  ≔ &\mathrel{} ❴¬0 ∣ n ∈ γ(♯{v}) ∧ n≠0❵
+\end{alignat*}
+Abstract sets «♯{time}» and «♯{val}» are left as parameters to the analysis
+along with their operations «♯{next}», «♯{⟦b⟧}», «⌊γ⌋⸤clo⸥», «⌊γ⌋⸤0⸥»,
+«⌊γ⌋⸤¬0⸥» and «⊔⸢♯{val}⸣».
+
+The abstract semantics is a sound approximation of the collecting semantics,
+which we establish through the theorem:
+\begin{theorem}[Abstract Reachability Semantics Soundness]
+\begin{alignat*}{2}
+               & ⦑If⦒    &&\quad ρ,τ⊢e,∿{σ}⇑⟨e′,ρ′,∿{σ}′,τ′⟩ \quad ⦑and⦒ \quad ρ′,τ′⊢e′,∿{σ}′⇓∿{v},∿{σ}″
+\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ) ⊑ ♯{ρ} \quad ⦑and⦒ \quad η(τ) ⊑ ♯{τ} \quad ⦑and⦒ \quad η(∿{σ}) ⊑ ♯{σ}
+\\[\mathgobble]& ⦑then⦒  &&\quad ♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e′,♯{ρ}′,♯{σ}′,♯{τ}′⟩ \quad ⦑and⦒ \quad ♯{ρ}′,♯{τ}′⊢e,♯{σ}′⇓♯{v},♯{σ}″ 
+\\[\mathgobble]& ⦑where⦒ &&\quad η(ρ′) ⊑ ♯{ρ}′⦑,⦒\ η(τ′) ⊑ ♯{τ}′⦑,⦒\ η(∿{σ}′) ⊑ ♯{σ}′⦑,⦒\ v ∈ ∿{v}⦑,⦒\ η(σ″) ⊑ ∿{σ}″
+\end{alignat*}
+\end{theorem}
+The proof is by induction on the big-step derivation. The extraction function
+«η» is defined separately for environments («ρ»), time («τ»), collecting stores
+(«∿{σ}»), values («∿{v}») and configurations («∿{ς}»). «η(τ)» and «η(∿{v})» are
+given with parameters «♯{time}» and «♯{val}». «η(ρ)», «η(∿{σ})» and «η(∿{ς})»
+are defined pointwise:
+\begin{alignat*}{1}
+  & η(ρ)(x) ≔ η(ρ(x)) \quad\quad η(∿{σ})(♯{ℓ}) ≔ ⨆⸤ℓ ∈ γ(♯{ℓ})⸥η(∿{σ}(ℓ)) 
+\\[\mathgobble] & η(⟨e,ρ,τ,∿{σ}⟩) ≔ ⟨e,η(ρ),η(τ),η(∿{σ})⟩
+\end{alignat*}
+
+\paragraph{Computing the Analysis}
 
 An analysis for the program «e₀» w.r.t. the abstract semantics is some cache
 «\$ ∈ ♯{config} ↦ ℘(♯{val} × ♯{store})» that maps all configurations reachable

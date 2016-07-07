@@ -58,6 +58,38 @@ formalize this co-inductive process in Section~\ref{s:formalism} and prove it
 sound; in this section we instead focus on the intuition and implementation for
 the algorithm.
 
+\begin{figure} %{-{
+\rfloat{⸨monad-cache@⸩}
+\begin{flalign*}
+                  & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID)))))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨ev-cache@⸩}
+\begin{lstlisting}
+¦ (define (((ev-cache ev₀) ev) e)
+¦   (do ρ ← ask-env  σ ← get-store
+¦       ς ≔ (list e ρ σ)
+¦       ¢⸢out⸣ ← get-cache-out
+¦       (if (∈ ς ¢⸢out⸣)
+¦           (for/monad+ ([v×σ (¢⸢out⸣ ς)])
+¦             (do (put-store (cdr v×σ))
+¦                 (return (car v×σ))))
+¦           (do ¢⸢in⸣ ← ask-cache-in
+¦               v×σ₀ ≔ (if (∈ ς ¢⸢in⸣) (¢⸢in⸣ ς) ∅)
+¦               (put-cache-out (¢⸢out⸣ ς v×σ₀))
+¦               v  ← ((ev₀ ev) e)
+¦               σ′ ← get-store
+¦               v×σ′ ≔ (cons v σ′)
+¦               (update-cache-out (λ (¢⸢out⸣) 
+¦                 (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
+¦               (return v)))))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Co-inductive Caching Algorithm}
+\label{f:caching}
+\vspace{-1em}
+\end{figure} %}-}
+
 The co-inductive caching algorithm is shown in Figure~\ref{f:caching}, along
 with the monad transformer stack ⸨monad-cache@⸩ which has two new components:
 ⸨ReaderT⸩ for the input cache ⸨¢⸢in⸣⸩, and ⸨StateT+⸩ for the output cache
@@ -116,36 +148,4 @@ computable, as demonstrated on the following examples:
 ℑ,
 ¦ '(0 2 3)
 ℑ⁆
-
-\begin{figure} %{-{
-\rfloat{⸨monad-cache@⸩}
-\begin{flalign*}
-                  & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID)))))))⸩
-& \end{flalign*}
-\figskip\rfloat{⸨ev-cache@⸩}
-\begin{lstlisting}
-¦ (define (((ev-cache ev₀) ev) e)
-¦   (do ρ ← ask-env  σ ← get-store
-¦       ς ≔ (list e ρ σ)
-¦       ¢⸢out⸣ ← get-cache-out
-¦       (if (∈ ς ¢⸢out⸣)
-¦           (for/monad+ ([v×σ (¢⸢out⸣ ς)])
-¦             (do (put-store (cdr v×σ))
-¦                 (return (car v×σ))))
-¦           (do ¢⸢in⸣ ← ask-cache-in
-¦               v×σ₀ ≔ (if (∈ ς ¢⸢in⸣) (¢⸢in⸣ ς) ∅)
-¦               (put-cache-out (¢⸢out⸣ ς v×σ₀))
-¦               v  ← ((ev₀ ev) e)
-¦               σ′ ← get-store
-¦               v×σ′ ≔ (cons v σ′)
-¦               (update-cache-out (λ (¢⸢out⸣) 
-¦                 (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
-¦               (return v)))))
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{Co-inductive Caching Algorithm}
-\label{f:caching}
-\vspace{-1em}
-\end{figure} %}-}
 
