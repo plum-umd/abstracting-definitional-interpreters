@@ -23,9 +23,18 @@ out/%.bib: %.bib
 out/%.png: %.png
 	cp $< $@
 
-main.pdf: $(patsubst %,out/%,$(TEX_FILES)) $(patsubst %,out/%,$(BIB_FILES)) $(patsubst %,out/%,$(PNG_FILES))
-	cp *.cls out/
-	cp *.sty out/
+out/%.sty: %.sty
+	cp $< $@
+
+out/%.cls: %.cls
+	cp $< $@
+
+main.pdf: \
+			$(patsubst %,out/%,$(TEX_FILES)) \
+			$(patsubst %,out/%,$(BIB_FILES)) \
+			$(patsubst %,out/%,$(PNG_FILES)) \
+			$(patsubst %,out/%,$(STY_FILES)) \
+			$(patsubst %,out/%,$(CLS_FILES))
 	cd out ; texfot pdflatex main.tex ; bibtex main
 	mv out/main.pdf main.pdf
 
