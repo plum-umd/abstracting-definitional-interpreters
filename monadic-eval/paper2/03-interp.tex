@@ -390,14 +390,11 @@ returns both true and false on ⸨'N⸩.
 ¦ (define (δ . ovs)
 ¦   (match ovs
 ¦     [(list 'add1 n)  (return 'N)]
-¦     [(list 'sub1 n)  (return 'N)]
 ¦     [(list '+ n₀ n₁) (return 'N)]
-¦     [(list '- n₀ n₁) (return 'N)]
-¦     [(list '* n₀ n₁) (return 'N)]
 ¦     [(list '/ n₀ (? number? n₁))
 ¦      (if (= 0 n₁) fail (return 'N))]
 ¦     [(list '/ n₀ 'N)
-¦      (mplus fail (return 'N))]))
+¦      (mplus fail (return 'N))] ... ))
 ¦ (define (zero? v)
 ¦   (match v
 ¦     ['N (mplus (return #t) (return #f))]

@@ -61,7 +61,8 @@ conditional are always evaluated.  Consequently, it only uses a single
 iteration of the abstract evaluation function, and avoids the need for the
 cache-based fixed-point of Section~\ref{s:cache}.  We don't believe Big CFA2 as
 stated is unsound, however if the underlying abstractions were tightened, it
-appears it would run in to the same issues identified here.
+may then require a more involved fixpoint finding algorithm like the one we
+developed.
 
 Our formulation of a pushdown abstract interpreter computes an abstraction
 similar to the many existing variants of pushdown flow analysis~\cite%
