@@ -44,7 +44,7 @@ again:
 	make
 
 fixpoint:
-	make again && make again && make again && make again && make again
+	make && make again && make again && make again && make again && make again
 
 .PHONY: much
 much:
