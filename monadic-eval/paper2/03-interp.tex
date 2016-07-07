@@ -3,10 +3,10 @@
 We begin by constructing a definitional interpreter for a small but
 representative higher-order, functional language.  As our defining language, we
 use an applicative subset of Racket, a dialect of Scheme.\footnote{This choice
-is largely immaterial: any functional language would do.} The abstract syntax
+  is largely immaterial: any functional language would do.} The abstract syntax
 of the language is defined in Figure~\ref{f:syntax}; it includes variables,
-numbers, unary and binary operations on numbers, conditionals, {\tt letrec}
-expressions, functions and applications.
+numbers, binary operations on numbers, conditionals, {\tt letrec} expressions,
+functions and applications.
 
 \begin{figure} %{-{
 \rfloat{⸨ev@⸩}
@@ -21,9 +21,6 @@ expressions, functions and applications.
 ¦      (do v  ← (ev e₀)
 ¦          z? ← (zero? v)
 ¦          (ev (if z? e₁ e₂)))]
-¦     [(op1 o e₀)
-¦      (do v ← (ev e₀)
-¦          (δ o v))]   
 ¦     [(op2 o e₀ e₁)
 ¦      (do v₀ ← (ev e₀)
 ¦          v₁ ← (ev e₁)
@@ -49,6 +46,9 @@ expressions, functions and applications.
 \caption{The Extensible Definitional Interpreter}
 \label{f:interpreter}
 \end{figure} %}-}
+%¦     [(op1 o e₀)
+%¦      (do v ← (ev e₀)
+%¦          (δ o v))]   
 
 The interpreter for the language is defined in Figure~\ref{f:interpreter}. At
 first glance, it has many conventional aspects:
@@ -112,16 +112,11 @@ implementation.}
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
-¦     [(list 'add1 n)  (return (add1 n))]
-¦     [(list 'sub1 n)  (return (sub1 n))]
-¦     [(list '- n)     (return (- n))]
 ¦     [(list '+ n₀ n₁) (return (+ n₀ n₁))]
 ¦     [(list '- n₀ n₁) (return (- n₀ n₁))]
 ¦     [(list '* n₀ n₁) (return (* n₀ n₁))]
 ¦     [(list '/ n₀ n₁)
-¦      (if (= 0 n₁)
-¦          fail
-¦          (return (/ n₀ n₁)))]))
+¦      (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
 ¦ (define (zero? v)
 ¦   (return (= 0 v)))
 \end{lstlisting}
@@ -389,9 +384,8 @@ returns both true and false on ⸨'N⸩.
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
-¦     [(list 'add1 n)  (return 'N)]
 ¦     [(list '+ n₀ n₁) (return 'N)]
-¦     [(list '/ n₀ (? number? n₁))
+¦     [(list '/ n₀ (? num? n₁))
 ¦      (if (= 0 n₁) fail (return 'N))]
 ¦     [(list '/ n₀ 'N)
 ¦      (mplus fail (return 'N))] ... ))
@@ -411,11 +405,11 @@ an evaluator that produces a set of results:
 ℑ,
 ¦ '((N . ()))
 ℑ;
-¦ > (/ 5 (add1 2))
+¦ > (/ 5 (+ 1 2))
 ℑ,
 ¦ '((failure . ()) (N . ()))
 ℑ;
-¦ > (if0 (add1 0) 3 4)
+¦ > (if0 (+ 1 0) 3 4)
 ℑ,
 ¦ '((3 . ()) (4 . ()))
 ℑ⁆
@@ -426,14 +420,14 @@ If we link ⸨δ^@⸩ with the \emph{tracing} monad stack plus non-determinism:
 \end{alignat*}
 we get an evaluator that produces sets of traces:
 ℑ⁅
-¦ > (if0 (add1 0) 3 4)
+¦ > (if0 (+ 1 0) 3 4)
 ℑ,
 ¦ (set '((3 . ())
-¦        ((if0 (add1 0) 3 4) () ())
-¦        ((add1 0) () ())    (0 () ())    (3 () ()))    
+¦        ((if0 (+ 1 0) 3 4) () ())
+¦        ((+ 1 0) () ())    (0 () ())    (3 () ()))    
 ¦      '((4 . ())
-¦        ((if0 (add1 0) 3 4) () ())
-¦        ((add1 0) () ())    (0 () ())    (4 () ())))
+¦        ((if0 (+ 1 0) 3 4) () ())
+¦        ((+ 1 0) () ())    (0 () ())    (4 () ())))
 ℑ⁆
 
 It is clear that the interpreter will only ever see a finite set of numbers

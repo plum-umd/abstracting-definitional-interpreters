@@ -138,13 +138,13 @@ computable, as demonstrated on the following examples:
 ℑ,
 ¦ '()
 ℑ;
-¦ > (rec f (λ (n) (if0 n 1 (* n (f (sub1 n)))))
+¦ > (rec f (λ (n) (if0 n 1 (* n (f (- n 1)))))
 ¦     (f 5))
 ℑ,
 ¦ '(N)
 ℑ;
-¦ > (rec f (λ (x) (if0 x 0 (if0 (f (sub1 x)) 2 3)))
-¦      (f (add1 0)))
+¦ > (rec f (λ (x) (if0 x 0 (if0 (f (- x 1)) 2 3)))
+¦      (f (+ 1 0)))
 ℑ,
 ¦ '(0 2 3)
 ℑ⁆

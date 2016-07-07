@@ -23,7 +23,7 @@ widening.
 
 % To see the difference, here is an example without store-widening:
 % ℑ⁅
-% ¦ (let x (add1 0)
+% ¦ (let x (+ 1 0)
 % ¦   (let y (if0 x 1 2)
 % ¦     (let z (if0 x 3 4)
 % ¦       (if0 x y z))))
@@ -39,7 +39,7 @@ widening.
 % ℑ⁆
 % and with:
 % ℑ⁅
-% ¦ (let x (add1 0)
+% ¦ (let x (+ 1 0)
 % ¦   (let y (if0 x 1 2)
 % ¦     (let z (if0 x 3 4)
 % ¦       (if0 x y z))))

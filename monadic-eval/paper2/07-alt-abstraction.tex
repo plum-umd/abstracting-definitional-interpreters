@@ -5,10 +5,7 @@
 \begin{lstlisting}
 ¦ (define (δ . ovs)
 ¦   (match ovs
-¦     [`(add1 ,(? number? n))  (return (add1 n))]
-¦     [`(+    ,(? number? n₁)
-¦             ,(? number? n₂)) (return (+ n₁ n₂))]
-¦     [`(add1 ,_) (return 'N)]
+¦     [`(+ ,(? num? n₁) ,(? num? n₂)) (return (+ n₁ n₂))]
 ¦     [`(+ ,_ ,_) (return 'N)] ... ))
 ¦ (define (zero? v)
 ¦   (match v
@@ -19,15 +16,11 @@
 \begin{lstlisting}
 ¦ (define (find a)
 ¦   (do σ ← get-store
-¦       (for/monad+ ([v (σ a)])
-¦         (return v))))
-¦ (define (number*? n) (or (eq? 'N n) (number? n)))
+¦       (for/monad+ ([v (σ a)]) (return v))))
 ¦ (define (crush v vs)
-¦   (if (number*? v)
-¦       (set-add (for/set ([v* vs] #:unless (number*? v*)) 
-¦                  v*) 
-¦                'N)
-¦       (set-add vs v)))
+¦   (if (closure? v)
+¦       (set-add vs v)
+¦       (set-add (set-filter closure? vs) 'N)))
 ¦ (define (ext a v)
 ¦   (update-store (λ (σ) (if (∈ a σ)
 ¦                            (σ a (crush v (σ a)))
@@ -80,29 +73,21 @@ This combination of ⸨precise-δ@⸩ and ⸨store-crush@⸩ allows termination 
 programs, but still not all. In the following example, ⸨id⸩ is eventually
 applied to a widened argument ⸨'N⸩, which makes both conditional branches
 reachable. The function returns ⸨0⸩ in the base case, which is propagated to
-the recursive call and given to ⸨add1⸩, which yields the concrete answer ⸨1⸩.
-This results in a cycle where ⸨add1⸩ returns ⸨2⸩, ⸨3⸩, ⸨4⸩ when applied to ⸨1⸩,
-⸨2⸩, ⸨3⸩, etc.
+the recursive call and added to ⸨1⸩, which yields the concrete answer ⸨1⸩.
+This results in a cycle where the intermediate sum returns ⸨2⸩, ⸨3⸩, ⸨4⸩ when
+applied to ⸨1⸩, ⸨2⸩, ⸨3⸩, etc.
 ℑ⁅
-¦ > (rec id (λ (n) (if0 n 0 (add1 (id (sub1 n)))))
+¦ > (rec id (λ (n) (if0 n 0 (+ 1 (id (- n 1)))))
 ¦     (id 3))
 ℑ,
 ¦ timeout
 ℑ⁆
-To ensure termination for all programs, we assume all references to primitive
-operations are $η$-expanded, so that store-allocations also take place at
-primitive applications, ensuring widening at repeated bindings. The above
-program terminates with this desugaring:
-ℑ⁅
-¦ > (rec id (λ (n) (if0 n 0 ((λ (i) (add1 i))
-¦                            (id ((λ (j) (sub1 j)) n)))))
-¦     (id 3))
-ℑ,
-¦ '(0 N)
-ℑ⁆
-In fact, all programs terminate when using ⸨precise-δ@⸩, ⸨store-crush@⸩ and
-«η»-expanded primitives, which means we have a achieved a computable and
-uniquely precise abstract interpreter.
+To ensure termination for all programs, we assume all references to
+primitive operations are $η$-expanded, so that store-allocations also
+take place at primitive applications, ensuring widening at repeated
+bindings. In fact, all programs terminate when using ⸨precise-δ@⸩,
+⸨store-crush@⸩ and «η»-expanded primitives, which means we have a
+achieved a computable and uniquely precise abstract interpreter.
 
 \begin{figure} %{-{
 \rfloat{⸨symbolic-monad@⸩}
@@ -123,14 +108,14 @@ uniquely precise abstract interpreter.
 ¦     [(list '/ v₀ v₁)
 ¦      (do z? ← (zero? v₁)
 ¦          (cond [z? fail]
-¦                [(and (number? v₀) (number? v₁))
+¦                [(and (num? v₀) (num? v₁))
 ¦                 (return (/ v₀ v₁))]
 ¦                [else (return `(/ ,v₀ ,v₁))]))]
 ¦     [(list '¬ 0) 1] ... ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
 ¦       (match v
-¦         [(? number? n)          (return (= 0 n))]
+¦         [(? num? n)             (return (= 0 n))]
 ¦         [v #:when (∈ v φ)       (return #t)]
 ¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
 ¦         [`(¬ ,v′) (do a ← (zero? v′) (return (not a)))]
