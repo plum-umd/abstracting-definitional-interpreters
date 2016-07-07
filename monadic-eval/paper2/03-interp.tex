@@ -59,8 +59,6 @@ There are a few superficial aspects that deserve a quick note:
 environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
-
-% LAYOUT
 \begin{alignat*}{2}
                 𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
 \\[\mathgobble]        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
@@ -209,8 +207,7 @@ And divide-by-zero errors result in failures:
 ℑ⁆
 Because our monad stack places ⸨FailT⸩ above ⸨StateT⸩, the answer includes the
 (empty) store at the point of the error. Had we changed ⸨monad@⸩ to use
-«𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\
-𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID))))⸩» failures would not include the store:
+⸨(ReaderT (StateT (FailT ID))))⸩ then failures would not include the store:
 ℑ⁅
 ¦ > (/ 5 (- 3 3))
 ℑ,
@@ -351,15 +348,14 @@ set of all numbers. Abstract numbers are introduced by an alternative
 interpretation of primitive operations, given in Figure~\ref{f:abs-delta},
 which simply produces ⸨'N⸩ in all cases. 
 
-Some care must be taken in the abstract interpretation of ⸨'/⸩. If the
-denominator is the abstract number ⸨'N⸩, then it is possible the program could
-fail as a result of divide-by-zero, since ⸨0⸩ is contained in the
-representation of ⸨'N⸩. Therefore there are \emph{two} possible answers when
-the denominator is ⸨'N⸩: ⸨'N⸩ and ⸨'failure⸩. Both answers are ⸨return⸩ed by
-introducing non-determinism ⸨NondetT⸩ into the monad stack ⸨monad^@⸩.
-Adding non-determinism provides the ⸨mplus⸩ operation for combining multiple
-answers. Non-determinism is also used in the implementation of ⸨zero?⸩, which
-returns both true and false on ⸨'N⸩.
+Some care must be taken in the abstraction of ⸨'/⸩. If the denominator is the
+abstract number ⸨'N⸩, then it is possible the program could fail as a result of
+divide-by-zero, since ⸨0⸩ is contained in the representation of ⸨'N⸩. Therefore
+there are \emph{two} possible answers when the denominator is ⸨'N⸩: ⸨'N⸩ and
+⸨'failure⸩. Both answers are ⸨return⸩ed by introducing non-determinism
+⸨NondetT⸩ into the monad stack. Adding non-determinism provides the ⸨mplus⸩
+operation for combining multiple answers. Non-determinism is also used in
+⸨zero?⸩, which returns both true and false on ⸨'N⸩.
 
 \begin{figure} %{-{
 \rfloat{⸨monad^@⸩}
@@ -405,16 +401,13 @@ If we link ⸨δ^@⸩ with the \emph{tracing} monad stack plus non-determinism:
 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣
 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
 \end{alignat*}
-we get an evaluator that produces sets of traces:
+we get an evaluator that produces sets of traces (again not showing ⸨ρ⸩ or ⸨σ⸩
+in the results):
 ℑ⁅
 ¦ > (if0 (+ 1 0) 3 4)
 ℑ,
-¦ (set '((3 . ())
-¦        ((if0 (+ 1 0) 3 4) () ())
-¦        ((+ 1 0) () ())    (0 () ())    (3 () ()))    
-¦      '((4 . ())
-¦        ((if0 (+ 1 0) 3 4) () ())
-¦        ((+ 1 0) () ())    (0 () ())    (4 () ())))
+¦ (set '((3 . ()) (if0 (+ 1 0) 3 4) (+ 1 0) 0 3)
+¦      '((4 . ()) (if0 (+ 1 0) 3 4) (+ 1 0) 0 4))
 ℑ⁆
 
 It is clear that the interpreter will only ever see a finite set of numbers
