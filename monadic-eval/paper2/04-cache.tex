@@ -25,6 +25,27 @@ looked up from ⸨¢⸢in⸣⸩, which acts as an oracle. It is important that t
 is used co-inductively: it is only safe to use ⸨¢⸢in⸣⸩ as an oracle so long as
 some progress has been made first. 
 
+\begin{figure} %{-{
+\rfloat{⸨alloc^@⸩}
+\begin{lstlisting}
+¦ (define (alloc x) (return x))
+\end{lstlisting}
+\figskip\rfloat{⸨store-nd@⸩}
+\begin{lstlisting}
+¦ (define (find a)
+¦   (do σ ← get-store
+¦       (for/monad+ ([v (σ a)])
+¦         (return v))))
+¦ (define (ext a v)
+¦   (update-store
+¦     (λ (σ) (σ a (if (∈ a σ) 
+¦                     (set-add (σ a) v) 
+¦                     (set v))))))
+\end{lstlisting}
+\caption{Abstracting Allocation: 0CFA}
+\label{f:0cfa-abs}
+\end{figure} %}-}
+
 The results of evaluation are then stored in an output cache (⸨¢⸢out⸣⸩), which
 after the end of evaluation is “more defined” than the input cache (⸨¢⸢in⸣⸩),
 again following a co-inductive argument. The least fixed-point of ⸨¢⁺⸩ of an
@@ -34,6 +55,27 @@ over-approximate all finite-number of unrollings of the unfixed evaluator. We
 formalize this co-inductive process in Section~\ref{s:formalism} and prove it
 sound; in this section we instead focus on the intuition and implementation for
 the algorithm.
+
+The co-inductive caching algorithm is shown in Figure~\ref{f:caching}, along
+with the monad transformer stack ⸨monad-cache@⸩ which has two new components:
+⸨ReaderT⸩ for the input cache ⸨¢⸢in⸣⸩, and ⸨StateT+⸩ for the output cache
+⸨¢⸢out⸣⸩. We use a ⸨StateT+⸩ instead of ⸨WriterT⸩ monad transformer in the
+output cache so it can double as tracking the set of seen states. The ⸨+⸩ in
+⸨StateT+⸩ signifies that caches for multiple non-deterministic branches will be
+merged automatically, producing a set of results and a single cache, rather
+than a set of results paired with individual caches.
+
+In the algorithm, when a configuration ⸨ς⸩ is first encountered, we place an
+entry in the output cache mapping ⸨ς⸩ to «𝔥⸨(¢⸢in⸣⸩\ 𝔥⸨ς)⸩», which is the
+“oracle” result. Also, whenever we finish computing the result ⸨v×σ⸩ of
+evaluating a configuration ⸨ς⸩, we place an entry in the output cache mapping
+⸨ς⸩ to ⸨v×σ′⸩. Finally, whenever we reach a configuration ⸨ς⸩ for which a
+mapping in the output cache exists, we use it immediately, ⸨return⸩ing each
+result using the ⸨for/monad+⸩ iterator. Therefore, every “cache hit” on
+⸨¢⸢out⸣⸩ is in one of two possible states: 1) we have already seen the
+configuration, and the result is the oracle result, as desired; or 2) we have
+already computed the “improved” result (w.r.t. the oracle), and need not
+recompute it.
 
 \begin{figure} %{-{
 \rfloat{⸨monad-cache@⸩}
@@ -64,27 +106,6 @@ the algorithm.
 \caption{Co-inductive Caching Algorithm}
 \label{f:caching}
 \end{figure} %}-}
-
-The co-inductive caching algorithm is shown in Figure~\ref{f:caching}, along
-with the monad transformer stack ⸨monad-cache@⸩ which has two new components:
-⸨ReaderT⸩ for the input cache ⸨¢⸢in⸣⸩, and ⸨StateT+⸩ for the output cache
-⸨¢⸢out⸣⸩. We use a ⸨StateT+⸩ instead of ⸨WriterT⸩ monad transformer in the
-output cache so it can double as tracking the set of seen states. The ⸨+⸩ in
-⸨StateT+⸩ signifies that caches for multiple non-deterministic branches will be
-merged automatically, producing a set of results and a single cache, rather
-than a set of results paired with individual caches.
-
-In the algorithm, when a configuration ⸨ς⸩ is first encountered, we place an
-entry in the output cache mapping ⸨ς⸩ to «𝔥⸨(¢⸢in⸣⸩\ 𝔥⸨ς)⸩», which is the
-“oracle” result. Also, whenever we finish computing the result ⸨v×σ⸩ of
-evaluating a configuration ⸨ς⸩, we place an entry in the output cache mapping
-⸨ς⸩ to ⸨v×σ′⸩. Finally, whenever we reach a configuration ⸨ς⸩ for which a
-mapping in the output cache exists, we use it immediately, ⸨return⸩ing each
-result using the ⸨for/monad+⸩ iterator. Therefore, every “cache hit” on
-⸨¢⸢out⸣⸩ is in one of two possible states: 1) we have already seen the
-configuration, and the result is the oracle result, as desired; or 2) we have
-already computed the “improved” result (w.r.t. the oracle), and need not
-recompute it.
 
 To compute the least fixed-point ⸨¢⁺⸩ for the evaluator ⸨ev-cache⸩ we perform a
 standard Kleene fixpoint iteration starting from the empty map, the bottom
@@ -123,27 +144,3 @@ computable, as demonstrated on the following examples:
 ℑ,
 ¦ '(0 2 3)
 ℑ⁆
-
-\begin{figure} %{-{
-\rfloat{⸨fix-cache@⸩}
-\begin{lstlisting}
-¦ (define ((fix-cache eval) e)  
-¦   (do ρ ← ask-env  σ ← get-store
-¦       ς ≔ (list e ρ σ)
-¦       ¢⁺ ← (mlfp (λ (¢) 
-¦              (do (put-cache-out ∅)
-¦                  (put-store σ)
-¦                  (local-cache-in ¢ (eval e))
-¦                  get-cache-out)))
-¦       (for/monad+ ([v×σ (¢⁺ ς)])
-¦         (do (put-store (cdr v×σ))
-¦             (return (car v×σ))))))
-¦ (define (mlfp f)
-¦   (let loop ([x ∅])
-¦     (do x′ ← (f x)
-¦         (if (equal? x′ x) (return x) (loop x′)))))
-\end{lstlisting}
-\caption{Finding Fixpoints in the Cache}
-\label{f:fixing}
-\end{figure} %}-}
-
