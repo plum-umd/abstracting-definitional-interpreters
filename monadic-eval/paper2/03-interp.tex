@@ -37,8 +37,10 @@ functions and applications.
 ¦                         (local-env (ρ x a) 
 ¦                           (ev e₂)))]))
 \end{lstlisting}
+\vspace{-0.75em}
 \caption{The Extensible Definitional Interpreter}
 \label{f:interpreter}
+\vspace{-1em}
 \end{figure} %}-}
 %¦     [(op1 o e₀)
 %¦      (do v ← (ev e₀)
@@ -121,8 +123,10 @@ implementation.}
 ¦ (define (alloc x) (do σ ← get-store
 ¦                       (return (size σ))))
 \end{lstlisting}
+\vspace{-0.75em}
 \caption{Components for Definitional Interpreters}
 \label{f:concrete-components}
+\vspace{-1em}
 \end{figure} %}-}
 
 \subsection{Instantiating the Interpreter}
@@ -244,8 +248,10 @@ environment and store.  The top-level evaluation function is then:
 ¦       (tell (list e ρ σ))
 ¦       ((ev₀ ev) e)))
 \end{lstlisting}
+\vspace{-0.75em}
 \caption{Trace Collecting Semantics}
 \label{f:trace}
+\vspace{-1em}
 \end{figure} %}-}
 
 Now when an expression is evaluated, we get an answer and a list of all states
@@ -307,29 +313,6 @@ of expressions that were not evaluated during the running of a program:
 ¦ (cons '(failure . ()) (set 3 2))
 ℑ⁆
 
-\begin{figure} %{-{
-\rfloat{⸨dead-monad@⸩}
-\begin{flalign*}
-          & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
-& \end{flalign*}
-\figskip\rfloat{⸨ev-dead@⸩}
-\begin{lstlisting}
-¦ (define (((ev-dead ev₀) ev) e)
-¦   (do θ  ← get-dead       
-¦       (put-dead (set-remove θ e))
-¦       ((ev₀ ev) e)))
-\end{lstlisting}
-\figskip\rfloat{⸨eval-dead@⸩}
-\begin{lstlisting}
-¦ (define ((eval-dead eval) e₀)
-¦   (do (put-dead (subexps e₀))
-¦       (eval e₀)))
-\end{lstlisting}
-\caption{Dead Code Collecting Semantics}
-\label{f:dead}
-\end{figure} %}-}
-
 Our setup makes it easy not only to express the concrete interpreter, but also
 these useful forms of collecting semantics.
 
@@ -351,6 +334,31 @@ there are \emph{two} possible answers when the denominator is ⸨'N⸩: ⸨'N⸩
 ⸨NondetT⸩ into the monad stack. Adding non-determinism provides the ⸨mplus⸩
 operation for combining multiple answers. Non-determinism is also used in
 ⸨zero?⸩, which returns both true and false on ⸨'N⸩.
+
+\begin{figure} %{-{
+\rfloat{⸨dead-monad@⸩}
+\begin{flalign*}
+          & 𝔥⸨(define-monad⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨ev-dead@⸩}
+\begin{lstlisting}
+¦ (define (((ev-dead ev₀) ev) e)
+¦   (do θ  ← get-dead       
+¦       (put-dead (set-remove θ e))
+¦       ((ev₀ ev) e)))
+\end{lstlisting}
+\figskip\rfloat{⸨eval-dead@⸩}
+\begin{lstlisting}
+¦ (define ((eval-dead eval) e₀)
+¦   (do (put-dead (subexps e₀))
+¦       (eval e₀)))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Dead Code Collecting Semantics}
+\label{f:dead}
+\vspace{-1em}
+\end{figure} %}-}
 
 By linking together ⸨δ^@⸩ and the monad stack with non-determinism, we obtain
 an evaluator that produces a set of results:
@@ -380,28 +388,6 @@ in the results):
 ¦ (set '((3 . ()) (if0 (+ 1 0) 3 4) (+ 1 0) 0 3)
 ¦      '((4 . ()) (if0 (+ 1 0) 3 4) (+ 1 0) 0 4))
 ℑ⁆
-
-\begin{figure} %{-{
-\rfloat{⸨monad^@⸩}
-\begin{flalign*}
-                  & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
-& \end{flalign*}
-\figskip\rfloat{⸨δ^@⸩}
-\begin{lstlisting}
-¦ (define (δ o n₀ n₁)
-¦   (match* (o n₀ n₁)
-¦     [('+ _ _       ) (return 'N)]
-¦     [('/ _ (? num?)) (if (= 0 n₁) fail (return 'N))]
-¦     [('/ _ 'N      ) (mplus fail (return 'N))] ... ))
-¦ (define (zero? v)
-¦   (match v
-¦     ['N (mplus (return #t) (return #f))]
-¦     [_  (return (= 0 v))]))
-\end{lstlisting}
-\caption{Abstracting Primitive Operations}
-\label{f:abs-delta}
-\end{figure} %}-}
 
 It is clear that the interpreter will only ever see a finite set of numbers
 (including ⸨'N⸩), but it's definitely not true that the interpreter halts on
@@ -434,10 +420,34 @@ and ⸨ext⸩ which interact with a store mapping to \emph{sets} of values. The
 a given address.  The ⸨ext⸩ function joins whenever an address is already
 allocated, otherwise it maps the address to a singleton set.
 
+\begin{figure} %{-{
+\rfloat{⸨monad^@⸩}
+\begin{flalign*}
+                  & 𝔥⸨(define-monad⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨δ^@⸩}
+\begin{lstlisting}
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('+ _ _       ) (return 'N)]
+¦     [('/ _ (? num?)) (if (= 0 n₁) fail (return 'N))]
+¦     [('/ _ 'N      ) (mplus fail (return 'N))] ... ))
+¦ (define (zero? v)
+¦   (match v
+¦     ['N (mplus (return #t) (return #f))]
+¦     [_  (return (= 0 v))]))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Abstracting Primitive Operations}
+\label{f:abs-delta}
+\vspace{-1em}
+\end{figure} %}-}
+
 By linking these components with the same monad stack from before, we obtain an
 interpreter that loses precision whenever variables are bound to multiple
-values.  For example, this program binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and therefore
-produces both answers when run:
+values.  For example, this program binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and produces
+both answers when run:
 ℑ⁅
 ¦ > (let f (λ (x) x)
 ¦     (let _ (f 0) (f 1)))]

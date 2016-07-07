@@ -42,8 +42,10 @@ some progress has been made first.
 ¦                     (set-add (σ a) v) 
 ¦                     (set v))))))
 \end{lstlisting}
+\vspace{-0.75em}
 \caption{Abstracting Allocation: 0CFA}
 \label{f:0cfa-abs}
+\vspace{-1em}
 \end{figure} %}-}
 
 The results of evaluation are then stored in an output cache (⸨¢⸢out⸣⸩), which
@@ -76,36 +78,6 @@ result using the ⸨for/monad+⸩ iterator. Therefore, every “cache hit” on
 configuration, and the result is the oracle result, as desired; or 2) we have
 already computed the “improved” result (w.r.t. the oracle), and need not
 recompute it.
-
-\begin{figure} %{-{
-\rfloat{⸨monad-cache@⸩}
-\begin{flalign*}
-                  & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID)))))))⸩
-& \end{flalign*}
-\figskip\rfloat{⸨ev-cache@⸩}
-\begin{lstlisting}
-¦ (define (((ev-cache ev₀) ev) e)
-¦   (do ρ ← ask-env  σ ← get-store
-¦       ς ≔ (list e ρ σ)
-¦       ¢⸢out⸣ ← get-cache-out
-¦       (if (∈ ς ¢⸢out⸣)
-¦           (for/monad+ ([v×σ (¢⸢out⸣ ς)])
-¦             (do (put-store (cdr v×σ))
-¦                 (return (car v×σ))))
-¦           (do ¢⸢in⸣ ← ask-cache-in
-¦               v×σ₀ ≔ (if (∈ ς ¢⸢in⸣) (¢⸢in⸣ ς) ∅)
-¦               (put-cache-out (¢⸢out⸣ ς v×σ₀))
-¦               v  ← ((ev₀ ev) e)
-¦               σ′ ← get-store
-¦               v×σ′ ≔ (cons v σ′)
-¦               (update-cache-out (λ (¢⸢out⸣) 
-¦                 (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
-¦               (return v)))))
-\end{lstlisting}
-\caption{Co-inductive Caching Algorithm}
-\label{f:caching}
-\end{figure} %}-}
 
 To compute the least fixed-point ⸨¢⁺⸩ for the evaluator ⸨ev-cache⸩ we perform a
 standard Kleene fixpoint iteration starting from the empty map, the bottom
@@ -144,3 +116,36 @@ computable, as demonstrated on the following examples:
 ℑ,
 ¦ '(0 2 3)
 ℑ⁆
+
+\begin{figure} %{-{
+\rfloat{⸨monad-cache@⸩}
+\begin{flalign*}
+                  & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID)))))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨ev-cache@⸩}
+\begin{lstlisting}
+¦ (define (((ev-cache ev₀) ev) e)
+¦   (do ρ ← ask-env  σ ← get-store
+¦       ς ≔ (list e ρ σ)
+¦       ¢⸢out⸣ ← get-cache-out
+¦       (if (∈ ς ¢⸢out⸣)
+¦           (for/monad+ ([v×σ (¢⸢out⸣ ς)])
+¦             (do (put-store (cdr v×σ))
+¦                 (return (car v×σ))))
+¦           (do ¢⸢in⸣ ← ask-cache-in
+¦               v×σ₀ ≔ (if (∈ ς ¢⸢in⸣) (¢⸢in⸣ ς) ∅)
+¦               (put-cache-out (¢⸢out⸣ ς v×σ₀))
+¦               v  ← ((ev₀ ev) e)
+¦               σ′ ← get-store
+¦               v×σ′ ≔ (cons v σ′)
+¦               (update-cache-out (λ (¢⸢out⸣) 
+¦                 (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
+¦               (return v)))))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Co-inductive Caching Algorithm}
+\label{f:caching}
+\vspace{-1em}
+\end{figure} %}-}
+

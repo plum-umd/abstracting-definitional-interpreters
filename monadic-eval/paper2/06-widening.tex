@@ -1,14 +1,13 @@
 \section{Widening the Store}\label{s:widening}
 
 The abstract interpreter we've constructed so far uses a
-store-per-program-state abstraction, which while precise is also prohibitively
+store-per-program-state abstraction, which is precise but prohibitively
 expensive. A common technique to combat this cost is to use a global
-``widenened'' store, which over-approximates all the individual stores in the
-current set-up.  Thanks to our monad transformer framework, this change can be
-achieved simply by re-ordering of the monad stack, a technique due to Darais
-\emph{et al}~\cite{local:darais-oopsla2015}. Whereas before we had
-⸨monad-cache@⸩ we instead swap the order of ⸨StateT⸩ for the store and
-⸨NondetT⸩:
+``widenened'' store, which over-approximates each individual store in the
+current set-up. This change is achieved easily in the monadic setup by
+re-ordering the monad stack, a technique due to Darais \emph{et
+al}~\cite{local:darais-oopsla2015}. Whereas before we had ⸨monad-cache@⸩ we
+instead swap the order of ⸨StateT⸩ for the store and ⸨NondetT⸩:
 \begin{alignat*}{1}
   & 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢store⸣
 \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID))))))⸩
