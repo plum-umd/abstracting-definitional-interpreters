@@ -113,17 +113,14 @@ implementation.}
 \end{lstlisting}
 \figskip\rfloat{⸨store@⸩}
 \begin{lstlisting}
-¦ (define (find a)
-¦   (do σ ← get-store
-¦       (return (σ a))))
-¦ (define (ext a v) 
-¦   (update-store (λ (σ) (σ a v))))
+¦ (define (find a)  (do σ ← get-store
+¦                       (return (σ a))))
+¦ (define (ext a v) (update-store (λ (σ) (σ a v))))
 \end{lstlisting}
 \figskip\rfloat{⸨alloc@⸩}
 \begin{lstlisting}
-¦ (define (alloc x)
-¦   (do σ ← get-store
-¦       (return (size σ))))
+¦ (define (alloc x) (do σ ← get-store
+¦                       (return (size σ))))
 \end{lstlisting}
 \caption{Components for Definitional Interpreters}
 \label{f:concrete-components}
