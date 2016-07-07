@@ -65,6 +65,8 @@ There are a few superficial aspects that deserve a quick note:
 environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
+
+% LAYOUT
 \begin{alignat*}{2}
                 𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
 \\[\mathgobble]        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
@@ -79,9 +81,8 @@ function ⸨ev⸩—shadowing the name of the function ⸨ev⸩ being defined—
 (the argument) is called instead of self-recursion.  This is a standard
 encoding for recursive functions in a setting without recursive binding.  It is
 up to an external function, such as the Y-combinator, to close the recursive
-loop.  This open recursive form is crucial for our purposes in that it allows
-intercepting recursive calls to perform “deep” instrumentation of the
-interpreter.
+loop.  This open recursive form is crucial because it allows intercepting
+recursive calls to perform “deep” instrumentation of the interpreter.
 
 Second, the code is clearly \emph{incomplete}.  There are a number of free
 variables, noted in italics, which must implement the following:
@@ -117,8 +118,7 @@ implementation.}
 ¦     [(list '* n₀ n₁) (return (* n₀ n₁))]
 ¦     [(list '/ n₀ n₁)
 ¦      (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
-¦ (define (zero? v)
-¦   (return (= 0 v)))
+¦ (define (zero? v) (return (= 0 v)))
 \end{lstlisting}
 \figskip\rfloat{⸨store@⸩}
 \begin{lstlisting}
@@ -141,17 +141,16 @@ implementation.}
 \subsection{Instantiating the Interpreter}
 
 Next we examine a set of components which complete the definitional
-interpreter, defined in Figure~\ref{f:concrete-components}. The first component
-is ⸨monad@⸩, which uses our ⸨define-monad⸩ macro to generate a set of bindings
-based on a monad transformer stack.  For this interpreter, we use a failure
-monad to model divide-by-zero errors, a state monad to model the store, and a
-reader monad to model the environment.  The ⸨define-monad⸩ form generates
-bindings for ⸨return⸩, ⸨bind⸩, ⸨ask-env⸩, ⸨local-env⸩, ⸨get-store⸩ and
-⸨update-store⸩, and their definitions are
+interpreter, shown in Figure~\ref{f:concrete-components}. The first component
+⸨monad@⸩ uses a macro ⸨define-monad⸩ which generates a set of bindings based on
+a monad transformer stack.  We use a failure monad to model divide-by-zero
+errors, a state monad to model the store, and a reader monad to model the
+environment.  The ⸨define-monad⸩ form generates bindings for ⸨return⸩, ⸨bind⸩,
+⸨ask-env⸩, ⸨local-env⸩, ⸨get-store⸩ and ⸨update-store⸩; their definitions are
 standard~\cite{dvanhorn:Liang1995Monad}. 
 
-We also add the ⸨mrun⸩ operation for running monadic computations, starting
-with the empty environment and store ⸨∅⸩:
+We also define ⸨mrun⸩ for running monadic computations, starting with the empty
+environment and store ⸨∅⸩:
 \begin{lstlisting}
 ¦ (define (mrun m)
 ¦   (run-StateT ∅ (run-ReaderT ∅ m)))
@@ -162,20 +161,19 @@ be defined as:
 \begin{lstlisting}
 ¦ (define (((return a) r) s) (cons a s))
 ¦ (define (((bind ma f) r) s)
-¦   (match ((ma r) s)
-¦     [(cons a s′) (((f a) r) s′)]
-¦     ['failure 'failure]))
+¦   (match ((ma r) s) [(cons a s′) (((f a) r) s′)]
+¦                     ['failure 'failure]))
 \end{lstlisting}
-The remaining operations are similarly straightforward.  So far our use of
-monad transformers can be seen as a mere convenience, but the monad abstraction
-will become essential for deriving new analyses later on.
+So far our use of monad transformers is as a mere convenience, however the
+monad abstraction will become essential for easily deriving new analyses later
+on.
 
 The ⸨δ@⸩ component defines the interpretation of primitives, which is given in
 terms of the underlying monad.  Finally the ⸨alloc@⸩ component provides a
 definition of ⸨alloc⸩, which fetches the store and uses its size to return a
 fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a⸩ < 𝔥⸨(size σ)⸩»).
-The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending the
-store in terms of the monadic operations.
+The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending
+values in the store.
 
 The only remaining pieces of the puzzle are a fixed-point combinator, which is
 straightforward to define:
@@ -190,8 +188,8 @@ By taking advantage of Racket's languages-as-libraries
 features~\cite{dvanhorn:TobinHochstadt2011Languages}, we construct REPLs for
 interacting with this interpreter.  Here are a few examples, which make use of
 a concrete syntax for more succinctly writing expressions. The identity
-function evaluates to an answer consisting of a closure over the empty
-environment together with the empty store:
+function evaluates to a closure over the empty environment paired with the
+empty store:
 ℑ⁅
 ¦ > (λ (x) x)
 ℑ,
@@ -216,11 +214,9 @@ And divide-by-zero errors result in failures:
 ¦ '(failure . ())
 ℑ⁆
 Because our monad stack places ⸨FailT⸩ above ⸨StateT⸩, the answer includes the
-(empty) store at the point of the error. Had we changed ⸨monad@⸩ to use:
-\begin{alignat*}{1}
-& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID))))⸩
-\end{alignat*}
-failures would not include the store:
+(empty) store at the point of the error. Had we changed ⸨monad@⸩ to use
+«𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\
+𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID))))⸩» failures would not include the store:
 ℑ⁅
 ¦ > (/ 5 (- 3 3))
 ℑ,
@@ -237,12 +233,12 @@ The formal development of abstract interpretation often starts from a so-called
 ``non-standard collecting semantics.''  A common form of collecting semantics
 is a trace semantics, which collects streams of states the interpreter reaches.
 Figure~\ref{f:trace} shows the monad stack for a tracing interpreter and a
-``mix-in'' for the evaluator.  The monad stack adds ⸨WriterT⸩ using ⸨List⸩,
-which provides a new operation ⸨tell⸩ for writing items to the stream of
+``mix-in'' for the evaluator.  The monad stack adds ⸨WriterT List⸩, which
+provides a new operation ⸨tell⸩ for writing lists of items to the stream of
 reached states.  The ⸨ev-trace⸩ function is a wrapper around an underlying
 ⸨ev₀⸩ unfixed evaluator, and interposes itself between each recursive call by
-⸨tell⸩ing the current state of the evaluator, that is the current expression,
-environment, and store.  The top-level evaluation function is then:
+⸨tell⸩ing the current state of the evaluator: the current expression,
+environment and store.  The top-level evaluation function is then:
 \begin{lstlisting}
 ¦ (define (eval e) 
 ¦   (mrun ((fix (ev-tell ev)) e)))
@@ -266,15 +262,13 @@ environment, and store.  The top-level evaluation function is then:
 \label{f:trace}
 \end{figure} %}-}
 
-Now when an expression is evaluated, we get the resulting answer and a list of
-all the states seen by the evaluator, in the order in which they were seen. For
-example:
+Now when an expression is evaluated, we get an answer and a list of all states
+seen by the evaluator, in the order in which they were seen. For example (not
+showing ⸨ρ⸩ or ⸨σ⸩ in results):
 ℑ⁅
 ¦ > (* (+ 3 4) 9)
 ℑ,
-¦ '((63 . ())    
-¦   ((* (+ 3 4) 9)()())    ((+ 3 4)()()) 
-¦   (3()())    (4()())    (9()()))
+¦ '((63 . ()) (* (+ 3 4) 9) (+ 3 4) 3 4 9)
 ℑ⁆
 % ℑ⁅
 % ¦ > ((λ (x) (λ (y) x)) 4)
@@ -292,18 +286,17 @@ that loses the order and repetition of states.
 As another collecting semantics variant, we show how to collect the \emph{dead
 code} in a program.  Here we use a monad stack that has an additional state
 component (with operations named ⸨put-dead⸩ and ⸨get-dead⸩) which stores the
-set of dead expressions.  Initially this will contain all of the subexpressions
-of the program.  As the interpreter recurs through expressions it will remove
-them from the dead set.
+set of dead expressions.  Initially this will contain all subexpressions of the
+program.  As the interpreter evaluates expressions it will remove them from the
+dead set.
 
 Figure~\ref{f:dead} defines the monad stack for the dead code collecting
 semantics and the ⸨ev-dead@⸩ component, another mix-in for an ⸨ev₀⸩ evaluator
 to remove the given subexpression before recurring.  Since computing the dead
 code requires an outer wrapper that sets the initial set of dead code to be all
 of the subexpressions in the program, we define ⸨eval-dead@⸩ which consumes a
-\emph{closed evaluator}, i.e. something of the form ⸨(fix ev)⸩.
-
-Putting these pieces together, the dead code collecting semantics is defined:
+\emph{closed evaluator}, i.e. something of the form ⸨(fix ev)⸩. Putting these
+pieces together, the dead code collecting semantics is defined:
 \begin{lstlisting}
 ¦ (define (eval e)
 ¦   (mrun ((eval-dead (fix (ev-dead ev))) e)))
@@ -352,7 +345,7 @@ of expressions that were not evaluated during the running of a program:
 \end{figure} %}-}
 
 Our setup makes it easy not only to express the concrete interpreter, but also
-different forms of collecting semantics. Let us now look at abstractions.
+these useful forms of collecting semantics.
 
 \subsection{Abstracting Base Values}\label{s:base}
 
