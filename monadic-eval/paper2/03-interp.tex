@@ -448,24 +448,3 @@ produces both answers when run:
 Our abstract interpreter now has a truly finite domain; the next step is to
 detect loops in the state-space to achieve termination.
 
-\begin{figure} %{-{
-\rfloat{⸨alloc^@⸩}
-\begin{lstlisting}
-¦ (define (alloc x) (return x))
-\end{lstlisting}
-\figskip\rfloat{⸨store-nd@⸩}
-\begin{lstlisting}
-¦ (define (find a)
-¦   (do σ ← get-store
-¦       (for/monad+ ([v (σ a)])
-¦         (return v))))
-¦ (define (ext a v)
-¦   (update-store
-¦     (λ (σ) (σ a (if (∈ a σ) 
-¦                     (set-add (σ a) v) 
-¦                     (set v))))))
-\end{lstlisting}
-\caption{Abstracting Allocation: 0CFA}
-\label{f:0cfa-abs}
-\end{figure} %}-}
-

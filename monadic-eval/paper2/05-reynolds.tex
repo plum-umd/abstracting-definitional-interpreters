@@ -5,6 +5,31 @@ termination-guaranteeing cache-based fixed-point algorithm, we have obtained a
 terminating abstract interpreter.  But what kind of abstract interpretation did
 we get?
 
+\begin{figure} %{-{
+\rfloat{⸨fix-cache@⸩}
+\begin{lstlisting}
+¦ (define ((fix-cache eval) e)  
+¦   (do ρ ← ask-env  σ ← get-store
+¦       ς ≔ (list e ρ σ)
+¦       ¢⁺ ← (mlfp (λ (¢) 
+¦              (do (put-cache-out ∅)
+¦                  (put-store σ)
+¦                  (local-cache-in ¢ (eval e))
+¦                  get-cache-out)))
+¦       (for/monad+ ([v×σ (¢⁺ ς)])
+¦         (do (put-store (cdr v×σ))
+¦             (return (car v×σ))))))
+¦ (define (mlfp f)
+¦   (let loop ([x ∅])
+¦     (do x′ ← (f x)
+¦         (if (equal? x′ x)
+¦             (return x)
+¦             (loop x′)))))
+\end{lstlisting}
+\caption{Finding Fixpoints in the Cache}
+\label{f:fixing}
+\end{figure} %}-}
+
 We have followed the basic recipe of AAM, but adapted to a compositional
 evaluator instead of an abstract machine.  However, we did manage to skip over
 one of the key steps in the AAM method: we never store-allocated continuations.
