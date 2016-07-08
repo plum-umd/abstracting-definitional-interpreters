@@ -1,0 +1,8 @@
+The implementation for "Abstracting Definitional Interpreters" is publicly
+available on github:
+
+    https://github.com/plum-umd/monadic-eval.git
+
+and can be installed using Racket's package manager with:
+
+    raco pkg install https://github.com/plum-umd/monadic-eval.git
