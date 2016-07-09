@@ -561,10 +561,10 @@ environments («⟨e,♯{ρ}⟩»). In other words, «⟨e,♯{ρ}⟩» is suffi
 full pushdown precision because the tuple uniquely identifies the evaluation
 context up to the final result of evaluation.
 
-Our fully widened semantics recovers this pushdown setting because the cache
-maps tuples «⟨e,♯{ρ},♯{τ}⟩», which trivially contains «⟨e,♯{ρ}⟩». Furthermore,
-we see that the abstract time component «♯{τ}» is redundant, and eliminate it
-from the cache, resulting in a smaller cache domain for the same analysis:
+Our fully widened semantics recovers pushdown precision because the cache maps
+tuples «⟨e,♯{ρ},♯{τ}⟩», which contains «⟨e,♯{ρ}⟩». We then see that abstract
+time «♯{τ}» is redundant and eliminate it from the cache, resulting in a
+smaller domain for the same analysis:
 \begin{alignat*}{2}
   ♯{ς} ∈ &\mathrel{} ♯{config} ≔ exp × ♯{env} × ♯{time} 
 \\[\mathgobble] \$ ∈ &\mathrel{} ♯{cache} ≔ exp × ♯{env} ↦ ℘(♯{val}) 
@@ -574,10 +574,9 @@ An advantage of our setting is that we recover pushdown analysis also for
 varying degrees of store-widening, which is not the case in Gilray \emph{et
 al}~\cite{local:p4f}, although pushdown precision for non-widened semantics has
 been achieved by Johnson and Van Horn~\cite{dvanhorn:Johnson2014Abstracting}.
-Furthermore, the implementation of our analyzer achieves this precision through
-precise call-return matching in the defining metalanguage of a definitional
-interpreter, requiring no added instrumentation to the state-space of the
-analyzer.
+Furthermore, the implementation of our analyzer inherits this precision through
+precise call-return matching in the defining metalanguage, requiring no added
+instrumentation to the state-space of the analyzer.
 
 Going back to Nielson et al~\cite{dvanhorn:Neilson:1999}, it would be
 interesting to redevelop their constraint-based analysis descriptions of kCFA

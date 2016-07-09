@@ -17,8 +17,9 @@ out/%.tex: %.tex $(SED_FILES)
 	sed -f latex-unicode-unescape.sed -i.bak $@
 	sed -f latex-unicode-post.sed     -i.bak $@
 
-out/%.bib: %.bib
+out/%.bib: %.bib latex-unicode.sed
 	bibclean $< > $@
+	sed -f latex-unicode.sed -i.bak $@
 
 out/%.png: %.png
 	cp $< $@
@@ -30,6 +31,7 @@ out/%.cls: %.cls
 	cp $< $@
 
 main.pdf: \
+	    Makefile \
 			$(patsubst %,out/%,$(TEX_FILES)) \
 			$(patsubst %,out/%,$(BIB_FILES)) \
 			$(patsubst %,out/%,$(PNG_FILES)) \
@@ -40,24 +42,23 @@ main.pdf: \
 
 .PHONY: again
 again:
-	touch main.tex
-	make
+	touch Makefile && touch Makefile && make
 
+.PHONY: fixpoint
 fixpoint:
-	make && make again && make again && make again && make again && make again
+	make again && make again && make again && make again && make again && make again
 
 .PHONY: much
 much:
-	touch main.tex
-	make
-	touch main.tex
-	make
-	touch main.tex
-	make
+	make again && make again && make again
+
+.PHONY: remake
+remake:
+	make clean && make much
 
 .PHONY: clean
 clean:
-	rm -r out/
+	rm -rf out/
 
 
 # main.pdf : main.tex style.tex sigplanconf.cls

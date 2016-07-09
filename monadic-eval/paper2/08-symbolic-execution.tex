@@ -1,5 +1,26 @@
 \section{Path Sensitivity}\label{s:symbolic}
 
+\begin{figure} %{-{
+\rfloat{⸨δ^-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('/ n₀ n₁)
+¦      (do z? ← (zero? n₁)
+¦          (cond [z? fail]
+¦                [(member 'N (list n₀ n₁))
+¦                 (return 'N)] ... ))])] ... ))
+¦ (define (zero? v)
+¦   (do φ ← get-path-cond
+¦       (match v 
+¦         ['N (mplus (return #t) (return #f))] ... )))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Symbolic Execution with Abstract Numbers}
+\label{f:symbolic-widen}
+\vspace{-1em}
+\end{figure} %}-}
+
 As a final exercise in applying our definitional abstract interpretation
 framework, we develop a symbolic execution engine, and use it to perform sound
 program verification. First we describe the monad stack and metafunctions that
@@ -44,27 +65,6 @@ A scaled up symbolic executor could implement ⸨zero?⸩ by calling out to an S
 solver for interesting arithmetics, or extend the language with symbolic
 functions and blame semantics for sound higher-order symbolic
 execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relatively}.
-
-\begin{figure} %{-{
-\rfloat{⸨δ^-symbolic@⸩}
-\begin{lstlisting}
-¦ (define (δ o n₀ n₁)
-¦   (match* (o n₀ n₁)
-¦     [('/ n₀ n₁)
-¦      (do z? ← (zero? n₁)
-¦          (cond [z? fail]
-¦                [(member 'N (list n₀ n₁))
-¦                 (return 'N)] ... ))])] ... ))
-¦ (define (zero? v)
-¦   (do φ ← get-path-cond
-¦       (match v 
-¦         ['N (mplus (return #t) (return #f))] ... )))
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{Symbolic Execution with Abstract Numbers}
-\label{f:symbolic-widen}
-\vspace{-1em}
-\end{figure} %}-}
 
 \newcommand{\lamif}{«λ⦑IF⦒» }
 

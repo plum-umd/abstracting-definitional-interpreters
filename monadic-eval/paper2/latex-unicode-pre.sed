@@ -29,7 +29,6 @@ s/∿/\\widetilde/g
 s/♯/\\widehat/g
 s/⇄/\\galois/g
 s/␣/\\texttt{\\hspace{1em}}/g
-#s/⌊γ⌋/\\lfloor\\!\\gamma\\!\\rfloor/g
 
 s/ℑ⁅/\\\\\\begin{minipage}{\\linewidth}\\vspace{-0.25em}\\begin{lstlisting}/g
 s/ℑ,/\\end{lstlisting}\\resultskip\\begin{lstlisting}\[style=result\]/g

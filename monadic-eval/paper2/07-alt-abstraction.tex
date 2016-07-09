@@ -1,40 +1,45 @@
 \section{An Alternative Abstraction}\label{s:alt-abstraction}
 
-\begin{figure} %{-{
-\rfloat{⸨precise-δ@⸩}
-\begin{lstlisting}
-¦ (define (δ o n₀ n₁)
-¦   (match* (o n₀ n₁)
-¦     [('+ (? num?) (? num?)) (return (+ n₀ n₁))]
-¦     [('+ _        _       ) (return 'N)] ... ))
-¦ (define (zero? v)
-¦   (match v
-¦     ['N (mplus (return #t) (return #f))]
-¦     [_  (return (zero? v))]))
-\end{lstlisting}
-\figskip\rfloat{⸨store-crush@⸩}
-\begin{lstlisting}
-¦ (define (find a)
-¦   (do σ ← get-store
-¦       (for/monad+ ([v (σ a)]) (return v))))
-¦ (define (crush v vs)
-¦   (if (closure? v)
-¦       (set-add vs v)
-¦       (set-add (set-filter closure? vs) 'N)))
-¦ (define (ext a v)
-¦   (update-store (λ (σ) (if (∈ a σ)
-¦                            (σ a (crush v (σ a)))
-¦                            (σ a (set v))))))
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{An Alternative Abstraction for Precise Primitives}
-\label{f:pres-delta}
-\vspace{-1em}
-\end{figure} %}-}
-
 In this section, we demonstrate how easy it is to experiment with alternative
 abstraction strategies by swapping out components.  In particular we look at an
 alternative abstraction of primitive operations and store joins.
+
+\begin{figure} %{-{
+\rfloat{⸨symbolic-monad@⸩}
+\begin{flalign*}
+                  & 𝔥⸨(define-monad⸩
+  & \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩
+\end{flalign*}
+\figskip\rfloat{⸨ev-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (((ev-symbolic ev₀) ev) e)
+¦   (match e [(sym x) (return x)]
+¦            [e       ((ev₀ ev) e)]))
+\end{lstlisting}
+\figskip\rfloat{⸨δ-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('/ n₀ n₁)
+¦      (do z? ← (zero? n₁)
+¦          (cond [z? fail]
+¦                [(and (num? n₀) (num? n₁))
+¦                 (return (/ n₀ n₁))]
+¦                [else (return `(/ ,n₀ ,n₁))]))] ... ))
+¦ (define (zero? v)
+¦   (do φ ← get-path-cond
+¦       (match v
+¦         [(? num? n)             (return (= 0 n))]
+¦         [v #:when (∈ v φ)       (return #t)]
+¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
+¦         [v (mplus (do (refine v)       (return #t))
+¦                   (do (refine `(¬ ,v)) (return #f)))])))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Symbolic Execution Variant}
+\label{f:symbolic}
+\vspace{-1em}
+\end{figure} %}-}
 
 Figure~\ref{f:pres-delta} defines two new components: ⸨precise-δ@⸩ and
 ⸨store-crush@⸩.  The first is an alternative interpretation for primitive
@@ -90,43 +95,6 @@ take place at primitive applications, ensuring widening at repeated
 bindings. In fact, all programs terminate when using ⸨precise-δ@⸩,
 ⸨store-crush@⸩ and «η»-expanded primitives, which means we have a
 achieved a computable and uniquely precise abstract interpreter.
-
-\begin{figure} %{-{
-\rfloat{⸨symbolic-monad@⸩}
-\begin{flalign*}
-                  & 𝔥⸨(define-monad⸩
-  & \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩
-\end{flalign*}
-\figskip\rfloat{⸨ev-symbolic@⸩}
-\begin{lstlisting}
-¦ (define (((ev-symbolic ev₀) ev) e)
-¦   (match e [(sym x) (return x)]
-¦            [e       ((ev₀ ev) e)]))
-\end{lstlisting}
-\figskip\rfloat{⸨δ-symbolic@⸩}
-\begin{lstlisting}
-¦ (define (δ o n₀ n₁)
-¦   (match* (o n₀ n₁)
-¦     [('/ n₀ n₁)
-¦      (do z? ← (zero? n₁)
-¦          (cond [z? fail]
-¦                [(and (num? n₀) (num? n₁))
-¦                 (return (/ n₀ n₁))]
-¦                [else (return `(/ ,n₀ ,n₁))]))] ... ))
-¦ (define (zero? v)
-¦   (do φ ← get-path-cond
-¦       (match v
-¦         [(? num? n)             (return (= 0 n))]
-¦         [v #:when (∈ v φ)       (return #t)]
-¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
-¦         [v (mplus (do (refine v)       (return #t))
-¦                   (do (refine `(¬ ,v)) (return #f)))])))
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{Symbolic Execution Variant}
-\label{f:symbolic}
-\vspace{-1em}
-\end{figure} %}-}
 
 Here we see one of the strengths of the extensible, definitional approach to
 abstract interpreters. The combination of added precision and widening is

@@ -47,3 +47,35 @@ widening.
 % store.  Importantly, the cache, which bounds the overall run-time of
 % the abstract interpreter, is potentially exponential without
 % store-widening, but collapses to polynomial after store-widening.
+
+\begin{figure} %{-{
+\rfloat{⸨precise-δ@⸩}
+\begin{lstlisting}
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('+ (? num?) (? num?)) (return (+ n₀ n₁))]
+¦     [('+ _        _       ) (return 'N)] ... ))
+¦ (define (zero? v)
+¦   (match v
+¦     ['N (mplus (return #t) (return #f))]
+¦     [_  (return (zero? v))]))
+\end{lstlisting}
+\figskip\rfloat{⸨store-crush@⸩}
+\begin{lstlisting}
+¦ (define (find a)
+¦   (do σ ← get-store
+¦       (for/monad+ ([v (σ a)]) (return v))))
+¦ (define (crush v vs)
+¦   (if (closure? v)
+¦       (set-add vs v)
+¦       (set-add (set-filter closure? vs) 'N)))
+¦ (define (ext a v)
+¦   (update-store (λ (σ) (if (∈ a σ)
+¦                            (σ a (crush v (σ a)))
+¦                            (σ a (set v))))))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{An Alternative Abstraction for Precise Primitives}
+\label{f:pres-delta}
+\vspace{-1em}
+\end{figure} %}-}

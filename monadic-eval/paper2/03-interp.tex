@@ -163,6 +163,26 @@ fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a�
 The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending
 values in the store.
 
+\begin{figure} %{-{
+\rfloat{⸨trace-monad@⸩}
+\begin{flalign*}
+                  & 𝔥⸨(define-monad⸩
+& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨ev-tell@⸩}
+\begin{lstlisting}
+¦ (define (((ev-tell ev₀) ev) e)
+¦   (do ρ ← ask-env
+¦       σ ← get-store
+¦       (tell (list e ρ σ))
+¦       ((ev₀ ev) e)))
+\end{lstlisting}
+\vspace{-0.75em}
+\caption{Trace Collecting Semantics}
+\label{f:trace}
+\vspace{-1em}
+\end{figure} %}-}
+
 The only remaining pieces of the puzzle are a fixed-point combinator, which is
 straightforward to define:
 \begin{lstlisting}
@@ -229,26 +249,6 @@ environment and store.  The top-level evaluation function is then:
 \begin{lstlisting}
 ¦ (define (eval e) (mrun ((fix (ev-tell ev)) e)))
 \end{lstlisting}
-
-\begin{figure} %{-{
-\rfloat{⸨trace-monad@⸩}
-\begin{flalign*}
-                  & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
-& \end{flalign*}
-\figskip\rfloat{⸨ev-tell@⸩}
-\begin{lstlisting}
-¦ (define (((ev-tell ev₀) ev) e)
-¦   (do ρ ← ask-env
-¦       σ ← get-store
-¦       (tell (list e ρ σ))
-¦       ((ev₀ ev) e)))
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{Trace Collecting Semantics}
-\label{f:trace}
-\vspace{-1em}
-\end{figure} %}-}
 
 Now when an expression is evaluated, we get an answer and a list of all states
 seen by the evaluator, in the order in which they were seen. For example (not
@@ -381,13 +381,6 @@ in the results):
 ¦      '((4 . ()) (if0 (+ 1 0) 3 4) (+ 1 0) 0 4))
 ℑ⁆
 
-It is clear that the interpreter will only ever see a finite set of numbers
-(including ⸨'N⸩), but it's definitely not true that the interpreter halts on
-all inputs.  First, it's still possible to generate an infinite number of
-closures.  Second, there's no way for the interpreter to detect when it sees a
-loop.  To make a terminating abstract interpreter requires tackling both.  We
-look next at abstracting closures.
-
 \begin{figure} %{-{
 \rfloat{⸨monad^@⸩}
 \begin{flalign*}
@@ -411,6 +404,13 @@ look next at abstracting closures.
 \label{f:abs-delta}
 \vspace{-1em}
 \end{figure} %}-}
+
+It is clear that the interpreter will only ever see a finite set of numbers
+(including ⸨'N⸩), but it's definitely not true that the interpreter halts on
+all inputs.  First, it's still possible to generate an infinite number of
+closures.  Second, there's no way for the interpreter to detect when it sees a
+loop.  To make a terminating abstract interpreter requires tackling both.  We
+look next at abstracting closures.
 
 \subsection{Abstracting Closures}
 
@@ -451,3 +451,4 @@ values.
 
 Our abstract interpreter now has a truly finite domain; the next step is to
 detect loops in the state-space to achieve termination.
+
