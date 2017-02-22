@@ -21,6 +21,100 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
 
 \paragraph{Concrete Semantics}
 
+\begin{figure*} %{{{
+\begin{flushright}[\emph{Concrete Evaluation}]\quad\fbox{«ρ,τ⊢e,σ⇓v,σ′»}\end{flushright}
+\vspace{-0.75em}
+\begin{mathpar}
+  \inferrule*[left=(Lit)]{ }{ρ , τ ⊢ n , σ ⇓ n , σ}
+
+  \inferrule*[left=(Var)]{ }{ρ , τ ⊢ x , σ ⇓ σ(ρ(x)) , σ}
+
+  \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}\vspace{-0.75em}
+
+  \inferrule*[left=(Bin)]{
+  ρ , τ ⊢ e₁ , σ  ⇓ v₁ , σ₁ \\
+  ρ , τ ⊢ e₂ , σ₁ ⇓ v₂ , σ₂}
+  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}\vspace{-0.75em}
+
+  \inferrule*[left=(App),right={\begin{minipage}{2em}\ssmall
+    \begin{alignat*}{1}
+    \begin{alignedat}{2} 
+⟨λx.e′,ρ′⟩ = &\mathrel{} v₁ \\[-0.5em]
+        ℓ  = &\mathrel{} ⟨x,τ′⟩ \\[-0.5em]
+        τ′ \mathrel{\hphantom{=}} &\mathrel{} ⦑\emph{fresh}⦒
+      \end{alignedat}
+    \end{alignat*}
+  \end{minipage}}]{
+  ρ       , τ  ⊢ e₁    , σ        ⇓ v₁ , σ₁ \\
+  ρ       , τ  ⊢ e₂    , σ₁       ⇓ v₂ , σ₂ \\
+  ρ′[x↦ℓ] , τ′ ⊢ e′    , σ₂[ℓ↦v₂] ⇓ v′ , σ₃}
+  {ρ      , τ ⊢ e₁(e₂) , σ        ⇓ v′ , σ₃}\vspace{-0.75em}
+
+  \inferrule*[left=(IfT),right={\ssmall «n=0»}]{
+  ρ , τ ⊢ e₁ , σ ⇓ n , σ₁ \\
+  ρ , τ ⊢ e₂ , σ₁ ⇓ v , σ₂}
+  {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
+
+  \inferrule*[left=(IfF),right={\ssmall «n≠0»}]{
+    ρ , τ ⊢ e₁ , σ  ⇓ n , σ₁ \\
+    ρ , τ ⊢ e₃ , σ₁ ⇓ v , σ₂}
+  {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
+\end{mathpar}
+\begin{flushright}[\emph{Concrete Reachability}]\quad\fbox{«ρ,τ⊢e,σ⇑ς»}\end{flushright}
+\vspace{-0.25em}
+\begin{mathpar}
+  \inferrule*[left=(Refl)]{ }{ρ,τ⊢e,σ⇑⟨e,ρ,σ,τ⟩}
+
+  \inferrule*[left=(RBin1)]
+  {ρ,τ⊢e₁,σ⇑ς}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}
+
+  \inferrule*[left=(RBin2)]
+  {  ρ,τ⊢e₁,σ⇓v₁,σ₁
+  \\ ρ,τ⊢e₂,σ₁⇑ς}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}\vspace{-0.75em}
+
+  \inferrule*[left=(RApp1)]
+   {ρ,τ⊢e₁,σ⇑ς}
+   {ρ,τ⊢e₁(e₂),σ⇑ς}
+
+   \inferrule*[left=(RApp2),right={\ssmall «⟨λx.e′,ρ′⟩=v₁»}]
+   {  ρ,τ⊢e₁,σ⇓v₁,σ₁
+   \\ ρ,τ⊢e₂,σ₁⇑ς}
+   {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
+
+   \inferrule*[left=(RApp3),right={\begin{minipage}{2em}\ssmall
+       \begin{alignat*}{1}
+       \begin{alignedat}{2} 
+    ⟨λx.e′,ρ′⟩ = &\mathrel{} v₁ \\[-0.5em]
+           ℓ  = &\mathrel{} ⟨x,τ′⟩ \\[-0.5em]
+           τ′ \mathrel{\hphantom{=}} &\mathrel{} ⦑\emph{fresh}⦒
+         \end{alignedat}
+       \end{alignat*}
+     \end{minipage}}]
+  {  ρ,τ⊢e₁,σ ⇓v₁,σ₁
+  \\ ρ,τ⊢e₂,σ₁⇓v₂,σ₂
+  \\ ρ′[x↦ℓ],τ′⊢e′,σ₂[ℓ↦v₂]⇑ς}
+  {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
+
+  \inferrule*[left=(RIf1)]
+  {ρ,τ⊢e₁,σ⇑ς}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
+
+  \inferrule*[left=(RIfT),right={\ssmall «n=0»}]
+  {  ρ,τ⊢e₁,σ⇓n,σ₁
+  \\ ρ,τ⊢e₂,σ₁⇑ς}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}\vspace{-0.75em}
+
+  \inferrule*[left=(RIfF),right={\ssmall «n≠0»}]
+  {  ρ,τ⊢e₁,σ⇓n,σ₁
+  \\ ρ,τ⊢e₃,σ₁⇑ς}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
+\end{mathpar}
+\caption{\lamif{} Big-step Concrete Evaluation and Reachability Semantics}
+\label{f:lamif-concrete}
+\end{figure*} %}}}
+
 We begin with the concrete semantics of \lamif as a big-step evaluation
 relation «ρ,τ⊢e,σ⇓v,σ′», shown in Figure~\ref{f:lamif-concrete}. The definition
 is mostly standard: «ρ» and «σ» are the environment and store, «e» is the
