@@ -7,6 +7,7 @@ BIB_FILES = $(wildcard *.bib)
 TEX_FILES = $(wildcard *.tex)
 STY_FILES = $(wildcard *.sty)
 CLS_FILES = $(wildcard *.cls)
+BST_FILES = $(wildcard *.bst)
 
 out/%.tex: %.tex $(SED_FILES)
 	mkdir -p out
@@ -30,13 +31,17 @@ out/%.sty: %.sty
 out/%.cls: %.cls
 	cp $< $@
 
+out/%.bst: %.bst
+	cp $< $@
+
 main.pdf: \
 	    Makefile \
 			$(patsubst %,out/%,$(TEX_FILES)) \
 			$(patsubst %,out/%,$(BIB_FILES)) \
 			$(patsubst %,out/%,$(PNG_FILES)) \
 			$(patsubst %,out/%,$(STY_FILES)) \
-			$(patsubst %,out/%,$(CLS_FILES))
+			$(patsubst %,out/%,$(CLS_FILES)) \
+			$(patsubst %,out/%,$(BST_FILES))
 	cd out ; texfot pdflatex main.tex ; bibtex main
 	mv out/main.pdf main.pdf
 
