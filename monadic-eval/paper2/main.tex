@@ -271,28 +271,34 @@
 %%            {pcn@cs.umd.edu}
 
 \begin{abstract}
-In this paper we show that definitional interpreters for programming languages
-can express not only the usual notion of interpretation, but also a wide
-variety of collecting semantics, abstract interpretations, symbolic executions
-and their intermixings.
-%
-To achieve this we reconstruct a standard definitional interpreter using two
-new ingredients: monadic operations and open recursion.
-%
-The resulting definitional \emph{abstract} interpreter is extensible and we
-recover various abstract semantics through its instantiations.
+  In this functional pearl, we examine the use of definitional
+  interpreters as a basis for abstract interpretation of higher-order
+  programming languages.  As it turns out, definitional interpreters,
+  especially those written in a monadic style, can provide a nice
+  basis for a wide variety of collecting semantics, abstract
+  interpretations, symbolic executions, and their intermixings.
 
-In addition to recovering well-known abstractions, we show that the resulting
-abstract interpreter is perfectly precise in modeling call and return flows,
-\emph{i.e.} it implements Pushdown Control Flow Analysis (PDCFA).
-%
-True to the definitional style of Reynolds, the abstract interpreter contains
-no explicit mechanics to achieve this property; it is simply inherited from the
-defining metalanguage.
 
-In addition to demonstrating our technique, we formalize a systematic
-methodology for deriving definitional abstract interpreters, prove it sound,
-and make precise its relationship to PDCFA.
+  But the real insight of this story is a kind of replaying of an
+  insight contained in Reynold's landmark paper, \emph{Definitional
+    Interpreters for Higher-Order Programming Languages}, in which he
+  observes definitional interpreters open the possibility of the
+  defined-language inheriting properties of the defining-language.  We
+  show the same holds true for definitional \emph{abstract}
+  interpreters.  Remarkably, we observe that abstract definitional
+  interpreters inherit the so-called ``pushdown control flow''
+  property, wherein function calls and returns are precisely matched
+  in the abstract semantics, simply by virtue of the function call
+  mechanism of the defining-language.
+
+  Past approaches first achieved this property for higher-order
+  languages within the last ten years and have since been the subject
+  of many papers.  These approaches start from a state-machine
+  semantics and uniformly involve significant technical engineering to
+  recover the precision of pushdown control flow.  In contrast,
+  starting from a definitional interpreter, the pushdown control flow
+  property is inherent in the meta-language and requires no further
+  technical mechanism to achieve.
 \end{abstract}
 
 \maketitle
