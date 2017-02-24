@@ -5,15 +5,14 @@
 \begin{lstlisting}
 ¦ (define (δ o n₀ n₁)
 ¦   (match* (o n₀ n₁)
-¦     [('/ n₀ n₁)
-¦      (do z? ← (zero? n₁)
-¦          (cond [z? fail]
-¦                [(member 'N (list n₀ n₁))
-¦                 (return 'N)] ... ))])] ... ))
+¦     [('/ n₀ n₁) (do z? ← (zero? n₁)
+¦                     (cond [z? fail]
+¦                           [(member 'N (list n₀ n₁)) (return 'N)]
+¦                           ... ))]
+¦     ... ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
-¦       (match v 
-¦         ['N (mplus (return #t) (return #f))] ... )))
+¦       (match v ['N (mplus (return #t) (return #f))] ... )))
 \end{lstlisting}
 \vspace{-0.75em}
 \caption{Symbolic Execution with Abstract Numbers}

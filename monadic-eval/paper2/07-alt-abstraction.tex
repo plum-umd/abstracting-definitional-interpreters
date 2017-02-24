@@ -7,8 +7,7 @@ alternative abstraction of primitive operations and store joins.
 \begin{figure} %{-{
 \rfloat{⸨symbolic-monad@⸩}
 \begin{flalign*}
-                  & 𝔥⸨(define-monad⸩
-  & \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩
+  & 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩ &
 \end{flalign*}
 \figskip\rfloat{⸨ev-symbolic@⸩}
 \begin{lstlisting}
@@ -16,16 +15,15 @@ alternative abstraction of primitive operations and store joins.
 ¦   (match e [(sym x) (return x)]
 ¦            [e       ((ev₀ ev) e)]))
 \end{lstlisting}
+\vspace{0.75em}
 \figskip\rfloat{⸨δ-symbolic@⸩}
 \begin{lstlisting}
 ¦ (define (δ o n₀ n₁)
 ¦   (match* (o n₀ n₁)
-¦     [('/ n₀ n₁)
-¦      (do z? ← (zero? n₁)
-¦          (cond [z? fail]
-¦                [(and (num? n₀) (num? n₁))
-¦                 (return (/ n₀ n₁))]
-¦                [else (return `(/ ,n₀ ,n₁))]))] ... ))
+¦     [('/ n₀ n₁) (do z? ← (zero? n₁)
+¦                     (cond [z? fail]
+¦                     [(and (num? n₀) (num? n₁)) (return (/ n₀ n₁))]
+¦                     [else (return `(/ ,n₀ ,n₁))]))] ... ))
 ¦ (define (zero? v)
 ¦   (do φ ← get-path-cond
 ¦       (match v
@@ -55,24 +53,20 @@ store, termination is therefore not guaranteed.
 
 The ⸨store-crush@⸩ operations are designed to work with ⸨precise-δ@⸩ by
 performing \emph{widening} when joining multiple concrete values into the
-store. This abstraction offers a high-level of precision; for example,
-``straight-line'' arithmetic operations are computed with full precision:
+store. This abstraction offers a high-level of precision; for example:
 ℑ⁅
-¦ > (* (+ 3 4) 9)
+¦ > (* (+ 3 4) 9)        ;; Constant arithmetic expressions are computed with full precision.
 ℑ,
 ¦ '(63)
 ℑ⁆
-Even linear binding and arithmetic preserves precision:
 ℑ⁅
-¦ > ((λ (x) (* x x)) 5)
+¦ > ((λ (x) (* x x)) 5)  ;; Even linear binding and arithmetic preserves precision.
 ℑ,
 ¦ '(25)
 ℑ⁆
-It's only when the approximation of binding structure comes in to
-contact with base values that we see a loss in precision:
 ℑ⁅
-¦ > (let f (λ (x) x)
-¦     (* (f 5) (f 5)))
+¦ > (let f (λ (x) x)     ;; Only when the approximation of binding structure comes in to
+¦     (* (f 5) (f 5)))   ;; contact with base values that we see a loss in precision.
 ℑ,
 '(N)
 ℑ⁆

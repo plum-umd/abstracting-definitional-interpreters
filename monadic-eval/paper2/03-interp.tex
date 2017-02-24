@@ -16,14 +16,11 @@ functions and applications.
 ¦     [(num n)        (return n)]
 ¦     [(vbl x)        (do ρ ← ask-env
 ¦                         (find (ρ x)))]    
-¦     [(ifz e₀ e₁ e₂) (do v  ← (ev e₀)
-¦                         z? ← (zero? v)
+¦     [(ifz e₀ e₁ e₂) (do v  ← (ev e₀)  z? ← (zero? v)
 ¦                         (ev (if z? e₁ e₂)))]
-¦     [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)
-¦                         v₁ ← (ev e₁)
+¦     [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)  v₁ ← (ev e₁)
 ¦                         (δ o v₀ v₁))]
-¦     [(rec f e₀ e₁)  (do ρ  ← ask-env
-¦                         a  ← (alloc f)
+¦     [(rec f e₀ e₁)  (do ρ  ← ask-env  a  ← (alloc f)
 ¦                         ρ′ ≔ (ρ f a)
 ¦                         (ext a (cons e₀ ρ′))
 ¦                         (local-env ρ′ (ev e₁)))]
@@ -31,7 +28,7 @@ functions and applications.
 ¦                         (return (cons (lam x e₀) ρ)))]
 ¦     [(app e₀ e₁)    (do (cons (lam x e₂) ρ) ← (ev e₀)
 ¦                         v₁ ← (ev e₁)
-¦                         a  ← (alloc x)         
+¦                         a  ← (alloc x)
 ¦                         (ext a v₁)
 ¦                         (local-env (ρ x a) (ev e₂)))]))
 \end{lstlisting}
@@ -59,11 +56,11 @@ There are a few superficial aspects that deserve a quick note:
 environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
-\begin{alignat*}{2}
-                𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
-\\[\mathgobble]        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
-\\[\mathgobble] 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
-\\[\mathgobble]            𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
+\begin{alignat*}{4}
+                & 𝔥⸨(do x ←«\ »e . r)⸩ &&≡ 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩ \quad &&
+                         𝔥⸨(do e . r)⸩ &&≡ 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
+\\[\mathgobble] & 𝔥⸨(do x ≔«\ »e . r)⸩ &&≡ 𝔥⸨(let ((x e)) (do . r))⸩ \quad &&
+                             𝔥⸨(do b)⸩ &&≡ 𝔥⸨b⸩
 \end{alignat*}
 Finally, there are two unconventional aspects worth noting.
 
@@ -98,8 +95,8 @@ implementation.}
 \begin{figure} %{-{
 \rfloat{⸨monad@⸩}
 \begin{flalign*}
-                  & 𝔥⸨(define-monad⸩ ␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩ 
-& \end{flalign*}
+& 𝔥⸨(define-monad⸩ ␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩ &
+\end{flalign*}
 \figskip\rfloat{⸨δ@⸩}
 \begin{lstlisting}
 ¦ (define (δ o n₀ n₁)
@@ -110,12 +107,14 @@ implementation.}
 ¦     ['/ (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
 ¦ (define (zero? v) (return (= 0 v)))
 \end{lstlisting}
+\vspace{0.75em}
 \figskip\rfloat{⸨store@⸩}
 \begin{lstlisting}
 ¦ (define (find a)  (do σ ← get-store
 ¦                       (return (σ a))))
 ¦ (define (ext a v) (update-store (λ (σ) (σ a v))))
 \end{lstlisting}
+\vspace{0.75em}
 \figskip\rfloat{⸨alloc@⸩}
 \begin{lstlisting}
 ¦ (define (alloc x) (do σ ← get-store
@@ -140,18 +139,18 @@ standard~\cite{dvanhorn:Liang1995Monad}.
 
 We also define ⸨mrun⸩ for running monadic computations, starting with the empty
 environment and store ⸨∅⸩:
-\begin{lstlisting}
-¦ (define (mrun m) (run-StateT ∅ (run-ReaderT ∅ m)))
-\end{lstlisting}
+\begin{alignat*}{1}
+&𝔥⸨(define (mrun m) (run-StateT ∅⸩\ 𝔥⸨(run-ReaderT ∅⸩\ 𝔥⸨m)))⸩
+\end{alignat*}
 While the ⸨define-monad⸩ form is hiding some details, this component could have
 equivalently been written out explicitly. For example, ⸨return⸩ and ⸨bind⸩ can
 be defined as:
-\begin{lstlisting}
-¦ (define (((return a) r) s) (cons a s))
-¦ (define (((bind ma f) r) s)
-¦   (match ((ma r) s) [(cons a s′) (((f a) r) s′)]
-¦                     ['failure 'failure]))
-\end{lstlisting}
+\begin{alignat*}{5}
+  & 𝔥⸨(define (((return a) r) s) (cons a s))⸩
+ &␣␣& 𝔥⸨(define (((bind ma f⸩&&𝔥⸨) r) s)⸩ \\
+  &&&␣𝔥⸨(match ((ma r) s)⸩&&𝔥⸨[(cons a s′) (((f a) r) s′)]⸩ & \\
+  &&&&&𝔥⸨['failure 'failure]))⸩ &
+\end{alignat*}
 So far our use of monad transformers is as a mere convenience, however the
 monad abstraction will become essential for easily deriving new analyses later
 on.
@@ -163,17 +162,15 @@ fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a�
 The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending
 values in the store.
 
-\begin{figure} %{-{
+\begin{figure} %{-{ ␣
 \rfloat{⸨trace-monad@⸩}
 \begin{flalign*}
-                  & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
+& 𝔥⸨(define-monad⸩ \ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨ev-tell@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-tell ev₀) ev) e)
-¦   (do ρ ← ask-env
-¦       σ ← get-store
+¦   (do ρ ← ask-env  σ ← get-store
 ¦       (tell (list e ρ σ))
 ¦       ((ev₀ ev) e)))
 \end{lstlisting}
@@ -183,41 +180,65 @@ values in the store.
 \vspace{-1em}
 \end{figure} %}-}
 
-The only remaining pieces of the puzzle are a fixed-point combinator, which is
-straightforward to define:
-\begin{lstlisting}
-¦ (define ((fix f) x) ((f (fix f)) x))
-\end{lstlisting}
-and the main entry-point for the interpreter:
-\begin{lstlisting}
-¦ (define (eval e) (mrun ((fix ev) e)))
-\end{lstlisting}
+The only remaining pieces of the puzzle are a fixed-point combinator and the
+main entry-point for the interpreter, which are straightforward to define:
+%
+\begin{alignat*}{2}
+  & 𝔥⸨(define ((fix f) x) ((f (fix f)) x))⸩
+ &␣␣& 𝔥⸨(define (eval e) (mrun ((fix ev) e)))⸩
+\end{alignat*}
+
+%% By taking advantage of Racket's languages-as-libraries
+%% features~\cite{dvanhorn:TobinHochstadt2011Languages}, we construct REPLs for
+%% interacting with this interpreter.  Here are a few examples, which make use of
+%% a concrete syntax for more succinctly writing expressions. The identity
+%% function evaluates to a closure over the empty environment paired with the
+%% empty store:
+%% ℑ⁅
+%% ¦ > (λ (x) x)
+%% ℑ,
+%% ¦ '(((λ (x) x) . ()) . ())
+%% ℑ⁆
+%% Here's an example showing a non-empty environment and store:
+%% ℑ⁅
+%% ¦ > ((λ (x) (λ (y) x)) 4)
+%% ℑ,
+%% ¦ '(((λ (y) x) . ((x . 0))) . ((0 . 4)))
+%% ℑ⁆
+%% Primitive operations work as expected:
+%% ℑ⁅
+%% ¦ > (* (+ 3 4) 9)
+%% ℑ,
+%% ¦ '(63 . ())
+%% ℑ⁆
+%% And divide-by-zero errors result in failures:
+%% ℑ⁅
+%% ¦ > (/ 5 (- 3 3))
+%% ℑ,
+%% ¦ '(failure . ())
+%% ℑ⁆
+
 By taking advantage of Racket's languages-as-libraries
 features~\cite{dvanhorn:TobinHochstadt2011Languages}, we construct REPLs for
-interacting with this interpreter.  Here are a few examples, which make use of
-a concrete syntax for more succinctly writing expressions. The identity
-function evaluates to a closure over the empty environment paired with the
-empty store:
+interacting with this interpreter.  Here are a few evaluation examples in a
+succinct concrete syntax:
 ℑ⁅
-¦ > (λ (x) x)
+¦ > (λ (x) x)              ;; => Closure over the empty environment paired with the empty store.
 ℑ,
 ¦ '(((λ (x) x) . ()) . ())
 ℑ⁆
-Here's an example showing a non-empty environment and store:
 ℑ⁅
-¦ > ((λ (x) (λ (y) x)) 4)
+¦ > ((λ (x) (λ (y) x)) 4)  ;; => Closure over a non-empty environment and store.
 ℑ,
 ¦ '(((λ (y) x) . ((x . 0))) . ((0 . 4)))
 ℑ⁆
-Primitive operations work as expected:
 ℑ⁅
-¦ > (* (+ 3 4) 9)
+¦ > (* (+ 3 4) 9)          ;; Primitive operations work as expected.
 ℑ,
 ¦ '(63 . ())
 ℑ⁆
-And divide-by-zero errors result in failures:
 ℑ⁅
-¦ > (/ 5 (- 3 3))
+¦ > (/ 5 (- 3 3))          ;; Divide-by-zero errors result in failures.
 ℑ,
 ¦ '(failure . ())
 ℑ⁆
@@ -246,9 +267,9 @@ reached states.  The ⸨ev-trace⸩ function is a wrapper around an underlying
 ⸨ev₀⸩ unfixed evaluator, and interposes itself between each recursive call by
 ⸨tell⸩ing the current state of the evaluator: the current expression,
 environment and store.  The top-level evaluation function is then:
-\begin{lstlisting}
-¦ (define (eval e) (mrun ((fix (ev-tell ev)) e)))
-\end{lstlisting}
+\begin{alignat*}{1}
+&𝔥⸨(define (eval e) (mrun ((fix (ev-tell ev)) e)))⸩
+\end{alignat*}
 
 Now when an expression is evaluated, we get an answer and a list of all states
 seen by the evaluator, in the order in which they were seen. For example (not
@@ -285,10 +306,10 @@ code requires an outer wrapper that sets the initial set of dead code to be all
 of the subexpressions in the program, we define ⸨eval-dead@⸩ which consumes a
 \emph{closed evaluator}, i.e. something of the form ⸨(fix ev)⸩. Putting these
 pieces together, the dead code collecting semantics is defined:
-\begin{lstlisting}
-¦ (define (eval e)
-¦   (mrun ((eval-dead (fix (ev-dead ev))) e)))
-\end{lstlisting}
+\begin{alignat*}{1}
+  & 𝔥⸨(define (eval e) (mrun ((eval-dead (fix (ev-dead ev))) e)))⸩
+\end{alignat*}
+
 Running a program with the dead code interpreter produces an answer and the set
 of expressions that were not evaluated during the running of a program:
 ℑ⁅
@@ -311,16 +332,16 @@ these useful forms of collecting semantics.
 \begin{figure} %{-{
 \rfloat{⸨dead-monad@⸩}
 \begin{flalign*}
-          & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
+& 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
 & \end{flalign*}
 \figskip\rfloat{⸨ev-dead@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-dead ev₀) ev) e)
-¦   (do θ  ← get-dead       
+¦   (do θ ← get-dead       
 ¦       (put-dead (set-remove θ e))
 ¦       ((ev₀ ev) e)))
 \end{lstlisting}
+\vspace{0.75em}
 \figskip\rfloat{⸨eval-dead@⸩}
 \begin{lstlisting}
 ¦ (define ((eval-dead eval) e₀)
@@ -384,9 +405,8 @@ in the results):
 \begin{figure} %{-{
 \rfloat{⸨monad^@⸩}
 \begin{flalign*}
-                  & 𝔥⸨(define-monad⸩
-& \\[\monadgobble]& ␣␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩
-& \end{flalign*}
+& 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩ &
+\end{flalign*}
 \figskip\rfloat{⸨δ^@⸩}
 \begin{lstlisting}
 ¦ (define (δ o n₀ n₁)
