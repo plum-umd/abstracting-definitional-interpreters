@@ -30,8 +30,8 @@ s/♯/\\widehat/g
 s/⇄/\\galois/g
 s/␣/\\texttt{\\hspace{1em}}/g
 
-s/ℑ⁅/\\\\\\begin{minipage}{\\linewidth}\\vspace{-0.25em}\\begin{lstlisting}/g
+s/ℑ⁅/\\\\\\begin{minipage}{\\linewidth}\\begin{lstlisting}/g
 s/ℑ,/\\end{lstlisting}\\resultskip\\begin{lstlisting}\[style=result\]/g
 s/ℑ;/\\end{lstlisting}\\resultskip\\begin{lstlisting}/g
-s/ℑ⁆/\\end{lstlisting}\\end{minipage}\\vspace{-0.25em}/g
+s/ℑ⁆/\\end{lstlisting}\\end{minipage}/g
 

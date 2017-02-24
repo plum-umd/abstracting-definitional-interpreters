@@ -15,7 +15,6 @@ alternative abstraction of primitive operations and store joins.
 ¦   (match e [(sym x) (return x)]
 ¦            [e       ((ev₀ ev) e)]))
 \end{lstlisting}
-\vspace{0.75em}
 \figskip\rfloat{⸨δ-symbolic@⸩}
 \begin{lstlisting}
 ¦ (define (δ o n₀ n₁)
@@ -33,10 +32,8 @@ alternative abstraction of primitive operations and store joins.
 ¦         [v (mplus (do (refine v)       (return #t))
 ¦                   (do (refine `(¬ ,v)) (return #f)))])))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{Symbolic Execution Variant}
+\captionskip{Symbolic Execution Variant}
 \label{f:symbolic}
-\vspace{-1em}
 \end{figure} %}-}
 
 Figure~\ref{f:pres-delta} defines two new components: ⸨precise-δ@⸩ and
@@ -58,13 +55,11 @@ store. This abstraction offers a high-level of precision; for example:
 ¦ > (* (+ 3 4) 9)        ;; Constant arithmetic expressions are computed with full precision.
 ℑ,
 ¦ '(63)
-ℑ⁆
-ℑ⁅
+ℑ;
 ¦ > ((λ (x) (* x x)) 5)  ;; Even linear binding and arithmetic preserves precision.
 ℑ,
 ¦ '(25)
-ℑ⁆
-ℑ⁅
+ℑ;
 ¦ > (let f (λ (x) x)     ;; Only when the approximation of binding structure comes in to
 ¦     (* (f 5) (f 5)))   ;; contact with base values that we see a loss in precision.
 ℑ,

@@ -32,10 +32,8 @@ functions and applications.
 ¦                         (ext a v₁)
 ¦                         (local-env (ρ x a) (ev e₂)))]))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{The Extensible Definitional Interpreter}
+\captionskip{The Extensible Definitional Interpreter}
 \label{f:interpreter}
-\vspace{-1em}
 \end{figure} %}-}
 %¦     [(op1 o e₀)
 %¦      (do v ← (ev e₀)
@@ -107,23 +105,19 @@ implementation.}
 ¦     ['/ (if (= 0 n₁) fail (return (/ n₀ n₁)))]))
 ¦ (define (zero? v) (return (= 0 v)))
 \end{lstlisting}
-\vspace{0.75em}
 \figskip\rfloat{⸨store@⸩}
 \begin{lstlisting}
 ¦ (define (find a)  (do σ ← get-store
 ¦                       (return (σ a))))
 ¦ (define (ext a v) (update-store (λ (σ) (σ a v))))
 \end{lstlisting}
-\vspace{0.75em}
 \figskip\rfloat{⸨alloc@⸩}
 \begin{lstlisting}
 ¦ (define (alloc x) (do σ ← get-store
 ¦                       (return (size σ))))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{Components for Definitional Interpreters}
+\captionskip{Components for Definitional Interpreters}
 \label{f:concrete-components}
-\vspace{-1em}
 \end{figure} %}-}
 
 \subsection{Instantiating the Interpreter}
@@ -175,10 +169,8 @@ values in the store.
 ¦       (tell (list e ρ σ))
 ¦       ((ev₀ ev) e)))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{Trace Collecting Semantics}
+\captionskip{Trace Collecting Semantics}
 \label{f:trace}
-\vspace{-1em}
 \end{figure} %}-}
 
 The only remaining pieces of the puzzle are a fixed-point combinator and the
@@ -227,18 +219,15 @@ succinct concrete syntax:
 ¦ > (λ (x) x)              ;; => Closure over the empty environment paired with the empty store.
 ℑ,
 ¦ '(((λ (x) x) . ()) . ())
-ℑ⁆
-ℑ⁅
+ℑ;
 ¦ > ((λ (x) (λ (y) x)) 4)  ;; => Closure over a non-empty environment and store.
 ℑ,
 ¦ '(((λ (y) x) . ((x . 0))) . ((0 . 4)))
-ℑ⁆
-ℑ⁅
+ℑ;
 ¦ > (* (+ 3 4) 9)          ;; Primitive operations work as expected.
 ℑ,
 ¦ '(63 . ())
-ℑ⁆
-ℑ⁅
+ℑ;
 ¦ > (/ 5 (- 3 3))          ;; Divide-by-zero errors result in failures.
 ℑ,
 ¦ '(failure . ())
@@ -342,17 +331,14 @@ these useful forms of collecting semantics.
 ¦       (put-dead (set-remove θ e))
 ¦       ((ev₀ ev) e)))
 \end{lstlisting}
-\vspace{0.75em}
 \figskip\rfloat{⸨eval-dead@⸩}
 \begin{lstlisting}
 ¦ (define ((eval-dead eval) e₀)
 ¦   (do (put-dead (subexps e₀))
 ¦       (eval e₀)))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{Dead Code Collecting Semantics}
+\captionskip{Dead Code Collecting Semantics}
 \label{f:dead}
-\vspace{-1em}
 \end{figure} %}-}
 
 \subsection{Abstracting Base Values}\label{s:base}
@@ -420,10 +406,8 @@ in the results):
 ¦     ['N (mplus (return #t) (return #f))]
 ¦     [_  (return (= 0 v))]))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{Abstracting Primitive Operations}
+\captionskip{Abstracting Primitive Operations}
 \label{f:abs-delta}
-\vspace{-1em}
 \end{figure} %}-}
 
 It is clear that the interpreter will only ever see a finite set of numbers

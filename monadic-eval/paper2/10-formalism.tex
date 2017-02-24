@@ -11,7 +11,7 @@ subset of the language described in Figure~\ref{f:syntax}, which we call
 \begin{alignat*}{1}
 e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,e) 
 \end{alignat*}
-\vspace{-2.0em}
+\vspace{0pt} % -2.0em}
 \begin{alignat*}{6}
                 n ∈&&\mathrel{} nums  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad ℓ ∈ &&\mathrel{}  addr ≔ &\mathrel{} var × time 
 \\[\mathgobble] x ∈&&\mathrel{} vars  \mathrel{\hphantom{≔}} &\mathrel{}             &\quad\quad σ ∈ &&\mathrel{} store ≔ &\mathrel{} addr → val⸤⊥⸥ 
@@ -23,18 +23,18 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
 
 \begin{figure*} %{{{
 \begin{flushright}[\emph{Concrete Evaluation}]\quad\fbox{«ρ,τ⊢e,σ⇓v,σ′»}\end{flushright}
-\vspace{-0.75em}
+  \vspace{0pt} % -0.75em}
 \begin{mathpar}
   \inferrule*[left=(Lit)]{ }{ρ , τ ⊢ n , σ ⇓ n , σ}
 
   \inferrule*[left=(Var)]{ }{ρ , τ ⊢ x , σ ⇓ σ(ρ(x)) , σ}
 
-  \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}\vspace{-0.75em}
+  \inferrule*[left=(Lam)]{ }{ρ , τ ⊢ λx.e , σ ⇓ ⟨λx.e,ρ⟩ , σ}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(Bin)]{
   ρ , τ ⊢ e₁ , σ  ⇓ v₁ , σ₁ \\
   ρ , τ ⊢ e₂ , σ₁ ⇓ v₂ , σ₂}
-  {ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}\vspace{-0.75em}
+{ρ , τ ⊢ b(e₁,e₂) , σ ⇓ ⟦b⟧(v₁,v₂) , σ₂}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(App),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -48,7 +48,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   ρ       , τ  ⊢ e₁    , σ        ⇓ v₁ , σ₁ \\
   ρ       , τ  ⊢ e₂    , σ₁       ⇓ v₂ , σ₂ \\
   ρ′[x↦ℓ] , τ′ ⊢ e′    , σ₂[ℓ↦v₂] ⇓ v′ , σ₃}
-  {ρ      , τ ⊢ e₁(e₂) , σ        ⇓ v′ , σ₃}\vspace{-0.75em}
+{ρ      , τ ⊢ e₁(e₂) , σ        ⇓ v′ , σ₃}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(IfT),right={\ssmall «n=0»}]{
   ρ , τ ⊢ e₁ , σ ⇓ n , σ₁ \\
@@ -61,7 +61,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   {ρ , τ ⊢ ⟬if0⟭(e₁)❴e₂❵❴e₃❵ , σ ⇓ v , σ₂}
 \end{mathpar}
 \begin{flushright}[\emph{Concrete Reachability}]\quad\fbox{«ρ,τ⊢e,σ⇑ς»}\end{flushright}
-\vspace{-0.25em}
+  \vspace{0pt} % -0.25em}
 \begin{mathpar}
   \inferrule*[left=(Refl)]{ }{ρ,τ⊢e,σ⇑⟨e,ρ,σ,τ⟩}
 
@@ -72,7 +72,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   \inferrule*[left=(RBin2)]
   {  ρ,τ⊢e₁,σ⇓v₁,σ₁
   \\ ρ,τ⊢e₂,σ₁⇑ς}
-  {ρ,τ⊢b(e₁,e₂),σ⇑ς}\vspace{-0.75em}
+  {ρ,τ⊢b(e₁,e₂),σ⇑ς}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(RApp1)]
    {ρ,τ⊢e₁,σ⇑ς}
@@ -81,7 +81,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
    \inferrule*[left=(RApp2),right={\ssmall «⟨λx.e′,ρ′⟩=v₁»}]
    {  ρ,τ⊢e₁,σ⇓v₁,σ₁
    \\ ρ,τ⊢e₂,σ₁⇑ς}
-   {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
+   {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{0pt} % -0.75em}
 
    \inferrule*[left=(RApp3),right={\begin{minipage}{2em}\ssmall
        \begin{alignat*}{1}
@@ -95,7 +95,7 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   {  ρ,τ⊢e₁,σ ⇓v₁,σ₁
   \\ ρ,τ⊢e₂,σ₁⇓v₂,σ₂
   \\ ρ′[x↦ℓ],τ′⊢e′,σ₂[ℓ↦v₂]⇑ς}
-  {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{-0.75em}
+  {ρ,τ⊢e₁(e₂),σ⇑ς}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(RIf1)]
   {ρ,τ⊢e₁,σ⇑ς}
@@ -104,14 +104,14 @@ e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,
   \inferrule*[left=(RIfT),right={\ssmall «n=0»}]
   {  ρ,τ⊢e₁,σ⇓n,σ₁
   \\ ρ,τ⊢e₂,σ₁⇑ς}
-  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}\vspace{-0.75em}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(RIfF),right={\ssmall «n≠0»}]
   {  ρ,τ⊢e₁,σ⇓n,σ₁
   \\ ρ,τ⊢e₃,σ₁⇑ς}
   {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,σ⇑ς}
 \end{mathpar}
-\caption{\lamif{} Big-step Concrete Evaluation and Reachability Semantics}
+\captionskip{\lamif{} Big-step Concrete Evaluation and Reachability Semantics}
 \label{f:lamif-concrete}
 \end{figure*} %}}}
 
@@ -126,18 +126,18 @@ in the store.
 
 \begin{figure*} %{-{
 \begin{flushright}[\emph{Collecting Evaluation}]\quad\fbox{«ρ,τ⊢e,∿{σ}⇓∿{v},∿{σ}′»}\end{flushright}
-\vspace{-0.75em}
+  \vspace{0pt} % -0.75em}
 \begin{mathpar}
   \inferrule*[left=(OLit)]{ }{ρ,τ⊢n,∿{σ}⇓❴n❵,∿{σ}}
 
   \inferrule*[left=(OVar)]{ }{ρ,τ⊢x,∿{σ}⇓∿{σ}(ρ(x)),∿{σ}}
 
-  \inferrule*[left=(OLam)]{ }{ρ,τ⊢λx.e,∿{σ}⇓❴⟨λx.e,ρ⟩❵,∿{σ}}\vspace{-0.75em}
+  \inferrule*[left=(OLam)]{ }{ρ,τ⊢λx.e,∿{σ}⇓❴⟨λx.e,ρ⟩❵,∿{σ}}\vspace{0pt} % -0.75em}
 
     \inferrule*[left=(OBin)]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂}
-  {  ρ,τ⊢b(e₁,e₂),∿{σ}⇓∿{⟦b⟧}(∿{v}₁,∿{v}₂),∿{σ}₂}\vspace{-0.75em}
+  {  ρ,τ⊢b(e₁,e₂),∿{σ}⇓∿{⟦b⟧}(∿{v}₁,∿{v}₂),∿{σ}₂}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(OApp),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -151,7 +151,7 @@ in the store.
   {  ρ      ,τ ⊢e₁    ,∿{σ} ⇓∿{v}₁,∿{σ}₁
   \\ ρ      ,τ ⊢e₂    ,∿{σ}₁⇓∿{v}₂,∿{σ}₂
   \\ ρ′[x↦ℓ],τ′⊢e′    ,∿{σ}₂[ℓ↦∿{v}₂]⇓∿{v}′,∿{σ}₃}
-  {ρ      ,τ ⊢e₁(e₂),∿{σ} ⇓∿{v}′,∿{σ}₃}\vspace{-0.75em}
+  {ρ      ,τ ⊢e₁(e₂),∿{σ} ⇓∿{v}′,∿{σ}₃}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(OIfT),right={\ssmall «0∈∿{v}₁»}]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
@@ -169,7 +169,7 @@ in the store.
     {  ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇓∿{v},∿{σ}₂}
 \end{mathpar}
 \begin{flushright}[\emph{Collecting Reachability}]\quad\fbox{«ρ,τ⊢e,∿{σ}⇑∿{ς}»}\end{flushright}
-\vspace{-0.25em}
+  \vspace{0pt} % -0.25em}
 \begin{mathpar}
   \inferrule*[left=(ORefl)]{ }{ρ,τ⊢e,∿{σ}⇑⟨e,ρ,∿{σ},τ⟩}
 
@@ -180,7 +180,7 @@ in the store.
   \inferrule*[left=(ORBin2)]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
-  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}\vspace{-0.75em}
+  {ρ,τ⊢b(e₁,e₂),∿{σ}⇑∿{ς}}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(ORApp1)]
    {ρ,τ⊢e₁,∿{σ}⇑∿{ς}}
@@ -189,7 +189,7 @@ in the store.
    \inferrule*[left=(ORApp2),right={\ssmall «⟨λx.e′,ρ′⟩∈∿{v}₁»}]
    {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
    \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
-   {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}\vspace{-0.75em}
+   {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}\vspace{0pt} % -0.75em}
 
    \inferrule*[left=(ORApp3),right={\begin{minipage}{2em}\ssmall
        \begin{alignat*}{1}
@@ -203,7 +203,7 @@ in the store.
   {  ρ,τ⊢e₁,∿{σ} ⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇓∿{v}₂,∿{σ}₂
   \\ ρ′[x↦ℓ],τ′⊢e′,∿{σ}₂[ℓ↦∿{v}₂]⇑∿{ς}}
-  {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}\vspace{-0.75em}
+  {ρ,τ⊢e₁(e₂),∿{σ}⇑∿{ς}}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(ORIf1)]
   {ρ,τ⊢e₁,∿{σ}⇑∿{ς}}
@@ -212,7 +212,7 @@ in the store.
   \inferrule*[left=(ORIfT),right={\ssmall «0∈∿{v}₁»}]
   {  ρ,τ⊢e₁,∿{σ}⇓∿{v}₁,∿{σ}₁
   \\ ρ,τ⊢e₂,∿{σ}₁⇑∿{ς}}
-  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}\vspace{-0.75em}
+  {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(ORIfF),right={\begin{minipage}{2em}\ssmall 
     \begin{alignat*}{2}
@@ -224,7 +224,7 @@ in the store.
     \\ ρ,τ⊢e₃,∿{σ}₁⇑∿{ς}}
     {ρ,τ⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,∿{σ}⇑∿{ς}}
 \end{mathpar}
-\caption{Big-step Collecting Evaluation and Reachability Semantics}
+\captionskip{Big-step Collecting Evaluation and Reachability Semantics}
 \label{f:lamif-collecting}
 \end{figure*} %}-}
 
@@ -322,18 +322,18 @@ and the partial ordering on stores and configurations is pointwise:
 
 \begin{figure*} %{-{
 \begin{flushright}[\emph{Abstract Evaluation}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇓♯{v},♯{σ}′»}\end{flushright}
-\vspace{-0.75em}
+  \vspace{0pt} % -0.75em}
 \begin{mathpar}
   \inferrule*[left=(ALit)]{ }{♯{ρ},♯{τ}⊢n,♯{σ}⇓♯{η}(n),♯{σ}}
 
   \inferrule*[left=(AVar)]{ }{♯{ρ},♯{τ}⊢x,♯{σ}⇓♯{σ}(♯{ρ}(x)),♯{σ}}
 
-  \inferrule*[left=(ALam)]{ }{♯{ρ},♯{τ}⊢λx.e,♯{σ}⇓♯{η}(⟨λx.e,♯{ρ}⟩),♯{σ}}\vspace{-0.75em}
+  \inferrule*[left=(ALam)]{ }{♯{ρ},♯{τ}⊢λx.e,♯{σ}⇓♯{η}(⟨λx.e,♯{ρ}⟩),♯{σ}}\vspace{0pt} % -0.75em}
 
     \inferrule*[left=(ABin)]
     {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
     \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂}
-    {  ♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇓♯{⟦b⟧}(♯{v}₁,♯{v}₂),♯{σ}₂}\vspace{-0.75em}
+    {  ♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇓♯{⟦b⟧}(♯{v}₁,♯{v}₂),♯{σ}₂}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(AApp),right={\begin{minipage}{2em}\ssmall
     \begin{alignat*}{1}
@@ -348,7 +348,7 @@ and the partial ordering on stores and configurations is pointwise:
   {  ♯{ρ}      ,♯{τ} ⊢e₁    ,♯{σ} ⇓♯{v}₁,♯{σ}₁
   \\ ♯{ρ}      ,♯{τ} ⊢e₂    ,♯{σ}₁⇓♯{v}₂,♯{σ}₂
   \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′    ,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇓♯{v}′,♯{σ}₃}
-  {♯{ρ}      ,♯{τ} ⊢e₁(e₂),♯{σ} ⇓♯{v}′,♯{σ}₃}\vspace{-0.75em}
+  {♯{ρ}      ,♯{τ} ⊢e₁(e₂),♯{σ} ⇓♯{v}′,♯{σ}₃}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(AIfT),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
   {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
@@ -361,7 +361,7 @@ and the partial ordering on stores and configurations is pointwise:
   {  ♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇓♯{v},♯{σ}₂}
 \end{mathpar}
 \begin{flushright}[\emph{Abstract Reachability}]\quad\fbox{«♯{ρ},♯{τ}⊢e,♯{σ}⇑♯{ς}»}\end{flushright}
-\vspace{-0.25em}
+  \vspace{0pt} % -0.25em}
 \begin{mathpar}
   \inferrule*[left=(ARefl)]{ }{♯{ρ},♯{τ}⊢e,♯{σ}⇑⟨e,♯{ρ},♯{σ},♯{τ}⟩}
 
@@ -372,7 +372,7 @@ and the partial ordering on stores and configurations is pointwise:
   \inferrule*[left=(ARBin2)]
   {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
   \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}\vspace{-0.75em}
+  {♯{ρ},♯{τ}⊢b(e₁,e₂),♯{σ}⇑♯{ς}}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(ARApp1)]
   {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
@@ -381,7 +381,7 @@ and the partial ordering on stores and configurations is pointwise:
   \inferrule*[left=(ARApp2),right={\ssmall «⟨λx.e′,♯{ρ}′⟩∈⌊γ⌋⸤clo⸥(♯{v}₁)»}]
   {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
   \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}\vspace{-0.75em}
+  {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}\vspace{0pt} % -0.75em}
 
    \inferrule*[left=(ARApp3),right={\begin{minipage}{2em}\ssmall
        \begin{alignat*}{1}
@@ -396,7 +396,7 @@ and the partial ordering on stores and configurations is pointwise:
      {  ♯{ρ},♯{τ}⊢e₁,♯{σ} ⇓♯{v}₁,♯{σ}₁
        \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇓♯{v}₂,♯{σ}₂
      \\ ♯{ρ}′[x↦♯{ℓ}],♯{τ}′⊢e′,♯{σ}₂⊔[♯{ℓ}↦♯{v}₂]⇑♯{ς}}
-     {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}\vspace{-0.75em}
+     {♯{ρ},♯{τ}⊢e₁(e₂),♯{σ}⇑♯{ς}}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(ARIf1)]
   {♯{ρ},♯{τ}⊢e₁,♯{σ}⇑♯{ς}}
@@ -405,14 +405,14 @@ and the partial ordering on stores and configurations is pointwise:
   \inferrule*[left=(ARIfT),right={\ssmall «0∈⌊γ⌋⸤0⸥(♯{v}₁)»}]
   {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
   \\ ♯{ρ},♯{τ}⊢e₂,♯{σ}₁⇑♯{ς}}
-  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}\vspace{-0.75em}
+  {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}\vspace{0pt} % -0.75em}
 
   \inferrule*[left=(ARIfF),right={\ssmall «¬0∈⌊γ⌋⸤¬0⸥(♯{v}₁)»}]
     {  ♯{ρ},♯{τ}⊢e₁,♯{σ}⇓♯{v}₁,♯{σ}₁
     \\ ♯{ρ},♯{τ}⊢e₃,♯{σ}₁⇑♯{ς}}
     {♯{ρ},♯{τ}⊢⟬if0⟭(e₁)❴e₂❵❴e₃❵,♯{σ}⇑♯{ς}}
 \end{mathpar}
-\caption{Big-step Abstract Evaluation and Reachability Semantics}
+\captionskip{Big-step Abstract Evaluation and Reachability Semantics}
 \label{f:lamif-abstract}
 \end{figure*} %}-}
 

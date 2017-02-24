@@ -3,7 +3,6 @@
 \begin{lstlisting}
 ¦ (define (alloc x) (return x))
 \end{lstlisting}
-\vspace{0.75em}
 \figskip\rfloat{⸨store-nd@⸩}
 \begin{lstlisting}
 ¦ (define (find a)
@@ -13,10 +12,8 @@
 ¦ (define (ext a v)
 ¦   (update-store (λ (σ) (σ a (if (∈ a σ) (set-add (σ a) v) (set v))))))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{Abstracting Allocation: 0CFA}
+\captionskip{Abstracting Allocation: 0CFA}
 \label{f:0cfa-abs}
-\vspace{-1em}
 \end{figure} %}-}
 
 \section{Caching and Finding Fixpoints}\label{s:cache}
@@ -115,10 +112,8 @@ all of which are finite.
 ¦               (update-cache-out (λ (¢⸢out⸣) (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
 ¦               (return v)))))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{Co-inductive Caching Algorithm}
+\captionskip{Co-inductive Caching Algorithm}
 \label{f:caching}
-\vspace{-1em}
 \end{figure} %}-}
 
 With these peices in place we construct a complete interpreter:

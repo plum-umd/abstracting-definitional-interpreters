@@ -59,7 +59,6 @@ widening.
 ¦     ['N (mplus (return #t) (return #f))]
 ¦     [_  (return (zero? v))]))
 \end{lstlisting}
-\vspace{0.75em}
 \figskip\rfloat{⸨store-crush@⸩}
 \begin{lstlisting}
 ¦ (define (find a)
@@ -74,8 +73,6 @@ widening.
 ¦                            (σ a (crush v (σ a)))
 ¦                            (σ a (set v))))))
 \end{lstlisting}
-\vspace{-0.75em}
-\caption{An Alternative Abstraction for Precise Primitives}
+\captionskip{An Alternative Abstraction for Precise Primitives}
 \label{f:pres-delta}
-\vspace{-1em}
 \end{figure} %}-}
