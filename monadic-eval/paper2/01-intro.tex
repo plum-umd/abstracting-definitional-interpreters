@@ -1,87 +1,152 @@
 \section{Introduction}
 
-In his landmark paper, \emph{Definitional Interpreters for Higher-order
-Programming Languages}~\cite{dvanhorn:reynolds-acm72}, Reynolds observed that
-when a programming language is defined by way of an interpreter, it is possible
-to inherit semantic characteristics of the defining metalanguage. For example,
-it is possible to define a definitional interpreter which is call-by-value when
-the metalanguage is call-by-value, and call-by-name when the metalanguage is
-call-by-name.
+An abstract interpreter is intended to soundly and effectively compute
+an over-approximation to its concrete counterpart.  For higher-order
+langauges, these concrete interpreters tend to be formulated as
+state-machines [cite many early papers].  There are several reasons
+for this choice:
+ they operate with simple transfer functions defined over
+  similarly simple data structures,
+ they make explicit all aspects of the state of a computation,
+  and
+ computing fixed-points in the set of reachable states is
+  straightforward.
+%
+The essence of the state-machine based approach was distilled by Van
+Horn and Might in their ``abstracting abstract machines'' (AAM)
+technique, which provides a systematic method for constructing
+abstract interpreters from standard abstract machines like the CEK- or
+Krivine-machines \cite{AAM}.  Language designers who would like to
+build abstract interpreters and program analysis tools for their
+language can now, in principle at least, first build a state-machine
+interpreter and then turn the crank to construct the approximating
+abstract counterpart.
 
-We expand on Reynolds's observation in the setting of abstract interpreters and
-discover the following:
-\begin{itemize}
-\item Definitional interpreters, written in monadic style, can simultaneously
-  define a language's semantics as well as safe approximations of those
-  semantics, \emph{i.e.} abstract interpreters.
-\item These definitional \emph{abstract} interpreters can inherit
-  characteristics of the defining language.  In particular, precise
-  call-and-return matching can be inherited, yielding a pushdown
-  analysis~\cite{dvanhorn:Earl2010Pushdown,local:vardoulakis-diss12}.
-\end{itemize}
-Furthermore, we contribute:
-\begin{itemize}
-\item A systematic methodology for designing abstract interpreters via
-  definitional interpreters; and
-\item A soundness framework establishing the correctness of abstract
-  interpreters defined in definitional style.
-\end{itemize}
+A natural pair of questions to arise from this past work is to wonder
+(1) if a systematic abstraction technique similar to AAM can be
+carried out for interpreters written, \emph{not} as state-machines,
+but instead as high-level definitional interpreters, i.e. recursive,
+compositional evaluators?, and (2) is such a perspective fruitful?  In
+this functional pearl we seek to answer both questions in the
+affirmative.
 
-\paragraph{A Compositional Approach to Program Analysis}
-There are many approaches to designing program analyzers for programming
-languages. For \emph{higher-order} programming languages, two popular
-approaches are to use abstract machines~\cite{dvanhorn:VanHorn2010Abstracting}
-and constraint systems~\cite{dvanhorn:Neilson:1999}. Other foundations exist
-for designing program analyzers, but no approach to-date utilizes big-step
-operational semantics or definitional interpreters for program analysis of
-higher-order languages. This is unfortunate because big-step semantics and
-definitional interpreters are more compositional and high-level than state
-machines or constraint systems. Big-step and denotational approaches exist for
-first-order programming languages; the gap is in extending these ideas to the
-higher-order setting.
+For the first question, we show the AAM recipe can largely be applied
+to definitional interpreters in a straightforward adaptation of the
+original method.  There are two technical challenges compared with the
+state-machine based approach: (1) the interpreter needs to be written
+with a cacheing strategy to ensure termination, (2) computing a
+fixed-point of the abstract interpreter is not as straightforward as
+in the reachable state semantics.  Neither represent serious
+challenges and ideas from coinduction and fixed-point algorithms
+readily apply.
 
-We bridge this gap, providing the first framework for program analysis of
-higher-order languages which builds upon big-step semantics and their
-corresponding definitional interpreters, which are compositional by nature. 
+For the second question, we claim that the abstract definitional
+interpreter perspective is fruitful in two regards.  The first is
+unsurprising: high-level abstract interpreters offer the ususal
+beneficial properties of their concrete counterparts in terms of being
+re-usable and extensible.  In particular, we show that abstract
+interpreters can be structured with monad transformers to good effect.
+The second regard is more suprising, and we consider its observation
+to be the main contribution of this pearl.
 
-Our key insights are to design definitional interpreters in monadic,
-open-recursive style (§~\ref{s:interp}), and to design a
-novel fixpoint algorithm tailored specifically to the setting of higher-order
-definitional interpreters (§~\ref{s:cache}). The extensible nature of the
-interpreter allows us to recover a wide-range of analyses through its
-instantiation, including widening techniques (§~\ref{s:widening}), precision
-preserving abstractions (§~\ref{s:alt-abstraction}), and symbolic execution for
-program verification (§~\ref{s:symbolic}). Our implementation is freely
-available through a suite of embedded languages in Racket (§~\ref{s:try-it}).
-Finally, we prove the approach sound w.r.t. a derived big-step collecting and
-abstract semantics (§~\ref{s:formalism}), where the key insight in the
-formalism is to model not only standard big-step \emph{evaluation} relations,
-but also big-step \emph{reachability} relations.
+Definitional interpreters, compared with abstract machines, can leave
+aspects of computation implicit, relying on the semantics of the
+defining-language to implicitly define the semantics of the
+defined-language, an observation made by Reynolds in his landmark
+paper, \emph{Definitional Interpreters for Higher-order Programming
+  Languages}~\cite{dvanhorn:reynolds-acm72}.  For example, it is
+possible to write a definitional interpreter such that it defines a
+call-by-value language when the metalanguage is call-by-value, and
+defines a call-by-name language when the metalanguage is call-by-name.
 
-\paragraph{Pushdown Precision in Program Analysis}
-A common problem with traditional approaches to control flow analysis is the
-inability to properly match a function call with its return in the abstract
-semantics. This leads to infeasible program (abstract) executions in which a
-call is made from one point in the program, but control returns to another.
-The PDCFA analysis of Earl \emph{et al}~\cite{dvanhorn:Earl2010Pushdown} and
-CFA2 analysis of Vardoulakis and Shivers~\cite{dvanhorn:Vardoulakis2011CFA2}
-were the first approaches to overcome this limitation in the higher-order
-setting. In essence, these analyses replaces the traditional finite automata
-abstractions of programs with pushdown automata, an approach pioneered by Reps
-\emph{et al}~\cite{dvanhorn:Reps1995Precise} in the first-order setting.
+[TODO: finish.]
 
-We realize a new technique for defining abstract interpreters with pushdown
-precision, meaning the analysis precisely matches function calls to returns. In
-the setting of definitional interpreters, this property is inherited from the
-defining metalanguage and requires no instrumentation to the analysis \emph{at
-all} (§~\ref{s:reynolds}).
+\newpage
 
-A technical difference between small-step and big-step approaches to semantics
-are that small-step methods must model the execution context of evaluation,
-whether through evaluation contexts~\cite{local:felleisen-TCS1992} or stack
-frames~\cite{dvanhorn:Felleisen1987Calculus}. In big-step methods, there is no
-model for the context; it is implicit in the definition of evaluation rules, or
-in the case of definitional interpreters, implicit in the call-and-return
-semantics of the defining programming language. Because a defining programming
-language is precise in its call/return behavior, so is a definitional abstract
-interpreter embedded within it.
+
+
+%% In his landmark paper, \emph{Definitional Interpreters for Higher-order
+%% Programming Languages}~\cite{dvanhorn:reynolds-acm72}, Reynolds observed that
+%% when a programming language is defined by way of an interpreter, it is possible
+%% to inherit semantic characteristics of the defining metalanguage. For example,
+%% it is possible to define a definitional interpreter which is call-by-value when
+%% the metalanguage is call-by-value, and call-by-name when the metalanguage is
+%% call-by-name.
+
+%% We expand on Reynolds's observation in the setting of abstract interpreters and
+%% discover the following:
+%% \begin{itemize}
+%% \item Definitional interpreters, written in monadic style, can simultaneously
+%%   define a language's semantics as well as safe approximations of those
+%%   semantics, \emph{i.e.} abstract interpreters.
+%% \item These definitional \emph{abstract} interpreters can inherit
+%%   characteristics of the defining language.  In particular, precise
+%%   call-and-return matching can be inherited, yielding a pushdown
+%%   analysis~\cite{dvanhorn:Earl2010Pushdown,local:vardoulakis-diss12}.
+%% \end{itemize}
+%% Furthermore, we contribute:
+%% \begin{itemize}
+%% \item A systematic methodology for designing abstract interpreters via
+%%   definitional interpreters; and
+%% \item A soundness framework establishing the correctness of abstract
+%%   interpreters defined in definitional style.
+%% \end{itemize}
+
+%% \paragraph{A Compositional Approach to Program Analysis}
+%% There are many approaches to designing program analyzers for programming
+%% languages. For \emph{higher-order} programming languages, two popular
+%% approaches are to use abstract machines~\cite{dvanhorn:VanHorn2010Abstracting}
+%% and constraint systems~\cite{dvanhorn:Neilson:1999}. Other foundations exist
+%% for designing program analyzers, but no approach to-date utilizes big-step
+%% operational semantics or definitional interpreters for program analysis of
+%% higher-order languages. This is unfortunate because big-step semantics and
+%% definitional interpreters are more compositional and high-level than state
+%% machines or constraint systems. Big-step and denotational approaches exist for
+%% first-order programming languages; the gap is in extending these ideas to the
+%% higher-order setting.
+
+%% We bridge this gap, providing the first framework for program analysis of
+%% higher-order languages which builds upon big-step semantics and their
+%% corresponding definitional interpreters, which are compositional by nature. 
+
+%% Our key insights are to design definitional interpreters in monadic,
+%% open-recursive style (§~\ref{s:interp}), and to design a
+%% novel fixpoint algorithm tailored specifically to the setting of higher-order
+%% definitional interpreters (§~\ref{s:cache}). The extensible nature of the
+%% interpreter allows us to recover a wide-range of analyses through its
+%% instantiation, including widening techniques (§~\ref{s:widening}), precision
+%% preserving abstractions (§~\ref{s:alt-abstraction}), and symbolic execution for
+%% program verification (§~\ref{s:symbolic}). Our implementation is freely
+%% available through a suite of embedded languages in Racket (§~\ref{s:try-it}).
+%% Finally, we prove the approach sound w.r.t. a derived big-step collecting and
+%% abstract semantics (§~\ref{s:formalism}), where the key insight in the
+%% formalism is to model not only standard big-step \emph{evaluation} relations,
+%% but also big-step \emph{reachability} relations.
+
+%% \paragraph{Pushdown Precision in Program Analysis}
+%% A common problem with traditional approaches to control flow analysis is the
+%% inability to properly match a function call with its return in the abstract
+%% semantics. This leads to infeasible program (abstract) executions in which a
+%% call is made from one point in the program, but control returns to another.
+%% The PDCFA analysis of Earl \emph{et al}~\cite{dvanhorn:Earl2010Pushdown} and
+%% CFA2 analysis of Vardoulakis and Shivers~\cite{dvanhorn:Vardoulakis2011CFA2}
+%% were the first approaches to overcome this limitation in the higher-order
+%% setting. In essence, these analyses replaces the traditional finite automata
+%% abstractions of programs with pushdown automata, an approach pioneered by Reps
+%% \emph{et al}~\cite{dvanhorn:Reps1995Precise} in the first-order setting.
+
+%% We realize a new technique for defining abstract interpreters with pushdown
+%% precision, meaning the analysis precisely matches function calls to returns. In
+%% the setting of definitional interpreters, this property is inherited from the
+%% defining metalanguage and requires no instrumentation to the analysis \emph{at
+%% all} (§~\ref{s:reynolds}).
+
+%% A technical difference between small-step and big-step approaches to semantics
+%% are that small-step methods must model the execution context of evaluation,
+%% whether through evaluation contexts~\cite{local:felleisen-TCS1992} or stack
+%% frames~\cite{dvanhorn:Felleisen1987Calculus}. In big-step methods, there is no
+%% model for the context; it is implicit in the definition of evaluation rules, or
+%% in the case of definitional interpreters, implicit in the call-and-return
+%% semantics of the defining programming language. Because a defining programming
+%% language is precise in its call/return behavior, so is a definitional abstract
+%% interpreter embedded within it.
