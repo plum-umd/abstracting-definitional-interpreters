@@ -56,11 +56,11 @@ There are a few superficial aspects that deserve a quick note:
 environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
-\begin{alignat*}{4}
-                & 𝔥⸨(do x ←«\ »e . r)⸩ &&≡ 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩ \quad &&
-                         𝔥⸨(do e . r)⸩ &&≡ 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
-\\[\mathgobble] & 𝔥⸨(do x ≔«\ »e . r)⸩ &&≡ 𝔥⸨(let ((x e)) (do . r))⸩ \quad &&
-                             𝔥⸨(do b)⸩ &&≡ 𝔥⸨b⸩
+\begin{alignat*}{2}
+                𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
+\\[\mathgobble]        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
+\\[\mathgobble] 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
+\\[\mathgobble]            𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
 \end{alignat*}
 Finally, there are two unconventional aspects worth noting.
 
@@ -145,11 +145,12 @@ environment and store ⸨∅⸩:
 While the ⸨define-monad⸩ form is hiding some details, this component could have
 equivalently been written out explicitly. For example, ⸨return⸩ and ⸨bind⸩ can
 be defined as:
-\begin{alignat*}{5}
-  & 𝔥⸨(define (((return a) r) s) (cons a s))⸩
- &␣␣& 𝔥⸨(define (((bind ma f⸩&&𝔥⸨) r) s)⸩ \\
-  &&&␣𝔥⸨(match ((ma r) s)⸩&&𝔥⸨[(cons a s′) (((f a) r) s′)]⸩ & \\
-  &&&&&𝔥⸨['failure 'failure]))⸩ &
+\begin{alignat*}{1}
+& 𝔥⸨(define (((return a) r) s) (cons a s))⸩ \\
+& 𝔥⸨(define (((bind ma f) r) s)⸩ \\
+  &␣𝔥⸨(match ((ma r) s)⸩ \\
+    &␣␣𝔥⸨[(cons a s′) (((f a) r) s′)]⸩ \\
+    &␣␣𝔥⸨['failure 'failure]))⸩
 \end{alignat*}
 So far our use of monad transformers is as a mere convenience, however the
 monad abstraction will become essential for easily deriving new analyses later
@@ -183,9 +184,9 @@ values in the store.
 The only remaining pieces of the puzzle are a fixed-point combinator and the
 main entry-point for the interpreter, which are straightforward to define:
 %
-\begin{alignat*}{2}
-  & 𝔥⸨(define ((fix f) x) ((f (fix f)) x))⸩
- &␣␣& 𝔥⸨(define (eval e) (mrun ((fix ev) e)))⸩
+\begin{alignat*}{1}
+& 𝔥⸨(define ((fix f) x) ((f (fix f)) x))⸩ \\
+& 𝔥⸨(define (eval e) (mrun ((fix ev) e)))⸩
 \end{alignat*}
 
 %% By taking advantage of Racket's languages-as-libraries
