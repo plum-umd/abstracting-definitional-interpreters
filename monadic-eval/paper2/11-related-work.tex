@@ -8,27 +8,43 @@ the abstracting abstract
 machines~\cite{dvanhorn:VanHorn2010Abstracting,dvanhorn:VanHorn2012Systematic}
 approach to deriving abstract interpreters from a small-step machine. The key
 difference here is that we operate in the setting of a monadic definitional
-interpreter instead of an abstract machine.  This involved a novel caching
-mechanism and fixed-point algorithm, but otherwise followed the same recipe.
-Remarkably, the pushdown property is simply inherited from the meta-language
-rather than require explicit mechanisms within the abstract interpreter.
+interpreter instead of an abstract machine. In moving to this new setting we
+developed a novel caching mechanism and fixed-point algorithm, but otherwise
+followed the same recipe. Remarkably, in the setting of definitional
+interpreters, the pushdown property for the analysis is simply inherited from
+the meta-language rather than requiring explicit instrumentation to the
+abstract interpreter.
+
+Definitional abstract interpreters for higher order languages were first
+explored by Jones and Nielson~\cite{local:jones-book1995}, which introduces the
+technique of interpreting a higher order object language directly as terms in a
+meta-language to perform abstract interpretation. While their work lays the
+foundations for this idea, it does not consider abstractions for fixpoints in
+the domain, so although their abstract interpreters are sound, they are not in
+general computable. They propose a naïve solution of truncating the
+interpretation of syntactic fixpoints to some finite depth, but this solution
+isn't general and doesn't account for non-syntactic occurrences of bottom in
+the concrete domain (e.g. Y combinators). Our work develops such an abstraction
+for concrete denotational fixpoints using a fixpoint caching algorithm,
+resulting in general, computable abstractions for arbitrary definitional
+interpreters.
 
 The use of monads and monad transformers to make extensible (concrete)
 interpreters is a well-known
 idea~\cite{davdar:Moggi:1989:Monads,local:steele-popl94,dvanhorn:Liang1995Monad},
 which we have extended to work for compositional abstract interpreters.  The
-use of monads and monad transformers in machine based-formulatons of abstract
+use of monads and monad transformers in machine based-formulations of abstract
 interpreters has previously been explored by Sergey, \emph{et
 al.}~\cite{dvanhorn:Sergey2013Monadic} and Darais \emph{et
 al.}~\cite{local:darais-oopsla2015}, respectively.  Darais has also shown that
 certain monad transformers are also \emph{Galois transformers}, i.e. they
-compose to form monads that are Galois connections.  This idea may pave a path
-forward for having both componential code \emph{and proofs} for abstract
-interpreters in the style presented here.
+compose to form monads that transport Galois connections.  This idea may pave a
+path forward for obtaining both compositional code \emph{and proofs} for
+abstract interpreters in the style presented here.
 
 The caching mechanism used to ensure termination in our abstract interpreter is
 similar to that used by Johnson and Van
-Horn~\cite{dvanhorn:Johnson2014Abstracting}.  They use a local- and
+Horn~\cite{dvanhorn:Johnson2014Abstracting}. They use a local- and
 meta-memoization table in a machine-based interpreter to ensure termination for
 a pushdown abstract interpreter.  This mechanism is in turn reminiscent of
 Gl\"{u}ck's use of memoization in an interpreter for two-way non-deterministic
@@ -80,7 +96,7 @@ similar to the many existing variants of pushdown flow analysis~\cite%
 % abstract garbage collector into a pushdown abstract interpreter
 % achieves a similar goal as that of so-called @emph{introspective}
 % pushdown abstract interpreters@~cite[earl-icfp12 johnson-jfp14].  }
-The mixing of symbolic execution and abstract intrepretation is similar in
+The mixing of symbolic execution and abstract interpretation is similar in
 spirit to the \emph{logic flow analysis} of Might~\cite{local:might-popl07},
 albeit in a pushdown setting and with a stronger notion of negation; generally,
 our presentation resembles traditional formulations of symbolic execution more
