@@ -7,6 +7,8 @@ s/δ/<delta>/g
 s/σ/<sigma>/g
 s/ς/<varsigma>/g
 s/ρ/<rho>/g
+s/α/<alpha>/g
+s/ψ/<psi>/g
 s/φ/<phi>/g
 s/θ/<theta>/g
 s/Σ/<Sigma>/g

@@ -1,0 +1,149 @@
+\section{Garbage Collection}\label{s:gc}
+
+%% Nick:
+%% - The figure shows the pdcfa GC monad instance and `mrun'.
+%%   `ev-collect' and `ev-roots' work for concrete or abstract.
+%% - `ev-cache-gc' and `fix-cache-gc' are small extensions to the caching
+%%   algorithm to hold on to ψ (to make sure the search is complete in wake of
+%%   AGC). These can be abbreviated with ellipses (as in δ for symbolic
+%%   execution)--the only changes are in lines that refer to ψ.
+
+\begin{figure} %{-{
+\rfloat{⸨monad-pdcfa-gc@⸩}
+\begin{flalign*}
+& 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢roots⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID))))))))⸩ &
+\end{flalign*}
+\figskip\rfloat{⸨mrun-pdcfa-gc@⸩}
+% Nick:
+% The only extension to `mrun' is the last ReaderT for ψ, so I thought
+% collapsing the old components to two-per-line was reasonable. The
+% other version is just below.
+\begin{lstlisting}
+¦ (define (mrun m)
+¦   (run-StateT+ ∅ (run-ReaderT ∅   ; out-¢₀, in-¢₀
+¦   (run-StateT  ∅ (run-ReaderT ∅   ; σ₀, ρ₀
+¦   (run-ReaderT (set) m))))))      ; ψ₀
+\end{lstlisting}
+%% \begin{lstlisting}
+%% ¦ (define (mrun m)
+%% ¦   (run-StateT+ ∅     ; out-¢₀
+%% ¦   (run-ReaderT ∅     ; in-¢₀
+%% ¦   (run-StateT  ∅     ; σ₀
+%% ¦   (run-ReaderT ∅     ; ρ₀
+%% ¦   (run-ReaderT (set) ; ψ₀
+%% ¦                m))))))
+%% \end{lstlisting}
+\captionskip{Monad Instance with Root Address Set}
+\label{f:gc-monad}
+\end{figure} %}-}
+
+\begin{figure} %{-{
+\begin{lstlisting}
+¦ (define ((gc αs) σ)
+¦   (restrict σ (reachable αs σ)))
+¦ (define (reachable αs s)
+¦   (define (R to-see seen)
+¦     (match to-see
+¦       [(set) seen]
+¦       [(set α αs ...)
+¦        (define sα (s α))
+¦        (define αs* (if (set? sα)
+¦                        (for/fold ([αs* (set)])
+¦                                  ([v (in-set sα)])
+¦                          (set-union αs* (roots-v v)))
+¦                        (roots-v sα)))
+¦        (R (set-subtract (set-union αs* αs) seen)
+¦           (set-add seen α))]))
+¦   (R αs (set)))
+¦ (define (roots e ρ)
+¦   (for/set ([x (in-set (fv e))])
+¦     (ρ x)))
+¦ (define (roots-v v)
+¦   (match v
+¦     [(cons l ρ) (roots l ρ)]
+¦     [_ (set)]))
+\end{lstlisting}
+\captionskip{Helper Functions for Garbage Collection}
+\label{f:gc-help}
+\end{figure} %}-}
+
+\begin{figure} %{-{
+\rfloat{⸨ev-collect@⸩}
+\begin{lstlisting}
+¦ (define (((ev-collect ev0) ev) e)
+¦   (do ψ ← ask-roots
+¦       v ← ((ev0 ev) e)
+¦       (update-store (gc (set-union ψ (roots-v v))))
+¦       (return v)))
+\end{lstlisting}
+\figskip\rfloat{⸨ev-roots@⸩}
+\begin{lstlisting}
+¦ (define (((ev-roots ev₀) ev) e)
+¦   (match e
+¦     [(ifz e₀ e₁ e₂) (do ψ  ← ask-roots
+¦                         ρ  ← ask-env
+¦                         ψ′ ≔ (set-union ψ (roots e₁ ρ) (roots e₂ ρ))
+¦                         v  ← (local-roots ψ′ (ev e₀))
+¦                         b  ← (truish? v)
+¦                         (ev (if b e₁ e₂)))]
+¦     [(op2 o e₀ e₁)  (do ψ  ← ask-roots
+¦                         ρ  ← ask-env
+¦                         v₀ ← (local-roots (set-union ψ (roots e₁ ρ)) (ev e₀))
+¦                         v₁ ← (local-roots (set-union ψ (roots-v v₀)) (ev e₁))
+¦                         (δ o v₀ v₁))]
+¦     [(app e₀ e₁)    (do ρ  ← ask-env
+¦                         ψ  ← ask-roots
+¦                         v₀ ← (local-roots (set-union ψ (roots e₁ ρ)) (ev e₀))
+¦                         v₁ ← (local-roots (set-union ψ (roots-v v₀)) (ev e₁))
+¦                         (cons (lam x e₂) ρ′) ≔ v₀
+¦                         a  ← (alloc x)
+¦                         (ext a v₁)
+¦                         (local-env (ρ′ x a) (ev e₂)))]
+¦     [_ ((ev₀ ev) e)]))
+\end{lstlisting}
+\captionskip{Address Collection and Propagation}
+\label{f:gc-collect-roots}
+\end{figure} %}-}
+
+\begin{figure} %{-{
+\figskip\rfloat{⸨ev-cache-gc@⸩}
+\begin{lstlisting}
+¦ (define (((ev-cache ev₀) ev) e)
+¦   (do ρ   ← ask-env  σ ← get-store  ψ ← ask-roots
+¦       ς   ≔ (list e ρ σ ψ)
+¦       ¢⸢out⸣ ← get-cache-out
+¦       (if (∈ ς ¢⸢out⸣)
+¦           (for/monad+ ([v×σ (¢⸢out⸣ ς)])
+¦             (do (put-store (cdr v×σ))
+¦                 (return (car v×σ))))
+¦           (do ¢⸢in⸣    ← ask-cache-in
+¦               v×σ₀  ≔ (if (∈ ς ¢⸢in⸣) (¢⸢in⸣ ς) ∅)
+¦               (put-cache-out (¢⸢out⸣ ς v×σ₀))
+¦               v     ← ((ev₀ ev) e)
+¦               σ′    ← get-store
+¦               v×σ′  ≔ (cons v σ′)
+¦               (update-cache-out (λ (¢⸢out⸣) (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
+¦               (return v)))))
+\end{lstlisting}
+\figskip\rfloat{⸨fix-cache-gc@⸩}
+\begin{lstlisting}
+¦ (define ((fix-cache eval) e)  
+¦   (do ρ ← ask-env  σ ← get-store  ψ ← ask-roots
+¦       ς ≔ (list e ρ σ ψ)
+¦       ¢⁺ ← (mlfp (λ (¢) (do (put-cache-out ∅)
+¦                             (put-store σ)
+¦                             (local-cache-in ¢ (eval e))
+¦                             get-cache-out)))
+¦       (for/monad+ ([v×σ (¢⁺ ς)])
+¦         (do (put-store (cdr v×σ))
+¦             (return (car v×σ))))))
+\end{lstlisting}
+\figskip\rfloat{⸨eval-cache-gc@⸩}
+\begin{lstlisting}
+¦ (define (eval e)
+¦   (mrun ((fix-cache (fix (ev-cache (ev-collect (ev-roots ev))))) e)))
+\end{lstlisting}
+\captionskip{Co-inductive Caching with Garbage Collection}
+\label{f:gc-components}
+\end{figure} %}-}
+
