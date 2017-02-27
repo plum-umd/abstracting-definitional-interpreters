@@ -34,7 +34,7 @@ For the first question, we show the AAM recipe can largely be applied
 to definitional interpreters in a straightforward adaptation of the
 original method.  There are two technical challenges compared with the
 state-machine based approach: (1) the interpreter needs to be written
-with a cacheing strategy to ensure termination, (2) computing a
+with a caching strategy to ensure termination, (2) computing a
 fixed-point of the abstract interpreter is not as straightforward as
 in the reachable state semantics.  Neither represent serious
 challenges and ideas from coinduction and fixed-point algorithms
@@ -58,10 +58,40 @@ paper, \emph{Definitional Interpreters for Higher-order Programming
 possible to write a definitional interpreter such that it defines a
 call-by-value language when the metalanguage is call-by-value, and
 defines a call-by-name language when the metalanguage is call-by-name.
+We show that \emph{abstract} definitional interpreters can likewise
+inherit properties of the metalanguage.  In particular we construct an
+abstract definitional interpreter where there is no explicit
+representation of continuations or a call stack.  Instead the
+interpreter is written in a straightfoward recursive style where the
+call stack is implicitly handled by the metalangauge.  What emerges
+from this construction is a total abstract evaluation function that
+soundly approximates all possible concrete executions of a given
+program.  But remarkably, since the abstract evaluator relies on the
+metalanguage to manage the call stack implicitly, it is easy to
+oberserve that it introduces no approximation in the matching of calls
+and returns, and therefore implements a ``pushdown'' analysis, all
+without the need for any explicit machinery to do so.
 
-[TODO: finish.]
+\subsection*{Outline}
 
-\newpage
+In the remainder of this pearl, we present an adaptation of the AAM
+method to the setting of compositional evaluation functions,
+a.k.a.~definitional interpreters.  We first briefly review the basic
+ingredients in the AAM recipe (\S\ref{s:aam}) and then define our
+definitional interpreter (\S\ref{s:interp}).  The interpreter is
+largely standard, but is written in a monadic and extensible style, so
+as to be re-usable for various forms of semantics we examine.  The AAM
+technique applies in a basically straightfoward way by
+store-allocating bindings and soundly finitizing the heap.  But when
+naively run, the interpreter will not always terminate.  To solve this
+problem we introduce a caching strategy and a simple fixed-point
+computation to ensure the interpreter terminates (\S\ref{s:cache}).
+It is at this point that we observe the interpreter we have built
+enjoys the ``pushdown'' property \emph{\`a la} Reynolds---it is
+inherited from the defining language of our interpreter and requires
+no explicit mechanism (\S\ref{s:reynolds}).
+
+Having established the main results, we then explore some\dots
 
 
 
