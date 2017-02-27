@@ -1,4 +1,4 @@
-\section{Path Sensitivity}\label{s:symbolic}
+\section{Symbolic execution}\label{s:symbolic}
 
 \begin{figure} %{-{
 \rfloat{⸨δ^-symbolic@⸩}
@@ -26,7 +26,7 @@ abstractions discussed in previous sections can be applied to enforce
 termination, turning a traditional symbolic execution into a path-sensitive
 verification engine.
 
-\subsection{Symbolic Execution}
+%\subsection{Symbolic Execution}
 To support symbolic execution, first we extend the syntax of the language to
 support symbolic numbers:
 \begin{alignat*}{4}
@@ -65,7 +65,7 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 
 \newcommand{\lamif}{«λ⦑IF⦒» }
 
-\subsection{From Symbolic Execution to Verification}
+\paragraph{From Symbolic Execution to Verification}
 
 Traditional symbolic executors mainly aim to find bugs and do not provide
 termination guarantee. However, when we apply to this symbolic executor the
