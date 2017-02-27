@@ -1,6 +1,4 @@
-\section{Related Work}
-
-\cite{local:jones-ai1995}
+\section{Related Work}\ref{s:related-work}
 
 This work draws upon and re-presents many ideas from the literature on abstract
 interpretation for higher-order languages.  In particular, it closely follows
@@ -15,18 +13,20 @@ interpreters, the pushdown property for the analysis is simply inherited from
 the meta-language rather than requiring explicit instrumentation to the
 abstract interpreter.
 
-Definitional abstract interpreters for higher order languages were first
-explored by Jones and Nielson~\cite{local:jones-book1995}, which introduces the
-technique of interpreting a higher order object language directly as terms in a
-meta-language to perform abstract interpretation. While their work lays the
-foundations for this idea, it does not consider abstractions for fixpoints in
-the domain, so although their abstract interpreters are sound, they are not in
-general computable. They propose a naïve solution of truncating the
-interpretation of syntactic fixpoints to some finite depth, but this solution
-isn't general and doesn't account for non-syntactic occurrences of bottom in
-the concrete domain (e.g. Y combinators). Our work develops such an abstraction
-for concrete denotational fixpoints using a fixpoint caching algorithm,
-resulting in general, computable abstractions for arbitrary definitional
+Compositionally defined abstract interpretation functions for
+higher-order languages were first explored by Jones and
+Nielson~\cite{local:jones-book1995}, which introduces the technique of
+interpreting a higher-order object language directly as terms in a
+meta-language to perform abstract interpretation. While their work
+lays the foundations for this idea, it does not consider abstractions
+for fixpoints in the domain, so although their abstract interpreters
+are sound, they are not in general computable. They propose a naïve
+solution of truncating the interpretation of syntactic fixpoints to
+some finite depth, but this solution isn't general and doesn't account
+for non-syntactic occurrences of bottom in the concrete domain (e.g. Y
+combinators). Our work develops such an abstraction for concrete
+denotational fixpoints using a fixpoint caching algorithm, resulting
+in general, computable abstractions for arbitrary definitional
 interpreters.
 
 The use of monads and monad transformers to make extensible (concrete)
