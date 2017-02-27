@@ -672,14 +672,16 @@ Furthermore, the implementation of our analyzer inherits this precision through
 precise call-return matching in the defining metalanguage, requiring no added
 instrumentation to the state-space of the analyzer.
 
-Going back to Nielson et al~\cite{dvanhorn:Neilson:1999}, it would be
-interesting to redevelop their constraint-based analysis descriptions of kCFA
-in a form that recovers pushdown precision. Such an exercise would amount to
-translating our big-step abstract semantics instantiated to kCFA to a
-constraint system. The resulting system would differ from classical kCFA by the
-addition of environments «♯{ρ}» (which Nielson et al call context environments)
-to the domain of the cache. In this way our formal framework is able to bridge
-the gap between results in pushdown analysis described via small-step machines
-\emph{a la} Van Horn and Might~\cite{dvanhorn:VanHorn2010Abstracting}, and
-constraint-based systems \emph{a la} Nielson et al for which pushdown analysis
-has yet to be described effectively.
+Going back to Nielson, \emph{et al.}~\cite{dvanhorn:Neilson:1999}, it
+would be interesting to redevelop their constraint-based analysis
+descriptions of kCFA in a form that recovers pushdown precision. Such
+an exercise would amount to translating our big-step abstract
+semantics instantiated to kCFA to a constraint system. The resulting
+system would differ from classical kCFA by the addition of
+environments «♯{ρ}» (which Nielson, \emph{et al.}~call context
+environments) to the domain of the cache. In this way our formal
+framework is able to bridge the gap between results in pushdown
+analysis described via small-step machines \emph{\`a la} Van Horn and
+Might~\cite{dvanhorn:VanHorn2010Abstracting}, and constraint-based
+systems \emph{\`a la} Nielson, \emph{et al.}~for which pushdown
+analysis has yet to be described effectively.
