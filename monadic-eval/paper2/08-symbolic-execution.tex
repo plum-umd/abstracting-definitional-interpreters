@@ -34,7 +34,7 @@ support symbolic numbers:
 \\ ε ∈ &&\mathrel{}    pexp ⩴ &\mathrel{} e ∣ ¬e             &\hspace{1em} [⦑\emph{path expression}⦒]
 \\ φ ∈ &&\mathrel{}    pcon ≔ &\mathrel{} ℘(pexp)   &\hspace{1em} [⦑\emph{path condition}⦒]
 \end{alignat*}
-Figure~\ref{s:symbolic} shows the units needed to turn the existing interpreter
+Figure~\ref{f:symbolic-widen} shows the units needed to turn the existing interpreter
 into a symbolic executor. Primitives such as ⸨'/⸩ now also take as input and
 return symbolic values. As standard, symbolic execution employs a
 path-condition accumulating assumptions made at each branch, allowing the
