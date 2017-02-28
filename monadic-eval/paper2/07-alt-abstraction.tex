@@ -5,6 +5,7 @@ abstraction strategies by swapping out components.  In particular we look at an
 alternative abstraction of primitive operations and store joins.
 
 \begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨symbolic-monad@⸩}
 \begin{flalign*}
   & 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩ &
@@ -34,6 +35,7 @@ alternative abstraction of primitive operations and store joins.
 \end{lstlisting}
 \captionskip{Symbolic Execution Variant}
 \label{f:symbolic}
+\end{mdframed}
 \end{figure} %}-}
 
 Figure~\ref{f:pres-delta} defines two new components: ⸨precise-δ@⸩ and

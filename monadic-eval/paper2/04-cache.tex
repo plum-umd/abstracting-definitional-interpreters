@@ -1,21 +1,3 @@
-\begin{figure} %{-{
-\rfloat{⸨alloc^@⸩}
-\begin{lstlisting}
-¦ (define (alloc x) (return x))
-\end{lstlisting}
-\figskip\rfloat{⸨store-nd@⸩}
-\begin{lstlisting}
-¦ (define (find a)
-¦   (do σ ← get-store
-¦       (for/monad+ ([v (σ a)])
-¦         (return v))))
-¦ (define (ext a v)
-¦   (update-store (λ (σ) (σ a (if (∈ a σ) (set-add (σ a) v) (set v))))))
-\end{lstlisting}
-\captionskip{Abstracting Allocation: 0CFA}
-\label{f:0cfa-abs}
-\end{figure} %}-}
-
 \section{Caching and Finding Fixpoints}\label{s:cache}
 
 At this point, the interpreter obtained by linking together ⸨monad^@⸩, ⸨δ^@⸩,
@@ -59,33 +41,8 @@ output cache so it can double as tracking the set of seen states. The ⸨+⸩ in
 merged automatically, producing a set of results and a single cache, rather
 than a set of results paired with individual caches.
 
-In the algorithm, when a configuration ⸨ς⸩ is first encountered, we place an
-entry in the output cache mapping ⸨ς⸩ to «𝔥⸨(¢⸢in⸣⸩\ 𝔥⸨ς)⸩», which is the
-“oracle” result. Also, whenever we finish computing the result ⸨v×σ⸩ of
-evaluating a configuration ⸨ς⸩, we place an entry in the output cache mapping
-⸨ς⸩ to ⸨v×σ′⸩. Finally, whenever we reach a configuration ⸨ς⸩ for which a
-mapping in the output cache exists, we use it immediately, ⸨return⸩ing each
-result using the ⸨for/monad+⸩ iterator. Therefore, every “cache hit” on
-⸨¢⸢out⸣⸩ is in one of two possible states: 1) we have already seen the
-configuration, and the result is the oracle result, as desired; or 2) we have
-already computed the “improved” result (w.r.t. the oracle), and need not
-recompute it.
-
-To compute the least fixed-point ⸨¢⁺⸩ for the evaluator ⸨ev-cache⸩ we perform a
-standard Kleene fixpoint iteration starting from the empty map, the bottom
-element for the cache, as shown in Figure~\ref{f:fixing}.
-
-The algorithm runs the caching evaluator ⸨eval⸩ on the given program ⸨e⸩ from
-the initial environment and store. This is done inside of ⸨mlfp⸩, a monadic
-least fixed-point finder. After finding the least fixed-point, the final values
-and store for the initial configuration ⸨ς⸩ are extracted and returned.
-
-Termination of the least fixed-point is justified by the monotonicity of the
-evaluator (it always returns an “improved” oracle), and the finite domain of
-the cache, which maps abstract configurations to pairs of values and stores,
-all of which are finite.
-
 \begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨monad-cache@⸩}
 \begin{flalign*}
 & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID)))))))⸩ &
@@ -111,7 +68,59 @@ all of which are finite.
 \end{lstlisting}
 \captionskip{Co-inductive Caching Algorithm}
 \label{f:caching}
+\end{mdframed}
 \end{figure} %}-}
+
+In the algorithm, when a configuration ⸨ς⸩ is first encountered, we place an
+entry in the output cache mapping ⸨ς⸩ to «𝔥⸨(¢⸢in⸣⸩\ 𝔥⸨ς)⸩», which is the
+“oracle” result. Also, whenever we finish computing the result ⸨v×σ⸩ of
+evaluating a configuration ⸨ς⸩, we place an entry in the output cache mapping
+⸨ς⸩ to ⸨v×σ′⸩. Finally, whenever we reach a configuration ⸨ς⸩ for which a
+mapping in the output cache exists, we use it immediately, ⸨return⸩ing each
+result using the ⸨for/monad+⸩ iterator. Therefore, every “cache hit” on
+⸨¢⸢out⸣⸩ is in one of two possible states: 1) we have already seen the
+configuration, and the result is the oracle result, as desired; or 2) we have
+already computed the “improved” result (w.r.t. the oracle), and need not
+recompute it.
+
+To compute the least fixed-point ⸨¢⁺⸩ for the evaluator ⸨ev-cache⸩ we perform a
+standard Kleene fixpoint iteration starting from the empty map, the bottom
+element for the cache, as shown in Figure~\ref{f:fixing}.
+
+\begin{figure} %{-{
+\begin{mdframed}
+\rfloat{⸨fix-cache@⸩}
+\begin{lstlisting}
+¦ (define ((fix-cache eval) e)  
+¦   (do ρ ← ask-env  σ ← get-store
+¦       ς ≔ (list e ρ σ)
+¦       ¢⁺ ← (mlfp (λ (¢) (do (put-cache-out ∅)
+¦                             (put-store σ)
+¦                             (local-cache-in ¢ (eval e))
+¦                             get-cache-out)))
+¦       (for/monad+ ([v×σ (¢⁺ ς)])
+¦         (do (put-store (cdr v×σ))
+¦             (return (car v×σ))))))
+¦ (define (mlfp f)
+¦   (let loop ([x ∅])
+¦     (do x′ ← (f x)
+¦         (if (equal? x′ x) (return x) (loop x′)))))
+\end{lstlisting}
+\captionskip{Finding Fixpoints in the Cache}
+\label{f:fixing}
+\end{mdframed}
+\end{figure} %}-}
+
+The algorithm runs the caching evaluator ⸨eval⸩ on the given program ⸨e⸩ from
+the initial environment and store. This is done inside of ⸨mlfp⸩, a monadic
+least fixed-point finder. After finding the least fixed-point, the final values
+and store for the initial configuration ⸨ς⸩ are extracted and returned.
+
+Termination of the least fixed-point is justified by the monotonicity of the
+evaluator (it always returns an “improved” oracle), and the finite domain of
+the cache, which maps abstract configurations to pairs of values and stores,
+all of which are finite.
+
 
 With these peices in place we construct a complete interpreter:
 \begin{alignat*}{1}
@@ -136,12 +145,16 @@ computable, as demonstrated on the following examples:
 ¦ '(0 2 3)
 ℑ⁆
 
-\subsection{Formalism}\label{s:cache:formalism}
+\subsection*{Formal soundness and termination}\label{s:cache:formalism}
 
-We formalize this co-inductive caching algorithm in Appendix
-Section~\ref{s:formalism}, where we prove both that it always terminates, and
-that it computes a sound over-approximation of concrete evaluation. Here, we
-give a short summary of our metatheory approach.
+In this pearl, we have focused on the code and its intuitions rather
+than rigorously establishing the usual formal properties of our
+abstract interpreter, but this is just a matter of presentation: the
+interpreter is indeed proven sound and computable.  We have formalized
+this co-inductive caching algorithm in Appendix~\ref{s:formalism},
+where we prove both that it always terminates, and that it computes a
+sound over-approximation of concrete evaluation. Here, we give a short
+summary of our metatheory approach.
 
 In formalising the soundness of this caching algorithm, we extend a standard
 big-step evaluation semantics into a \emph{big-step reachability} semantics,

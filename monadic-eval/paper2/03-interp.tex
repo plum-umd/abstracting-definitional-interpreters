@@ -9,6 +9,7 @@ numbers, binary operations on numbers, conditionals, {\tt letrec} expressions,
 functions and applications.
 
 \begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨ev@⸩}
 \begin{lstlisting}
 ¦ (define ((ev ev) e)
@@ -34,6 +35,7 @@ functions and applications.
 \end{lstlisting}
 \captionskip{The Extensible Definitional Interpreter}
 \label{f:interpreter}
+\end{mdframed}
 \end{figure} %}-}
 %¦     [(op1 o e₀)
 %¦      (do v ← (ev e₀)
@@ -91,6 +93,7 @@ eliminate free variables.\footnote{We use Racket
 implementation.}
 
 \begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨monad@⸩}
 \begin{flalign*}
 & 𝔥⸨(define-monad⸩ ␣𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨ID))))⸩ &
@@ -118,6 +121,7 @@ implementation.}
 \end{lstlisting}
 \captionskip{Components for Definitional Interpreters}
 \label{f:concrete-components}
+\end{mdframed}
 \end{figure} %}-}
 
 \subsection{Instantiating the Interpreter}
@@ -158,6 +162,7 @@ The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and exte
 values in the store.
 
 \begin{figure} %{-{ ␣
+\begin{mdframed}
 \rfloat{⸨trace-monad@⸩}
 \begin{flalign*}
 & 𝔥⸨(define-monad⸩ \ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨WriterT List⸩}⸢traces⸣\ 𝔥⸨ID)))))⸩
@@ -171,6 +176,7 @@ values in the store.
 \end{lstlisting}
 \captionskip{Trace Collecting Semantics}
 \label{f:trace}
+\end{mdframed}
 \end{figure} %}-}
 
 The only remaining pieces of the puzzle are a fixed-point combinator and the
@@ -320,6 +326,7 @@ Our setup makes it easy not only to express the concrete interpreter, but also
 these useful forms of collecting semantics.
 
 \begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨dead-monad@⸩}
 \begin{flalign*}
 & 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
@@ -339,6 +346,7 @@ these useful forms of collecting semantics.
 \end{lstlisting}
 \captionskip{Dead Code Collecting Semantics}
 \label{f:dead}
+\end{mdframed}
 \end{figure} %}-}
 
 \subsection{Abstracting Base Values}\label{s:base}
@@ -390,6 +398,7 @@ in the results):
 ℑ⁆
 
 \begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨monad^@⸩}
 \begin{flalign*}
 & 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣𝔥\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID)))))⸩ &
@@ -408,6 +417,7 @@ in the results):
 \end{lstlisting}
 \captionskip{Abstracting Primitive Operations}
 \label{f:abs-delta}
+\end{mdframed}
 \end{figure} %}-}
 
 It is clear that the interpreter will only ever see a finite set of numbers
@@ -432,6 +442,27 @@ Any abstraction of the allocation function that produces a finite set will do,
 but the choice of abstraction will determine the precision of the resulting
 analysis.  A simple choice is to allocate variables using the variable's name
 as its address.  This gives a monomorphic, or 0CFA-like, abstraction.
+
+\begin{figure} %{-{
+\begin{mdframed}
+\rfloat{⸨alloc^@⸩}
+\begin{lstlisting}
+¦ (define (alloc x) (return x))
+\end{lstlisting}
+\figskip\rfloat{⸨store-nd@⸩}
+\begin{lstlisting}
+¦ (define (find a)
+¦   (do σ ← get-store
+¦       (for/monad+ ([v (σ a)])
+¦         (return v))))
+¦ (define (ext a v)
+¦   (update-store (λ (σ) (σ a (if (∈ a σ) (set-add (σ a) v) (set v))))))
+\end{lstlisting}
+\captionskip{Abstracting Allocation: 0CFA}
+\label{f:0cfa-abs}
+\end{mdframed}
+\end{figure} %}-}
+
 
 Figure~\ref{f:0cfa-abs} shows the component ⸨alloc^@⸩ which implements
 monomorphic allocation, and the component ⸨store-nd@⸩ for implementing ⸨find⸩

@@ -1,27 +1,5 @@
 \section{Pushdown \emph{à la} Reynolds}\label{s:reynolds}
 
-\begin{figure} %{-{
-\rfloat{⸨fix-cache@⸩}
-\begin{lstlisting}
-¦ (define ((fix-cache eval) e)  
-¦   (do ρ ← ask-env  σ ← get-store
-¦       ς ≔ (list e ρ σ)
-¦       ¢⁺ ← (mlfp (λ (¢) (do (put-cache-out ∅)
-¦                             (put-store σ)
-¦                             (local-cache-in ¢ (eval e))
-¦                             get-cache-out)))
-¦       (for/monad+ ([v×σ (¢⁺ ς)])
-¦         (do (put-store (cdr v×σ))
-¦             (return (car v×σ))))))
-¦ (define (mlfp f)
-¦   (let loop ([x ∅])
-¦     (do x′ ← (f x)
-¦         (if (equal? x′ x) (return x) (loop x′)))))
-\end{lstlisting}
-\captionskip{Finding Fixpoints in the Cache}
-\label{f:fixing}
-\end{figure} %}-}
-
 By combining the finite abstraction of base values and closures with the
 termination-guaranteeing cache-based fixed-point algorithm, we have obtained a
 terminating abstract interpreter.  But what kind of abstract interpretation did

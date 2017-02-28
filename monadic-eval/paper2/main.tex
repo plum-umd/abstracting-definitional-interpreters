@@ -1,4 +1,4 @@
-\documentclass[acmlarge,anonymous]{acmart}\settopmatter{printfolios=true}
+\documentclass[acmlarge,review,anonymous]{acmart}\settopmatter{printfolios=true}
 
 \usepackage{microtype}
 \usepackage{textcomp}
@@ -21,15 +21,7 @@
 \usepackage{mathpartir}
 \usepackage{galois}
 
-%\newtheorem{lemma}{Lemma}
-%\newtheorem{theorem}{Theorem}
-%\newtheorem{proposition}{Proposition}
-
-%\usepackage[usenames,dvipsnames]{color}
-%\definecolor{PaleBlue}{rgb}{0.90,0.90,1.0}
-%\definecolor{LightGray}{rgb}{0.90,0.90,0.90}
-%\definecolor{CommentColor}{rgb}{0.76,0.45,0.12}
-%\definecolor{OutputColor}{rgb}{0.59,0.00,0.59}
+\usepackage{mdframed}
 
 \definecolor{IdentifierColor}{rgb}{0.15,0.15,0.50}
 \newcommand{\ID}[1]{{\color{IdentifierColor}#1}}
@@ -153,7 +145,8 @@
 \newcommand{\rfloat}[1]{\begin{flushright}\fbox{#1}\end{flushright}\vspace{-2.1em}} % -2.1em}}
 \newcommand{\resultskip}{\vspace{-0.8em}} % -1.2em}}
 \newcommand{\figskip}{\vspace{0pt}} % -1.3em}}
-\newcommand{\captionskip}[1]{\vspace{-0.75em}\caption{#1}\vspace{-1em}}
+%\newcommand{\captionskip}[1]{\vspace{-0.75em}\caption{#1}\vspace{-1em}}
+\newcommand\captionskip[1]{\caption{#1}}
 \newcommand{\up}[1]{\overbrace{\vphantom{X^X}#1}}
 \newcommand{\mathgobble}{-0.25em}
 \newcommand{\monadgobble}{-0.5em}
