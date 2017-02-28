@@ -8,7 +8,7 @@ of the language is defined in Figure~\ref{f:syntax}; it includes variables,
 numbers, binary operations on numbers, conditionals, {\tt letrec} expressions,
 functions and applications.
 
-\begin{figure} %{-{
+\begin{figure} %{{{
 \rfloat{⸨ev@⸩}
 \begin{lstlisting}
 ¦ (define ((ev ev) e)
@@ -34,7 +34,7 @@ functions and applications.
 \end{lstlisting}
 \captionskip{The Extensible Definitional Interpreter}
 \label{f:interpreter}
-\end{figure} %}-}
+\end{figure} %}}}
 %¦     [(op1 o e₀)
 %¦      (do v ← (ev e₀)
 %¦          (δ o v))]   
@@ -51,7 +51,7 @@ the environment and store.
 \item It relies on a helper function ⸨δ⸩ to interpret primitive operations.
 \end{itemize}
 There are a few superficial aspects that deserve a quick note:
-environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
+environments ⸨ρ⸩ are finite maps and the syntax ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
 \begin{alignat*}{2}
