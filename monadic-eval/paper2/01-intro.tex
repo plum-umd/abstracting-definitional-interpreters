@@ -142,39 +142,13 @@ system~\cite{local:flatt-pldi98} to write program components that can
 be linked together.
 
 All of the code presented in this pearl runs; this document is a
-literate Racket program.  We have also implemented a ⸨#lang⸩ language
-so that composing and experimenting with these interpreters is easy.
-Assuming Racket is installed, you can install the ⸨monadic-eval⸩
-package with {\bf (URL redacted for double-blind)} and a brief
-tutorial is available on github.
+literate Racket program.  We have also implemented a small DSL for
+composing and experimenting with these interpreters easily.  Assuming
+Racket is installed, you can install the ⸨monadic-eval⸩ package with
+{\bf (URL redacted for double-blind)} and a brief tutorial is
+available on github.
 
 
-%% In his landmark paper, \emph{Definitional Interpreters for Higher-order
-%% Programming Languages}~\cite{dvanhorn:reynolds-acm72}, Reynolds observed that
-%% when a programming language is defined by way of an interpreter, it is possible
-%% to inherit semantic characteristics of the defining metalanguage. For example,
-%% it is possible to define a definitional interpreter which is call-by-value when
-%% the metalanguage is call-by-value, and call-by-name when the metalanguage is
-%% call-by-name.
-
-%% We expand on Reynolds's observation in the setting of abstract interpreters and
-%% discover the following:
-%% \begin{itemize}
-%% \item Definitional interpreters, written in monadic style, can simultaneously
-%%   define a language's semantics as well as safe approximations of those
-%%   semantics, \emph{i.e.} abstract interpreters.
-%% \item These definitional \emph{abstract} interpreters can inherit
-%%   characteristics of the defining language.  In particular, precise
-%%   call-and-return matching can be inherited, yielding a pushdown
-%%   analysis~\cite{dvanhorn:Earl2010Pushdown,local:vardoulakis-diss12}.
-%% \end{itemize}
-%% Furthermore, we contribute:
-%% \begin{itemize}
-%% \item A systematic methodology for designing abstract interpreters via
-%%   definitional interpreters; and
-%% \item A soundness framework establishing the correctness of abstract
-%%   interpreters defined in definitional style.
-%% \end{itemize}
 
 %% \paragraph{A Compositional Approach to Program Analysis}
 %% There are many approaches to designing program analyzers for programming
