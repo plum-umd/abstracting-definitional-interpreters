@@ -2,7 +2,7 @@
 
 An abstract interpreter is intended to soundly and effectively compute
 an over-approximation to its concrete counterpart.  For higher-order
-langauges, these concrete interpreters tend to be formulated as
+languages, these concrete interpreters tend to be formulated as
 state-machines~(e.g.~\cite{dvanhorn:jagannathan-weeks-popl95,
   dvanhorn:jagannathan-etal-popl98, 
   dvanhorn:wright-jagannathan-toplas98,
@@ -50,11 +50,11 @@ arbitrary definitional interpreters.
 
 For the second question, we claim that the abstract definitional
 interpreter perspective is fruitful in two regards.  The first is
-unsurprising: high-level abstract interpreters offer the ususal
+unsurprising: high-level abstract interpreters offer the usual
 beneficial properties of their concrete counterparts in terms of being
 re-usable and extensible.  In particular, we show that abstract
 interpreters can be structured with monad transformers to good effect.
-The second regard is more suprising, and we consider its observation
+The second regard is more surprising, and we consider its observation
 to be the main contribution of this pearl.
 
 Definitional interpreters, in contrast to abstract machines, can leave
@@ -70,13 +70,13 @@ Inspired by Reynolds, we show that \emph{abstract} definitional interpreters can
 inherit properties of the metalanguage.  In particular we construct an
 abstract definitional interpreter where there is no explicit
 representation of continuations or a call stack.  Instead the
-interpreter is written in a straightfoward recursive style, and the
+interpreter is written in a straightforward recursive style, and the
 call stack is implicitly handled by the metalangauge.  What emerges
 from this construction is a total abstract evaluation function that
 soundly approximates all possible concrete executions of a given
 program.  But remarkably, since the abstract evaluator relies on the
 metalanguage to manage the call stack implicitly, it is easy to
-oberserve that it introduces no approximation in the matching of calls
+observe that it introduces no approximation in the matching of calls
 and returns, and therefore implements a ``pushdown'' analysis, all
 without the need for any explicit machinery to do so.
 
@@ -89,7 +89,7 @@ the basic ingredients in the AAM recipe (\S\ref{s:aam}) and then
 define our definitional interpreter (\S\ref{s:interp}).  The
 interpreter is largely standard, but is written in a monadic and
 extensible style, so as to be re-usable for various forms of semantics
-we examine.  The AAM technique applies in a basically straightfoward
+we examine.  The AAM technique applies in a basically straightforward
 way by store-allocating bindings and soundly finitizing the heap.  But
 when naively run, the interpreter will not always terminate.  To solve
 this problem we introduce a caching strategy and a simple fixed-point
@@ -103,13 +103,13 @@ Having established the main results, we then explore some variations
 in brief vignettes that showcase the flexibility of our definitional
 abstract interpreter approach.  First we consider the widely used
 technique of so-called ``store-widening,'' which trades precision for
-efficeincy by modelling the abstract store globally instead of locally
+efficiency by modelling the abstract store globally instead of locally
 (\S\ref{s:widening}).  Thanks to our monadic formulation of the
 interpreter, this is achieved by a simple re-ordering of the monad
 transformer stack.  We also explore some alternative abstractions,
 showing that due to the extensible construction, it's easy to
 experiment with alternative components for the abstract interpreter.
-In particular, we define an alternative interpretation of the primitve
+In particular, we define an alternative interpretation of the primitive
 operations that remains completely precise until forced by joins in
 the store to introduce approximation (\S\ref{s:alt-abstraction}).  As
 another variation, we explore computing a form of symbolic execution
