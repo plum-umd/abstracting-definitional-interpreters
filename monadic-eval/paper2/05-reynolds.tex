@@ -8,9 +8,8 @@ we get?
 We have followed the basic recipe of AAM, but adapted to a compositional
 evaluator instead of an abstract machine.  However, we did manage to skip over
 one of the key steps in the AAM method: we never store-allocated continuations.
-\begin{center}
 \emph{In fact, there are no continuations at all!}
-\end{center}
+
 The abstract machine formulation of the semantics models the object-level stack
 explicitly as an inductively defined data structure.  Because stacks may be
 arbitrarily large, they must be finitized like base values and closures.  Like

@@ -130,6 +130,24 @@ higher-order abstract interpretation (\S\ref{s:related-work}) and draw
 some conclusions (\S\ref{s:conclusion}).
 
 
+\subsection*{Style}
+
+To convey the ideas of this paper as concretely as possible, we
+present code implementing our definitional abstract interpreter and
+all its variations.  As a metalanguage, we use an applicative subset
+of Racket~\cite{dvanhorn:plt-tr1}, a dialect of Scheme.  This choice
+is largely immaterial: any functional language would do.  However, to
+aide extensibility, we use Racket's \emph{unit}
+system~\cite{local:flatt-pldi98} to write program components that can
+be linked together.
+
+All of the code presented in this pearl runs; this document is a
+literate Racket program.  We have also implemented a ⸨#lang⸩ language
+so that composing and experimenting with these interpreters is easy.
+Assuming Racket is installed, you can install the ⸨monadic-eval⸩
+package with {\bf (URL redacted for double-blind)} and a brief
+tutorial is available on github.
+
 
 %% In his landmark paper, \emph{Definitional Interpreters for Higher-order
 %% Programming Languages}~\cite{dvanhorn:reynolds-acm72}, Reynolds observed that
