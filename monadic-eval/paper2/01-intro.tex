@@ -34,7 +34,7 @@ but instead as high-level definitional interpreters, i.e. recursive,
 compositional evaluators?
 \item  is such a perspective fruitful?
 \end{enumerate}
-In this functional pearl we seek to answer both questions in the
+In this functional pearl, we seek to answer both questions in the
 affirmative.
 
 For the first question, we show the AAM recipe can be applied
@@ -77,8 +77,10 @@ soundly approximates all possible concrete executions of a given
 program.  But remarkably, since the abstract evaluator relies on the
 metalanguage to manage the call stack implicitly, it is easy to
 observe that it introduces no approximation in the matching of calls
-and returns, and therefore implements a ``pushdown'' analysis, all
-without the need for any explicit machinery to do so.
+and returns, and therefore implements a ``pushdown''
+analysis~\cite{dvanhorn:Earl2010Pushdown,
+  dvanhorn:Vardoulakis2011CFA2}, all without the need for any explicit
+machinery to do so.
 
 \subsection*{Outline}
 
