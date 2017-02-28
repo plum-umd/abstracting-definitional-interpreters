@@ -45,13 +45,10 @@ some progress has been made first.
 
 The results of evaluation are then stored in an output cache (⸨¢⸢out⸣⸩), which
 after the end of evaluation is “more defined” than the input cache (⸨¢⸢in⸣⸩),
-again following a co-inductive argument. The least fixed-point of ⸨¢⁺⸩ of an
+again following a co-inductive argument. The least fixed-point ⸨¢⁺⸩ of an
 evaluator which transforms an oracle ⸨¢⸢in⸣⸩ and outputs a more defined oracle
 ⸨¢⸢out⸣⸩ is then a sound approximation of the program, because it
-over-approximate all finite-number of unrollings of the unfixed evaluator. We
-formalize this co-inductive process in Section~\ref{s:formalism} and prove it
-sound; in this section we instead focus on the intuition and implementation for
-the algorithm.
+over-approximates all finite unrollings of the unfixed evaluator. 
 
 The co-inductive caching algorithm is shown in Figure~\ref{f:caching}, along
 with the monad transformer stack ⸨monad-cache@⸩ which has two new components:
@@ -139,3 +136,34 @@ computable, as demonstrated on the following examples:
 ¦ '(0 2 3)
 ℑ⁆
 
+\subsection{Formalism}\label{s:cache:formalism}
+
+We formalize this co-inductive caching algorithm in Appendix
+Section~\ref{s:formalism}, where we prove both that it always terminates, and
+that it computes a sound over-approximation of concrete evaluation. Here, we
+give a short summary of our metatheory approach.
+
+In formalising the soundness of this caching algorithm, we extend a standard
+big-step evaluation semantics into a \emph{big-step reachability} semantics,
+which characterizes all intermediate configurations which are seen between the
+evaluation of a single expression and its eventual result. These two
+notions—\emph{evaluation} which relates expressions to fully evaluated results,
+and \emph{reachability} which characterizes intermediate configuration
+states—remain distinct throughout the formalism.
+
+After specifying evaluation and reachability for concrete evaluation, we
+develop a \emph{collecting} semantics which gives a precise specification for
+any abstract interpreter, and an \emph{abstract} semantics which partially
+specifies a sound, over-approximating algorithm w.r.t. the collecting
+semantics.
+
+The final step is to compute an oracle for the \emph{abstract evaluation
+relation}, which maps individual configurations to abstractions of the values
+they evaluate to. To construct this cache, we \emph{mutually} compute the
+least-fixed point of both the evaluation and reachability relations: based on
+what is evaluated, discover new things which are reachable, and based on what
+is reachable, discover new results of evaluation. The caching algorithm
+developed in this section is a slightly more efficient strategy for solving the
+mutual fixpoint, by taking a deep exploration of the reachability relation
+(up-to seeing the same configuration twice) rather than applying just a single
+rule of inference.
