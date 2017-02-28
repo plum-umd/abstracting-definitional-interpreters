@@ -37,12 +37,12 @@ which we have extended to work for compositional abstract
 interpreters.  The use of monads and monad transformers in machine
 based-formulations of abstract interpreters has previously been
 explored by \citet{dvanhorn:Sergey2013Monadic} and
-\citet{local:darais-oopsla2015}, respectively.  Darais has also shown
-that certain monad transformers are also \emph{Galois transformers},
-i.e. they compose to form monads that transport Galois connections.
-This idea may pave a path forward for obtaining both compositional
-code \emph{and proofs} for abstract interpreters in the style
-presented here.
+\citet{local:darais-oopsla2015}, respectively, and inspired our own
+adoption of these ideas.  Darais has also shown that certain monad
+transformers are also \emph{Galois transformers}, i.e. they compose to
+form monads that transport Galois connections.  This idea may pave a
+path forward for obtaining both compositional code \emph{and proofs}
+for abstract interpreters in the style presented here.
 
 The caching mechanism used to ensure termination in our abstract interpreter is
 similar to that used by \citet{dvanhorn:Johnson2014Abstracting}. They use a local- and
@@ -98,16 +98,19 @@ similar to the many existing variants of pushdown flow analysis~\cite%
 % abstract garbage collector into a pushdown abstract interpreter
 % achieves a similar goal as that of so-called @emph{introspective}
 % pushdown abstract interpreters@~cite[earl-icfp12 johnson-jfp14].  }
-The mixing of symbolic execution and abstract interpretation is similar in
-spirit to the \emph{logic flow analysis} of Might~\cite{local:might-popl07},
-albeit in a pushdown setting and with a stronger notion of negation; generally,
-our presentation resembles traditional formulations of symbolic execution more
-closely.  Our approach to symbolic execution only handles the first-order case
-of symbolic values, as is traditional.  However, Nguyễn's work on higher-order
-symbolic execution~\cite{dvanhorn:Nguyen2015Relatively} demonstrates how to
-scale to behavioral symbolic values.  In principle, it should be possible to
-handle this case in our approach by adapting Nguyễn's method to a formulation
-in a compositional evaluator.
+The mixing of symbolic execution and abstract interpretation is
+similar in spirit to the \emph{logic flow analysis} of
+Might~\cite{local:might-popl07}, albeit in a pushdown setting and with
+a stronger notion of negation; generally, our presentation resembles
+traditional formulations of symbolic execution more
+closely~\cite{dvanhorn:King1976Symbolic}.  Our approach to symbolic
+execution only handles the first-order case of symbolic values, as is
+common.  However, Nguyễn's work on higher-order symbolic
+execution~\cite{dvanhorn:Nguyen2015Relatively} demonstrates how to
+scale to behavioral symbolic values.  In principle, it should be
+possible to handle this case in our approach by adapting Nguyễn's
+method to a formulation in a compositional evaluator, but this remains
+to be carried out.
 
 Now that we have abstract interpreters formulated with a basis in abstract
 machines and with a basis in monadic interpreters, an obvious question is can
