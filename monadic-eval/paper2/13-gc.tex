@@ -1,14 +1,33 @@
 \section{Garbage Collection}\label{s:gc}
 
-%% Nick:
-%% - The figure shows the pdcfa GC monad instance and `mrun'.
-%%   `ev-collect' and `ev-roots' work for concrete or abstract.
-%% - `ev-cache-gc' and `fix-cache-gc' are small extensions to the caching
-%%   algorithm to hold on to ψ (to make sure the search is complete in wake of
-%%   AGC). These can be abbreviated with ellipses (as in δ for symbolic
-%%   execution)--the only changes are in lines that refer to ψ.
+
+As a denouement to our series of examples, each giving a bit more
+icing on the cake, we show how to incorporate garbage collection into
+our definitional abstract interpreter.
+
+This example, like store-widening, is the rational re-creation of a
+well-known technique: abstract garbage
+collection~\cite{dvanhorn:Might:2006:GammaCFA} mimics the process of
+reclaiming unreachable heap addresses as done in garbage-collecting
+concrete interpreters.  While garbage collection in the concrete can
+largely be considered an implementation detail that doesn't effect the
+results of computation (modulo pragmatic issues of memory
+consumption), in the abstract semantics, garbage collection can have a
+significant positive effect on the precision of analysis results.
+This is because store locations mediate joins, and therefore points of
+imprecision, in the abstract semantics.  If an address can be
+cleared-out and recycled, this represents the avoidance of a join that
+would be encountered in a non-garbage-collecting abstract interpreter.
+
+In the finite-state-machine model, abstract garbage collection is
+fairly straightforward and closely follows concrete
+formulations~\cite{dvanhorn:Might:2006:GammaCFA,dvanhorn:VanHorn2010Abstracting}.
+However, incporporating both pushdown control flow and abstract
+garbage collection has proved rather involved and required new
+techniques~\cite{dvanhorn:Earl2012Introspective,dvanhorn:Johnson2014Pushdown}.
 
 \begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨monad-pdcfa-gc@⸩}
 \begin{flalign*}
 & 𝔥⸨(define-monad (⸩\!\up{𝔥⸨ReaderT⸩}⸢roots⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢in-\$⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT+⸩}⸢out-\$⸣\ 𝔥⸨ID))))))))⸩ &
@@ -35,40 +54,64 @@
 %% \end{lstlisting}
 \captionskip{Monad Instance with Root Address Set}
 \label{f:gc-monad}
+\end{mdframed}
 \end{figure} %}-}
 
-\begin{figure} %{-{
+The key difficulty for pushdown machine models, which essentially use
+abstract models that are pushdown automata, is that the usual approach
+to garbage collection is to crawl the call stack to compute the root
+set of reachable addresses~\cite{dvanhorn:Morrisett1995Abstract}.
+Traversing the stack, however, is not something that can be expressed
+by a pushdown automata.
+%
+This difficulty is somewhat exacerbated by the definitional
+interpreter approach in that there isn't even a stack to traverse!
+Nevertheless, as we demonstrate, this challenge can be overcome to
+obtain a pushdown, garbage-collecting abstract interpreter.
+%
+Doing so shows that the definitional abstract interpreter approach
+also scales to handle so-called \emph{introspective} pushdown analysis
+that require some level of introspection on the
+stack~\cite{dvanhorn:Earl2012Introspective,dvanhorn:Johnson2014Pushdown}.
+
+Solving the abstract garbage collection problem for a definitional
+abstract interpreter boils down to answer the following question: how
+can we track root addresses that are live on the call stack when the
+call stack is implicitly defined by the metalanguage?  The answer is
+fairly simple: we extend the monad with a set of root addresses.  When
+evaluating compound expressions, we calculate the appropriate root
+sets for the context.  In essence, we render explicit only the
+addresses of the calling context, while still relying on the
+metalangauge to implictly take care of the rest as before.
+
+Figure~\ref{f:gc-monad} defines the appropriate monad instance.  All
+that has changed is there is an added reader component, which will be
+used to model the context's current root set.
+%
+The use of this added component necessitates a change to the caching
+and fixpoint calculation, namely we must include the root sets as part
+of the configuration.  Compared with the ⸨ev-cache@⸩ component of
+Section~\ref{s:cache}, we make a simple adjustment to the first few
+lines to cache the root set along with the rest of configuration:
 \begin{lstlisting}
-¦ (define ((gc αs) σ)
-¦   (restrict σ (reachable αs σ)))
-¦ (define (reachable αs s)
-¦   (define (R to-see seen)
-¦     (match to-see
-¦       [(set) seen]
-¦       [(set α αs ...)
-¦        (define sα (s α))
-¦        (define αs* (if (set? sα)
-¦                        (for/fold ([αs* (set)])
-¦                                  ([v (in-set sα)])
-¦                          (set-union αs* (roots-v v)))
-¦                        (roots-v sα)))
-¦        (R (set-subtract (set-union αs* αs) seen)
-¦           (set-add seen α))]))
-¦   (R αs (set)))
-¦ (define (roots e ρ)
-¦   (for/set ([x (in-set (fv e))])
-¦     (ρ x)))
-¦ (define (roots-v v)
-¦   (match v
-¦     [(cons l ρ) (roots l ρ)]
-¦     [_ (set)]))
+¦ (define (((ev-cache ev₀) ev) e)
+¦   (do ρ   ← ask-env  σ ← get-store  ψ ← ask-roots
+¦       ς   ≔ (list e ρ σ ψ)
+¦       ...))
 \end{lstlisting}
-\captionskip{Helper Functions for Garbage Collection}
-\label{f:gc-help}
-\end{figure} %}-}
+Similary, for ⸨fix-cache@⸩:
+\begin{lstlisting}
+¦ (define ((fix-cache eval) e)  
+¦   (do ρ ← ask-env  σ ← get-store  ψ ← ask-roots
+¦       ς ≔ (list e ρ σ ψ)
+¦       ...))
+\end{lstlisting}
 
-\begin{figure} %{-{
-\rfloat{⸨ev-collect@⸩}
+We can now write a ⸨ev-collect@⸩ component that performs the garbage
+collection: it asks for the current roots in the context, evaluates an
+expression to a value, then updates the store after garbage collecting
+all addresses not reachable from the root set of the context and the
+roots in the produced value:
 \begin{lstlisting}
 ¦ (define (((ev-collect ev0) ev) e)
 ¦   (do ψ ← ask-roots
@@ -76,6 +119,25 @@
 ¦       (update-store (gc (set-union ψ (roots-v v))))
 ¦       (return v)))
 \end{lstlisting}
+Here, ⸨gc⸩ and ⸨roots-v⸩ are (omitted) helper functions that perform
+garbage collection and calculate the set of root addresses in a value,
+respectively.
+
+All that remains is to define a component that propagates root sets
+appropriately from compound expressions to their constituents.
+Figure~\ref{f:gc-collect-roots} gives the ⸨ev-roots@⸩ component, which
+does exactly this.
+%
+Finally, the pieces are stiched together with the following to obtain
+a pushdown, garbage-collecting definitional abstract interpreter:
+\begin{lstlisting}
+¦ (define (eval e)
+¦   (mrun ((fix-cache (fix (ev-cache (ev-collect (ev-roots ev))))) e)))
+\end{lstlisting}
+
+
+\begin{figure} %{-{
+\begin{mdframed}
 \figskip\rfloat{⸨ev-roots@⸩}
 \begin{lstlisting}
 ¦ (define (((ev-roots ev₀) ev) e)
@@ -103,47 +165,91 @@
 \end{lstlisting}
 \captionskip{Address Collection and Propagation}
 \label{f:gc-collect-roots}
+\end{mdframed}
 \end{figure} %}-}
 
-\begin{figure} %{-{
-\figskip\rfloat{⸨ev-cache-gc@⸩}
-\begin{lstlisting}
-¦ (define (((ev-cache ev₀) ev) e)
-¦   (do ρ   ← ask-env  σ ← get-store  ψ ← ask-roots
-¦       ς   ≔ (list e ρ σ ψ)
-¦       ¢⸢out⸣ ← get-cache-out
-¦       (if (∈ ς ¢⸢out⸣)
-¦           (for/monad+ ([v×σ (¢⸢out⸣ ς)])
-¦             (do (put-store (cdr v×σ))
-¦                 (return (car v×σ))))
-¦           (do ¢⸢in⸣    ← ask-cache-in
-¦               v×σ₀  ≔ (if (∈ ς ¢⸢in⸣) (¢⸢in⸣ ς) ∅)
-¦               (put-cache-out (¢⸢out⸣ ς v×σ₀))
-¦               v     ← ((ev₀ ev) e)
-¦               σ′    ← get-store
-¦               v×σ′  ≔ (cons v σ′)
-¦               (update-cache-out (λ (¢⸢out⸣) (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
-¦               (return v)))))
-\end{lstlisting}
-\figskip\rfloat{⸨fix-cache-gc@⸩}
-\begin{lstlisting}
-¦ (define ((fix-cache eval) e)  
-¦   (do ρ ← ask-env  σ ← get-store  ψ ← ask-roots
-¦       ς ≔ (list e ρ σ ψ)
-¦       ¢⁺ ← (mlfp (λ (¢) (do (put-cache-out ∅)
-¦                             (put-store σ)
-¦                             (local-cache-in ¢ (eval e))
-¦                             get-cache-out)))
-¦       (for/monad+ ([v×σ (¢⁺ ς)])
-¦         (do (put-store (cdr v×σ))
-¦             (return (car v×σ))))))
-\end{lstlisting}
-\figskip\rfloat{⸨eval-cache-gc@⸩}
-\begin{lstlisting}
-¦ (define (eval e)
-¦   (mrun ((fix-cache (fix (ev-cache (ev-collect (ev-roots ev))))) e)))
-\end{lstlisting}
-\captionskip{Co-inductive Caching with Garbage Collection}
-\label{f:gc-components}
-\end{figure} %}-}
+
+
+
+%% Nick:
+%% - The figure shows the pdcfa GC monad instance and `mrun'.
+%%   `ev-collect' and `ev-roots' work for concrete or abstract.
+%% - `ev-cache-gc' and `fix-cache-gc' are small extensions to the caching
+%%   algorithm to hold on to ψ (to make sure the search is complete in wake of
+%%   AGC). These can be abbreviated with ellipses (as in δ for symbolic
+%%   execution)--the only changes are in lines that refer to ψ.
+
+
+%% \begin{figure} %{-{
+%% \begin{lstlisting}
+%% ¦ (define ((gc αs) σ)
+%% ¦   (restrict σ (reachable αs σ)))
+%% ¦ (define (reachable αs s)
+%% ¦   (define (R to-see seen)
+%% ¦     (match to-see
+%% ¦       [(set) seen]
+%% ¦       [(set α αs ...)
+%% ¦        (define sα (s α))
+%% ¦        (define αs* (if (set? sα)
+%% ¦                        (for/fold ([αs* (set)])
+%% ¦                                  ([v (in-set sα)])
+%% ¦                          (set-union αs* (roots-v v)))
+%% ¦                        (roots-v sα)))
+%% ¦        (R (set-subtract (set-union αs* αs) seen)
+%% ¦           (set-add seen α))]))
+%% ¦   (R αs (set)))
+%% ¦ (define (roots e ρ)
+%% ¦   (for/set ([x (in-set (fv e))])
+%% ¦     (ρ x)))
+%% ¦ (define (roots-v v)
+%% ¦   (match v
+%% ¦     [(cons l ρ) (roots l ρ)]
+%% ¦     [_ (set)]))
+%% \end{lstlisting}
+%% \captionskip{Helper Functions for Garbage Collection}
+%% \label{f:gc-help}
+%% \end{figure} %}-}
+
+
+%% \begin{figure} %{-{
+%% \figskip\rfloat{⸨ev-cache-gc@⸩}
+%% \begin{lstlisting}
+%% ¦ (define (((ev-cache ev₀) ev) e)
+%% ¦   (do ρ   ← ask-env  σ ← get-store  ψ ← ask-roots
+%% ¦       ς   ≔ (list e ρ σ ψ)
+%% ¦       ¢⸢out⸣ ← get-cache-out
+%% ¦       (if (∈ ς ¢⸢out⸣)
+%% ¦           (for/monad+ ([v×σ (¢⸢out⸣ ς)])
+%% ¦             (do (put-store (cdr v×σ))
+%% ¦                 (return (car v×σ))))
+%% ¦           (do ¢⸢in⸣    ← ask-cache-in
+%% ¦               v×σ₀  ≔ (if (∈ ς ¢⸢in⸣) (¢⸢in⸣ ς) ∅)
+%% ¦               (put-cache-out (¢⸢out⸣ ς v×σ₀))
+%% ¦               v     ← ((ev₀ ev) e)
+%% ¦               σ′    ← get-store
+%% ¦               v×σ′  ≔ (cons v σ′)
+%% ¦               (update-cache-out (λ (¢⸢out⸣) (¢⸢out⸣ ς (set-add (¢⸢out⸣ ς) v×σ′))))
+%% ¦               (return v)))))
+%% \end{lstlisting}
+%% \figskip\rfloat{⸨fix-cache-gc@⸩}
+%% \begin{lstlisting}
+%% ¦ (define ((fix-cache eval) e)  
+%% ¦   (do ρ ← ask-env  σ ← get-store  ψ ← ask-roots
+%% ¦       ς ≔ (list e ρ σ ψ)
+%% ¦       ¢⁺ ← (mlfp (λ (¢) (do (put-cache-out ∅)
+%% ¦                             (put-store σ)
+%% ¦                             (local-cache-in ¢ (eval e))
+%% ¦                             get-cache-out)))
+%% ¦       (for/monad+ ([v×σ (¢⁺ ς)])
+%% ¦         (do (put-store (cdr v×σ))
+%% ¦             (return (car v×σ))))))
+%% \end{lstlisting}
+%% \figskip\rfloat{⸨eval-cache-gc@⸩}
+%% \begin{lstlisting}
+%% ¦ (define (eval e)
+%% ¦   (mrun ((fix-cache (fix (ev-cache (ev-collect (ev-roots ev))))) e)))
+%% \end{lstlisting}
+%% \captionskip{Co-inductive Caching with Garbage Collection}
+%% \label{f:gc-components}
+%% \end{figure} %}-}
 
