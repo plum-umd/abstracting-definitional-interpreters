@@ -15,22 +15,22 @@ for this choice:
 The essence of the state-machine based approach was distilled by Van
 Horn and Might in their ``abstracting abstract machines'' (AAM)
 technique, which provides a systematic method for constructing
-abstract interpreters from standard abstract machines like the CEK- or
+abstract interpreters from standard abstract machines like the CEK or
 Krivine-machines \cite{dvanhorn:VanHorn2010Abstracting}.  Language
 designers who would like to build abstract interpreters and program
 analysis tools for their language can now, in principle at least,
 first build a state-machine interpreter and then turn the crank to
 construct the approximating abstract counterpart.
 
-A natural pair of questions to arise from this past work is to wonder
-(1) if a systematic abstraction technique similar to AAM can be
+A natural pair of questions that arise from this past work are to wonder
+(1) can a systematic abstraction technique similar to AAM  be
 carried out for interpreters written, \emph{not} as state-machines,
 but instead as high-level definitional interpreters, i.e. recursive,
-compositional evaluators?, and (2) is such a perspective fruitful?  In
+compositional evaluators? And (2) is such a perspective fruitful?  In
 this functional pearl we seek to answer both questions in the
 affirmative.
 
-For the first question, we show the AAM recipe can largely be applied
+For the first question, we show the AAM recipe can be applied
 to definitional interpreters in a straightforward adaptation of the
 original method. The primary technical challenge in this new setting
 is handling interpreter fixpoints in a way that is both sound and
@@ -50,20 +50,20 @@ interpreters can be structured with monad transformers to good effect.
 The second regard is more suprising, and we consider its observation
 to be the main contribution of this pearl.
 
-Definitional interpreters, compared with abstract machines, can leave
+Definitional interpreters, as opposed to abstract machines, can leave
 aspects of computation implicit, relying on the semantics of the
-defining-language to implicitly define the semantics of the
-defined-language, an observation made by Reynolds in his landmark
+defin\emph{ing}-language to define the semantics of the
+defin\emph{ed}-language, an observation made by Reynolds in his landmark
 paper, \emph{Definitional Interpreters for Higher-order Programming
-  Languages}~\cite{dvanhorn:reynolds-acm72}.  For example, it is
+  Languages}~\cite{dvanhorn:reynolds-acm72}.  For example, Reynolds showed it is
 possible to write a definitional interpreter such that it defines a
 call-by-value language when the metalanguage is call-by-value, and
 defines a call-by-name language when the metalanguage is call-by-name.
-We show that \emph{abstract} definitional interpreters can likewise
+Inspired by Reynolds, we show that \emph{abstract} definitional interpreters can likewise
 inherit properties of the metalanguage.  In particular we construct an
 abstract definitional interpreter where there is no explicit
 representation of continuations or a call stack.  Instead the
-interpreter is written in a straightfoward recursive style where the
+interpreter is written in a straightfoward recursive style, and the
 call stack is implicitly handled by the metalangauge.  What emerges
 from this construction is a total abstract evaluation function that
 soundly approximates all possible concrete executions of a given
@@ -106,9 +106,9 @@ In particular, we define an alternative interpretation of the primitve
 operations that remains completely precise until forced by joins in
 the store to introduce approximation (\S\ref{s:alt-abstraction}).  As
 another variation, we explore computing a form of symbolic execution
-with an instance of our interpreter (\S\ref{s:symbolic}).  Lastly, we
+as yet another instance of our interpreter (\S\ref{s:symbolic}).  Lastly, we
 show how to incorporate so-called ``abstract garbage collection,'' a
-known technique for improving the precision of the abstract
+well-known technique for improving the precision of abstract
 interpretation by clearing out unreachable store locations, thus
 avoiding future joins which cause imprecision (\S\ref{s:gc}).  This
 last variation is significant because it demonstrates that even though
