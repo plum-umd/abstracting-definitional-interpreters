@@ -8,7 +8,7 @@ of the language is defined in Figure~\ref{f:syntax}; it includes variables,
 numbers, binary operations on numbers, conditionals, {\tt letrec} expressions,
 functions and applications.
 
-\begin{figure} %{-{
+\begin{figure} %{{{
 \begin{mdframed}
 \rfloat{⸨ev@⸩}
 \begin{lstlisting}
@@ -36,7 +36,7 @@ functions and applications.
 \captionskip{The Extensible Definitional Interpreter}
 \label{f:interpreter}
 \end{mdframed}
-\end{figure} %}-}
+\end{figure} %}}}
 %¦     [(op1 o e₀)
 %¦      (do v ← (ev e₀)
 %¦          (δ o v))]   
@@ -53,7 +53,7 @@ the environment and store.
 \item It relies on a helper function ⸨δ⸩ to interpret primitive operations.
 \end{itemize}
 There are a few superficial aspects that deserve a quick note:
-environments ⸨ρ⸩ are finite maps and ⸨(ρ«\ »x)⸩ denotes
+environments ⸨ρ⸩ are finite maps and the syntax ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
 \begin{alignat*}{2}
@@ -74,7 +74,7 @@ loop.  This open recursive form is crucial because it allows intercepting
 recursive calls to perform “deep” instrumentation of the interpreter.
 
 Second, the code is clearly \emph{incomplete}.  There are a number of free
-variables, noted in italics, which must implement the following:
+variables, typeset as italics, which implement the following:
 \begin{itemize}
 \item The underlying monad of the interpreter: ⸨return⸩ and ⸨bind⸩;
 \item An interpretation of primitives: ⸨δ⸩ and ⸨zero?⸩;
