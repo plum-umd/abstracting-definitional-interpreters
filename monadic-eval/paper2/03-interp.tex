@@ -72,7 +72,7 @@ loop.  This open recursive form is crucial because it allows intercepting
 recursive calls to perform “deep” instrumentation of the interpreter.
 
 Second, the code is clearly \emph{incomplete}.  There are a number of free
-variables, noted in italics, which must implement the following:
+variables, typeset as italics, which implement the following:
 \begin{itemize}
 \item The underlying monad of the interpreter: ⸨return⸩ and ⸨bind⸩;
 \item An interpretation of primitives: ⸨δ⸩ and ⸨zero?⸩;
