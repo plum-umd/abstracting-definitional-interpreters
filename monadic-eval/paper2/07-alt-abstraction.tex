@@ -1,42 +1,12 @@
 \section{An Alternative Abstraction}\label{s:alt-abstraction}
 
-In this section, we demonstrate how easy it is to experiment with alternative
-abstraction strategies by swapping out components.  In particular we look at an
-alternative abstraction of primitive operations and store joins.
-
-\begin{figure} %{-{
-\begin{mdframed}
-\rfloat{⸨symbolic-monad@⸩}
-\begin{flalign*}
-  & 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩ &
-\end{flalign*}
-\figskip\rfloat{⸨ev-symbolic@⸩}
-\begin{lstlisting}
-¦ (define (((ev-symbolic ev₀) ev) e)
-¦   (match e [(sym x) (return x)]
-¦            [e       ((ev₀ ev) e)]))
-\end{lstlisting}
-\figskip\rfloat{⸨δ-symbolic@⸩}
-\begin{lstlisting}
-¦ (define (δ o n₀ n₁)
-¦   (match* (o n₀ n₁)
-¦     [('/ n₀ n₁) (do z? ← (zero? n₁)
-¦                     (cond [z? fail]
-¦                           [(and (num? n₀) (num? n₁)) (return (/ n₀ n₁))]
-¦                           [else (return `(/ ,n₀ ,n₁))]))] ... ))
-¦ (define (zero? v)
-¦   (do φ ← get-path-cond
-¦       (match v
-¦         [(? num? n)             (return (= 0 n))]
-¦         [v #:when (∈ v φ)       (return #t)]
-¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
-¦         [v (mplus (do (refine v)       (return #t))
-¦                   (do (refine `(¬ ,v)) (return #f)))])))
-\end{lstlisting}
-\captionskip{Symbolic Execution Variant}
-\label{f:symbolic}
-\end{mdframed}
-\end{figure} %}-}
+In this section, we demonstrate how easy it is to experiment with
+alternative abstraction strategies by swapping out components.  In
+particular we look at an alternative abstraction of primitive
+operations and store joins that results in an abstraction that---to
+the best of our knowledge---has not been explored in the literature.
+This example shows the potential for rapidly prototyping novel
+abstractions using our approach.
 
 Figure~\ref{f:pres-delta} defines two new components: ⸨precise-δ@⸩ and
 ⸨store-crush@⸩.  The first is an alternative interpretation for primitive

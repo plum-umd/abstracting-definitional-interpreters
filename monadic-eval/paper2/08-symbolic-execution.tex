@@ -2,6 +2,40 @@
 
 \begin{figure} %{-{
 \begin{mdframed}
+\rfloat{⸨symbolic-monad@⸩}
+\begin{flalign*}
+  & 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢path⸣\ 𝔥⸨(⸩\!\up{𝔥⸨NondetT⸩}⸢mplus⸣\ 𝔥⸨ID))))))⸩ &
+\end{flalign*}
+\figskip\rfloat{⸨ev-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (((ev-symbolic ev₀) ev) e)
+¦   (match e [(sym x) (return x)]
+¦            [e       ((ev₀ ev) e)]))
+\end{lstlisting}
+\figskip\rfloat{⸨δ-symbolic@⸩}
+\begin{lstlisting}
+¦ (define (δ o n₀ n₁)
+¦   (match* (o n₀ n₁)
+¦     [('/ n₀ n₁) (do z? ← (zero? n₁)
+¦                     (cond [z? fail]
+¦                           [(and (num? n₀) (num? n₁)) (return (/ n₀ n₁))]
+¦                           [else (return `(/ ,n₀ ,n₁))]))] ... ))
+¦ (define (zero? v)
+¦   (do φ ← get-path-cond
+¦       (match v
+¦         [(? num? n)             (return (= 0 n))]
+¦         [v #:when (∈ v φ)       (return #t)]
+¦         [v #:when (∈ `(¬ ,v) φ) (return #f)]
+¦         [v (mplus (do (refine v)       (return #t))
+¦                   (do (refine `(¬ ,v)) (return #f)))])))
+\end{lstlisting}
+\captionskip{Symbolic Execution Variant}
+\label{f:symbolic}
+\end{mdframed}
+\end{figure} %}-}
+
+\begin{figure} %{-{
+\begin{mdframed}
 \rfloat{⸨δ^-symbolic@⸩}
 \begin{lstlisting}
 ¦ (define (δ o n₀ n₁)
@@ -20,13 +54,18 @@
 \end{mdframed}
 \end{figure} %}-}
 
-As a final exercise in applying our definitional abstract interpretation
-framework, we develop a symbolic execution engine, and use it to perform sound
-program verification. First we describe the monad stack and metafunctions that
-implement a symbolic executor~\cite{dvanhorn:King1976Symbolic}, then show how
+In this section, we carry out another---this time more
+involved---example that shows how to instantiate our definitional
+abstract interpreter to obtain a symbolic execution engine that
+performs sound program verification.  This serves to demonstrate the
+range of the approach, capturing forms of analysis typically
+considered fairly dissimilar.
+
+First we describe the monad stack and metafunctions that implement a
+symbolic executor~\cite{dvanhorn:King1976Symbolic}, then show how
 abstractions discussed in previous sections can be applied to enforce
-termination, turning a traditional symbolic execution into a path-sensitive
-verification engine.
+termination, turning a traditional symbolic execution into a
+path-sensitive verification engine.
 
 %\subsection{Symbolic Execution}
 To support symbolic execution, first we extend the syntax of the language to
@@ -67,23 +106,26 @@ execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relati
 
 \newcommand{\lamif}{«λ⦑IF⦒» }
 
-\paragraph{From Symbolic Execution to Verification}
+%\paragraph{From Symbolic Execution to Verification}
 
-Traditional symbolic executors mainly aim to find bugs and do not provide
-termination guarantee. However, when we apply to this symbolic executor the
-finite abstractions presented in previous sections, namely base value widening
-and finite allocation (Section~\ref{s:base}), and caching and fixing
+Traditional symbolic executors mainly aim to find bugs and do not
+provide a termination guarantee. However, when we apply to this
+symbolic executor the finite abstractions presented in previous
+sections, namely base value widening and finite allocation
+(Section~\ref{s:base}), and caching and fixing
 (Section~\ref{s:cache}), we turn the symbolic execution into a sound,
-path-sensitive program verification.
+path-sensitive program verification engine.
 
-Operations on symbolic values introduce a new source of infinity in the
-state-space, because the space of symbolic values is not finite. We therefore
-widen a symbolic value to the abstract number ⸨'N⸩ when it shares an address
-with a different number, similarly to the precision-preserving abstraction from
-Section~\ref{s:alt-abstraction}. Figure~\ref{f:symbolic-widen} shows extension
-to ⸨δ⸩ and ⸨zero?⸩ in the presence of ⸨'N⸩. The different treatments of ⸨'N⸩
-and symbolic values clarifies that abstract values are not symbolic values: the
-former stands for a set of multiple values, whereas the latter stands for an
-single unknown value. Tests on abstract number ⸨'N⸩ do not strengthen the
+There is one wrinkle, which is that operations on symbolic values
+introduce a new source of unboundness in the state-space, because the
+space of symbolic values is not finite. We therefore widen a symbolic
+value to the abstract number ⸨'N⸩ when it shares an address with a
+different number, similarly to the precision-preserving abstraction
+from Section~\ref{s:alt-abstraction}. Figure~\ref{f:symbolic-widen}
+shows extension to ⸨δ⸩ and ⸨zero?⸩ in the presence of ⸨'N⸩. The
+different treatments of ⸨'N⸩ and symbolic values clarifies that
+abstract values are not symbolic values: the former stands for a set
+of multiple values, whereas the latter stands for an single unknown
+value. Tests on abstract number ⸨'N⸩ do not strengthen the
 path-condition; it is unsound to accumulate any assumption about ⸨'N⸩.
 
