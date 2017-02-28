@@ -22,7 +22,7 @@ would be encountered in a non-garbage-collecting abstract interpreter.
 In the finite-state-machine model, abstract garbage collection is
 fairly straightforward and closely follows concrete
 formulations~\cite{dvanhorn:Might:2006:GammaCFA,dvanhorn:VanHorn2010Abstracting}.
-However, incporporating both pushdown control flow and abstract
+However, incorporating both pushdown control flow and abstract
 garbage collection has proved rather involved and required new
 techniques~\cite{dvanhorn:Earl2012Introspective,dvanhorn:Johnson2014Pushdown}.
 
@@ -82,7 +82,7 @@ fairly simple: we extend the monad with a set of root addresses.  When
 evaluating compound expressions, we calculate the appropriate root
 sets for the context.  In essence, we render explicit only the
 addresses of the calling context, while still relying on the
-metalangauge to implictly take care of the rest as before.
+metalanguage to implicitly take care of the rest as before.
 
 Figure~\ref{f:gc-monad} defines the appropriate monad instance.  All
 that has changed is there is an added reader component, which will be
@@ -99,7 +99,7 @@ lines to cache the root set along with the rest of configuration:
 ¦       ς   ≔ (list e ρ σ ψ)
 ¦       ...))
 \end{lstlisting}
-Similary, for ⸨fix-cache@⸩:
+Similarly, for ⸨fix-cache@⸩:
 \begin{lstlisting}
 ¦ (define ((fix-cache eval) e)  
 ¦   (do ρ ← ask-env  σ ← get-store  ψ ← ask-roots
@@ -128,7 +128,7 @@ appropriately from compound expressions to their constituents.
 Figure~\ref{f:gc-collect-roots} gives the ⸨ev-roots@⸩ component, which
 does exactly this.
 %
-Finally, the pieces are stiched together with the following to obtain
+Finally, the pieces are stitched together with the following to obtain
 a pushdown, garbage-collecting definitional abstract interpreter:
 \begin{lstlisting}
 ¦ (define (eval e)
