@@ -61,15 +61,15 @@ performs sound program verification.  This serves to demonstrate the
 range of the approach, capturing forms of analysis typically
 considered fairly dissimilar.
 
-First we describe the monad stack and metafunctions that implement a
-symbolic executor~\cite{dvanhorn:King1976Symbolic}, then show how
+First, we describe the monad stack and metafunctions that implement a
+symbolic executor~\cite{dvanhorn:King1976Symbolic}, then we show how
 abstractions discussed in previous sections can be applied to enforce
 termination, turning a traditional symbolic execution into a
 path-sensitive verification engine.
 
 %\subsection{Symbolic Execution}
-To support symbolic execution, first we extend the syntax of the language to
-support symbolic numbers:
+To support symbolic execution, the syntax of the language is extended to
+include symbolic numbers:
 \begin{alignat*}{4}
    e ∈ &&\mathrel{}     exp ⩴ &\mathrel{} … ∣ 𝔥⸨(sym⸩\ x𝔥⸨)⸩ &\hspace{1em} [⦑\emph{symbolic number}⦒]
 \\ ε ∈ &&\mathrel{}    pexp ⩴ &\mathrel{} e ∣ ¬e             &\hspace{1em} [⦑\emph{path expression}⦒]
@@ -99,10 +99,12 @@ division-by-0 error are not feasible:
 ¦ (set (cons '(/ 5 x) (set '(¬ x)))
 ¦      (cons 2 (set 'x)))
 ℑ⁆
-A scaled up symbolic executor could implement ⸨zero?⸩ by calling out to an SMT
-solver for interesting arithmetics, or extend the language with symbolic
-functions and blame semantics for sound higher-order symbolic
-execution~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2015Relatively}.
+A scaled up symbolic executor could implement ⸨zero?⸩ by calling out
+to an SMT solver for more interesting reasoning about arithmetic, or
+extend the language with symbolic functions and blame semantics for
+sound higher-order symbolic execution, essentially recreating a
+pushdown variant of Nguyễn et
+al.~\cite{dvanhorn:TobinHochstadt2012Higherorder,dvanhorn:Nguyen2014Soft,dvanhorn:Nguyen2015Relatively}.
 
 \newcommand{\lamif}{«λ⦑IF⦒» }
 
@@ -118,14 +120,15 @@ path-sensitive program verification engine.
 
 There is one wrinkle, which is that operations on symbolic values
 introduce a new source of unboundness in the state-space, because the
-space of symbolic values is not finite. We therefore widen a symbolic
-value to the abstract number ⸨'N⸩ when it shares an address with a
-different number, similarly to the precision-preserving abstraction
-from Section~\ref{s:alt-abstraction}. Figure~\ref{f:symbolic-widen}
-shows extension to ⸨δ⸩ and ⸨zero?⸩ in the presence of ⸨'N⸩. The
-different treatments of ⸨'N⸩ and symbolic values clarifies that
-abstract values are not symbolic values: the former stands for a set
-of multiple values, whereas the latter stands for an single unknown
-value. Tests on abstract number ⸨'N⸩ do not strengthen the
-path-condition; it is unsound to accumulate any assumption about ⸨'N⸩.
+space of symbolic values is not finite. A simple strategy to ensure
+termination is to widen a symbolic value to the abstract number ⸨'N⸩
+when it shares an address with a different number, similarly to the
+precision-preserving abstraction from
+Section~\ref{s:alt-abstraction}. Figure~\ref{f:symbolic-widen} shows
+extension to ⸨δ⸩ and ⸨zero?⸩ in the presence of ⸨'N⸩. The different
+treatments of ⸨'N⸩ and symbolic values clarifies that abstract values
+are not symbolic values: the former stands for a set of multiple
+values, whereas the latter stands for an single unknown value. Tests
+on abstract number ⸨'N⸩ do not strengthen the path-condition; it is
+unsound to accumulate any assumption about ⸨'N⸩.
 
