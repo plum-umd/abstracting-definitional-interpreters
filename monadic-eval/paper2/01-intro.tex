@@ -40,11 +40,11 @@ affirmative.
 For the first question, we show the AAM recipe can be applied
 to definitional interpreters in a straightforward adaptation of the
 original method. The primary technical challenge in this new setting
-is handling interpreter fixpoints in a way that is both sound and
-always terminates---a naive abstraction of fixpoints will be sound but
-isn't always terminating, and a naive use of caching for fixpoints
+is handling interpreter fixed-points in a way that is both sound and
+always terminates---a naive abstraction of fixed-points will be sound but
+isn't always terminating, and a naive use of caching for fixed-points
 will guarantee termination but is inherently unsound. We address this
-technical challenge with a straightforward caching fixpoint-finding
+technical challenge with a straightforward caching fixed-point-finding
 algorithm which is both sound and guaranteed to terminate when abstracting
 arbitrary definitional interpreters.
 
@@ -169,7 +169,7 @@ available on github.
 
 %% Our key insights are to design definitional interpreters in monadic,
 %% open-recursive style (§~\ref{s:interp}), and to design a
-%% novel fixpoint algorithm tailored specifically to the setting of higher-order
+%% novel fixed-point algorithm tailored specifically to the setting of higher-order
 %% definitional interpreters (§~\ref{s:cache}). The extensible nature of the
 %% interpreter allows us to recover a wide-range of analyses through its
 %% instantiation, including widening techniques (§~\ref{s:widening}), precision

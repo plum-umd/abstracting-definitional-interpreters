@@ -2,7 +2,7 @@
 
 In this section we formalize our approach to designing definitional abstract
 interpreters. We begin with a ``ground truth'' big-step semantics and concludes
-with the fixpoint iteration strategy described in Section~\ref{s:cache}, which
+with the fixed-point iteration strategy described in Section~\ref{s:cache}, which
 we prove sound and computable w.r.t. a synthesized abstract semantics. The
 design is systematic, and applies to arbitrary developments which use big-step
 operational semantics. We demonstrate the systematic process as applied to a
@@ -498,7 +498,7 @@ The relations «♯{ρ},♯{τ}⊢e,♯{σ}⇓⸢\$⸣♯{v},♯{σ}′» and «
 are modified versions of the original abstract semantics, but with recursive
 judgements replaced by «⟨♯{v},♯{σ}′⟩ ∈ \$(e,♯{ρ},♯{σ},♯{τ})» and «♯{ς} ∈
 \$(e,♯{ρ},♯{σ},♯{τ})» respectively. Therefore «ℱ» is not recursive; the
-recursion in the relations is lifted to the outer fixpoint of the analysis.
+recursion in the relations is lifted to the outer fixed-point of the analysis.
 Because the state space «♯{config} ↦ ℘(♯{val}×♯{store})» is finite and «ℱ» is
 monotonic, «\$⁺» can be computed algorithmically in finite time by Kleene
 fixed-point iteration. See Nielson et al~\cite{dvanhorn:Neilson:1999} for more
@@ -534,7 +534,7 @@ language formalized in this section) has domain:
 \begin{alignat*}{1}
   & ℰ ∈ Σ → Σ \quad ⦑\emph{where}⦒ \quad Σ ≔ ♯{config} → ℘(♯{val}×♯{store})
 \end{alignat*}
-and is defined such that its denotational-fixpoint («Y(ℰ)») recovers concrete
+and is defined such that its denotational-fixed-point («Y(ℰ)») recovers concrete
 interpretation when instantiated with the concrete state-space. For example,
 the recursive case for binary operator expressions is defined:
 \begin{alignat*}{1}
@@ -571,13 +571,13 @@ The iteration to compute «\$⁺» given «ℰ» is then defined:
 The fixed interpreter «ℰ⋆» calls the unfixed interpreter «ℰ», but intercepts
 recursive calls to perform (1) and (2) described above. When loops are
 detected, the results from the previous complete result «\$ᵒ» is used, and the
-outer fixpoint computes the least fixed point of this «\$ᵒ».
+outer fixed-point computes the least fixed point of this «\$ᵒ».
 
 The end result is that, rather than compute analysis results and reachable
-states naively with Kleene fixpoint iteration, we are able to reuse the
+states naively with Kleene fixed-point iteration, we are able to reuse the
 standard definitional interpreter—written in open-recursive form—to
 simultaneously explore reachable states, cache intermediate configurations, and
-iterate towards a least fixpoint solution for the analysis. This method is more
+iterate towards a least fixed-point solution for the analysis. This method is more
 efficient, and reuses an extensible definitional interpreter which can recover
 a wide range of analyses, including concrete interpretation.
 
@@ -618,7 +618,7 @@ outer cache «\$ᵒ» \emph{and} the store «♯{σ}»:
 \\[\mathgobble] & \hspace{3em}      \mathrel{⟬in⟭} ⟨♯{V},♯{σ}⸢i\prime⸣,\$⸢i\prime⸣[♯{ς}↦♯{V}]⟩)) 
 \\[\mathgobble] & \hspace{1em} \mathrel{⟬in⟭} π⸤2×3⸥(ℰ⋆(⟨e₀,♯{ρ}₀,♯{τ}₀⟩,♯{σ},❴❵)))
 \end{alignat*}
-This second version of widening, which computes a fixpoint also over the store,
+This second version of widening, which computes a fixed-point also over the store,
 recovers a so-called \emph{flow-insensitive} analysis. In this model, all
 program states are re-analyzed in the store resulting from execution. Also, the
 cache («\$») does not index over store states «♯{σ}» in its domain, greatly
@@ -627,7 +627,7 @@ static analyzer.
 
 \paragraph{Recovering Classical 0CFA}
 
-From the fully widened static analyzer, which computes a mutual fixpoint
+From the fully widened static analyzer, which computes a mutual fixed-point
 between a cache and store, we can easily recover a classical 0CFA analysis. We
 do this by instantiating «♯{time}» to the singleton abstraction «❴•❵», as was
 shown in Section~\ref{s:interp}. In this setting, the lexical environment «ρ»

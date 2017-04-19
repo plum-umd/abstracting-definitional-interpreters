@@ -1,4 +1,4 @@
-\section{Caching and Finding Fixpoints}\label{s:cache}
+\section{Caching and Finding Fixed-points}\label{s:cache}
 
 At this point, the interpreter obtained by linking together ⸨monad^@⸩, ⸨δ^@⸩,
 ⸨alloc^@⸩ and ⸨store-nd@⸩ components will only ever visit a finite number of
@@ -84,7 +84,7 @@ already computed the “improved” result (w.r.t. the oracle), and need not
 recompute it.
 
 To compute the least fixed-point ⸨¢⁺⸩ for the evaluator ⸨ev-cache⸩ we perform a
-standard Kleene fixpoint iteration starting from the empty map, the bottom
+standard Kleene fixed-point iteration starting from the empty map, the bottom
 element for the cache, as shown in Figure~\ref{f:fixing}.
 
 \begin{figure} %{-{
@@ -106,7 +106,7 @@ element for the cache, as shown in Figure~\ref{f:fixing}.
 ¦     (do x′ ← (f x)
 ¦         (if (equal? x′ x) (return x) (loop x′)))))
 \end{lstlisting}
-\captionskip{Finding Fixpoints in the Cache}
+\captionskip{Finding Fixed-Points in the Cache}
 \label{f:fixing}
 \end{mdframed}
 \end{figure} %}-}
@@ -177,6 +177,6 @@ least-fixed point of both the evaluation and reachability relations: based on
 what is evaluated, discover new things which are reachable, and based on what
 is reachable, discover new results of evaluation. The caching algorithm
 developed in this section is a slightly more efficient strategy for solving the
-mutual fixpoint, by taking a deep exploration of the reachability relation
+mutual fixed-point, by taking a deep exploration of the reachability relation
 (up-to seeing the same configuration twice) rather than applying just a single
 rule of inference.

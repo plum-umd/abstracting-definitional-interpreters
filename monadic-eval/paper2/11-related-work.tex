@@ -21,13 +21,13 @@ higher-order languages were first explored by
 interpreting a higher-order object language directly as terms in a
 meta-language to perform abstract interpretation. While their work
 lays the foundations for this idea, it does not consider abstractions
-for fixpoints in the domain, so although their abstract interpreters
+for fixed-points in the domain, so although their abstract interpreters
 are sound, they are not in general computable. They propose a naïve
-solution of truncating the interpretation of syntactic fixpoints to
+solution of truncating the interpretation of syntactic fixed-points to
 some finite depth, but this solution isn't general and doesn't account
 for non-syntactic occurrences of bottom in the concrete domain (\emph{e.g.}
 \emph{via} Y combinators). Our work develops such an abstraction for concrete
-denotational fixpoints using a fixpoint caching algorithm, resulting in
+denotational fixed-points using a fixed-point caching algorithm, resulting in
 general, computable abstractions for arbitrary definitional interpreters.
 
 The use of monads and monad transformers to make extensible (concrete)
@@ -80,7 +80,7 @@ conditional are always evaluated.  Consequently, it only uses a single
 iteration of the abstract evaluation function, and avoids the need for the
 cache-based fixed-point of Section~\ref{s:cache}.  We believe Big CFA2 as
 stated is sound, however if the underlying abstractions were tightened, it
-may then require a more involved fixpoint finding algorithm like the one we
+may then require a more involved fixed-point finding algorithm like the one we
 developed.
 
 Our formulation of a pushdown abstract interpreter computes an abstraction
