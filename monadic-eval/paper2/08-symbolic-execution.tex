@@ -79,7 +79,7 @@ Figure~\ref{f:symbolic-widen} shows the units needed to turn the existing interp
 into a symbolic executor. Primitives such as ⸨'/⸩ now also take as input and
 return symbolic values. As standard, symbolic execution employs a
 path-condition accumulating assumptions made at each branch, allowing the
-elimination of infeasible paths and construction of test cases. We represent
+elimination of provably infeasible paths and construction of test cases. We represent
 the path-condition ⸨φ⸩ as a set of symbolic values or their negations.
 If ⸨e⸩ is in ⸨φ⸩, ⸨e⸩ is assumed to evaluate to ⸨0⸩;
 if ⸨¬ e⸩ is in ⸨φ⸩, ⸨e⸩ is assumed to evaluate to non-⸨0⸩.
