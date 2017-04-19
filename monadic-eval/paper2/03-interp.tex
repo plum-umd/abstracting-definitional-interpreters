@@ -6,6 +6,52 @@ of the language is defined in Figure~\ref{f:syntax}; it includes variables,
 numbers, binary operations on numbers, conditionals, {\tt letrec} expressions,
 functions and applications.
 
+\begin{wrapfigure}{r}{0.5\textwidth} %{{{ f:syntax
+\begin{mdframed}
+\begin{alignat*}{4}
+   e ∈ &&\mathrel{}   exp ⩴ &\mathrel{} 𝔥⸨(vbl⸩\ x𝔥⸨)⸩         &\hspace{3em} [⦑\emph{variable}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩         &\hspace{3em} [⦑\emph{number}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(if0⸩\ e\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{conditional}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{binary op}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{application}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(rec⸩\ x\ ℓ\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{letrec}⦒]
+\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} ℓ                     &\hspace{3em} [⦑\emph{lambda}⦒]
+\\[\mathgobble]ℓ ∈ &&\mathrel{}   lam ⩴ &\mathrel{} 𝔥⸨(lam⸩\ x\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{function defn}⦒]
+\\[\mathgobble] x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵        &\hspace{3em} [⦑\emph{variable names}⦒]
+%\\[\mathgobble] u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵           &\hspace{3em} [⦑\emph{unary prim}⦒]
+\\[\mathgobble] b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵        &\hspace{3em} [⦑\emph{binary prim}⦒]
+\end{alignat*}
+\captionskip{Programming Language Syntax}
+\label{f:syntax}
+\end{mdframed}
+\end{wrapfigure} %}}}
+
+
+
+The interpreter for the language is defined in Figure~\ref{f:interpreter}. At
+first glance, it has many conventional aspects:
+\begin{itemize}
+\item It is compositionally defined by structural recursion on the syntax of
+expressions.
+\item It represents function values as a closure data structure which pairs the
+lambda term with the evaluation environment.
+\item It is structured monadically and uses monad operations to interact with
+the environment and store.
+\item It relies on a helper function ⸨δ⸩ to interpret primitive operations.
+\end{itemize}
+There are a few superficial aspects that deserve a quick note:
+environments ⸨ρ⸩ are finite maps and the syntax ⸨(ρ«\ »x)⸩ denotes
+«ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  For simplicity, recursive function
+definitions (⸨rec⸩) are assumed to be syntactic values.  The
+⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
+\begin{alignat*}{2}
+                𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
+\\[\mathgobble]        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
+\\[\mathgobble] 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
+\\[\mathgobble]            𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
+\end{alignat*}
+Finally, there are two unconventional aspects worth noting.
+
 \begin{figure} %{{{
 \begin{mdframed}
 \rfloat{⸨ev@⸩}
@@ -38,30 +84,6 @@ functions and applications.
 %¦     [(op1 o e₀)
 %¦      (do v ← (ev e₀)
 %¦          (δ o v))]   
-
-The interpreter for the language is defined in Figure~\ref{f:interpreter}. At
-first glance, it has many conventional aspects:
-\begin{itemize}
-\item It is compositionally defined by structural recursion on the syntax of
-expressions.
-\item It represents function values as a closure data structure which pairs the
-lambda term with the evaluation environment.
-\item It is structured monadically and uses monad operations to interact with
-the environment and store.
-\item It relies on a helper function ⸨δ⸩ to interpret primitive operations.
-\end{itemize}
-There are a few superficial aspects that deserve a quick note:
-environments ⸨ρ⸩ are finite maps and the syntax ⸨(ρ«\ »x)⸩ denotes
-«ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  For simplicity, recursive function
-definitions (⸨rec⸩) are assumed to be syntactic values.  The
-⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
-\begin{alignat*}{2}
-                𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
-\\[\mathgobble]        𝔥⸨(do e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(_) (do . r)))⸩
-\\[\mathgobble] 𝔥⸨(do x ≔«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(let ((x e)) (do . r))⸩
-\\[\mathgobble]            𝔥⸨(do b)⸩ ≡ &\mathrel{} 𝔥⸨b⸩
-\end{alignat*}
-Finally, there are two unconventional aspects worth noting.
 
 First, the interpreter is written in an \emph{open recursive style}; the
 evaluator does not call itself recursively, instead it takes as an argument a
