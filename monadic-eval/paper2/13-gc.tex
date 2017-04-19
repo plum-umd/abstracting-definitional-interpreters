@@ -142,7 +142,7 @@ a pushdown, garbage-collecting definitional abstract interpreter:
 \begin{lstlisting}
 ¦ (define (((ev-roots ev₀) ev) e)
 ¦   (match e
-¦     [(ifz e₀ e₁ e₂) (do ψ  ← ask-roots
+¦     [(if0 e₀ e₁ e₂) (do ψ  ← ask-roots
 ¦                         ρ  ← ask-env
 ¦                         ψ′ ≔ (set-union ψ (roots e₁ ρ) (roots e₂ ρ))
 ¦                         v  ← (local-roots ψ′ (ev e₀))

@@ -15,7 +15,7 @@ functions and applications.
 ¦     [(num n)        (return n)]
 ¦     [(vbl x)        (do ρ ← ask-env
 ¦                         (find (ρ x)))]    
-¦     [(ifz e₀ e₁ e₂) (do v  ← (ev e₀)  z? ← (zero? v)
+¦     [(if0 e₀ e₁ e₂) (do v  ← (ev e₀)  z? ← (zero? v)
 ¦                         (ev (if z? e₁ e₂)))]
 ¦     [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)  v₁ ← (ev e₁)
 ¦                         (δ o v₀ v₁))]
