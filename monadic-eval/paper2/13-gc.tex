@@ -92,7 +92,7 @@ The use of this added component necessitates a change to the caching
 and fixpoint calculation, namely we must include the root sets as part
 of the configuration.  Compared with the ⸨ev-cache@⸩ component of
 Section~\ref{s:cache}, we make a simple adjustment to the first few
-lines to cache the root set along with the rest of configuration:
+lines to cache the root set along with the rest of the configuration:
 \begin{lstlisting}
 ¦ (define (((ev-cache ev₀) ev) e)
 ¦   (do ρ   ← ask-env  σ ← get-store  ψ ← ask-roots
