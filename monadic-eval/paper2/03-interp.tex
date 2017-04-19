@@ -1,4 +1,28 @@
+\newpage
+
 \section{A Definitional Interpreter}\label{s:interp}
+
+\begin{wrapfigure}{R}{0.5\textwidth} %{{{ f:syntax
+  \begin{mdframed}
+    \begin{alignat*}{4}
+      e ∈ &&\mathrel{}   exp ⩴ &\mathrel{} 𝔥⸨(vbl⸩\ x𝔥⸨)⸩         &\hspace{3em} [⦑\emph{variable}⦒]
+      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩         &\hspace{3em} [⦑\emph{number}⦒]
+      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(if0⸩\ e\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{conditional}⦒]
+      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{binary op}⦒]
+      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{application}⦒]
+      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(rec⸩\ x\ ℓ\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{letrec}⦒]
+      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} ℓ                     &\hspace{3em} [⦑\emph{lambda}⦒]
+      \\[\mathgobble]ℓ ∈ &&\mathrel{}   lam ⩴ &\mathrel{} 𝔥⸨(lam⸩\ x\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{function defn}⦒]
+      \\[\mathgobble] x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵        &\hspace{3em} [⦑\emph{variable names}⦒]
+      %\\[\mathgobble] u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵           &\hspace{3em} [⦑\emph{unary prim}⦒]
+      \\[\mathgobble] b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵        &\hspace{3em} [⦑\emph{binary prim}⦒]
+    \end{alignat*}
+    \captionskip{Programming Language Syntax}
+    \label{f:syntax}
+  \end{mdframed}
+\end{wrapfigure} %}}}
+
+
 
 We begin by constructing a definitional interpreter for a small but
 representative higher-order, functional language.  The abstract syntax
@@ -6,39 +30,15 @@ of the language is defined in Figure~\ref{f:syntax}; it includes variables,
 numbers, binary operations on numbers, conditionals, {\tt letrec} expressions,
 functions and applications.
 
-\begin{wrapfigure}{r}{0.5\textwidth} %{{{ f:syntax
-\begin{mdframed}
-\begin{alignat*}{4}
-   e ∈ &&\mathrel{}   exp ⩴ &\mathrel{} 𝔥⸨(vbl⸩\ x𝔥⸨)⸩         &\hspace{3em} [⦑\emph{variable}⦒]
-\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩         &\hspace{3em} [⦑\emph{number}⦒]
-\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(if0⸩\ e\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{conditional}⦒]
-\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{binary op}⦒]
-\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{application}⦒]
-\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(rec⸩\ x\ ℓ\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{letrec}⦒]
-\\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} ℓ                     &\hspace{3em} [⦑\emph{lambda}⦒]
-\\[\mathgobble]ℓ ∈ &&\mathrel{}   lam ⩴ &\mathrel{} 𝔥⸨(lam⸩\ x\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{function defn}⦒]
-\\[\mathgobble] x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵        &\hspace{3em} [⦑\emph{variable names}⦒]
-%\\[\mathgobble] u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵           &\hspace{3em} [⦑\emph{unary prim}⦒]
-\\[\mathgobble] b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵        &\hspace{3em} [⦑\emph{binary prim}⦒]
-\end{alignat*}
-\captionskip{Programming Language Syntax}
-\label{f:syntax}
-\end{mdframed}
-\end{wrapfigure} %}}}
+The interpreter for the language is defined in
+Figure~\ref{f:interpreter}. At first glance, it has many conventional
+aspects: it is compositionally defined by structural recursion on the
+syntax of expressions; it represents function values as a closure data
+structure which pairs the lambda term with the evaluation environment;
+it is structured monadically and uses monad operations to interact
+with the environment and store; and it relies on a helper function ⸨δ⸩
+to interpret primitive operations.
 
-
-
-The interpreter for the language is defined in Figure~\ref{f:interpreter}. At
-first glance, it has many conventional aspects:
-\begin{itemize}
-\item It is compositionally defined by structural recursion on the syntax of
-expressions.
-\item It represents function values as a closure data structure which pairs the
-lambda term with the evaluation environment.
-\item It is structured monadically and uses monad operations to interact with
-the environment and store.
-\item It relies on a helper function ⸨δ⸩ to interpret primitive operations.
-\end{itemize}
 There are a few superficial aspects that deserve a quick note:
 environments ⸨ρ⸩ are finite maps and the syntax ⸨(ρ«\ »x)⸩ denotes
 «ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  For simplicity, recursive function
@@ -52,38 +52,6 @@ definitions (⸨rec⸩) are assumed to be syntactic values.  The
 \end{alignat*}
 Finally, there are two unconventional aspects worth noting.
 
-\begin{figure} %{{{
-\begin{mdframed}
-\rfloat{⸨ev@⸩}
-\begin{lstlisting}
-¦ (define ((ev ev) e)
-¦   (match e
-¦     [(num n)        (return n)]
-¦     [(vbl x)        (do ρ ← ask-env
-¦                         (find (ρ x)))]    
-¦     [(if0 e₀ e₁ e₂) (do v  ← (ev e₀)  z? ← (zero? v)
-¦                         (ev (if z? e₁ e₂)))]
-¦     [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)  v₁ ← (ev e₁)
-¦                         (δ o v₀ v₁))]
-¦     [(rec f l e)    (do ρ  ← ask-env  a  ← (alloc f)
-¦                         ρ′ ≔ (ρ f a)
-¦                         (ext a (cons l ρ′))
-¦                         (local-env ρ′ (ev e)))]
-¦     [(lam x e₀)     (do ρ ← ask-env
-¦                         (return (cons (lam x e₀) ρ)))]
-¦     [(app e₀ e₁)    (do (cons (lam x e₂) ρ) ← (ev e₀)
-¦                         v₁ ← (ev e₁)
-¦                         a  ← (alloc x)
-¦                         (ext a v₁)
-¦                         (local-env (ρ x a) (ev e₂)))]))
-\end{lstlisting}
-\captionskip{The Extensible Definitional Interpreter}
-\label{f:interpreter}
-\end{mdframed}
-\end{figure} %}}}
-%¦     [(op1 o e₀)
-%¦      (do v ← (ev e₀)
-%¦          (δ o v))]   
 
 First, the interpreter is written in an \emph{open recursive style}; the
 evaluator does not call itself recursively, instead it takes as an argument a
@@ -112,6 +80,90 @@ indicated by the box in the upper-right corner) and linked together to
 eliminate free variables.\footnote{We use Racket
 \emph{units}~\cite{local:flatt-pldi98} to model components in our
 implementation.}
+
+%% HACK: the explicit number of short lines is because the equations
+%% seem to screw up the calculation.
+\begin{wrapfigure}[24]{R}{0.5\textwidth} %{{{
+\begin{mdframed}
+\rfloat{⸨ev@⸩}
+\begin{lstlisting}
+¦ (define ((ev ev) e)
+¦   (match e
+¦     [(num n)
+¦      (return n)]
+¦     [(vbl x)
+¦      (do ρ ← ask-env
+¦          (find (ρ x)))]    
+¦     [(if0 e₀ e₁ e₂)
+¦      (do v  ← (ev e₀)  z? ← (zero? v)
+¦          (ev (if z? e₁ e₂)))]
+¦     [(op2 o e₀ e₁)
+¦      (do v₀ ← (ev e₀)  v₁ ← (ev e₁)
+¦          (δ o v₀ v₁))]
+¦     [(rec f l e)
+¦      (do ρ  ← ask-env  a  ← (alloc f)
+¦          ρ′ ≔ (ρ f a)
+¦          (ext a (cons l ρ′))
+¦          (local-env ρ′ (ev e)))]
+¦     [(lam x e₀)
+¦      (do ρ ← ask-env
+¦          (return (cons (lam x e₀) ρ)))]
+¦     [(app e₀ e₁)
+¦      (do (cons (lam x e₂) ρ) ← (ev e₀)
+¦           v₁ ← (ev e₁)
+¦           a  ← (alloc x)
+¦           (ext a v₁)
+¦           (local-env (ρ x a) (ev e₂)))]))
+\end{lstlisting}
+\captionskip{The Extensible Definitional Interpreter}
+\label{f:interpreter}
+\end{mdframed}
+\end{wrapfigure} %}}}
+%¦     [(op1 o e₀)
+%¦      (do v ← (ev e₀)
+%¦          (δ o v))]   
+
+
+\subsection{Instantiating the Interpreter}
+
+Next we examine a set of components which complete the definitional
+interpreter, shown in Figure~\ref{f:concrete-components}. The first component
+⸨monad@⸩ uses a macro ⸨define-monad⸩ which generates a set of bindings based on
+a monad transformer stack.  We use a failure monad to model divide-by-zero
+errors, a state monad to model the store, and a reader monad to model the
+environment.  The ⸨define-monad⸩ form generates bindings for ⸨return⸩, ⸨bind⸩,
+⸨ask-env⸩, ⸨local-env⸩, ⸨get-store⸩ and ⸨update-store⸩; their definitions are
+standard~\cite{dvanhorn:Liang1995Monad}. 
+
+We also define ⸨mrun⸩ for running monadic computations, starting with the empty
+environment and store ⸨∅⸩:
+
+\begin{minipage}{0.4\textwidth}
+\begin{alignat*}{1}
+  & 𝔥⸨(define (mrun m)⸩\\
+  & ␣𝔥⸨(run-StateT ∅⸩\ 𝔥⸨(run-ReaderT ∅⸩\ 𝔥⸨m)))⸩\\
+\end{alignat*}
+\end{minipage}
+
+\noindent
+While the ⸨define-monad⸩ form is hiding some details, this component could have
+equivalently been written out explicitly. For example, ⸨return⸩ and ⸨bind⸩ can
+be defined as:
+
+\begin{minipage}{0.4\textwidth}
+\begin{alignat*}{1}
+& 𝔥⸨(define (((return a) r) s) (cons a s))⸩ \\
+& 𝔥⸨(define (((bind ma f) r) s)⸩ \\
+  &␣𝔥⸨(match ((ma r) s)⸩ \\
+    &␣␣𝔥⸨[(cons a s′) (((f a) r) s′)]⸩ \\
+    &␣␣𝔥⸨['failure 'failure]))⸩\\
+\end{alignat*}
+\end{minipage}
+
+\noindent
+So far our use of monad transformers is as a mere convenience, however the
+monad abstraction will become essential for easily deriving new analyses later
+on.
 
 \begin{figure} %{-{
 \begin{mdframed}
@@ -144,36 +196,6 @@ implementation.}
 \label{f:concrete-components}
 \end{mdframed}
 \end{figure} %}-}
-
-\subsection{Instantiating the Interpreter}
-
-Next we examine a set of components which complete the definitional
-interpreter, shown in Figure~\ref{f:concrete-components}. The first component
-⸨monad@⸩ uses a macro ⸨define-monad⸩ which generates a set of bindings based on
-a monad transformer stack.  We use a failure monad to model divide-by-zero
-errors, a state monad to model the store, and a reader monad to model the
-environment.  The ⸨define-monad⸩ form generates bindings for ⸨return⸩, ⸨bind⸩,
-⸨ask-env⸩, ⸨local-env⸩, ⸨get-store⸩ and ⸨update-store⸩; their definitions are
-standard~\cite{dvanhorn:Liang1995Monad}. 
-
-We also define ⸨mrun⸩ for running monadic computations, starting with the empty
-environment and store ⸨∅⸩:
-\begin{alignat*}{1}
-&𝔥⸨(define (mrun m) (run-StateT ∅⸩\ 𝔥⸨(run-ReaderT ∅⸩\ 𝔥⸨m)))⸩
-\end{alignat*}
-While the ⸨define-monad⸩ form is hiding some details, this component could have
-equivalently been written out explicitly. For example, ⸨return⸩ and ⸨bind⸩ can
-be defined as:
-\begin{alignat*}{1}
-& 𝔥⸨(define (((return a) r) s) (cons a s))⸩ \\
-& 𝔥⸨(define (((bind ma f) r) s)⸩ \\
-  &␣𝔥⸨(match ((ma r) s)⸩ \\
-    &␣␣𝔥⸨[(cons a s′) (((f a) r) s′)]⸩ \\
-    &␣␣𝔥⸨['failure 'failure]))⸩
-\end{alignat*}
-So far our use of monad transformers is as a mere convenience, however the
-monad abstraction will become essential for easily deriving new analyses later
-on.
 
 The ⸨δ@⸩ component defines the interpretation of primitives, which is given in
 terms of the underlying monad.  Finally the ⸨alloc@⸩ component provides a
