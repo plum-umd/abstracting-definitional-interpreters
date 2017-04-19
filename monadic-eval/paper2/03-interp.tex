@@ -257,7 +257,7 @@ is a trace semantics, which collects streams of states the interpreter reaches.
 Figure~\ref{f:trace} shows the monad stack for a tracing interpreter and a
 ``mix-in'' for the evaluator.  The monad stack adds ⸨WriterT List⸩, which
 provides a new operation ⸨tell⸩ for writing lists of items to the stream of
-reached states.  The ⸨ev-trace⸩ function is a wrapper around an underlying
+reached states.  The ⸨ev-tell⸩ function is a wrapper around an underlying
 ⸨ev₀⸩ unfixed evaluator, and interposes itself between each recursive call by
 ⸨tell⸩ing the current state of the evaluator: the current expression,
 environment and store.  The top-level evaluation function is then:
