@@ -19,10 +19,10 @@ functions and applications.
 ¦                         (ev (if z? e₁ e₂)))]
 ¦     [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)  v₁ ← (ev e₁)
 ¦                         (δ o v₀ v₁))]
-¦     [(rec f e₀ e₁)  (do ρ  ← ask-env  a  ← (alloc f)
+¦     [(rec f l e)    (do ρ  ← ask-env  a  ← (alloc f)
 ¦                         ρ′ ≔ (ρ f a)
-¦                         (ext a (cons e₀ ρ′))
-¦                         (local-env ρ′ (ev e₁)))]
+¦                         (ext a (cons l ρ′))
+¦                         (local-env ρ′ (ev e)))]
 ¦     [(lam x e₀)     (do ρ ← ask-env
 ¦                         (return (cons (lam x e₀) ρ)))]
 ¦     [(app e₀ e₁)    (do (cons (lam x e₂) ρ) ← (ev e₀)
@@ -52,7 +52,8 @@ the environment and store.
 \end{itemize}
 There are a few superficial aspects that deserve a quick note:
 environments ⸨ρ⸩ are finite maps and the syntax ⸨(ρ«\ »x)⸩ denotes
-«ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  The
+«ρ(x)» while ⸨(ρ«\ »x a)⸩ denotes «ρ[x↦a]».  For simplicity, recursive function
+definitions (⸨rec⸩) are assumed to be syntactic values.  The
 ⸨do⸩-notation is just shorthand for ⸨bind⸩, as usual:
 \begin{alignat*}{2}
                 𝔥⸨(do x ←«\ »e . r)⸩ ≡ &\mathrel{} 𝔥⸨(bind e (λ«\ »(x) (do . r)))⸩
