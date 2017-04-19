@@ -62,13 +62,14 @@ widening.
 ¦ (define (zero? v)
 ¦   (match v
 ¦     ['N (mplus (return #t) (return #f))]
-¦     [_  (return (zero? v))]))
+¦     [_  (return (= 0 v))]))
 \end{lstlisting}
 \figskip\rfloat{⸨store-crush@⸩}
 \begin{lstlisting}
 ¦ (define (find a)
 ¦   (do σ ← get-store
-¦       (for/monad+ ([v (σ a)]) (return v))))
+¦       (for/monad+ ([v (σ a)])
+¦         (return v))))
 ¦ (define (crush v vs)
 ¦   (if (closure? v)
 ¦       (set-add vs v)
