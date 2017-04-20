@@ -316,6 +316,33 @@ environment and store.  The top-level evaluation function is then:
 &𝔥⸨(define (eval e) (mrun ((fix (ev-tell ev)) e)))⸩
 \end{alignat*}
 
+
+\begin{wrapfigure}{R}{0.5\textwidth} %{-{
+\begin{mdframed}
+\rfloat{⸨dead-monad@⸩}
+\begin{flalign*}
+& 𝔥⸨(define-monad⸩\ \\[-.5em]
+&␣ 𝔥⸨(⸩\!\down{𝔥⸨ReaderT⸩}⸤env⸥\ 𝔥⸨(⸩\!\down{𝔥⸨StateT⸩}⸤store⸥\ 𝔥⸨(⸩\!\down{𝔥⸨StateT⸩}⸤dead⸥\ 𝔥⸨(⸩\!\down{𝔥⸨FailT⸩}⸤errors⸥\ 𝔥⸨ID)))))⸩
+& \end{flalign*}
+\figskip\rfloat{⸨ev-dead@⸩}
+\begin{lstlisting}
+¦ (define (((ev-dead ev₀) ev) e)
+¦   (do θ ← get-dead       
+¦       (put-dead (set-remove θ e))
+¦       ((ev₀ ev) e)))
+\end{lstlisting}
+\figskip\rfloat{⸨eval-dead@⸩}
+\begin{lstlisting}
+¦ (define ((eval-dead eval) e₀)
+¦   (do (put-dead (subexps e₀))
+¦       (eval e₀)))
+\end{lstlisting}
+\captionskip{Dead Code Collecting Semantics}
+\label{f:dead}
+\end{mdframed}
+\end{wrapfigure} %}-}
+
+
 Now when an expression is evaluated, we get an answer and a list of all states
 seen by the evaluator, in the order in which they were seen. For example (not
 showing ⸨ρ⸩ or ⸨σ⸩ in results):
@@ -374,29 +401,6 @@ of expressions that were not evaluated during the running of a program:
 Our setup makes it easy not only to express the concrete interpreter, but also
 these useful forms of collecting semantics.
 
-\begin{figure} %{-{
-\begin{mdframed}
-\rfloat{⸨dead-monad@⸩}
-\begin{flalign*}
-& 𝔥⸨(define-monad⸩\ 𝔥⸨(⸩\!\up{𝔥⸨ReaderT⸩}⸢env⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢store⸣\ 𝔥⸨(⸩\!\up{𝔥⸨StateT⸩}⸢dead⸣\ 𝔥⸨(⸩\!\up{𝔥⸨FailT⸩}⸢errors⸣\ 𝔥⸨ID)))))⸩
-& \end{flalign*}
-\figskip\rfloat{⸨ev-dead@⸩}
-\begin{lstlisting}
-¦ (define (((ev-dead ev₀) ev) e)
-¦   (do θ ← get-dead       
-¦       (put-dead (set-remove θ e))
-¦       ((ev₀ ev) e)))
-\end{lstlisting}
-\figskip\rfloat{⸨eval-dead@⸩}
-\begin{lstlisting}
-¦ (define ((eval-dead eval) e₀)
-¦   (do (put-dead (subexps e₀))
-¦       (eval e₀)))
-\end{lstlisting}
-\captionskip{Dead Code Collecting Semantics}
-\label{f:dead}
-\end{mdframed}
-\end{figure} %}-}
 
 \subsection{Abstracting Base Values}\label{s:base}
 
