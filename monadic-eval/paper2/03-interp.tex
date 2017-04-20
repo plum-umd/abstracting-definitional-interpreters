@@ -197,9 +197,16 @@ on.
 \end{figure} %}-}
 
 The ⸨δ@⸩ component defines the interpretation of primitives, which is given in
-terms of the underlying monad.  Finally the ⸨alloc@⸩ component provides a
-definition of ⸨alloc⸩, which fetches the store and uses its size to return a
-fresh address (assuming the invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a⸩ < 𝔥⸨(size σ)⸩»).
+terms of the underlying monad.  
+%
+The ⸨alloc@⸩ component provides a definition of ⸨alloc⸩, which fetches
+the store and uses its size to return a fresh address, assuming the
+invariant «𝔥⸨(∈«\ »a σ)⸩ ⇔ 𝔥⸨a⸩ < 𝔥⸨(size σ)⸩».  The ⸨alloc⸩ function
+takes a single argument, which is the name of the variable whose
+binding is being allocated.  For the time being, it is ignored, but
+will become relevant when abstracting closures
+(\S\ref{s:abstracting-closures}).
+%
 The ⸨store@⸩ component defines ⸨find⸩ and ⸨ext⸩ for finding and extending
 values in the store.
 
@@ -470,6 +477,7 @@ loop.  To make a terminating abstract interpreter requires tackling both.  We
 look next at abstracting closures.
 
 \subsection{Abstracting Closures}
+\label{s:abstracting-closures}
 
 Closures consist of code---a lambda term---and an environment---a finite map
 from variables to addresses.  Since the set of lambda terms and variables is
