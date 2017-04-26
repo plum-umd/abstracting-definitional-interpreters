@@ -12,7 +12,7 @@
   (define (R to-see seen)
     (match to-see
       [(set) seen]
-      [(set a as ...)
+      [(set a as ...) #:when (∈ a s)
        (define sa (s a))
        (define as* (if (set? sa)
                        (for/fold ([as* (set)])
@@ -20,7 +20,9 @@
                          (set-union as* (roots-v v)))                   
                        (roots-v sa)))
        (R (set-subtract (set-union as* as) seen)
-          (set-add seen a))]))
+          (set-add seen a))]
+      [(set a as ...) ; a is a "dangling" letrec pointer
+       (R seen (set-add seen a))]))
   (R as (set)))
 
 (define (roots e ρ)

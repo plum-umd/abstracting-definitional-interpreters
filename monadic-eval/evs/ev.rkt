@@ -33,11 +33,20 @@
          v₁ ← (ev e₁)
          (δ o v₀ v₁))]
 
-    [(lrc f e₀ e₁) 
+    [(lrc f e₀ e₁)
+     (do ρ  ← ask-env
+         a  ← (alloc f)
+         ρ′ ≔ (ρ f a)
+         v ← (local-env ρ′ (ev e₀))
+	 (ext a v)
+	 (local-env ρ′ (ev e₁)))]
+
+     ;; Assuming lambda RHS
+     #;
      (do ρ  ← ask-env
          a  ← (alloc f)
          (ext a (cons e₀ (ρ f a)))
-         (local-env (ρ f a) (ev e₁)))]
+         (local-env (ρ f a) (ev e₁)))
 
     [(and (lam x e₀) l)
      (do ρ ← ask-env

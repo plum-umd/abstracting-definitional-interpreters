@@ -33,6 +33,15 @@
          v₁ ← (ev e₁)
          (δ o v₀ v₁))]
 
+    [(lrc f e₀ e₁)
+     (do ρ  ← ask-env
+         a  ← (alloc f)
+         ρ′ ≔ (ρ f a)
+         v ← (local-env ρ′ (ev e₀))
+	 (ext a v)
+	 (local-env ρ′ (ev e₁)))]
+
+    #;
     [(lrc f e₀ e₁) 
      (do ρ  ← ask-env
          a  ← (alloc f)
