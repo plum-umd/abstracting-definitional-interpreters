@@ -33,7 +33,6 @@
  "evs/ev-compile.rkt"
  "evs/ev-debug.rkt"
  "evs/ev-collect.rkt"
- "evs/ev-gc-count.rkt"
  "evs/ev-lazy-deref.rkt"
  "evs/ev-loop.rkt"
 
@@ -54,9 +53,6 @@
  "monad/monad-pdcfa-widen-gc.rkt"
  "monad/monad-symbolic.rkt"
  "monad/monad-gc.rkt"
- "monad/monad-gc-count.rkt"
- "monad/monad-pdcfa-gc-count.rkt"
- "monad/monad-pdcfa-widen-gc-count.rkt"
 
  ;; alloc
  "metafuns/alloc.rkt"
@@ -80,7 +76,6 @@
  "metafuns/delta-abs.rkt"
 
  ;; gc
- "metafuns/gc-count.rkt"
 
  ;; monoids
  "transformers.rkt"

@@ -19,7 +19,7 @@ out/%.tex: %.tex $(SED_FILES)
 	sed -f latex-unicode-post.sed     -i.bak $@
 
 out/%.bib: %.bib latex-unicode.sed
-	bibclean $< > $@
+	-bibclean $< > $@
 	sed -f latex-unicode.sed -i.bak $@
 
 out/%.png: %.png

@@ -21,7 +21,6 @@
   [ev-ref^      : ev-ref]
   [ev-trace^    : ev-trace]
   [ev-gc^       : ev-gc]
-  [ev-gc-count^ : ev-gc ev-count]
   [ev-lazy!^    : ev-lazy!]
   [ev-reach^    : ev-reach]
   [ev-echo^     : ev-echo]
@@ -66,7 +65,6 @@
 
 
   [force^ : force]
-  [gc-count^ : gc count]
 
   [alloc^    : alloc]
   ;; alloc : any → M addr
