@@ -37,7 +37,16 @@
  requires no further technical mechanism to achieve.}
 
 @include-section{01-intro.scrbl}
-@;include-section{02-aam.scrbl}
+@include-section{02-aam.scrbl}
+@include-section{03-interp.scrbl}
+@include-section{04-cache.scrbl}
+@include-section{05-reynolds.scrbl}
+@include-section{06-widening.scrbl}
+@include-section{07-alt-abstraction.scrbl}
+@include-section{08-symbolic-execution.scrbl}
+@include-section{09-gc.scrbl}
+@include-section{10-related-work.scrbl}
+@include-section{11-conclusions.scrbl}
 
 
 @(generate-bib)

@@ -87,3 +87,68 @@ analysis @~cite{dvanhorn:Earl2010Pushdown
   dvanhorn:Vardoulakis2011CFA2}, all without the need for any explicit
 machinery to do so.
 
+@section[#:style 'unnumbered]{Outline}
+
+In the remainder of this pearl, we present an adaptation of the AAM
+method to the setting of recursively-defined, compositional evaluation
+functions, a.k.a.~definitional interpreters.  We first briefly review
+the basic ingredients in the AAM recipe (@secref{s:aam}) and then
+define our definitional interpreter (@secref{s:interp}).  The
+interpreter is largely standard, but is written in a monadic and
+extensible style, so as to be re-usable for various forms of semantics
+we examine.  The AAM technique applies in a basically straightforward
+way by store-allocating bindings and soundly finitizing the heap.  But
+when naively run, the interpreter will not always terminate.  To solve
+this problem we introduce a caching strategy and a simple fixed-point
+computation to ensure the interpreter terminates (@secref{s:cache}).
+It is at this point that we observe the interpreter we have built
+enjoys the ``pushdown'' property @emph{à la} Reynolds---it is
+inherited from the defining language of our interpreter and requires
+no explicit mechanism (@secref{s:reynolds}).
+
+Having established the main results, we then explore some variations
+in brief vignettes that showcase the flexibility of our definitional
+abstract interpreter approach.  First we consider the widely used
+technique of so-called ``store-widening,'' which trades precision for
+efficiency by modelling the abstract store globally instead of locally
+(@secref{s:widening}).  Thanks to our monadic formulation of the
+interpreter, this is achieved by a simple re-ordering of the monad
+transformer stack.  We also explore some alternative abstractions,
+showing that due to the extensible construction, it's easy to
+experiment with alternative components for the abstract interpreter.
+In particular, we define an alternative interpretation of the primitive
+operations that remains completely precise until forced by joins in
+the store to introduce approximation (@secref{s:alt-abstraction}).  As
+another variation, we explore computing a form of symbolic execution
+as yet another instance of our interpreter (@secref{s:symbolic}).  Lastly, we
+show how to incorporate so-called ``abstract garbage collection,'' a
+well-known technique for improving the precision of abstract
+interpretation by clearing out unreachable store locations, thus
+avoiding future joins which cause imprecision (@secref{s:gc}).  This
+last variation is significant because it demonstrates that even though
+we have no explicit representation of the stack, it is possible to
+compute analyses that typically require such explicit representations
+in order to calculate root sets for garbage collection.
+
+Finally, we place our work in the context of the prior literature on
+higher-order abstract interpretation (@secref{s:related-work}) and draw
+some conclusions (@secref{s:conclusion}).
+
+
+@section[#:style 'unnumbered]{Style}
+
+To convey the ideas of this paper as concretely as possible, we
+present code implementing our definitional abstract interpreter and
+all its variations.  As a metalanguage, we use an applicative subset
+of Racket @~cite{dvanhorn:plt-tr1}, a dialect of Scheme.  This choice
+is largely immaterial: any functional language would do.  However, to
+aide extensibility, we use Racket's @emph{unit}
+system @~cite{local:flatt-pldi98} to write program components that can
+be linked together.
+
+All of the code presented in this pearl runs; this document is a
+literate Racket program.  We have also implemented a small DSL for
+composing and experimenting with these interpreters easily.  Assuming
+Racket is installed, you can install the @tt{monadic-eval} package with
+@bold{(URL redacted for double-blind)} and a brief tutorial is
+available on github.
