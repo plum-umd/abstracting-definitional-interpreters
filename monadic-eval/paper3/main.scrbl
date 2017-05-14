@@ -1,7 +1,7 @@
 #lang scribble/acmart @acmlarge
 @require["bib.rkt"]
 
-@title{Abstracting Definitional Interpreters}
+@title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
 @subtitle{Functional Pearl}
 
 @abstract{In this functional pearl, we examine the use of

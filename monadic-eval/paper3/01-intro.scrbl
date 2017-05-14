@@ -1,6 +1,5 @@
 #lang scribble/acmart @acmlarge
 
-@require[scriblib/bibtex scriblib/autobib]
 @require["bib.rkt"]
 
 @title{Introduction}
