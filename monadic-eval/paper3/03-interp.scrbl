@@ -354,8 +354,22 @@ non-determinism:
 ...
 }
 
-
-
+@figure["f:abs-delta" "Abstracting Primitive Operations"]{
+@filebox[@racket[monad^@]]{
+@racketblock[
+(define-monad (ReaderT (FailT (StateT (NondetT ID)))))]}
+@filebox[@racket[δ^@]]{
+@racketblock[
+(define (δ o n₀ n₁)
+  (match* (o n₀ n₁)
+    [('+ _ _       ) (return 'N)]
+    [('/ _ (? num?)) (if (= 0 n₁) fail (return 'N))]
+    [('/ _ 'N      ) (mplus fail (return 'N))] ... ))
+(define (zero? v)
+  (match v
+    ['N (mplus (return #t) (return #f))]
+    [_  (return (= 0 v))]))
+]}}
 
 It is clear that the interpreter will only ever see a finite set of
 numbers (including @racket['N]), but it's definitely not true that the
@@ -365,8 +379,61 @@ the interpreter to detect when it sees a loop.  To make a terminating
 abstract interpreter requires tackling both.  We look next at
 abstracting closures.
 
+@section[#:tag "s:abstracting-closures"]{Abstracting Closures}
 
+Closures consist of code---a lambda term---and an environment---a finite map
+from variables to addresses.  Since the set of lambda terms and variables is
+bounded by the program text, it suffices to finitize closures by finitizing the
+set of addresses.  Following the AAM approach, we do this by modifying the
+allocation function to produce elements drawn from a finite set.  In order to
+retain soundness in the semantics, we modify the store to map addresses to
+@emph{sets} of values, model store update as a join, and model dereference as a
+non-deterministic choice.
 
+Any abstraction of the allocation function that produces a finite set will do,
+but the choice of abstraction will determine the precision of the resulting
+analysis.  A simple choice is to allocate variables using the variable's name
+as its address.  This gives a monomorphic, or 0CFA-like, abstraction.
 
+@figure["f:0cfa-abs" "Abstracting Allocation: 0CFA"]{
+@filebox[@racket[alloc^@]]{
+@racketblock[
+(define (alloc x) (return x))]}
+@filebox[@racket[store-nd@]]{
+@racketblock[
+(define (find a)
+  (do σ ← get-store
+      (for/monad+ ([v (σ a)])
+        (return v))))
+(define (ext a v)
+  (update-store (λ (σ) (σ a (if (∈ a σ) (set-add (σ a) v) (set v))))))]}}
 
+@Figure-ref{f:0cfa-abs} shows the component @racket[alloc^@] which
+implements monomorphic allocation, and the component
+@racket[store-nd@] for implementing @racket[find] and @racket[ext]
+which interact with a store mapping to @emph{sets} of values. The
+@racket[for/monad+] form is a convenience for combining a set of
+computations with @racket[mplus], and is used so @racket[find] returns
+@emph{all} of the values in the store at a given address.  The
+@racket[ext] function joins whenever an address is already allocated,
+otherwise it maps the address to a singleton set.  By linking these
+components with the same monad stack from before, we obtain an
+interpreter that loses precision whenever variables are bound to
+multiple values.
+
+@;{
+% KEEP IF POSSIBLE
+% For example, this program binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and produces
+%both answers when run:
+%ℑ⁅
+%¦ > (let f (λ (x) x)
+%¦     (let _ (f 0) (f 1)))]
+%ℑ,
+%¦ '((0 . ((x 1 0) (f ((λ (x) x) . ()))))
+%¦   (1 . ((x 1 0) (f ((λ (x) x) . ())))))
+%ℑ⁆
+}
+
+Our abstract interpreter now has a truly finite domain; the next step is to
+detect loops in the state-space to achieve termination.
 
