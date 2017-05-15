@@ -35,4 +35,13 @@
   (make-monadic-eval '(monad-nd@ δ-abs@ alloc@ state@ ev@)
                      '(fix ev)))
 
+(define the-0cfa-eval
+   (make-monadic-eval '(monad-nd@ alloc-x@ state-nd@ δ-abs@ ev@) 
+                      '(fix ev)))
+
+(define the-pdcfa-eval
+   (make-monadic-eval '(monad-pdcfa@ state-nd@ alloc-x@ δ-abs@ ev@ ev-cache@ eval-coind@)
+                      '(eval-coind (fix (ev-cache ev)))))
+
+
 
