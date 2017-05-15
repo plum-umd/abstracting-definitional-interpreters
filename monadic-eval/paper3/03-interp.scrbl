@@ -3,6 +3,7 @@
           scribble/manual 
           scriblib/footnote
           scribble/eval
+          racket/match
           "evals.rkt"
           "bib.rkt")
 
@@ -230,5 +231,142 @@ in a succinct concrete syntax:
 @code:comment{Divide-by-zero errors result in failures.}
 (quotient 5 (- 3 3))   
 ]
+Because our monad stack places @racket[FailT] above @racket[StateT],
+the answer includes the (empty) store at the point of the error. Had
+we changed @racket[monad@] to use @racket[(ReaderT (StateT (FailT
+ID)))] then failures would not include the store:
+@interaction[#:eval the-pure-eval-alt
+(quotient 5 (- 3 3))   
+]
+At this point we've defined a simple definitional interpreter, although the
+extensible components involved—monadic operations and open recursion—will allow
+us to instantiate the same interpreter to achieve a wide range of useful
+abstract interpretations.
+
+@section[#:tag "s:collecting"]{Collecting Variations}
+
+The formal development of abstract interpretation often starts from a
+so-called ``non-standard collecting semantics.''  A common form of
+collecting semantics is a trace semantics, which collects streams of
+states the interpreter reaches.  @Figure-ref{f:trace} shows the monad
+stack for a tracing interpreter and a ``mix-in'' for the evaluator.
+The monad stack adds @racket[WriterT List], which provides a new
+operation @racket[tell] for writing lists of items to the stream of
+reached states.  The @racket[ev-tell] function is a wrapper around an
+underlying @racket[ev₀] unfixed evaluator, and interposes itself
+between each recursive call by @racket[tell]ing the current state of
+the evaluator: the current expression, environment and store.  The
+top-level evaluation function is then: 
+@racketblock[
+(define (eval e) (mrun ((fix (ev-tell ev)) e)))
+]
+
+@figure["f:dead" "Dead Code Collecting Semantics"]{
+@filebox[@racket[dead-monad@]]{
+@racketblock[
+(define-monad
+  (ReaderT (StateT (StateT (FailT ID)))))]}
+@filebox[@racket[ev-dead@]]{
+@racketblock[
+(define (((ev-dead ev₀) ev) e)
+  (do θ ← get-dead       
+      (put-dead (set-remove θ e))
+      ((ev₀ ev) e)))]}
+@filebox[@racket[eval-dead@]]{
+@racketblock[
+(define ((eval-dead eval) e₀)
+  (do (put-dead (subexps e₀))
+      (eval e₀)))]}
+}
+
+
+Now when an expression is evaluated, we get an answer and a list of all states
+seen by the evaluator, in the order in which they were seen. For example:
+@;(not showing @racket[ρ] or @racket[σ] in results):
+@interaction[#:eval the-trace-eval
+(* (+ 3 4) 9)]
+Were we to swap @racket[List] with @racket[Set] in the monad stack, we would obtain a
+@emph{reachable} state semantics, another common form of collecting semantics,
+that loses the order and repetition of states.
+
+As another collecting semantics variant, we show how to collect the
+@emph{dead code} in a program.  Here we use a monad stack that has an
+additional state component (with operations named @racket[put-dead] and
+@racket[get-dead]) which stores the set of dead expressions.  Initially this
+will contain all subexpressions of the program.  As the interpreter
+evaluates expressions it will remove them from the dead set.
+
+@Figure-ref{f:dead} defines the monad stack for the dead code
+collecting semantics and the @racket[ev-dead@] component, another
+mix-in for an @racket[ev₀] evaluator to remove the given subexpression
+before recurring.  Since computing the dead code requires an outer
+wrapper that sets the initial set of dead code to be all of the
+subexpressions in the program, we define @racket[eval-dead@] which
+consumes a @emph{closed evaluator}, i.e. something of the form
+@racket[(fix ev)]. Putting these pieces together, the dead code
+collecting semantics is defined:
+@racketblock[ 
+(define (eval e) (mrun ((eval-dead (fix (ev-dead ev))) e)))]
+
+Running a program with the dead code interpreter produces an answer and the set
+of expressions that were not evaluated during the running of a program:
+@interaction[#:eval the-dead-eval
+(if0 0 1 2)
+(λ (x) x)
+(if0 (quotient 1 0) 2 3)]
+
+Our setup makes it easy not only to express the concrete interpreter,
+but also these useful forms of collecting semantics.
+
+@section[#:tag "s:base"]{Abstracting Base Values}
+
+Our interpreter must become decidable before it can be considered an analysis,
+and the first step towards decidability is to abstract the base types of the
+language to something finite. We do this for our number base type by
+introducing a new @emph{abstract} number, written @racket['N], which represents the
+set of all numbers. Abstract numbers are introduced by an alternative
+interpretation of primitive operations, given in @Figure-ref{f:abs-delta},
+which simply produces @racket['N] in all cases. 
+
+Some care must be taken in the abstraction of @racket['quotient]. If
+the denominator is the abstract number @racket['N], then it is
+possible the program could fail as a result of divide-by-zero, since
+@racket[0] is contained in the interpretation of
+@racket['N]. Therefore there are @emph{two} possible answers when the
+denominator is @racket['N]: @racket['N] and @racket['failure]. Both
+answers are @racket[return]ed by introducing non-determinism
+@racket[NondetT] into the monad stack. Adding non-determinism provides
+the @racket[mplus] operation for combining multiple
+answers. Non-determinism is also used in @racket[zero?], which returns
+both true and false on @racket['N].
+
+By linking together @racket[δ^@] and the monad stack with
+non-determinism, we obtain an evaluator that produces a set of
+results:
+@interaction[#:eval the-abs-delta-eval
+(* (+ 3 4) 9)
+(quotient 5 (+ 1 2))
+(if0 (+ 1 0) 3 4)]
+
+@;{FIXME
+If we link @racket[δ^@] with the @emph{tracing} monad stack plus
+non-determinism:
+...
+}
+
+
+
+
+It is clear that the interpreter will only ever see a finite set of
+numbers (including @racket['N]), but it's definitely not true that the
+interpreter halts on all inputs.  First, it's still possible to
+generate an infinite number of closures.  Second, there's no way for
+the interpreter to detect when it sees a loop.  To make a terminating
+abstract interpreter requires tackling both.  We look next at
+abstracting closures.
+
+
+
+
 
 
