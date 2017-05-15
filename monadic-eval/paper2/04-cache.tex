@@ -122,7 +122,7 @@ the cache, which maps abstract configurations to pairs of values and stores,
 all of which are finite.
 
 
-With these peices in place we construct a complete interpreter:
+With these pieces in place we construct a complete interpreter:
 \begin{alignat*}{1}
 & 𝔥⸨(define (eval e) (mrun ((fix-cache (fix (ev-cache ev))) e)))⸩
 \end{alignat*}
