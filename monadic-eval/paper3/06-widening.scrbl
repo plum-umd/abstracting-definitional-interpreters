@@ -30,3 +30,32 @@ we get a store-widened variant of the abstract interpreter. Because
 @racket[StateT] for the store appears underneath nondeterminism, it
 will be automatically widened. We write @racket[StateT+] to signify
 that the cell of state supports such widening.
+
+@figure["f:pres-delta" "An Alternative Abstraction for Precise Primitives"]{
+@filebox[@racket[precise-δ@]]{
+@racketblock[
+(define (δ o n₀ n₁)
+  (match* (o n₀ n₁)
+    [('+ (? num?) (? num?)) (return (+ n₀ n₁))]
+    [('+ _        _       ) (return 'N)] ... ))
+(define (zero? v)
+  (match v
+    ['N (mplus (return #t) (return #f))]
+    [_  (return (= 0 v))]))
+]}
+@filebox[@racket[store-crush@]]{
+@racketblock[
+(define (find a)
+  (do σ ← get-store
+      (for/monad+ ([v (σ a)])
+        (return v))))
+(define (crush v vs)
+  (if (closure? v)
+      (set-add vs v)
+      (set-add (set-filter closure? vs) 'N)))
+(define (ext a v)
+  (update-store (λ (σ) (if (∈ a σ)
+                           (σ a (crush v (σ a)))
+                           (σ a (set v))))))
+]}}
+
