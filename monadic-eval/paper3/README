@@ -6,6 +6,7 @@ To build the paper, you will need:
 
 - XeLaTeX
 - Racket v6.9.
+- raco pkg install monadic-eval/
 - Modified version of the latest version of acmart.cls.
 
 Patching to use (a modified version of!) the latest version of
