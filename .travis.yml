@@ -18,5 +18,5 @@ before_script:
 script:
  - pushd monadic-eval
  - make test
- - pushd paper
- - make main.tex
+ - make tex
+

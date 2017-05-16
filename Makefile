@@ -1,4 +1,4 @@
-.PHONY: install test clean paper
+.PHONY: install test pdf tex clean
 DEFAULT: install
 
 install:
@@ -9,8 +9,11 @@ install:
 test:
 	@raco test --drdr --timeout +inf.0 -j 4 --package monadic-eval
 
-paper:
-	make -C monadic-eval/paper3/ main.pdf
+pdf:
+	make -C monadic-eval/paper/ main.pdf
+
+tex:
+	make -C monadic-eval/paper/ main.tex
 
 clean:
 	rm -f .\#* \#*\# *\~ &>/dev/null
