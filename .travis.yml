@@ -16,5 +16,7 @@ install:
 before_script:
 
 script:
- - cd monadic-eval/ ; make test
- - cd monadic-eval/paper ; make main.tex
+ - pushd monadic-eval
+ - make test
+ - pushd paper
+ - make main.tex
