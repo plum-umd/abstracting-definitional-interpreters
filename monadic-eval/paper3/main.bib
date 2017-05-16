@@ -12561,3 +12561,736 @@ language={English}
   school = {University of Utah},
   year = {2014}
 }
+@article{davdar:gibbons:2011:monadic-equational-reasoning,
+    author = {Gibbons, Jeremy and Hinze, Ralf},
+    citeulike-article-id = {9922463},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=2034777},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/2034574.2034777},
+    date-added = {2015-08-15 17:17:16},
+    journal = {SIGPLAN Not.},
+    priority = {2},
+    publisher = {ACM},
+    title = {Just do it: simple monadic equational reasoning},
+    x-abstract = {One of the appeals of pure functional programming is that it is so amenable to equational reasoning. One of the problems of pure functional programming is that it rules out computational effects. Moggi and Wadler showed how to get round this problem by using monads to encapsulate the effects, leading in essence to a phase distinction - a pure functional evaluation yielding an impure imperative computation. Still, it has not been clear how to reconcile that phase distinction with the continuing appeal of functional programming; does the impure imperative part become inaccessible to equational reasoning? We think not; and to back that up, we present a simple axiomatic approach to reasoning about programs with computational effects.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/2034574.2034777},
+    x-issn = {0362-1340},
+    x-month = sep,
+    x-number = {9},
+    x-url = {http://dx.doi.org/10.1145/2034574.2034777},
+    x-volume = {46},
+    xpages = {2--14},
+    year = {2011}
+}
+
+@incollection{davdar:calculation-coq,
+    author = {Tesson, Julien and Hashimoto, Hideki and Hu, Zhenjiang and Loulergue, Fr\'{e}d\'{e}ric and Takeichi, Masato},
+    booktitle = {Algebraic Methodology and Software Technology},
+    chapter = {10},
+    citeulike-article-id = {8823271},
+    citeulike-linkout-0 = {http://dx.doi.org/10.1007/978-3-642-17796-5\_10},
+    citeulike-linkout-1 = {http://www.springerlink.com/content/4777t68m32tm1606},
+    citeulike-linkout-2 = {http://link.springer.com/chapter/10.1007/978-3-642-17796-5\_10},
+    date-added = {2015-07-10 21:41:22},
+    editor = {Johnson, Michael and Pavlovic, Dusko},
+    keywords = {coq, formal\_development, programming},
+    priority = {2},
+    publisher = {Springer Berlin Heidelberg},
+    series = {Lecture Notes in Computer Science},
+    title = {Program Calculation in Coq},
+    x-abstract = {Program calculation, being a programming technique that derives programs from specification by means of formula manipulation, is a challenging activity. It requires human insights and creativity, and needs systems to help human to focus on clever parts of the derivation by automating tedious ones and verifying correctness of transformations. Different from many existing systems, we show in this paper that Coq, a popular theorem prover, provides a cheap way to implement a powerful system to support program calculation, which has not been recognized so far. We design and implement a set of tactics for the Coq proof assistant to help the user to derive programs by program calculation and to write proofs in calculational form. The use of these tactics is demonstrated through program calculations in Coq based on the theory of lists.},
+    x-address = {Berlin, Heidelberg},
+    x-doi = {10.1007/978-3-642-17796-5\_10},
+    x-isbn = {978-3-642-17795-8},
+    x-url = {http://dx.doi.org/10.1007/978-3-642-17796-5\_10},
+    x-volume = {6486},
+    xpages = {163--179},
+    year = {2011}
+}
+
+@techreport{davdar:Moggi:1989:Monads,
+    author = {Moggi, Eugenio},
+    citeulike-article-id = {763238},
+    citeulike-linkout-0 = {http://www.disi.unige.it/person/MoggiE/ftp/abs-view.pdf},
+    date-added = {2014-11-13 21:23:18},
+    howpublished = {ECS-LFCS-90-113},
+    institution = {Edinburgh University},
+    keywords = {category-theory, language-haskell, monad, semantics},
+    priority = {2},
+    title = {An Abstract View of Programming Languages},
+    x-abstract = {The aim of these course notes is to show that notions and ideas from Category
+Theory can be useful tools in Computer Science, by illustrating some recent applications
+to the study of programming languages based on the principle \notions
+of computation as monads". The main objective is to propose a unied approach
+to the denotational semantics of programming languages. The category-theoretic
+notions introduced in the course will be presented with specic applications in
+mind (so that they will not sound too abstract) and guidelines for linking abstract
+and concrete concepts will be stressed.},
+    x-url = {http://www.disi.unige.it/person/MoggiE/ftp/abs-view.pdf},
+    year = {1989}
+}
+
+@inproceedings{davdar:Sergey:2013:Monalysis,
+    author = {Sergey, Ilya and Devriese, Dominique and Might, Matthew and Midtgaard, Jan and Darais, David and Clarke, Dave and Piessens, Frank},
+    citeulike-article-id = {13136834},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=2491979},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/2499370.2491979},
+    date-added = {2014-11-12 22:55:11},
+    journal = {Proceedings of Programming Language Design and Implementation 2013 (PLDI 2013)},
+    keywords = {abstract-interpretation, monad, static-analysis},
+    location = {Seattle, Washington, USA},
+    priority = {2},
+    publisher = {ACM},
+    title = {Monadic Abstract Interpreters},
+    x-abstract = {Recent developments in the systematic construction of abstract interpreters hinted at the possibility of a broad unification of concepts in static analysis. We deliver that unification by showing context-sensitivity, polyvariance, flow-sensitivity, reachability-pruning, heap-cloning and cardinality-bounding to be independent of any particular semantics. Monads become the unifying agent between these concepts and between semantics. For instance, by plugging the same "context-insensitivity monad" into a monadically-parameterized semantics for Java or for the lambda calculus, it yields the expected context-insensitive analysis. To achieve this unification, we develop a systematic method for transforming a concrete semantics into a monadically-parameterized abstract machine. Changing the monad changes the behavior of the machine. By changing the monad, we recover a spectrum of machines---from the original concrete semantics to a monovariant, flow- and context-insensitive static analysis with a singly-threaded heap and weak updates. The monadic parameterization also suggests an abstraction over the ubiquitous monotone fixed-point computation found in static analysis. This abstraction makes it straightforward to instrument an analysis with high-level strategies for improving precision and performance, such as abstract garbage collection and widening. While the paper itself runs the development for continuation-passing style, our generic implementation replays it for direct-style lambda-calculus and Featherweight Java to support generality.},
+    x-doi = {10.1145/2499370.2491979},
+    x-month = jun,
+    x-url = {http://dx.doi.org/10.1145/2499370.2491979},
+    xpages = {399--410},
+    year = {2013}
+}
+
+@inproceedings{davdar:might:2006:gammacfa,
+    author = {Might, Matthew and Shivers, Olin},
+    booktitle = {ICFP '06: Proceedings of the 11th {ACM} {SIGPLAN} {I}nternational {C}onference on {F}unctional {P}rogramming},
+    citeulike-article-id = {4837509},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=1159803.1159807},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/1159803.1159807},
+    date-added = {2014-09-29 09:27:06},
+    keywords = {abstract-garbage-collection, static-analysis},
+    location = {Portland, Oregon, USA},
+    priority = {2},
+    publisher = {ACM},
+    series = {ICFP '06},
+    title = {Improving flow analyses via {Gamma-CFA}: Abstract garbage collection and counting},
+    x-abstract = {We present two independent and complementary improvements for flow-based analysis of higher-order languages: (1)  abstract garbage collection  and (2) abstract counting , collectively titled {Gamma-CFA}.  Abstract garbage collection is an analog to its concrete counterpart: we determine when an abstract resource has become unreachable, and then reallocate it as fresh. This prevents flow sets from merging in the abstract, which has two immediate effects: (1) the precision of the analysis is increased, and (2) the running time of the analysis is frequently reduced. In some nontrivial cases, we achieve an order of magnitude improvement in precision and time  simultaneously .In abstract counting, we track how many times an abstract resource has been allocated. A count of one implies that the abstract resource momentarily represents only one concrete resource. This, in turn, allows us to perform environment analysis and to expand the kinds (rather than just the degree) of optimizations available to the compiler.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/1159803.1159807},
+    x-isbn = {1-59593-309-3},
+    x-url = {http://dx.doi.org/10.1145/1159803.1159807},
+    xpages = {13--25},
+    year = {2006}
+}
+
+@inproceedings{davdar:might:2010:mcfa,
+    author = {Might, Matthew and Smaragdakis, Yannis and Van Horn, David},
+    booktitle = {PLDI '10: Proceedings of the 2010 ACM SIGPLAN Conference on Programming Language Design and Implementation},
+    citeulike-article-id = {7329790},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=1806596.1806631},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/1806596.1806631},
+    date-added = {2014-09-29 09:25:58},
+    keywords = {cfa, control-flow-analysis, k-cfa, kcfa, m-cfa, mcfa},
+    location = {Toronto, Ontario, Canada},
+    priority = {2},
+    publisher = {ACM Press},
+    series = {PLDI '10},
+    title = {Resolving and exploiting the k-{CFA} paradox: {I}lluminating functional vs. object-oriented program analysis},
+    x-abstract = {Low-level program analysis is a fundamental problem, taking the shape of "flow analysis" in functional languages and "points-to" analysis in imperative and object-oriented languages. Despite the similarities, the vocabulary and results in the two communities remain largely distinct, with limited cross-understanding. One of the few links is Shivers's {k-CFA} work, which has advanced the concept of "context-sensitive analysis" and is widely known in both communities. Recent results indicate that the relationship between the functional and object-oriented incarnations of {k-CFA} is not as well understood as thought. Van Horn and Mairson proved {k-CFA} for k ≥ 1 to be {EXPTIME}-complete; hence, no polynomial-time algorithm can exist. Yet, there are several polynomial-time formulations of context-sensitive points-to analyses in object-oriented languages. Thus, it seems that functional {k-CFA} may actually be a profoundly different analysis from object-oriented {k-CFA}. We resolve this paradox by showing that the exact same specification of {k-CFA} is polynomial-time for object-oriented languages yet exponential-time for functional ones: objects and closures are subtly different, in a way that interacts crucially with context-sensitivity and complexity. This illumination leads to an immediate payoff: by projecting the object-oriented treatment of objects onto closures, we derive a polynomial-time hierarchy of context-sensitive {CFAs} for functional programs.},
+    x-doi = {10.1145/1806596.1806631},
+    x-isbn = {978-1-4503-0019-3},
+    x-url = {http://dx.doi.org/10.1145/1806596.1806631},
+    xpages = {305--315},
+    year = {2010}
+}
+
+@article{davdar:leroy:2009:compcert,
+    author = {Leroy, Xavier},
+    citeulike-article-id = {9892087},
+    date-added = {2014-09-29 08:36:08},
+    journal = {Communication of the ACM},
+    keywords = {compcert, coq, proof},
+    priority = {2},
+    title = {Formal verification of a realistic compiler},
+    x-month = jul,
+    x-number = {7},
+    x-volume = {52},
+    xpages = {107--115},
+    year = {2009}
+}
+
+@inproceedings{davdar:das:2002:esp,
+    author = {Das, Manuvir and Lerner, Sorin and Seigle, Mark},
+    booktitle = {Proceedings of the ACM SIGPLAN 2002 Conference on Programming Language Design and Implementation},
+    citeulike-article-id = {3048734},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=512538},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/512529.512538},
+    date-added = {2014-09-29 08:35:03},
+    journal = {SIGPLAN Not.},
+    location = {Berlin, Germany},
+    priority = {2},
+    publisher = {ACM},
+    series = {PLDI '02},
+    title = {{ESP}: Path-sensitive Program Verification in Polynomial Time},
+    x-abstract = {In this paper, we present a new algorithm for partial program verification that runs in polynomial time and space. We are interested in checking that a program satisfies a given temporal safety property. Our insight is that by accurately modeling only those branches in a program for which the property-related behavior differs along the arms of the branch, we can design an algorithm that is accurate enough to verify the program with respect to the given property, without paying the potentially exponential cost of full path-sensitive {analysis.We} have implemented this "property simulation" algorithm as part of a partial verification tool called {ESP}. We present the results of applying {ESP} to the problem of verifying the file {I/O} behavior of a version of the {GNU} C compiler (gcc, 140,000 {LOC}). We are able to prove that all of the 646 calls to .fprintf in the source code of gcc are guaranteed to print to valid, open files. Our results show that property simulation scales to large programs and is accurate enough to verify meaningful properties.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/512529.512538},
+    x-isbn = {1-58113-463-0},
+    x-issn = {0362-1340},
+    x-month = may,
+    x-url = {http://dx.doi.org/10.1145/512529.512538},
+    x-volume = {37},
+    xpages = {57--68},
+    year = {2002}
+}
+
+@inproceedings{davdar:feng:2014:apposcopy,
+    author = {Feng, Yu and Anand, Saswat and Dillig, Isil and Aiken, Alex},
+    booktitle = {SIGSOFT FSE},
+    citeulike-article-id = {13377125},
+    date-added = {2014-09-29 08:33:58},
+    keywords = {feng2014apposcopy},
+    priority = {2},
+    title = {Apposcopy: {Semantics-Based} Detection of Android Malware through Static Analysis},
+    year = {2014}
+}
+
+@inproceedings{davdar:smaragdakis:2011:pick-your-contexts-well,
+    author = {Smaragdakis, Yannis and Bravenboer, Martin and Lhot\'{a}k, Ondrej},
+    booktitle = {Proceedings of the 38th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+    citeulike-article-id = {9533212},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=1926390},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/1925844.1926390},
+    date-added = {2014-09-29 08:31:04},
+    journal = {SIGPLAN Not.},
+    location = {Austin, Texas, USA},
+    priority = {2},
+    publisher = {ACM},
+    series = {POPL '11},
+    title = {Pick Your Contexts Well: Understanding Object-sensitivity},
+    x-abstract = {Object-sensitivity has emerged as an excellent context abstraction for points-to analysis in object-oriented languages. Despite its practical success, however, object-sensitivity is poorly understood. For instance, for a context depth of 2 or higher, past scalable implementations deviate significantly from the original definition of an object-sensitive analysis. The reason is that the analysis has many degrees of freedom, relating to which context elements are picked at every method call and object creation. We offer a clean model for the analysis design space, and discuss a formal and informal understanding of object-sensitivity and of how to create good object-sensitive analyses. The results are surprising in their extent. We find that past implementations have made a sub-optimal choice of contexts, to the severe detriment of precision and performance. We define a "full-object-sensitive" analysis that results in significantly higher precision, and often performance, for the exact same context depth. We also introduce "type-sensitivity" as an explicit approximation of object-sensitivity that preserves high context quality at substantially reduced cost. A type-sensitive points-to analysis makes an unconventional use of types as context: the context types are not dynamic types of objects involved in the analysis, but instead upper bounds on the dynamic types of their allocator objects. Our results expose the influence of context choice on the quality of points-to analysis and demonstrate type-sensitivity to be an idea with major impact: It decisively advances the state-of-the-art with a spectrum of analyses that simultaneously enjoy speed (several times faster than an analogous object-sensitive analysis), scalability (comparable to analyses with much less context-sensitivity), and precision (comparable to the best object-sensitive analysis with the same context depth).},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/1925844.1926390},
+    x-isbn = {978-1-4503-0490-0},
+    x-issn = {0362-1340},
+    x-month = jan,
+    x-url = {http://dx.doi.org/10.1145/1925844.1926390},
+    x-volume = {46},
+    xpages = {17--30},
+    year = {2011}
+}
+
+@article{davdar:kastrinis:2013:hybrid-points-to,
+    author = {Kastrinis, George and Smaragdakis, Yannis},
+    booktitle = {Proceedings of the 34th ACM SIGPLAN conference on Programming language design and implementation},
+    citeulike-article-id = {12437335},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=2462191},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/2462156.2462191},
+    date-added = {2014-09-29 08:30:14},
+    journal = {SIGPLAN Not.},
+    location = {Seattle, Washington, USA},
+    priority = {2},
+    publisher = {ACM},
+    series = {PLDI '13},
+    title = {Hybrid Context-sensitivity for Points-to Analysis},
+    x-abstract = {Context-sensitive points-to analysis is valuable for achieving high precision with good performance. The standard flavors of context-sensitivity are call-site-sensitivity ({kCFA}) and object-sensitivity. Combining both flavors of context-sensitivity increases precision but at an infeasibly high cost. We show that a selective combination of call-site- and object-sensitivity for Java points-to analysis is highly profitable. Namely, by keeping a combined context only when analyzing selected language features, we can closely approximate the precision of an analysis that keeps both contexts at all times. In terms of speed, the selective combination of both kinds of context not only vastly outperforms non-selective combinations but is also faster than a mere object-sensitive analysis. This result holds for a large array of analyses (e.g., 1-object-sensitive, 2-object-sensitive with a context-sensitive heap, type-sensitive) establishing a new set of performance/precision sweet spots.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/2462156.2462191},
+    x-isbn = {978-1-4503-2014-6},
+    x-issn = {0362-1340},
+    x-month = jun,
+    x-number = {6},
+    x-url = {http://dx.doi.org/10.1145/2462156.2462191},
+    x-volume = {48},
+    xpages = {423--434},
+    year = {2013}
+}
+
+@article{davdar:johnson:2014:AAC,
+    archivePrefix = {arXiv},
+    author = {Johnson, J. Ian and Van Horn, David},
+    citeulike-article-id = {13377124},
+    citeulike-linkout-0 = {http://arxiv.org/abs/1305.3163},
+    citeulike-linkout-1 = {http://arxiv.org/pdf/1305.3163},
+    citeulike-linkout-2 = {http://dx.doi.org/10.1145/2661088.2661098},
+    date-added = {2014-09-29 08:26:15},
+    day = {14},
+    eprint = {1305.3163},
+    priority = {2},
+    title = {Abstracting Abstract Control (Extended)},
+    x-abstract = {The strength of a dynamic language is also its weakness: run-time flexibility
+comes at the cost of compile-time predictability. Many of the hallmarks of
+dynamic languages such as closures, continuations, various forms of reflection,
+and a lack of static types make many programmers rejoice, while compiler
+writers, tool developers, and verification engineers lament. The dynamism of
+these features simply confounds statically reasoning about programs that use
+them. Consequently, static analyses for dynamic languages are few, far between,
+and seldom sound.
+
+
+The "abstracting abstract machines" ({AAM}) approach to constructing static
+analyses has recently been proposed as a method to ameliorate the difficulty of
+designing analyses for such language features. The approach, so called because
+it derives a function for the sound and computable approximation of program
+behavior starting from the abstract machine semantics of a language, provides a
+viable approach to dynamic language analysis since all that is required is a
+machine description of the interpreter.
+
+
+The original {AAM} recipe produces finite state abstractions, which cannot
+faithfully represent an interpreter's control stack. Recent advances have shown
+that higher-order programs can be approximated with pushdown systems. However,
+these automata theoretic models either break down on features that inspect or
+modify the control stack.
+
+
+In this paper, we tackle the problem of bringing pushdown flow analysis to
+the domain of dynamic language features. We revise the abstracting abstract
+machines technique to target the stronger computational model of pushdown
+systems. In place of automata theory, we use only abstract machines and
+memoization. As case studies, we show the technique applies to a language with
+closures, garbage collection, stack-inspection, and first-class composable
+continuations.},
+    x-doi = {10.1145/2661088.2661098},
+    x-month = aug,
+    x-url = {http://dx.doi.org/10.1145/2661088.2661098},
+    year = {2014}
+}
+
+@article{davdar:felleisen:1992:red-sem,
+    author = {Felleisen, Matthias and Hieb, Robert},
+    citeulike-article-id = {2082838},
+    date-added = {2014-09-29 03:16:36},
+    journal = {Theoretical Computer Science},
+    keywords = {bibtex-import},
+    local-url = {file://localhost/Users/siek/papers/felleisen92\_seq\_control.pdf},
+    pdf = {felleisen92:\_seq\_control.pdf},
+    priority = {2},
+    publisher = {Elsevier Science Publishers Ltd.},
+    title = {The revised report on the syntactic theories of sequential control and state},
+    x-address = {Essex, UK},
+    x-doi = {10.1016/0304-3975(92)90014-7},
+    x-number = {2},
+    x-volume = {103},
+    xpages = {235--271},
+    year = {1992}
+}
+
+@techreport{davdar:plotkin:1981:sos,
+    author = {Plotkin, G. D.},
+    citeulike-article-id = {1437},
+    citeulike-linkout-0 = {http://citeseer.ist.psu.edu/plotkin81structural.html},
+    citeulike-linkout-1 = {http://citeseer.lcs.mit.edu/plotkin81structural.html},
+    citeulike-linkout-2 = {http://citeseer.ifi.unizh.ch/plotkin81structural.html},
+    citeulike-linkout-3 = {http://citeseer.comp.nus.edu.sg/plotkin81structural.html},
+    date-added = {2014-09-29 03:12:56},
+    keywords = {operational, semantics},
+    priority = {2},
+    title = {A Structural Approach to Operational Semantics},
+    x-abstract = {Syntax of a very simple programming language called L. What is
+abstract about it will be discussed a little here and later at greater length. For us syntax is a
+collection of syntactic sets of phrases; each set corresponds to a different type of phrase. Some
+of these sets are very simple and can be taken as given:
+
+Truthvalues This is the set T = ftt; ffg and is ranged over by (the metavariable) t (and
+we also happily employ for this (and any other) metavariable sub- and super-scripts
+to...},
+    x-address = {University of Aarhus},
+    x-number = {DAIMI FN-19},
+    x-url = {http://citeseer.ist.psu.edu/plotkin81structural.html},
+    year = {1981}
+}
+
+@inproceedings{davdar:cousot:1977:ai,
+    author = {Cousot, Patrick and Cousot, Radhia},
+    booktitle = {POPL '77: Proceedings of the 4th ACM SIGACT-SIGPLAN symposium on Principles of programming languages},
+    citeulike-article-id = {2631924},
+    date-added = {2014-04-17 00:50:13},
+    keywords = {abstract, interpretation},
+    priority = {2},
+    publisher = {ACM},
+    title = {Abstract interpretation: a unified lattice model for static analysis of programs by construction or approximation of fixpoints},
+    x-address = {New York, NY, USA},
+    xpages = {238--252},
+    year = {1977}
+}
+
+@book{davdar:nielson:2004:program-analysis,
+    author = {Nielson, Flemming and Nielson, Hanne R. and Hankin, Chris},
+    citeulike-article-id = {5709622},
+    citeulike-linkout-0 = {http://books.google.de/books?id=RLjt0xSj8DcC\&\#38;printsec=frontcover\&\#38;source=gbs\_navlinks\_s\#v=onepage\&\#38;q=\&\#38;f=false},
+    date-added = {2014-04-16 18:58:46},
+    howpublished = {Hardcover},
+    priority = {2},
+    publisher = {Springer},
+    title = {Principles of Program Analysis},
+    x-abstract = {{Program analysis concerns static techniques for computing reliable approximate information about the dynamic behaviour of programs. Applications include compilers (for code improvement), software validation (for detecting errors in algorithms or breaches of security) and transformations between data representation (for solving problems such as the Y2K problem). This book is unique in giving an overview of the four major approaches to program analysis: data flow analysis, constraint based analysis, abstract interpretation, and type and effect systems. The presentation demonstrates the extensive similarities between the approaches; this will aid the reader in choosing the right approach and in enhancing it with insights from the other approaches. The book covers basic semantic properties as well as more advanced algorithmic techniques. The book is aimed at M.Sc. and Ph.D. students but will be valuable also for experienced researchers and professionals.}},
+    x-month = dec,
+    x-url = {http://books.google.de/books?id=RLjt0xSj8DcC\&printsec=frontcover\&source=gbs\_navlinks\_s\#v=onepage\&q=\&f=false},
+    year = {2004}
+}
+
+@phdthesis{davdar:shivers:1991:cfa,
+    author = {Shivers, Olin G.},
+    citeulike-article-id = {82936},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=124950},
+    date-added = {2014-04-16 18:56:32},
+    keywords = {abstract-interpretation, cfa},
+    priority = {2},
+    publisher = {Carnegie Mellon University},
+    school = {Carnegie Mellon University},
+    title = {{Control-Flow} Analysis of {Higher-Order} Languages},
+    x-abstract = {Programs written in powerful, higher-order languages like Scheme, {ML}, and Common Lisp should run as fast as their {FORTRAN} and C counterparts. They should, but they don't. A major reason is the level of optimisation applied to these two classes of languages. Many {FORTRAN} and C compilers employ an arsenal of sophisticated global optimisations that depend upon data-ﬂow analysis: common-subexpression elimination, loop-invariant detection, induction-variable elimination, and many, many more. Compilers for higher- order languages do not provide these optimisations. Without them, Scheme, {LISP} and {ML} compilers are doomed to produce code that runs slower than their {FORTRAN} and C counterparts. The problem is the lack of an explicit control-ﬂow graph at compile time, something which traditional data-ﬂow analysis techniques require. In this dissertation, I present a technique for recovering the control-ﬂow graph of a Scheme program at compile time. I give examples of how this information can be used to perform several data-ﬂow analysis optimisations, including copy propagation, induction-variable elimination, useless-variable elimination, and type recovery. The analysis is deﬁned in terms of a non-standard semantic interpretation. The denotational semantics is carefully developed, and several theorems establishing the correctness of the semantics and the implementing algorithms are proven.},
+    x-address = {Pittsburgh, PA, USA},
+    x-url = {http://portal.acm.org/citation.cfm?id=124950},
+    year = {1991}
+}
+
+@incollection{davdar:cousot:1999:calculational,
+    author = {Cousot, Patrick},
+    booktitle = {Calculational System Design},
+    citeulike-article-id = {6768482},
+    date-added = {2014-04-16 18:44:12},
+    editor = {Broy, M. and Steinbr\"{u}ggen, R.},
+    priority = {2},
+    publisher = {NATO ASI Series F. IOS Press, Amsterdam},
+    title = {The Calculational Design of a Generic Abstract Interpreter},
+    year = {1999}
+}
+
+@incollection{davdar:midtgaard:2008:calculational-cfa,
+    author = {Midtgaard, Jan and Jensen, Thomas},
+    booktitle = {Static Analysis},
+    chapter = {23},
+    citeulike-article-id = {10793227},
+    citeulike-linkout-0 = {http://dx.doi.org/10.1007/978-3-540-69166-2\_23},
+    citeulike-linkout-1 = {http://www.springerlink.com/content/06710k86j0638054},
+    citeulike-linkout-2 = {http://link.springer.com/chapter/10.1007/978-3-540-69166-2\_23},
+    date-added = {2014-04-16 18:33:09},
+    editor = {Alpuente, Mar\'{\i}a and Vidal, Germ\'{a}n},
+    keywords = {abstract-interpretation, flow-analysis},
+    priority = {2},
+    publisher = {Springer Berlin Heidelberg},
+    series = {Lecture Notes in Computer Science},
+    title = {A Calculational Approach to {Control-Flow} Analysis by Abstract Interpretation},
+    x-abstract = {We present a derivation of a control-flow analysis by abstract interpretation. Our starting point is a transition system semantics defined as an abstract machine for a small functional language in continuation-passing style. We obtain a Galois connection for abstracting the machine states by composing Galois connections, most notable an independent-attribute Galois connection on machine states and a Galois connection induced by a closure operator associated with a constituent-parts relation on environments. We calculate abstract transfer functions by applying the state abstraction to the collecting semantics, resulting in a novel characterization of demand-driven {0-CFA}.},
+    x-address = {Berlin, Heidelberg},
+    x-doi = {10.1007/978-3-540-69166-2\_23},
+    x-isbn = {978-3-540-69163-1},
+    x-issn = {0302-9743},
+    x-url = {http://dx.doi.org/10.1007/978-3-540-69166-2\_23},
+    x-volume = {5079},
+    xpages = {347--362},
+    year = {2008}
+}
+
+@inproceedings{davdar:van-horn:2010:aam,
+    author = {Van Horn, David and Might, Matthew},
+    booktitle = {ICFP '10: Proceedings of the 15th ACM SIGPLAN International Conference on Functional Programming},
+    citeulike-article-id = {7956643},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=1863543.1863553},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/1863543.1863553},
+    date-added = {2014-04-16 18:32:17},
+    journal = {SIGPLAN Not.},
+    location = {Baltimore, Maryland, USA},
+    priority = {2},
+    publisher = {ACM},
+    series = {ICFP '10},
+    title = {Abstracting Abstract Machines},
+    x-abstract = {We describe a derivational approach to abstract interpretation that yields novel and transparently sound static analyses when applied to well-established abstract machines. To demonstrate the technique and support our claim, we transform the {CEK} machine of Felleisen and Friedman, a lazy variant of Krivine's machine, and the stack-inspecting {CM} machine of Clements and Felleisen into abstract interpretations of themselves. The resulting analyses bound temporal ordering of program events; predict return-flow and stack-inspection behavior; and approximate the flow and evaluation of by-need parameters. For all of these machines, we find that a series of well-known concrete machine refactorings, plus a technique we call store-allocated continuations, leads to machines that abstract into static analyses simply by bounding their stores. We demonstrate that the technique scales up uniformly to allow static analysis of realistic language features, including tail calls, conditionals, side effects, exceptions, first-class continuations, and even garbage collection.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/1863543.1863553},
+    x-isbn = {978-1-60558-794-3},
+    x-issn = {0362-1340},
+    x-month = sep,
+    x-number = {9},
+    x-url = {http://dx.doi.org/10.1145/1863543.1863553},
+    x-volume = {45},
+    xpages = {51--62},
+    year = {2010}
+}
+
+@inproceedings{davdar:sergey:2013:mai,
+    author = {Sergey, Ilya and Devriese, Dominique and Might, Matthew and Midtgaard, Jan and Darais, David and Clarke, Dave and Piessens, Frank},
+    citeulike-article-id = {12208135},
+    citeulike-linkout-0 = {http://matt.might.net/papers/sergey2013monalysis.pdf},
+    date-added = {2013-03-25 14:55:07},
+    journal = {Programming Language Design and Implementation},
+    priority = {0},
+    title = {Monadic Abstract Interpreters},
+    x-month = jun,
+    x-url = {http://matt.might.net/papers/sergey2013monalysis.pdf},
+    year = {2013}
+}
+
+@article{davdar:Flatt2012Macros,
+    author = {Flatt, Matthew and Culpepper, Ryan and Darais, David and Findler, Robert B.},
+    citeulike-article-id = {12208106},
+    citeulike-linkout-0 = {http://www.eecs.northwestern.edu/\~{}robby/pubs/papers/jfp2012-fcdf.pdf},
+    date-added = {2013-03-25 14:46:26},
+    journal = {Journal of Functional Programming},
+    priority = {0},
+    title = {Macros that Work Together: Compile-time bindings, partial expansion, and definition contexts},
+    x-month = mar,
+    x-number = {2},
+    x-url = {http://www.eecs.northwestern.edu/\~{}robby/pubs/papers/jfp2012-fcdf.pdf},
+    x-volume = {22},
+    xpages = {181--216},
+    year = {2012}
+}
+
+@article{davdar:Might2010Yacc,
+    archivePrefix = {arXiv},
+    author = {Might, Matthew and Darais, David},
+    citeulike-article-id = {8133134},
+    citeulike-linkout-0 = {http://arxiv.org/abs/1010.5023},
+    citeulike-linkout-1 = {http://arxiv.org/pdf/1010.5023},
+    date-added = {2013-03-25 14:39:13},
+    day = {24},
+    eprint = {1010.5023},
+    priority = {0},
+    title = {Yacc is dead},
+    x-abstract = {We present two novel approaches to parsing context-free languages. The first
+approach is based on an extension of Brzozowski's derivative from regular
+expressions to context-free grammars. The second approach is based on a
+generalization of the derivative to parser combinators. The payoff of these
+techniques is a small (less than 250 lines of code), easy-to-implement parsing
+library capable of parsing arbitrary context-free grammars into lazy parse
+forests. Implementations for both Scala and Haskell are provided. Preliminary
+experiments with {S-Expressions} parsed millions of tokens per second, which
+suggests this technique is efficient enough for use in practice.},
+    x-month = oct,
+    x-url = {http://arxiv.org/abs/1010.5023},
+    year = {2010}
+}
+
+@article{davdar:Might2011Parsing,
+    author = {Might, Matthew and Darais, David and Spiewak, Daniel},
+    citeulike-article-id = {10870613},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=2034801},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/2034574.2034801},
+    date-added = {2013-03-25 14:35:28},
+    journal = {SIGPLAN Not.},
+    priority = {0},
+    publisher = {ACM},
+    title = {Parsing with derivatives: a functional pearl},
+    x-abstract = {We present a functional approach to parsing unrestricted context-free grammars based on Brzozowski's derivative of regular expressions. If we consider context-free grammars as recursive regular expressions, Brzozowski's equational theory extends without modification to context-free grammars (and it generalizes to parser combinators). The supporting actors in this story are three concepts familiar to functional programmers - laziness, memoization and fixed points; these allow Brzozowski's original equations to be transliterated into purely functional code in about 30 lines spread over three functions. Yet, this almost impossibly brief implementation has a drawback: its performance is sour - in both theory and practice. The culprit? Each derivative can double the size of a grammar, and with it, the cost of the next derivative. Fortunately, much of the new structure inflicted by the derivative is either dead on arrival, or it dies after the very next derivative. To eliminate it, we once again exploit laziness and memoization to transliterate an equational theory that prunes such debris into working code. Thanks to this compaction, parsing times become reasonable in practice. We equip the functional programmer with two equational theories that, when combined, make for an abbreviated understanding and implementation of a system for parsing context-free languages.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/2034574.2034801},
+    x-issn = {0362-1340},
+    x-month = sep,
+    x-number = {9},
+    x-url = {http://dx.doi.org/10.1145/2034574.2034801},
+    x-volume = {46},
+    xpages = {189--195},
+    year = {2011}
+}
+
+@inproceedings{davdar:felleisen:1986:cek,
+    author = {Felleisen, Matthias and Friedman, Daniel P.},
+    booktitle = {3rd Working Conference on the Formal Description of Programming Concepts},
+    citeulike-article-id = {5906202},
+    date-added = {2011-07-13 07:58:05},
+    keywords = {cek},
+    priority = {2},
+    title = {Control operators, the {SECD}-machine, and the lambda-calculus},
+    x-month = aug,
+    year = {1986}
+}
+
+@phdthesis{davdar:felleisen:1987:dissertation,
+    author = {Felleisen, Matthias},
+    citeulike-article-id = {5906226},
+    date-added = {2011-07-13 07:57:56},
+    keywords = {cek},
+    priority = {2},
+    school = {Indiana University},
+    title = {The Calculi of {Lambda-v-CS} Conversion: A Syntactic Theory of Control and State in Imperative {Higher-Order} Programming Languages},
+    year = {1987}
+}
+
+@incollection{davdar:wehr:compare-modules-type-classes,
+    author = {Wehr, Stefan and Chakravarty, Manuel},
+    booktitle = {Programming Languages and Systems},
+    chapter = {14},
+    citeulike-article-id = {4290097},
+    citeulike-linkout-0 = {http://dx.doi.org/10.1007/978-3-540-89330-1\_14},
+    citeulike-linkout-1 = {http://www.springerlink.com/content/m7v201w152h03670},
+    date-added = {2011-07-13 07:31:28},
+    editor = {Ramalingam, G.},
+    journal = {Programming Languages and Systems},
+    keywords = {haskell, ml, modules, type-classes},
+    priority = {2},
+    publisher = {Springer Berlin / Heidelberg},
+    series = {Lecture Notes in Computer Science},
+    title = {{ML} Modules and Haskell Type Classes: A Constructive Comparison},
+    x-abstract = {Researchers repeatedly observed that the module system of {ML} and the type class mechanism of Haskell are related. So far, this relationship has received little formal investigation. The work at hand fills this gap: It introduces type-preserving translations from modules to type classes and vice versa, which enable a thorough comparison of the two concepts.},
+    x-address = {Berlin, Heidelberg},
+    x-doi = {10.1007/978-3-540-89330-1\_14},
+    x-isbn = {978-3-540-89329-5},
+    x-issn = {0302-9743},
+    x-url = {http://dx.doi.org/10.1007/978-3-540-89330-1\_14},
+    x-volume = {5356},
+    xpages = {188--204},
+    year = {2008}
+}
+
+@inproceedings{davdar:macqueen:modules-for-sml,
+    author = {MacQueen, David},
+    booktitle = {Proceedings of the 1984 ACM Symposium on LISP and functional programming},
+    citeulike-article-id = {1407},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=802036},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/800055.802036},
+    date-added = {2011-07-13 07:26:24},
+    keywords = {ml, modules},
+    location = {Austin, Texas, United States},
+    priority = {2},
+    publisher = {ACM},
+    series = {LFP '84},
+    title = {Modules for standard {ML}},
+    x-abstract = {The functional programming language {ML} has been undergoing a thorough redesign during the past year, and the module facility described here has been proposed as part of the revised language, now called Standard {ML}. The design has three main goals: (1) to facilitate the structuring of large {ML} programs; (2) to support separate compilation and generic library units; and (3) to employ new ideas in the semantics of data types to extend the power of {ML}'s polymorphic type system. It is based on concepts inherent in the structure of {ML}, primarily the notions of a declaration, its type signature, and the environment that it denotes.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/800055.802036},
+    x-isbn = {0-89791-142-3},
+    x-url = {http://dx.doi.org/10.1145/800055.802036},
+    xpages = {198--207},
+    year = {1984}
+}
+
+@inproceedings{davdar:wadler:make-ad-hoc-poly-less-ad-hoc,
+    author = {Wadler, P. and Blott, S.},
+    booktitle = {Proceedings of the 16th ACM SIGPLAN-SIGACT symposium on Principles of programming languages},
+    citeulike-article-id = {4958},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=75283},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/75277.75283},
+    date-added = {2011-07-13 06:42:42},
+    keywords = {ad-hoc-polymorphism, haskell, type-classes},
+    location = {Austin, Texas, United States},
+    priority = {2},
+    publisher = {ACM},
+    series = {POPL '89},
+    title = {How to make ad-hoc polymorphism less ad hoc},
+    x-abstract = {This paper presents type classes, a new approach to ad-hoc polymorphism. Type classes permit overloading of arithmetic operators such as multiplication, and generalise the  ” eqtype variables” of Standard {ML}. Type classes extend the {Hindley/Milner} polymorphic type system, and provide a new approach to issues that arise in object-oriented programming, bounded type quantification, and abstract data types. This paper provides an informal introduction to type classes, and defines them formally by means of type inference rules.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/75277.75283},
+    x-isbn = {0-89791-294-2},
+    x-url = {http://dx.doi.org/10.1145/75277.75283},
+    xpages = {60--76},
+    year = {1989}
+}
+
+@inproceedings{davdar:garcia:type-classes-without-types,
+    author = {Garcia, Ronald and Lumsdaine, A.},
+    booktitle = {2005 Workshop on Scheme and Functional Programming},
+    citeulike-article-id = {9540191},
+    citeulike-linkout-0 = {http://repository.readscheme.org/ftp/papers/sw2005/garcia.pdf},
+    date-added = {2011-07-13 05:56:27},
+    keywords = {osl, scheme, type-classes},
+    priority = {2},
+    title = {Type Classes Without Types},
+    x-abstract = {Data-directed programs consist of collections of generic functions, functions whose underlying implementation differs depending on properties of their arguments. Scheme's flexibility lends itself to developing generic functions, but the language has some shortcomings in this regard. In particular, it lacks both facilities for conveniently extending generic functions while preserving the flexibility of ad-hoc overloading techniques and constructs for grouping related generic functions into coherent interfaces. This paper describes and discusses a mechanism, inspired by Haskell type classes, for implementing generic functions in Scheme that directly addresses the aforementioned concerns. Certain properties of Scheme, namely dynamic typing and an emphasis on block structure, have guided the design toward an end that balances structure and flexibility. We describe the system, demonstrate its function, and argue that it implements an interesting approach to polymorphism and, more specifically, overloading.},
+    x-url = {http://repository.readscheme.org/ftp/papers/sw2005/garcia.pdf},
+    year = {2005}
+}
+
+@article{davdar:costanza:dynamic-scope=aop,
+    author = {Costanza, Pascal},
+    citeulike-article-id = {9540179},
+    citeulike-linkout-0 = {http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.5.8433},
+    date-added = {2011-07-13 05:50:08},
+    journal = {ACM SIGPLAN Notices},
+    keywords = {aspect-oriented-programming, dynamic-binding},
+    priority = {2},
+    title = {Dynamically Scoped Functions as the Essence of {AOP}},
+    x-abstract = {The aspect-oriented programming community devotes lots of energy into the provision of  complex static language constructs to reason about eventual dynamic properties of a program.},
+    x-url = {http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.5.8433},
+    x-volume = {38},
+    xpages = {29--36},
+    year = {2003}
+}
+
+@article{davdar:dreyer:modular-type-classes,
+    author = {Dreyer, Derek and Harper, Robert and Chakravarty, Manuel M. T. and Keller, Gabriele},
+    citeulike-article-id = {1256858},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=1190215.1190229},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/1190215.1190229},
+    date-added = {2011-07-13 05:41:55},
+    journal = {SIGPLAN Not.},
+    keywords = {modules, type-classes},
+    priority = {2},
+    publisher = {ACM},
+    title = {Modular type classes},
+    x-abstract = {{ML} modules and Haskell type classes have proven to be highly effective tools for program structuring. Modules emphasize explicit configuration of program components and the use of data abstraction. Type classes emphasize implicit program construction and ad hoc polymorphism. In this paper, we show how the implicitly-typed style of type class programming may be supported within the framework of an explicitly-typed module language by viewing type classes as a particular mode of use of modules. This view offers a harmonious integration of modules and type classes, where type class features, such as class hierarchies and associated types, arise naturally as uses of existing module-language constructs, such as module hierarchies and type components. In addition, programmers have explicit control over which type class instances are available for use by type inference in a given scope. We formalize our approach as a {Harper-Stone}-style elaboration relation, and provide a sound type inference algorithm as a guide to implementation.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/1190215.1190229},
+    x-isbn = {1595935754},
+    x-issn = {0362-1340},
+    x-month = jan,
+    x-number = {1},
+    x-url = {http://dx.doi.org/10.1145/1190215.1190229},
+    x-volume = {42},
+    xpages = {63--70},
+    year = {2007}
+}
+
+@inproceedings{davdar:garrigue:label-selective-lambda,
+    author = {Garrigue, Jacques and A"{\i}t-Kaci, Hassan},
+    booktitle = {Proceedings of the 21st ACM SIGPLAN-SIGACT symposium on Principles of programming languages},
+    citeulike-article-id = {9540171},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=174434},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/174675.174434},
+    date-added = {2011-07-13 05:40:29},
+    keywords = {lambda-calculus},
+    location = {Portland, Oregon, United States},
+    priority = {3},
+    publisher = {ACM},
+    series = {POPL '94},
+    title = {The typed polymorphic label-selective lambda-calculus},
+    x-abstract = {Formal calculi of record structures have recently been a focus of active research. However, scarcely anyone has studied formally the dual notion—i.e., argument-passing to functions by keywords, and its harmonization with currying. We have. Recently, we introduced the label-selective \&lgr;-calculus, a conservative extension of \&lgr;-calculus that uses a labeling of abstractions and applications to perform unordered currying. In other words, it enables some form of commutation between arguments. This improves program legibility, thanks to the presence of labels, and efficiency, thanks to argument commuting. In this paper, we propose a simply typed version of the calculus, then extend it to one with {ML}-like polymorphic types. For the latter calculus, we establish the existence of principal types and we give an algorithm to compute them. Thanks to the fact that label-selective \&lgr;-calculus is a conservative extension of \&lgr;-calculus by adding numeric labels to stand for argument positions, its polymorphic typing provides us with a keyword argument-passing extension of {ML} obviating the need of records. In this context, conventional {ML} syntax can be seen as a restriction of the more general keyword-oriented syntax limited to using only implicit positions instead of keywords.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/174675.174434},
+    x-isbn = {0-89791-636-0},
+    x-url = {http://dx.doi.org/10.1145/174675.174434},
+    xpages = {35--47},
+    year = {1994}
+}
+
+@inproceedings{davdar:oliveira:type-classes=objects+implicits,
+    author = {Oliveira, Bruno C. and Moors, Adriaan and Odersky, Martin},
+    booktitle = {Proceedings of the ACM international conference on Object oriented programming systems languages and applications},
+    citeulike-article-id = {8687730},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=1869459.1869489},
+    citeulike-linkout-1 = {http://dblp.uni-trier.de/rec/bibtex/conf/oopsla/OliveiraMO10},
+    citeulike-linkout-2 = {http://dx.doi.org/10.1145/1869459.1869489},
+    date-added = {2011-07-13 05:36:03},
+    keywords = {implicits, scala, type-classes},
+    location = {Reno/Tahoe, Nevada, USA},
+    priority = {0},
+    publisher = {ACM},
+    series = {OOPSLA '10},
+    title = {Type classes as objects and implicits},
+    x-abstract = {Type classes were originally developed in Haskell as a disciplined alternative to ad-hoc polymorphism. Type classes have been shown to provide a type-safe solution to important challenges in software engineering and programming languages such as, for example, retroactive extension of programs. They are also recognized as a good mechanism for concept-based generic programming and, more recently, have evolved into a mechanism for type-level computation. This paper presents a lightweight approach to type classes in object-oriented ({OO}) languages with generics using the {CONCEPT} pattern and implicits (a type-directed implicit parameter passing mechanism). This paper also shows how Scala's type system conspires with implicits to enable, and even surpass, many common extensions of the Haskell type class system, making Scala ideally suited for generic programming in the large.},
+    x-address = {New York, NY, USA},
+    x-doi = {10.1145/1869459.1869489},
+    x-isbn = {978-1-4503-0203-6},
+    x-url = {http://dx.doi.org/10.1145/1869459.1869489},
+    xpages = {341--360},
+    year = {2010}
+}
+
+@inproceedings{davdar:lewis:implicits=dynamic-scope+types,
+    author = {Lewis, Jeffrey R. and Shields, Mark B. and Meijert, Erik and Launchbury, John},
+    booktitle = {In POPL'00},
+    citeulike-article-id = {9540163},
+    citeulike-linkout-0 = {http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.156.5131},
+    date-added = {2011-07-13 05:29:57},
+    keywords = {dynamic-binding, implicits},
+    priority = {0},
+    title = {Implicit parameters: dynamic scoping with static types},
+    x-abstract = {This paper introduces a language feature, called implicit parameters, that provides dynamically scoped variables within a statically-typed {Hindley-Milner} framework. Implicit parameters are lexically distinct from regular identifiers, and are bound by a special with construct whose scope is dynamic, rather than static as with let. Implicit parameters are treated by the type system as parameters that are not explicitly declared, but are inferred from their use. We present implicit parameters within a small call-by-name X-calculus. We give a type system, a type inference algorithm, and several semantics. We also explore implicit parameters in the wider settings of call-by-need languages with overloading, and call-by-value languages with effects. As a witness to the former, we have implemented implicit parameters as an extension of Haskell within the Hugs interpreter, which we use to present several motivating examples. 1 A Scenario: Pretty Printing You have just finished writing the perfect pretty printer. It takes as input a document to be laid out, and produces a string. pretty:: Dot-> String You have done the hard part-your code is lovely, concise and modular, and your pretty printer produces output that is somehow even prettier than anything you would bother to do by hand. You're thinking: {JFP}: Functional Pearl. But, there are just a few fussy details left. For example, you were not focusing on the unimportant details, so you hard-coded the width of the display to be 78 characters. The annoying thing is that the check to see if {YOU} have exceeded the display width is buried deep within the code.... if i> = 78 then.. permission to make digital or hard copies of all or part ofthis work for {PersOXll} Or \&{SSrOOnl} {USC} is granted witllout fee provided that copies are not nn \& or distributed for prolit or commercial advantage a\$ld that copies bar this notice and the full citation on the first page. \~{}l'o {cC},py},
+    x-url = {http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.156.5131},
+    year = {2000}
+}
+
+@electronic{davdar:kiselyov:delimited-dynamic-binding,
+    author = {Kiselyov, Oleg and Shan, Chung-chieh and Sabry, Amr},
+    citeulike-article-id = {9540157},
+    citeulike-linkout-0 = {http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.104.8798},
+    date-added = {2011-07-13 05:17:41},
+    keywords = {delimited-continuations, dynamic-binding},
+    priority = {0},
+    title = {Delimited Dynamic Binding},
+    x-abstract = {Dynamic binding and delimited control are useful together in many settings, including Web applications, database cursors, and mobile code. We examine this pair of language features to show that the semantics of their interaction is ill-defined yet not expressive enough for these uses. We solve this open and subtle problem. We formalise a typed language {DB}+{DC} that combines a calculus {DB} of dynamic binding and a calculus {DC} of delimited control. We argue from theoretical and practical points of view that its semantics should be based on delimited dynamic binding: capturing a delimited continuation closes over part of the dynamic environment, rather than all or none of it; reinstating the captured continuation supplements the dynamic environment, rather than replacing or inheriting it. We introduce a type- and reduction-preserving translation from {DB} + {DC} to {DC}, which proves that delimited control macro-expresses dynamic binding. We use this translation to implement {DB} + {DC} in Scheme, {OCaml}, and Haskell. We extend {DB} + {DC} with mutable dynamic variables and a facility to obtain not only the latest binding of a dynamic variable but also older bindings. This facility provides for stack inspection and (more generally) folding over the execution context as an inductive data structure.},
+    x-url = {http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.104.8798},
+    year = {2006}
+}
+
