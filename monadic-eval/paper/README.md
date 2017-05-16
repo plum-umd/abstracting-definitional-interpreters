@@ -2,12 +2,17 @@ This directory contains the Scribble source code for the literate
 version of "Definitional Abstract Interpreters for Higher-Order
 Languages."
 
+(This version of the paper is slightly different from the submitted
+version of the paper: it lacks several typsetting improvements made by
+hand in the submission and it does not include the appendix which is
+written in latex.)
+
 To build the paper, you will need:
 
 - XeLaTeX
-- Racket v6.9.
-- raco pkg install monadic-eval/
-- Modified version of the latest version of acmart.cls.
+- Racket v6.9
+- Install monadic-eval package (make install from root directory)
+- Modified version of the latest version of acmart.cls (see below)
 
 Patching to use (a modified version of!) the latest version of
 acmart.cls:
@@ -19,6 +24,6 @@ acmart.cls:
 
 Run:
 ```
-   raco scribble ++style style.tex --xelatex main.scrbl
+   make main.pdf
 ```
 
