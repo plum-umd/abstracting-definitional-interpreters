@@ -65,16 +65,16 @@ path-sensitive verification engine.
 
 To support symbolic execution, the syntax of the language is extended to
 include symbolic numbers:
-@racketblock[
-FIXME
-]
-@;{
-\begin{alignat*}{4}
-   e ∈ &&\mathrel{}     exp ⩴ &\mathrel{} … ∣ 𝔥⸨(sym⸩\ x𝔥⸨)⸩ &\hspace{1em} [⦑\emph{symbolic number}⦒]
-\\ ε ∈ &&\mathrel{}    pexp ⩴ &\mathrel{} e ∣ ¬e             &\hspace{1em} [⦑\emph{path expression}⦒]
-\\ φ ∈ &&\mathrel{}    pcon ≔ &\mathrel{} ℘(pexp)   &\hspace{1em} [⦑\emph{path condition}⦒]
-\end{alignat*}
-}
+
+@tabular[#:sep @hspace[1]
+         #:column-properties '(left left left right)
+         (list (list @math{e ∈ exp} @tt{::=} @tt{... | (sym @math{x})}                @elem{[@emph{symbolic number}]})
+               (list @math{ε ∈ pexp} @tt{::=}       @elem{@math{e} @tt{|} @math{¬e}}   @elem{[@emph{path expression}]})
+               (list @math{φ ∈ pcon} @tt{::=}       @math{P(pexp)}                     @elem{[@emph{path condition}]}) )]
+
+               
+
+
 @Figure-ref{f:symbolic-widen} shows the units needed to turn the
 existing interpreter into a symbolic executor. Primitives such as
 @racket['/] now also take as input and return symbolic values. As
