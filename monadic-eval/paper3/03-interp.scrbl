@@ -9,29 +9,20 @@
 
 @title[#:tag "s:interp"]{A Definitional Interpreter}
 
-@;{
-\begin{wrapfigure}{R}{0.5\textwidth} %{{{ f:syntax
-  \begin{mdframed}
-    \begin{alignat*}{4}
-      e ∈ &&\mathrel{}   exp ⩴ &\mathrel{} 𝔥⸨(vbl⸩\ x𝔥⸨)⸩         &\hspace{3em} [⦑\emph{variable}⦒]
-      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(num⸩\ n𝔥⸨)⸩         &\hspace{3em} [⦑\emph{number}⦒]
-      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(if0⸩\ e\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{conditional}⦒]
-      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(op2⸩\ b\ e\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{binary op}⦒]
-      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(app⸩\ e\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{application}⦒]
-      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} 𝔥⸨(rec⸩\ x\ ℓ\ e𝔥⸨)⸩   &\hspace{3em} [⦑\emph{letrec}⦒]
-      \\[\mathgobble]     &&\mathrel{}       ∣ &\mathrel{} ℓ                     &\hspace{3em} [⦑\emph{lambda}⦒]
-      \\[\mathgobble]ℓ ∈ &&\mathrel{}   lam ⩴ &\mathrel{} 𝔥⸨(lam⸩\ x\ e𝔥⸨)⸩      &\hspace{3em} [⦑\emph{function defn}⦒]
-      \\[\mathgobble] x ∈ &&\mathrel{}   var ≔ &\mathrel{} ❴𝔥⸨x⸩, 𝔥⸨y⸩, …❵        &\hspace{3em} [⦑\emph{variable names}⦒]
-      %\\[\mathgobble] u ∈ &&\mathrel{}  unop ≔ &\mathrel{} ❴𝔥⸨add1⸩, …❵           &\hspace{3em} [⦑\emph{unary prim}⦒]
-      \\[\mathgobble] b ∈ &&\mathrel{} binop ≔ &\mathrel{} ❴𝔥⸨+⸩, 𝔥⸨-⸩, …❵        &\hspace{3em} [⦑\emph{binary prim}⦒]
-    \end{alignat*}
-    \captionskip{Programming Language Syntax}
-    \label{f:syntax}
-  \end{mdframed}
-\end{wrapfigure} %}}}
-}
+@figure["f:syntax" "Programming Language Syntax"
 
-@figure["f:syntax" "Programming Language Syntax" "FIXME"]
+@tabular[#:sep @hspace[1]
+         #:column-properties '(left center left right)
+         (list (list @math{e ∈ exp} @tt{::=} @tt{(vbl @math{x})}                   @elem{[@emph{variable}]})
+               (list @math{}        @tt{}    @tt{(num @math{n})}                   @elem{[@emph{conditional}]})
+               (list @math{}        @tt{}    @tt{(if0 @math{e} @math{e} @math{e})} @elem{[@emph{binary op}]})
+               (list @math{}        @tt{}    @tt{(app @math{e} @math{e})}          @elem{[@emph{application}]})
+               (list @math{}        @tt{}    @tt{(rec @math{x} @math{ℓ} @math{e})} @elem{[@emph{letrec}]})
+               (list @math{}        @tt{}    @math{ℓ}                              @elem{[@emph{lambda}]})
+               (list @math{ℓ ∈ lam} @tt{::=} @tt{(lam @math{x} @math{e})}          @elem{[@emph{function defn}]})
+               (list @math{x ∈ var} @tt{::=} @elem{@tt{x}, @tt{y}, ...}            @elem{[@emph{variable name}]})
+               (list @math{b ∈ bin} @tt{::=} @elem{@tt{+}, @tt{-}, ...}            @elem{[@emph{binary prim}]}))]]
+
 
 We begin by constructing a definitional interpreter for a small but
 representative higher-order, functional language.  The abstract syntax
