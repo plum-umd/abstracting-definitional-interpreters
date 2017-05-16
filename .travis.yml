@@ -17,5 +17,5 @@ before_script:
 
 script:
  - raco pkg install -u --auto monadic-eval/
- - raco test --drdr --package monadic-eval
+ - raco test --drdr --timeout +inf.0 -j 4 --package monadic-eval
  - cd monadic-eval/paper ; make main.tex
