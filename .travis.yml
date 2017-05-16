@@ -16,7 +16,6 @@ install:
 before_script:
 
 script:
- - pushd monadic-eval
  - make test
  - make tex
 
