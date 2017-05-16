@@ -28,7 +28,7 @@ For more, see:
 Installation
 ------------
 
-This code has been tested with Racket 6.3, but probably works with
+This code has been tested with Racket 6.9, but probably works with
 other versions of Racket too.
 
 To install:
