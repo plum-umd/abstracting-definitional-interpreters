@@ -21,6 +21,8 @@ acmart.cls:
 - Comment out line 2613 of acmart.dtx (using libertine)
 - latex acmart.ins
 - mv acmart.cls RACKET_HOME/share/pkgs/scribble-lib/scribble/acmart/
+  (where RACKET_HOME is the directory where Racket is intalled)
+
 
 Run:
 ```
