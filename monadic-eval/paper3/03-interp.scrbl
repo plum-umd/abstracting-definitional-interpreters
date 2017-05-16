@@ -14,11 +14,11 @@
 @tabular[#:sep @hspace[1]
          #:column-properties '(left center left right)
          (list (list @math{e ∈ exp} @tt{::=} @tt{(vbl @math{x})}                   @elem{[@emph{variable}]})
-               (list @math{}        @tt{}    @tt{(num @math{n})}                   @elem{[@emph{conditional}]})
-               (list @math{}        @tt{}    @tt{(if0 @math{e} @math{e} @math{e})} @elem{[@emph{binary op}]})
-               (list @math{}        @tt{}    @tt{(app @math{e} @math{e})}          @elem{[@emph{application}]})
-               (list @math{}        @tt{}    @tt{(rec @math{x} @math{ℓ} @math{e})} @elem{[@emph{letrec}]})
-               (list @math{}        @tt{}    @math{ℓ}                              @elem{[@emph{lambda}]})
+               (list @math{}        @tt{|}    @tt{(num @math{n})}                   @elem{[@emph{conditional}]})
+               (list @math{}        @tt{|}    @tt{(if0 @math{e} @math{e} @math{e})} @elem{[@emph{binary op}]})
+               (list @math{}        @tt{|}    @tt{(app @math{e} @math{e})}          @elem{[@emph{application}]})
+               (list @math{}        @tt{|}    @tt{(rec @math{x} @math{ℓ} @math{e})} @elem{[@emph{letrec}]})
+               (list @math{}        @tt{|}    @math{ℓ}                              @elem{[@emph{lambda}]})
                (list @math{ℓ ∈ lam} @tt{::=} @tt{(lam @math{x} @math{e})}          @elem{[@emph{function defn}]})
                (list @math{x ∈ var} @tt{::=} @elem{@tt{x}, @tt{y}, ...}            @elem{[@emph{variable name}]})
                (list @math{b ∈ bin} @tt{::=} @elem{@tt{+}, @tt{-}, ...}            @elem{[@emph{binary prim}]}))]]
