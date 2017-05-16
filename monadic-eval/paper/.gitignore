@@ -1,8 +1,0 @@
-tmp/
-*.aux
-*.log
-*.out
-main.pdf
-main.tex
-sigplanconf.cls
-formalism-harness.pdf

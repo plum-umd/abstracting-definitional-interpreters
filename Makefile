@@ -1,16 +1,16 @@
-.PHONY: init test clean examples
-DEFAULT: init
+.PHONY: install test clean paper
+DEFAULT: install
 
-init:
-	@echo "Initializing #lang monadic-eval"
+install:
+	@echo "Installing #lang monadic-eval"
 	-@raco pkg remove monadic-eval
-	raco pkg install ../monadic-eval/
+	@raco pkg install monadic-eval/
 
-test: init
+test:
 	@raco test --drdr --timeout +inf.0 -j 4 --package monadic-eval
 
-examples: compile
-	@raco test examples
+paper:
+	make -C monadic-eval/paper3/ main.pdf
 
 clean:
 	rm -f .\#* \#*\# *\~ &>/dev/null
