@@ -1,20 +1,13 @@
-.PHONY: clean default test
-DEFAULT: compile
+.PHONY: init test clean examples
+DEFAULT: init
 
 init:
 	@echo "Initializing #lang monadic-eval"
-	@for oldlink in $$(raco link -l | grep monadic-eval | sed 's/^.*path: //' | xargs); do \
-	  raco link -r $$oldlink ; \
-  done
-	cd .. && raco link monadic-eval
+	-@raco pkg remove monadic-eval
+	raco pkg install ../monadic-eval/
 
-compile:
-	make init
-	raco make -j 4 **/*.rkt
-
-test: compile
-	@raco test transformers.rkt
-	@raco test tests/eval*.rkt
+test: init
+	@raco test --drdr --timeout +inf.0 -j 4 --package monadic-eval
 
 examples: compile
 	@raco test examples
