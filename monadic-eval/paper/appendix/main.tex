@@ -269,53 +269,12 @@
 %%            {University of Maryland}
 %%            {pcn@cs.umd.edu}
 
-\begin{abstract}
-  In this functional pearl, we examine the use of definitional
-  interpreters as a basis for abstract interpretation of higher-order
-  programming languages.  As it turns out, definitional interpreters,
-  especially those written in monadic style, can provide a nice basis
-  for a wide variety of collecting semantics, abstract
-  interpretations, symbolic executions, and their intermixings.
-
-  But the real insight of this story is a replaying of an insight from
-  Reynold's landmark paper, \emph{Definitional Interpreters for
-    Higher-Order Programming Languages}, in which he observes
-  definitional interpreters enable the defined-language to inherit
-  properties of the defining-language.  We show the same holds true
-  for definitional \emph{abstract} interpreters.  Remarkably, we
-  observe that abstract definitional interpreters can inherit the
-  so-called ``pushdown control flow'' property, wherein function calls
-  and returns are precisely matched in the abstract semantics, simply
-  by virtue of the function call mechanism of the defining-language.
-
- The first approaches to achieve this property for higher-order
- languages appeared within the last ten years, and have since been the
- subject of many papers.  These approaches start from a state-machine
- semantics and uniformly involve significant technical engineering to
- recover the precision of pushdown control flow.  In contrast,
- starting from a definitional interpreter, the pushdown control flow
- property is inherent in the meta-language and requires no further
- technical mechanism to achieve.
-\end{abstract}
 
 \maketitle
 
 %\category{CR-number}{subcategory}{third-level}
 %\terms term1, term2
 %\keywords keyword1, keyword2
-
-\input{01-intro.tex}
-\input{02-aam.tex}
-\input{03-interp.tex}
-\input{04-cache.tex}
-\input{05-reynolds.tex}
-\input{06-widening.tex}
-\input{07-alt-abstraction.tex}
-\input{08-symbolic-execution.tex}
-\input{13-gc.tex}
-%\input{09-try-it.tex}
-\input{11-related-work.tex}
-\input{12-conclusions.tex}
 
 \begin{acks}
   We thank Sam Tobin-Hochstadt and Dionna Glaze for several fruitful
@@ -325,42 +284,9 @@
   attention~\cite{local:jones-ai1995}.
 \end{acks}
 
-%\balance
-%\bibliographystyle{abbrvnat}
 \bibliography{davdar,dvanhorn,local}
 
-\newpage
 \appendix
 \input{10-formalism.tex}
 
 \end{document}
-
-%\lstset
-% {language=Lisp
-% ,extendedchars=true
-% ,inputencoding=utf8
-% ,mathescape=true
-% ,escapechar=`
-% ,upquote=true
-% ,basicstyle=\ttfamily\color{ParenColor}
-% ,commentstyle=\color{CommentColor}
-% ,alsoletter=+-*/?'\#0123456789^
-% ,identifierstyle=\color{IdentifierColor}
-% ,emph=%
-%  {return,bind
-%  ,zero?
-%  ,ask-env,local-env
-%  ,ext,find,alloc
-%  ,get-store,put-store,update-store
-%  ,tell
-%  ,get-dead,put-dead,update-dead
-%  ,fail,mplus
-%  ,get-,put-,update-
-%  ,ask-,local-
-%  }
-% ,emphstyle=\color{IdentifierColor}\emph
-% ,classoffset=1
-% ,keywords={'add1,'sub1,'+,'-,'*,'/,'failure,'N,\#t,\#f,0,1,2,3,4,5,6,7,8,9}
-% ,keywordstyle=\color{ValueColor}
-% }
-
