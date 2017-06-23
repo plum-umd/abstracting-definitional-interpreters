@@ -10,7 +10,7 @@ written in latex.)
 To build the paper, you will need:
 
 - XeLaTeX
-- Racket v6.9
+- Racket v6.9.0.6 or later (nightly build from 6/23/17)
 - Install monadic-eval package (make install from root directory)
 - Modified version of the latest version of acmart.cls (see below)
 
