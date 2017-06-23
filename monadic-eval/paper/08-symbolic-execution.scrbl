@@ -104,8 +104,8 @@ calling out to an SMT solver for more interesting reasoning about
 arithmetic, or extend the language with symbolic functions and blame
 semantics for sound higher-order symbolic execution, essentially
 recreating a pushdown variant of Nguyễn et
-al.@~cite{dvanhorn:TobinHochstadt2012Higherorder
-dvanhorn:Nguyen2014Soft dvanhorn:Nguyen2015Relatively}.
+al.@~cite["dvanhorn:TobinHochstadt2012Higherorder"
+"dvanhorn:Nguyen2014Soft dvanhorn:Nguyen2015Relatively"].
 
 Traditional symbolic executors mainly aim to find bugs and do not
 provide a termination guarantee. However, when we apply to this

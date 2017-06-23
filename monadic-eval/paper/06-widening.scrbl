@@ -16,8 +16,8 @@ construct existing abstraction choices.
 The abstract interpreter we've constructed so far uses a
 store-per-program-state abstraction, which is precise but
 prohibitively expensive. A common technique to combat this cost is to
-use a global ``widened'' store@~cite{dvanhorn:might-phd
-dvanhorn:Shivers:1991:CFA}, which over-approximates each individual
+use a global ``widened'' store@~cite["dvanhorn:might-phd"
+"dvanhorn:Shivers:1991:CFA"], which over-approximates each individual
 store in the current set-up. This change is achieved easily in the
 monadic setup by re-ordering the monad stack, a technique due to
 @citet{local:darais-oopsla2015}. Whereas before we had

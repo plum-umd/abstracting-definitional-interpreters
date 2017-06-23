@@ -76,7 +76,8 @@ with individual caches.
               v     ← ((ev₀ ev) e)
               σ′    ← get-store
               v×σ′  ≔ (cons v σ′)
-              (update-cache-out (λ ($⸢out⸣) ($⸢out⸣ ς (set-add ($⸢out⸣ ς) v×σ′))))
+              (update-cache-out 
+               (λ ($⸢out⸣) ($⸢out⸣ ς (set-add ($⸢out⸣ ς) v×σ′))))
               (return v)))))]}}
 
 In the algorithm, when a configuration @racket[ς] is first

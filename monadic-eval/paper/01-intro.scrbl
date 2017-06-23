@@ -64,14 +64,15 @@ to be the main contribution of this pearl.
 Definitional interpreters, in contrast to abstract machines, can leave
 aspects of computation implicit, relying on the semantics of the
 defin@emph{ing}-language to define the semantics of the
-defin@emph{ed}-language, an observation made by Reynolds in his landmark
-paper, @emph{Definitional Interpreters for Higher-order Programming
-  Languages} @~cite{dvanhorn:reynolds-acm72}.  For example, Reynolds showed it is
-possible to write a definitional interpreter such that it defines a
-call-by-value language when the metalanguage is call-by-value, and
-defines a call-by-name language when the metalanguage is call-by-name.
-Inspired by Reynolds, we show that @emph{abstract} definitional interpreters can likewise
-inherit properties of the metalanguage.  In particular we construct an
+defin@emph{ed}-language, an observation made by Reynolds in his
+landmark paper, @emph{Definitional Interpreters for Higher-order
+Programming Languages} @~cite{dvanhorn:reynolds-acm72}.  For example,
+Reynolds showed it is possible to write a definitional interpreter
+such that it defines a call-by-value language when the metalanguage is
+call-by-value, and defines a call-by-name language when the
+metalanguage is call-by-name.  Inspired by Reynolds, we show that
+@emph{abstract} definitional interpreters can likewise inherit
+properties of the metalanguage.  In particular we construct an
 abstract definitional interpreter where there is no explicit
 representation of continuations or a call stack.  Instead the
 interpreter is written in a straightforward recursive style, and the
@@ -81,16 +82,15 @@ soundly approximates all possible concrete executions of a given
 program.  But remarkably, since the abstract evaluator relies on the
 metalanguage to manage the call stack implicitly, it is easy to
 observe that it introduces no approximation in the matching of calls
-and returns, and therefore implements a ``pushdown''
-analysis @~cite{dvanhorn:Earl2010Pushdown
-  dvanhorn:Vardoulakis2011CFA2}, all without the need for any explicit
-machinery to do so.
+and returns, and therefore implements a ``pushdown'' analysis
+@~cite["dvanhorn:Earl2010Pushdown" "dvanhorn:Vardoulakis2011CFA2"],
+all without the need for any explicit machinery to do so.
 
 @section[#:style 'unnumbered]{Outline}
 
 In the remainder of this pearl, we present an adaptation of the AAM
 method to the setting of recursively-defined, compositional evaluation
-functions, a.k.a.~definitional interpreters.  We first briefly review
+functions, a.k.a. definitional interpreters.  We first briefly review
 the basic ingredients in the AAM recipe (@secref{s:aam}) and then
 define our definitional interpreter (@secref{s:interp}).  The
 interpreter is largely standard, but is written in a monadic and

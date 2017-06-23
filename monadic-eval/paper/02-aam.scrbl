@@ -41,8 +41,8 @@ the design remains systematic.  Moreover, we show that the high-level semantics
 offers a number of benefits not available to the machine model.  
 
 There is a rich body of work concerning tools and techniques for
-@emph{extensible} interpreters @~cite{dvanhorn:Liang1995Monad
-local:jaskelioff2009lifting local:kiselyov2012typed}, all of which
+@emph{extensible} interpreters @~cite["dvanhorn:Liang1995Monad"
+"local:jaskelioff2009lifting" "local:kiselyov2012typed"], all of which
 applies to high-level semantics.  By putting abstract interpretation
 for higher-order languages on a high-level semantic basis, we can
 bring these results to bear on the construction of extensible abstract

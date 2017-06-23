@@ -1,8 +1,37 @@
-#lang scribble/acmart @acmlarge
+#lang scribble/acmart @acmsmall @screen
 @require["bib.rkt"]
 
-@title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
+@title{Abstracting Definitional Interpreters}
 @subtitle{Functional Pearl}
+
+@(define (umd-author user name)
+  (author name 
+	  #:affiliation 
+	  (affiliation #:institution 
+		       (institution
+			#:departments (list "Department of Computer Science")
+			"University of Maryland")
+		       #:city "College Park"
+		       #:state "Maryland")
+	  #:email
+	  (string-append user "@cs.umd.edu")))
+
+@umd-author["darais"]{David Darais}
+@umd-author["labichn"]{Nicholas Labich}
+@umd-author["pcn"]{Phúc C. Nguyễn}
+@umd-author["dvanhorn"]{David Van Horn}
+
+@setcopyright{none}
+@acmJournal{PACMPL}
+@acmYear{2017}
+@acmVolume{1}
+@acmNumber{1}
+@acmArticle{12}
+@acmMonth{9}
+@acmDOI{10.1145/3110256}
+
+@;acmBadgeL["artifact_available.png"]
+@acmBadgeR["artifact_evaluated-reusable.png"]
 
 @abstract{In this functional pearl, we examine the use of
  definitional interpreters as a basis for abstract

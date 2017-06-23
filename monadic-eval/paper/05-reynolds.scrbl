@@ -28,10 +28,10 @@ that usually comes at considerable effort and engineering in the
 formulations of higher-order flow analysis that model the stack
 explicitly.  So-called higher-order ``pushdown'' analysis has been the
 subject of multiple publications and two dissertations
-@~cite{dvanhorn:Vardoulakis2011CFA2 dvanhorn:Earl2010Pushdown
-local:vardoulakis-diss12 dvanhorn:VanHorn2012Systematic
-dvanhorn:Earl2012Introspective dvanhorn:Johnson2014Abstracting
-dvanhorn:Johnson2014Pushdown local:p4f local:earl-diss14}. Yet when
+@~cite["dvanhorn:Vardoulakis2011CFA2" "dvanhorn:Earl2010Pushdown"
+"local:vardoulakis-diss12" "dvanhorn:VanHorn2012Systematic"
+"dvanhorn:Earl2012Introspective" "dvanhorn:Johnson2014Abstracting"
+"dvanhorn:Johnson2014Pushdown" "local:p4f" "local:earl-diss14"]. Yet when
 formulated in the definitional interpreter style, the pushdown
 property requires no mechanics and is simply inherited from the
 meta-language.
