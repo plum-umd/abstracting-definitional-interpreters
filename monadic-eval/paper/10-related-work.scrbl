@@ -64,7 +64,6 @@ analysis @~cite["local:dawson1996practical"
   "local:janssens1998use"]. Unlike these systems, our approach uses a
 shallow embedding of cached non-determinism that can be applied in
 general-purpose functional languages.
-%
 Monad transformers that enable shallow embedding of cached non-determinism are
 of continued interest since Hinze's @emph{Deriving Backtracking Monad
   Transformers} @~cite["local:hinze2000deriving" "local:kiselyov2005backtracking"
