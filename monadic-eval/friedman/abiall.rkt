@@ -1,6 +1,7 @@
 #lang racket
 
 ;; Code from the Friedman and Mendhekar tutorial
+;; https://www.cs.indiana.edu/l/www/classes/b621/abiall.pdf
 
 (define Ds-zero?
   (λ (x)
