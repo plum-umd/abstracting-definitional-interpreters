@@ -90,31 +90,26 @@ to model components in our implementation.}
 @racketblock[
 (define ((ev ev) e)
   (match e
-    [(num n)
-     (_return n)]
-    [(vbl x)
-     (do ρ ← _ask-env
-         (_find (ρ x)))]    
-    [(if0 e₀ e₁ e₂)
-     (do v  ← (ev e₀)  z? ← (_zero? v)
-         (ev (if z? e₁ e₂)))]
-    [(op2 o e₀ e₁)
-     (do v₀ ← (ev e₀)  v₁ ← (ev e₁)
-         (_δ o v₀ v₁))]
-    [(rec f l e)
-     (do ρ  ← ask-env  a  ← (_alloc f)
-         ρ′ ≔ (ρ f a)
-         (_ext a (cons l ρ′))
-         (_local-env ρ′ (ev e)))]
-    [(lam x e₀)
-     (do ρ ← _ask-env
-         (_return (cons (lam x e₀) ρ)))]
-    [(app e₀ e₁)
-     (do (cons (lam x e₂) ρ) ← (ev e₀)
-          v₁ ← (ev e₁)
-          a  ← (_alloc x)
-          (_ext a v₁)
-          (_local-env (ρ x a) (ev e₂)))]))
+    [(num n)        (_return n)]
+    [(vbl x)        (do ρ ← _ask-env
+                        (_find (ρ x)))]
+    [(if0 e₀ e₁ e₂) (do v  ← (ev e₀)  
+                        z? ← (_zero? v)
+                        (ev (if z? e₁ e₂)))]
+    [(op2 o e₀ e₁) (do v₀ ← (ev e₀)  
+                       v₁ ← (ev e₁)
+                       (_δ o v₀ v₁))]
+    [(rec f l e)   (do ρ ← ask-env  a  ← (_alloc f)
+                       ρ′ ≔ (ρ f a)
+                       (_ext a (cons l ρ′))
+                       (_local-env ρ′ (ev e)))]
+    [(lam x e₀)    (do ρ ← _ask-env
+                       (_return (cons (lam x e₀) ρ)))]
+    [(app e₀ e₁)   (do (cons (lam x e₂) ρ) ← (ev e₀)
+                       v₁ ← (ev e₁)
+                       a  ← (_alloc x)
+                       (_ext a v₁)
+                       (_local-env (ρ x a) (ev e₂)))]))
 ]}}
 
 Next we examine a set of components which complete the definitional

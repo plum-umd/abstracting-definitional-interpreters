@@ -72,8 +72,8 @@ The caching mechanism used to ensure termination in our abstract interpreter is
 similar to that used by @citet{dvanhorn:Johnson2014Abstracting}. They use a local- and
 meta-memoization table in a machine-based interpreter to ensure termination for
 a pushdown abstract interpreter.  This mechanism is in turn reminiscent of
-Glück's use of memoization in an interpreter for two-way non-deterministic
-pushdown automata @~cite{local:gluck-schmidtfest13}.
+the use of memoization in an interpreter for two-way non-deterministic
+pushdown automata by @citet{local:gluck-schmidtfest13}.
 
 Caching recursive, non-deterministic functions is a well-studied
 problem in the functional logic programming community under the rubric

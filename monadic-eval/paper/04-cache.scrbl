@@ -59,23 +59,25 @@ with individual caches.
 @figure["f:caching" "Co-inductive Caching Algorithm"]{
 @filebox[@racket[monad-cache@]]{
 @racketblock[
-(define-monad (ReaderT (FailT (StateT (NondetT (ReaderT (StateT+ ID)))))))]}
+(define-monad 
+  (ReaderT (FailT (StateT (NondetT (ReaderT (StateT+ ID)))))))]}
 @filebox[@racket[ev-cache@]]{
 @racketblock[
 (define (((ev-cache ev₀) ev) e)
-  (do ρ   ← ask-env  σ ← get-store
-      ς   ≔ (list e ρ σ)
+  (do ρ ← ask-env
+      σ ← get-store
+      ς ≔ (list e ρ σ)
       $⸢out⸣ ← get-cache-out
       (if (∈ ς $⸢out⸣)
           (for/monad+ ([v×σ ($⸢out⸣ ς)])
             (do (put-store (cdr v×σ))
                 (return (car v×σ))))
-          (do $⸢in⸣    ← ask-cache-in
+          (do $⸢in⸣ ← ask-cache-in
               v×σ₀  ≔ (if (∈ ς $⸢in⸣) ($⸢in⸣ ς) ∅)
               (put-cache-out ($⸢out⸣ ς v×σ₀))
-              v     ← ((ev₀ ev) e)
-              σ′    ← get-store
-              v×σ′  ≔ (cons v σ′)
+              v ← ((ev₀ ev) e)
+              σ′ ← get-store
+              v×σ′ ≔ (cons v σ′)
               (update-cache-out 
                (λ ($⸢out⸣) ($⸢out⸣ ς (set-add ($⸢out⸣ ς) v×σ′))))
               (return v)))))]}}
