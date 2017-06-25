@@ -34,6 +34,26 @@ for non-syntactic occurrences of bottom in the concrete domain (@emph{e.g.}
 denotational fixed-points using a fixed-point caching algorithm, resulting in
 general, computable abstractions for arbitrary definitional interpreters.
 
+Perhaps the mostly closely related work is an unpublished
+graduate-level tutorial by @citet{local:friedman-ai}, which presents
+an ``abstracted'' interpreter paramaterized over the interpretation of
+(abstract) semantic domains and written in an open recursive style,
+which is then closed using a non-standard, caching fixpoint operator
+to ensure termination.  The interpreter closely resembles the
+definitional interpreter of @secref{s:interp} and the caching
+fixed-point operator is similar to that of @secref{s:cache}.  In
+contrast, their interpreter is not written in a monadic style for
+exensibility and uses mutation to model the cache and communicate
+updates during abstract interpretation.  The latter makes it difficult
+to reason about the algorithm.  The notes present no argument for
+soundness or termination, although both are implied.  Notably, the
+interpreter seems to include no abstraction of closures and relies
+instead on the cache to prevent non-termination whenever a previously
+encountered closure is seen.  Unfortunately, the strategy appears to
+be unsound---computations invovling Church-numeral style iteration
+produce ``⊥,'' but don't diverge when run concretely.  Nevertheless,
+the tutorial is remarkably close in spirit to the present work.
+
 The use of monads and monad transformers to make extensible (concrete)
 interpreters is a well-known
 idea @~cite["davdar:Moggi:1989:Monads" "local:steele-popl94" "dvanhorn:Liang1995Monad"],

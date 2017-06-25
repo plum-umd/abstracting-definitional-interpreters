@@ -1,4 +1,5 @@
 #lang scribble/acmart @acmlarge
+@(require "bib.rkt")
 
 @title[#:tag "s:conclusion"]{Conclusions}
 
@@ -26,3 +27,18 @@ believe the definitional abstract interpreter approach to be a
 fruitful new perspective on an old topic.  We are left wondering: what
 else can be profitably inherited from the metalanguage of an abstract
 interpreter?
+
+@acks{The seeds of this work were planted while at the Northeastern
+  University Programming Research Laboratory and the ideas benefited
+  greatly from lively discussions within the PRL.  In particular, we
+  thank Sam Tobin-Hochstadt and Dionna Glaze for several fruitful
+  conversations.  We also thank the people of the Laboratory for
+  Programming Languages at the University of Maryland for help
+  developing these ideas more recently.  Finally, we are grateful for
+  the constructive feedback from the anonymous reviewers of ICFP 2016
+  and 2017.  We thank Reviewer B of ICFP 2017 in particular for the
+  reference to the @citet{local:friedman-ai} tutorial, @emph{Using an
+  Abstracted Interpreter to Understand Abstract Interpretation}, an
+  (unknown to us) precursor to the current work that anticipated our
+  use of interpreters written using open recursion to explain abstract
+  intepretation.}
