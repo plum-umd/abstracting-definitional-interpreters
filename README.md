@@ -1,7 +1,7 @@
 Abstracting Definitional Interpreters
 =====================================
 
-[![Build Status](https://travis-ci.org/plum-umd/monadic-eval.png?branch=master)](https://travis-ci.org/plum-umd/monadic-eval)
+[![Build Status](https://travis-ci.org/plum-umd/abstracting-definitional-interpreters.png?branch=master)](https://travis-ci.org/plum-umd/abstracting-definitional-interpreters)
 
 Abstract
 --------
@@ -22,8 +22,8 @@ property; it is simply inherited from the defining language.
 
 For more, see:
 
-* WWW: https://plum-umd.github.io/monadic-eval/
-* PDF: https://plum-umd.github.io/monadic-eval/main.pdf
+* WWW: https://plum-umd.github.io/abstracting-definitional-interpreters/
+* PDF: https://plum-umd.github.io/abstracting-definitional-interpreters/main.pdf
 
 Installation
 ------------
@@ -33,7 +33,7 @@ other versions of Racket too.
 
 To install:
 ```
-   raco pkg install https://github.com/plum-umd/monadic-eval.git
+   raco pkg install https://github.com/plum-umd/abstracting-definitional-interpreters.git
 ```
 
 To test:
