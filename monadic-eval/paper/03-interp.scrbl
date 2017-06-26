@@ -17,9 +17,8 @@
                (list @math{}        @tt{|}    @tt{(num @math{n})}                   @elem{[@emph{conditional}]})
                (list @math{}        @tt{|}    @tt{(if0 @math{e} @math{e} @math{e})} @elem{[@emph{binary op}]})
                (list @math{}        @tt{|}    @tt{(app @math{e} @math{e})}          @elem{[@emph{application}]})
-               (list @math{}        @tt{|}    @tt{(rec @math{x} @math{ℓ} @math{e})} @elem{[@emph{letrec}]})
-               (list @math{}        @tt{|}    @math{ℓ}                              @elem{[@emph{lambda}]})
-               (list @math{ℓ ∈ lam} @tt{::=} @tt{(lam @math{x} @math{e})}          @elem{[@emph{function defn}]})
+               (list @math{}        @tt{|}    @tt{(rec @math{x} @math{e} @math{e})} @elem{[@emph{letrec}]})
+               (list @math{}        @tt{|}    @tt{(lam @math{x} @math{e})}          @elem{[@emph{function defn}]})
                (list @math{x ∈ var} @tt{::=} @elem{@tt{x}, @tt{y}, ...}            @elem{[@emph{variable name}]})
                (list @math{b ∈ bin} @tt{::=} @elem{@tt{+}, @tt{-}, ...}            @elem{[@emph{binary prim}]}))]]
 
@@ -28,22 +27,56 @@ We begin by constructing a definitional interpreter for a small but
 representative higher-order, functional language.  The abstract syntax
 of the language is defined in @Figure-ref{f:syntax}; it includes
 variables, numbers, binary operations on numbers, conditionals,
-@racket[letrec] expressions, functions and applications.
+recursive let expressions, functions, and applications.
 
 The interpreter for the language is defined in
 @Figure-ref{f:interpreter}. At first glance, it has many conventional
 aspects: it is compositionally defined by structural recursion on the
-syntax of expressions; it represents function values as a closure data
-structure which pairs the lambda term with the evaluation environment;
-it is structured monadically and uses monad operations to interact
-with the environment and store; and it relies on a helper function
-@racket[δ] to interpret primitive operations.
+syntax of expressions; it defines a call-by-value functional language,
+it represents function values as a closure data structure which pairs
+the lambda term with the evaluation environment; it is structured
+monadically and uses monad operations to interact with the environment
+and store; and it relies on a helper function @racket[δ] to interpret
+primitive operations.
+
+@figure["f:interpreter" "The Extensible Definitional Interpreter"]{
+@filebox[@racket[ev@]]{
+@racketblock[
+(define ((ev ev) e)
+  (match e
+    [(num n)        (_return n)]
+    [(vbl x)        (do ρ ← _ask-env
+                        (_find (ρ x)))]
+    [(if0 e₀ e₁ e₂) (do v  ← (ev e₀)  
+                        z? ← (_zero? v)
+                        (ev (if z? e₁ e₂)))]
+    [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)  
+                        v₁ ← (ev e₁)
+                        (_δ o v₀ v₁))]
+    [(rec f e₀ e₁)  (do ρ  ← ask-env
+                        a  ← (alloc f)
+                        ρ′ ≔ (ρ f a)
+                        v ← (local-env ρ′ (ev e₀))
+                        (ext a v)
+                        (local-env ρ′ (ev e₁)))]
+    [(lam x e₀)     (do ρ ← _ask-env
+                        (_return (cons (lam x e₀) ρ)))]
+    [(app e₀ e₁)    (do (cons (lam x e₂) ρ) ← (ev e₀)
+                        v₁ ← (ev e₁)
+                        a  ← (_alloc x)
+                        (_ext a v₁)
+                        (_local-env (ρ x a) (ev e₂)))]))
+]}}
 
 There are a few superficial aspects that deserve a quick note:
 environments @racket[ρ] are finite maps and the syntax @racket[(ρ x)]
-denotes @math{ρ(x)} while @racket[(ρ x a)] denotes @math{ρ[x↦a]}.  For
-simplicity, recursive function definitions (@racket[rec]) are assumed
-to be syntactic values.  The @racket[do]-notation is just shorthand for
+denotes @math{ρ(x)} while @racket[(ρ x a)] denotes @math{ρ[x↦a]}.
+Recursive let expressions @racket[(rec f e₀ e₁)] recursively bind
+@racket[f] to the result of evaluating @racket[e₀] in a scope
+including @racket[f] and then evaluate @racket[e₁] in a scope extended
+with @racket[f]; the @racket[e₀] expression need not be a syntactic
+value, but it is a run-time error if evaluating @racket[e₀] requires
+evaluating @racket[f].  The @racket[do]-notation is just shorthand for
 @racket[bind], as usual:
 @racketblock[
   (do x ← e . r) ≡ (bind e (λ (x) (do . r)))
@@ -84,33 +117,6 @@ we've named the component @racket[ev@], indicated by the box in the
 upper-right corner) and linked together to eliminate free
 variables.@note{We use Racket @emph{units} @~cite{local:flatt-pldi98}
 to model components in our implementation.}
-
-@figure["f:interpreter" "The Extensible Definitional Interpreter"]{
-@filebox[@racket[ev@]]{
-@racketblock[
-(define ((ev ev) e)
-  (match e
-    [(num n)        (_return n)]
-    [(vbl x)        (do ρ ← _ask-env
-                        (_find (ρ x)))]
-    [(if0 e₀ e₁ e₂) (do v  ← (ev e₀)  
-                        z? ← (_zero? v)
-                        (ev (if z? e₁ e₂)))]
-    [(op2 o e₀ e₁) (do v₀ ← (ev e₀)  
-                       v₁ ← (ev e₁)
-                       (_δ o v₀ v₁))]
-    [(rec f l e)   (do ρ ← ask-env  a  ← (_alloc f)
-                       ρ′ ≔ (ρ f a)
-                       (_ext a (cons l ρ′))
-                       (_local-env ρ′ (ev e)))]
-    [(lam x e₀)    (do ρ ← _ask-env
-                       (_return (cons (lam x e₀) ρ)))]
-    [(app e₀ e₁)   (do (cons (lam x e₂) ρ) ← (ev e₀)
-                       v₁ ← (ev e₁)
-                       a  ← (_alloc x)
-                       (_ext a v₁)
-                       (_local-env (ρ x a) (ev e₂)))]))
-]}}
 
 Next we examine a set of components which complete the definitional
 interpreter, shown in @Figure-ref{f:concrete-components}. The first
