@@ -59,9 +59,9 @@ contribution of this pearl.
 Definitional interpreters, in contrast to abstract machines, can leave
 aspects of computation implicit, relying on the semantics of the
 defin@emph{ing}-language to define the semantics of the
-defin@emph{ed}-language, an observation made by Reynolds in his
+defin@emph{ed}-language, an observation made by @citet{dvanhorn:reynolds-acm72} in his
 landmark paper, @emph{Definitional Interpreters for Higher-order
-Programming Languages} @~cite{dvanhorn:reynolds-acm72}.  For example,
+Programming Languages}.  For example,
 Reynolds showed it is possible to write a definitional interpreter
 such that it defines a call-by-value language when the metalanguage is
 call-by-value, and defines a call-by-name language when the
@@ -142,7 +142,8 @@ be linked together.
 
 All of the code presented in this pearl runs; this document is a
 literate Racket program.  We have also implemented a small DSL for
-composing and experimenting with these interpreters easily.  Assuming
-Racket is installed, you can install the @tt{monadic-eval} package with
-@bold{(URL redacted for double-blind)} and a brief tutorial is
-available on github.
+composing and experimenting with these interpreters easily.  Source
+code, documentation, and a brief tutorial are available at the
+following URL:
+@centered{@url{https://github.com/plum-umd/abstracting-definitional-interpreters}}
+
