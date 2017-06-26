@@ -29,37 +29,32 @@ their language can now, in principle at least, first build a
 state-machine interpreter and then turn the crank to construct the
 approximating abstract counterpart.
 
-A natural pair of questions that arise from this past work is to
-wonder:
-@itemlist[#:style 'ordered
-@item{can a systematic abstraction technique similar to AAM  be
-carried out for interpreters written, @emph{not} as state-machines,
-but instead as high-level definitional interpreters, i.e. recursive,
-compositional evaluators?}
-@item{is such a perspective fruitful?}
-]
-In this functional pearl, we seek to answer both questions in the
-affirmative.
+A natural question to arise from this past work is to wonder: can a
+systematic abstraction technique similar to AAM be carried out for
+interpreters written, @emph{not} as state-machines, but instead as
+high-level definitional interpreters, i.e. recursive, compositional
+evaluators?  This functional pearl answers in the affirmative and
+demonstrates some of the interesting consequences of doing so.
 
-For the first question, we show the AAM recipe can be applied
-to definitional interpreters in a straightforward adaptation of the
-original method. The primary technical challenge in this new setting
-is handling interpreter fixed-points in a way that is both sound and
-always terminates---a naive abstraction of fixed-points will be sound but
+First, we show the AAM recipe can be applied to definitional
+interpreters with only a slight adaptation of the original method. The
+primary technical challenge in this new setting is handling
+interpreter fixed-points in a way that is both sound and always
+terminates---a naive abstraction of fixed-points will be sound but
 isn't always terminating, and a naive use of caching for fixed-points
 will guarantee termination but is inherently unsound. We address this
-technical challenge with a straightforward caching fixed-point-finding
-algorithm which is both sound and guaranteed to terminate when abstracting
-arbitrary definitional interpreters.
+technical challenge with a caching fixed-point-finding algorithm which
+is both sound and guaranteed to terminate when abstracting arbitrary
+definitional interpreters.
 
-For the second question, we claim that the abstract definitional
-interpreter perspective is fruitful in two regards.  The first is
-unsurprising: high-level abstract interpreters offer the usual
-beneficial properties of their concrete counterparts in terms of being
-re-usable and extensible.  In particular, we show that abstract
-interpreters can be structured with monad transformers to good effect.
-The second regard is more surprising, and we consider its observation
-to be the main contribution of this pearl.
+Second, we claim that the abstract definitional interpreter
+perspective is fruitful in two regards.  The first is unsurprising:
+high-level abstract interpreters offer the usual beneficial properties
+of their concrete counterparts in terms of being re-usable and
+extensible.  In particular, we show that abstract interpreters can be
+structured with monad transformers to good effect.  The second regard
+is more surprising, and we consider its observation to be the main
+contribution of this pearl.
 
 Definitional interpreters, in contrast to abstract machines, can leave
 aspects of computation implicit, relying on the semantics of the
