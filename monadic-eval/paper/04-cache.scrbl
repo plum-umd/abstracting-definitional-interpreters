@@ -26,7 +26,7 @@ Although the interpreter will only ever see a finite set of inputs, it
 @emph{doesn't know it}.  A simple loop will cause the interpreter to
 diverge:
 @interaction[#:eval the-0cfa-eval
-(rec f (λ (x) (f x)) (f 0))
+((rec f (λ (x) (f x))) 0)
 ]
 To solve this problem, we introduce a @emph{cache} (@racket[$in]) as
 input to the algorithm, which maps from configurations (@racket[ς]) to
@@ -139,12 +139,12 @@ When linked with @racket[δ^] and @racket[alloc^], this abstract
 interpreter is sound and computable, as demonstrated on the following
 examples:
 @interaction[#:eval the-pdcfa-eval
-(rec f (λ (x) (f x))
-  (f 0))
-(rec f (λ (n) (if0 n 1 (* n (f (- n 1)))))
-  (f 5))
-(rec f (λ (x) (if0 x 0 (if0 (f (- x 1)) 2 3)))
-  (f (+ 1 0)))]
+((rec f (λ (x) (f x)))
+ 0)
+((rec f (λ (n) (if0 n 1 (* n (f (- n 1))))))
+ 5)
+((rec f (λ (x) (if0 x 0 (if0 (f (- x 1)) 2 3))))
+ (+ 1 0))]
 
 @section[#:style 'unnumbered #:tag "s:cache:formalism"]{Formal soundness and termination}
 

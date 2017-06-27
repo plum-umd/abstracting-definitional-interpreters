@@ -55,8 +55,8 @@ the concrete answer @racket[1].  This results in a cycle where the
 intermediate sum returns @racket[2], @racket[3], @racket[4] when
 applied to @racket[1], @racket[2], @racket[3], etc.
 @interaction[#:eval the-alt-eval
-(rec id (λ (n) (if0 n 0 (+ 1 (id (- n 1)))))
-  (id 3))
+((rec id (λ (n) (if0 n 0 (+ 1 (id (- n 1))))))
+ 3)
 ]
 To ensure termination for all programs, we assume all references to
 primitive operations are @math{η}-expanded, so that store-allocations

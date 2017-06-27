@@ -17,7 +17,7 @@
                (list @math{}        @tt{|}    @tt{(num @math{n})}                   @elem{[@emph{conditional}]})
                (list @math{}        @tt{|}    @tt{(if0 @math{e} @math{e} @math{e})} @elem{[@emph{binary op}]})
                (list @math{}        @tt{|}    @tt{(app @math{e} @math{e})}          @elem{[@emph{application}]})
-               (list @math{}        @tt{|}    @tt{(rec @math{x} @math{e} @math{e})} @elem{[@emph{letrec}]})
+               (list @math{}        @tt{|}    @tt{(rec @math{x} @math{e})}          @elem{[@emph{rec binding}]})
                (list @math{}        @tt{|}    @tt{(lam @math{x} @math{e})}          @elem{[@emph{function defn}]})
                (list @math{x ∈ var} @tt{::=} @elem{@tt{x}, @tt{y}, ...}            @elem{[@emph{variable name}]})
                (list @math{b ∈ bin} @tt{::=} @elem{@tt{+}, @tt{-}, ...}            @elem{[@emph{binary prim}]}))]]
@@ -27,7 +27,7 @@ We begin by constructing a definitional interpreter for a small but
 representative higher-order, functional language.  The abstract syntax
 of the language is defined in @Figure-ref{f:syntax}; it includes
 variables, numbers, binary operations on numbers, conditionals,
-recursive let expressions, functions, and applications.
+recursive expressions, functions, and applications.
 
 The interpreter for the language is defined in
 @Figure-ref{f:interpreter}. At first glance, it has many conventional
@@ -53,12 +53,12 @@ primitive operations.
     [(op2 o e₀ e₁)  (do v₀ ← (ev e₀)  
                         v₁ ← (ev e₁)
                         (_δ o v₀ v₁))]
-    [(rec f e₀ e₁)  (do ρ  ← ask-env
+    [(rec f e)      (do ρ  ← ask-env
                         a  ← (alloc f)
                         ρ′ ≔ (ρ f a)
-                        v ← (local-env ρ′ (ev e₀))
+                        v  ← (local-env ρ′ (ev e))
                         (ext a v)
-                        (local-env ρ′ (ev e₁)))]
+                        (return v))]
     [(lam x e₀)     (do ρ ← _ask-env
                         (_return (cons (lam x e₀) ρ)))]
     [(app e₀ e₁)    (do (cons (lam x e₂) ρ) ← (ev e₀)
@@ -71,12 +71,10 @@ primitive operations.
 There are a few superficial aspects that deserve a quick note:
 environments @racket[ρ] are finite maps and the syntax @racket[(ρ x)]
 denotes @math{ρ(x)} while @racket[(ρ x a)] denotes @math{ρ[x↦a]}.
-Recursive let expressions @racket[(rec f e₀ e₁)] recursively bind
-@racket[f] to the result of evaluating @racket[e₀] in a scope
-including @racket[f] and then evaluate @racket[e₁] in a scope extended
-with @racket[f]; the @racket[e₀] expression need not be a syntactic
-value, but it is a run-time error if evaluating @racket[e₀] requires
-evaluating @racket[f].  The @racket[do]-notation is just shorthand for
+Recursive expressions @racket[(rec f e)] bind @racket[f] to the result
+of evaluating @racket[e] in the scope of @racket[e] itself; it is a
+run-time error if evaluating @racket[e₀] requires evaluating
+@racket[f].  The @racket[do]-notation is just shorthand for
 @racket[bind], as usual:
 @racketblock[
   (do x ← e . r) ≡ (bind e (λ (x) (do . r)))
