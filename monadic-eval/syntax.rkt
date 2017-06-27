@@ -19,7 +19,7 @@
 (struct ifz (e0 e1 e2) #:symbolic)
 (struct op1 (o e)      #:symbolic)
 (struct op2 (o e0 e1)  #:symbolic)
-(struct lrc (f x e)    #:symbolic)
+(struct lrc (f e)      #:symbolic)
 
 (struct ref (e)        #:symbolic)
 (struct drf (e)        #:symbolic)
@@ -50,8 +50,8 @@
     [(srf e0 e1)
      (set-union (fv e0) (fv e1))]
     [(sym s) (set)]
-    [(lrc f e0 e1)
-     (set-remove (set-union (fv e0) (fv e1)) f)]
+    [(lrc f e)
+     (set-remove (fv e) f)]
     [_ (set)]))
 
 (define (subexps e)
@@ -64,11 +64,11 @@
              [(or (op1 _ e)
                   (ref e)
                   (drf e)
+                  (lrc _ e)
                   (lam _ e))
               (subexps e)]
              [(or (op2 _ e0 e1)
                   (srf e0 e1)
-                  (lrc _ (lam _ e0) e1)
                   (app e0 e1))
               (set-union (subexps e0)
                          (subexps e1))]

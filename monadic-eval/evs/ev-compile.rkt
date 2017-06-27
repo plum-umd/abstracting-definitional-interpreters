@@ -25,14 +25,14 @@
                                (do v₀ ← c₀
                                    v₁ ← c₁
                                    (δ o v₀ v₁)))]
-      [(lrc f (lam x e₀) e₁) (let ([c₀ (ev e₀)]
-                                   [c₁ (ev e₁)])
+      [(lrc f e)             (let ([c (ev e)])
                                (do ρ ← ask-env
                                    a ← (alloc f)
-                                   ρ* ≔ (ρ f a)
+                                   ρ* ≔ (ρ f a)                                   
+                                   v ← (local-env ρ* c)
                                    ; TODO: this needs to be hash-union for abstract stores
-                                   (update-store (λ (σ) (σ a (list 'clo x c₀ ρ*))))
-                                   (local-env ρ* c₁)))]
+                                   (update-store (λ (σ) (σ a v)))
+                                   (return v)))]
       [(lam x e₀)            (let ([c₀ (ev e₀)])
                                (do ρ ← ask-env
                                    (return (list 'clo x c₀ ρ))))]

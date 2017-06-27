@@ -37,7 +37,7 @@
      (srf (parse e0) (parse e1))]
     [(list 'quote s)
      (sym s)]
-    [(list 'rec f e0 e1)
-     (lrc f (parse e0) (parse e1))]
+    [(list 'rec f e)
+     (lrc f (parse e))]
     [(list e0 e1)
      (app (parse e0) (parse e1))]))

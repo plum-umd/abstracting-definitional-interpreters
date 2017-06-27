@@ -16,9 +16,9 @@
 ;; in pushdown approaches that don't iterate to fixed-point properly.
 (define (tricky012 N)
   (parse
-   `(rec f (λ (x)
-             (if0 x 0 (if0 (f (sub1 x)) 1 2)))
-      (f ,N))))
+   `((rec f (λ (x)
+             (if0 x 0 (if0 (f (sub1 x)) 1 2))))
+      ,N)))
 
 (define (dd N)
   ;; returns 2 if N=0, 13 otherwise
@@ -39,11 +39,11 @@
 (define (fact N)
   ;; DIVERGES when N < 0
   (parse
-   `(rec f (λ (x)
+   `((rec f (λ (x)
              (if0 x
                   1
-                  (* x (f (- x 1)))))
-         (f ,N))))
+                  (* x (f (- x 1))))))
+         ,N)))
 
 (define omega
   ;; DIVERGES

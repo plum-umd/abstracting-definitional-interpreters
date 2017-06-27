@@ -18,8 +18,8 @@
      (list o (unparse e))]
     [(op2 o e0 e1)
      (list o (unparse e0) (unparse e1))]
-    [(lrc f e0 e1)
-     (list 'rec f (unparse e0) (unparse e1))]
+    [(lrc f e)
+     (list 'rec f (unparse e))]
     [(sym s)
      (list 'quote s)]
     [(drf e) 
