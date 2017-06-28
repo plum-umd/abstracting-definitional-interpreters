@@ -78,12 +78,14 @@ of evaluating @racket[e] in the scope of @racket[e] itself; it is a
 run-time error if evaluating @racket[e₀] requires evaluating
 @racket[f].  The @racket[do]-notation is just shorthand for
 @racket[bind], as usual:
-@racketblock[
-  (do x ← e . r) ≡ (bind e (λ (x) (do . r)))
-       (do e . r) ≡ (bind e (λ (_) (do . r)))
-   (do x ≔ e . r) ≡ (let ((x e)) (do . r))
-           (do b) ≡ b
-]
+@centered[
+@tabular[#:style 'block
+         #:sep @hspace[1]
+         #:column-properties '(right center left)
+	 (list (list @racket[(do x ← e . r)] @math{≡} @racket[(bind e (λ (x) (do . r)))])
+               (list @racket[(do e . r)] @math{≡} @racket[(bind e (λ (_) (do . r)))])
+               (list @racket[(do x ≔ e . r)] @math{≡} @racket[(let ((x e)) (do . r))])
+               (list @racket[(do b)] @math{≡} @racket[b]))]]
 Finally, there are two unconventional aspects worth noting.
 
 First, the interpreter is written in an @emph{open recursive style};
