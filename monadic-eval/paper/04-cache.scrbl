@@ -119,12 +119,14 @@ shown in @Figure-ref{f:fixing}.
     (do x′ ← (f x)
         (if (equal? x′ x) (return x) (loop x′)))))]}}
 
-The algorithm runs the caching evaluator @racket[eval] on the given
-program @racket[e] from the initial environment and store. This is
-done inside of @racket[mlfp], a monadic least fixed-point
-finder. After finding the least fixed-point, the final values and
-store for the initial configuration @racket[ς] are extracted and
-returned.
+The algorithm repeatedly runs the caching evaluator @racket[eval] on the given
+program @racket[e] from the initial environment and store (falling back on the
+oracle @racket[$in] when a configuration is seen twice). This is done inside of
+@racket[mlfp], a monadic least fixed-point finder. Each iteration of the
+fixpoint loop runs the program from initial conditions, and returns an improved
+oracle for the next round, until there is no improvement to be made. After
+finding the least fixed-point of the oracle, the final values and store for the
+initial configuration @racket[ς] are extracted and returned.
 
 Termination of the least fixed-point is justified by the monotonicity of the
 evaluator (it always returns an “improved” oracle), and the finite domain of
