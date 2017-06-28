@@ -66,11 +66,13 @@ path-sensitive verification engine.
 To support symbolic execution, the syntax of the language is extended to
 include symbolic numbers:
 
-@tabular[#:sep @hspace[1]
+@centered[
+@tabular[#:style 'block
+         #:sep @hspace[1]
          #:column-properties '(left left left right)
          (list (list @math{e ∈ exp} @tt{::=} @tt{... | (sym @math{x})}                @elem{[@emph{symbolic number}]})
                (list @math{ε ∈ pexp} @tt{::=}       @elem{@math{e} @tt{|} @math{¬e}}   @elem{[@emph{path expression}]})
-               (list @math{φ ∈ pcon} @tt{::=}       @math{P(pexp)}                     @elem{[@emph{path condition}]}) )]
+               (list @math{φ ∈ pcon} @tt{::=}       @math{P(pexp)}                     @elem{[@emph{path condition}]}) )]]
 
                
 

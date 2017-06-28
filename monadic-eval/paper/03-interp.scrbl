@@ -9,9 +9,18 @@
 
 @title[#:tag "s:interp"]{A Definitional Interpreter}
 
-@figure["f:syntax" "Programming Language Syntax"
+@;figure["f:syntax" "Programming Language Syntax"]
 
-@tabular[#:sep @hspace[1]
+
+We begin by constructing a definitional interpreter for a small but
+representative higher-order, functional language.  The abstract syntax
+of the language is given below; it includes
+variables, numbers, binary operations on numbers, conditionals,
+recursive expressions, functions, and applications.
+
+@centered[
+@tabular[#:style 'block
+         #:sep @hspace[1]
          #:column-properties '(left center left right)
          (list (list @math{e ∈ exp} @tt{::=} @tt{(vbl @math{x})}                   @elem{[@emph{variable}]})
                (list @math{}        @tt{|}    @tt{(num @math{n})}                   @elem{[@emph{conditional}]})
@@ -21,13 +30,6 @@
                (list @math{}        @tt{|}    @tt{(lam @math{x} @math{e})}          @elem{[@emph{function defn}]})
                (list @math{x ∈ var} @tt{::=} @elem{@tt{x}, @tt{y}, ...}            @elem{[@emph{variable name}]})
                (list @math{b ∈ bin} @tt{::=} @elem{@tt{+}, @tt{-}, ...}            @elem{[@emph{binary prim}]}))]]
-
-
-We begin by constructing a definitional interpreter for a small but
-representative higher-order, functional language.  The abstract syntax
-of the language is defined in @Figure-ref{f:syntax}; it includes
-variables, numbers, binary operations on numbers, conditionals,
-recursive expressions, functions, and applications.
 
 The interpreter for the language is defined in
 @Figure-ref{f:interpreter}. At first glance, it has many conventional
