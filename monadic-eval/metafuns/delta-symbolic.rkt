@@ -12,7 +12,7 @@
     (with-monad M
       (match* (o vs)
         ; `N` is unrefinable, cannot build up symbolic value from it
-        [((not 'quotient) (list _ ... 'N _ ...)) (return 'N)]
+        [((not '/) (list _ ... 'N _ ...)) (return 'N)]
         [('add1 (list (? number? n))) (return (add1 n))]
         [('add1 (list s)) (return `(add1 ,s))]
         [('+ (list (? number? n) (? number? m))) (return (+ n m))]
@@ -25,19 +25,19 @@
         [('- (list s1 s2)) (return `(- ,s1 ,s2))]
         [('* (list (? number? n1) (? number? n2))) (return (* n1 n2))]
         [('* (list s1 s2)) (return `(* ,s1 ,s2))]       
-        [('quotient (list (? number? n1) (? number? n2)))
+        [('/ (list (? number? n1) (? number? n2)))
          (if (zero? n2)
              fail
              (return (quotient n1 n2)))]
-        [('quotient (list s1 (? number? n2)))
+        [('/ (list s1 (? number? n2)))
          (if (zero? n2)
              fail
-             (return `(quotient ,s1 ,n2)))]
-        [('quotient (list _ 'N))
+             (return `(/ ,s1 ,n2)))]
+        [('/ (list _ 'N))
          (mplus (return 'N) fail)]
-        [('quotient (list s1 s2))
+        [('/ (list s1 s2))
          (do b ← (truish? s2) ; relies on `s2`'s range being just numbers
-           (if b fail (return `(quotient ,s1 ,s2))))]
+           (if b fail (return `(/ ,s1 ,s2))))]
         [('¬ (list v))
          (do b ← (truish? v)
            (return (if b 1 0)))])))

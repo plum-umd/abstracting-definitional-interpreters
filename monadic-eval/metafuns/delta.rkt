@@ -17,7 +17,7 @@
       [(list '+ n1 n2) (return (+ n1 n2))]
       [(list '- n1 n2) (return (- n1 n2))]
       [(list '* n1 n2) (return (* n1 n2))]
-      [(list 'quotient n1 n2)
+      [(list '/ n1 n2)
        (if (zero? n2)
            fail
            (return (quotient n1 n2)))]

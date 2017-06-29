@@ -20,7 +20,7 @@
                 ,(? number? n₂)) (return (- n₁ n₂))]
         [`(*    ,(? number? n₁)
                 ,(? number? n₂)) (return (* n₁ n₂))]
-        [`(quotient ,(? number? n₁) ,(? number? n₂))
+        [`(/ ,(? number? n₁) ,(? number? n₂))
          (if (zero? n₂)
              fail
              (return (quotient n₁ n₂)))]
@@ -29,9 +29,9 @@
         [`(+ ,_ ,_) (return 'N)]
         [`(- ,_ ,_) (return 'N)]
         [`(* ,_ ,_) (return 'N)]
-        [`(quotient ,_ ,(? number? n₂))
+        [`(/ ,_ ,(? number? n₂))
          (if (zero? n₂) fail (return 'N))]
-        [`(quotient ,_ ,_)
+        [`(/ ,_ ,_)
          (mplus (return 'N) fail)])))
 
   (define (truish? v)

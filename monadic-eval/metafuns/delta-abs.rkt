@@ -17,9 +17,9 @@
       [(list '+ n0 n1) (return 'N)]
       [(list '- n0 n1) (return 'N)]
       [(list '* n0 n1) (return 'N)]
-      [(list 'quotient n0 (? number? n1))
+      [(list '/ n0 (? number? n1))
        (if (= 0 n1) fail (return 'N))]
-      [(list 'quotient n0 n1)
+      [(list '/ n0 n1)
        (mplus (return 'N) fail)]))
 
   (define (truish? v)

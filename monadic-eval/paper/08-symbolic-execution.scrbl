@@ -99,7 +99,7 @@ path-condition with the assumption made.
 In the following example, the symbolic executor recognizes that result
 @racket[3] and division-by-0 error are not feasible:
 @interaction[#:eval the-symbolic-eval
-(if0 'x (if0 'x 2 3) (quotient 5 'x))
+(if0 'x (if0 'x 2 3) (/ 5 'x))
 ]
 A scaled up symbolic executor could implement @racket[zero?] by
 calling out to an SMT solver for more interesting reasoning about

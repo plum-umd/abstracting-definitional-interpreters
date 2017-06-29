@@ -223,14 +223,14 @@ in a succinct concrete syntax:
 (* (+ 3 4) 9)
 
 @code:comment{Divide-by-zero errors result in failures.}
-(quotient 5 (- 3 3))   
+(/ 5 (- 3 3))   
 ]
 Because our monad stack places @racket[FailT] above @racket[StateT],
 the answer includes the (empty) store at the point of the error. Had
 we changed @racket[monad@] to use @racket[(ReaderT (StateT (FailT
 ID)))] then failures would not include the store:
 @interaction[#:eval the-pure-eval-alt
-(quotient 5 (- 3 3))   
+(/ 5 (- 3 3))   
 ]
 At this point we've defined a simple definitional interpreter, although the
 extensible components involved—monadic operations and open recursion—will allow
@@ -307,7 +307,7 @@ of expressions that were not evaluated during the running of a program:
 @interaction[#:eval the-dead-eval
 (if0 0 1 2)
 (λ (x) x)
-(if0 (quotient 1 0) 2 3)]
+(if0 (/ 1 0) 2 3)]
 
 Our setup makes it easy not only to express the concrete interpreter,
 but also these useful forms of collecting semantics.
@@ -322,7 +322,7 @@ set of all numbers. Abstract numbers are introduced by an alternative
 interpretation of primitive operations, given in @Figure-ref{f:abs-delta},
 which simply produces @racket['N] in all cases. 
 
-Some care must be taken in the abstraction of @racket['quotient]. If
+Some care must be taken in the abstraction of @racket['/]. If
 the denominator is the abstract number @racket['N], then it is
 possible the program could fail as a result of divide-by-zero, since
 @racket[0] is contained in the interpretation of
@@ -339,7 +339,7 @@ non-determinism, we obtain an evaluator that produces a set of
 results:
 @interaction[#:eval the-abs-delta-eval
 (* (+ 3 4) 9)
-(quotient 5 (+ 1 2))
+(/ 5 (+ 1 2))
 (if0 (+ 1 0) 3 4)]
 
 @;{FIXME

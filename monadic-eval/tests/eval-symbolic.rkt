@@ -39,12 +39,12 @@
   (check-match (eval ref-sref)
                (set (cons (cons 42 (↦ (_ 0))) (set))))
 
-  (define fail_42 (parse `(if0 's (quotient 1 's) 42)))
+  (define fail_42 (parse `(if0 's (/ 1 's) 42)))
   (check-match (eval fail_42)
                (set (cons (cons 42       (↦)) (set '(¬ s)))
                     (cons (cons 'failure (↦)) (set 's))))
   
-  (define 1/s_42 (parse `(if0 (¬ 's) (quotient 1 's) 42)))
+  (define 1/s_42 (parse `(if0 (¬ 's) (/ 1 's) 42)))
   (check-match (eval 1/s_42)
                (set (cons (cons 42 (↦)) (set 's))
-                    (cons (cons '(quotient 1 s) (↦)) (set '(¬ s))))))
+                    (cons (cons '(/ 1 s) (↦)) (set '(¬ s))))))
