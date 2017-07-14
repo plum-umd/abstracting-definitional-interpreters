@@ -416,20 +416,12 @@ computations with @racket[mplus], and is used so @racket[find] returns
 otherwise it maps the address to a singleton set.  By linking these
 components with the same monad stack from before, we obtain an
 interpreter that loses precision whenever variables are bound to
-multiple values.
-
-@;{
-% KEEP IF POSSIBLE
-% For example, this program binds ⸨x⸩ to both ⸨0⸩ and ⸨1⸩ and produces
-%both answers when run:
-%ℑ⁅
-%¦ > (let f (λ (x) x)
-%¦     (let _ (f 0) (f 1)))]
-%ℑ,
-%¦ '((0 . ((x 1 0) (f ((λ (x) x) . ()))))
-%¦   (1 . ((x 1 0) (f ((λ (x) x) . ())))))
-%ℑ⁆
-}
+multiple values.  For example, this program binds @racket[x] to both
+@racket[1] and @racket[2] and produces both answers when run:
+@interaction[#:eval the-pdcfa-eval
+(let ((f (λ (x) x)))
+  (f 1)
+  (f 2))]
 
 Our abstract interpreter now has a truly finite domain; the next step is to
 detect loops in the state-space to achieve termination.
