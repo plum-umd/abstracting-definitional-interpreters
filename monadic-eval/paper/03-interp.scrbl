@@ -342,14 +342,10 @@ results:
 (/ 5 (+ 1 2))
 (if0 (+ 1 0) 3 4)]
 
-@;{FIXME
 If we link @racket[δ^@] with the @emph{tracing} monad stack plus
 non-determinism:
 @interaction[#:eval the-abs-trace-delta-eval
-(* (+ 3 4) 9)
-(/ 5 (+ 1 2))
 (if0 (+ 1 0) 3 4)]
-}
 
 @figure["f:abs-delta" "Abstracting Primitive Operations"]{
 @filebox[@racket[monad^@]]{
