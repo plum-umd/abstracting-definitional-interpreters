@@ -43,7 +43,7 @@ Even linear binding and arithmetic preserves precision:
 Only when the approximation of binding structure comes in to
 contact with base values that we see a loss in precision:
 @interaction[#:eval the-alt-eval
-(let f (λ (x) x)
+(let ((f (λ (x) x)))
   (* (f 5) (f 5)))
 ]
 
