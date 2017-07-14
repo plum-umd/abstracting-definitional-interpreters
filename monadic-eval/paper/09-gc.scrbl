@@ -144,3 +144,29 @@ a pushdown, garbage-collecting definitional abstract interpreter:
                         (ext a v₁)
                         (local-env (ρ′ x a) (ev e₂)))]
     [_ ((ev₀ ev) e)]))]}}
+
+
+To observe the added precision due to GC, consider the following
+example, run using the (non-garbage-collecting) pushdown abstract
+interpreter of @secref{s:reynolds}:
+@interaction[#:eval the-pdcfa-eval
+((λ (f) ((λ (_) (f 2)) (f 1))) (λ (x) x))
+]
+This example binds @racket[f] to an identity function and applies
+@racket[f] to two arguments, @racket[1] and @racket[2].  Since the
+first binding of @racket[x] to @racket[1] is still in the store, when
+the second binding of @racket[x] to @racket[2] happens, the results
+are joined together.  This causes the second application of @racket[f]
+to produce @emph{both} @racket[1] and @racket[2].
+
+If instead the garbage-collecting variant of the abstract interpeter
+is used, there will be a garbage collection between the first and
+second call to @racket[f], which is after the first binding of
+@racket[x] but before the second.  At this moment, @racket[x] is
+unreachable and therefore collected.  By the time @racket[f] is
+applied again, @racket[x] gets bound in a fresh location to
+@emph{just} @racket[2] and the overall result reflects this more
+precise fact:
+@interaction[#:eval the-pdcfa-gc-eval
+((λ (f) ((λ (_) (f 2)) (f 1))) (λ (x) x))
+]
