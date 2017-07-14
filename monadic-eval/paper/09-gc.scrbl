@@ -54,7 +54,7 @@ Traversing the stack, however, is not something that can be expressed
 by a pushdown automata.
 @;{}
 This difficulty is somewhat exacerbated by the definitional
-interpreter approach in that there isn't even a stack to traverse!
+interpreter approach in combination with a metalanguage (Racket) that doesn't reify a stack to traverse!
 Nevertheless, as we demonstrate, this challenge can be overcome to
 obtain a pushdown, garbage-collecting abstract interpreter.
 @;{}
