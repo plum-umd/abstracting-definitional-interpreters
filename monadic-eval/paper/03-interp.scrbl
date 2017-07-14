@@ -387,10 +387,12 @@ retain soundness in the semantics, we modify the store to map addresses to
 @emph{sets} of values, model store update as a join, and model dereference as a
 non-deterministic choice.
 
-Any abstraction of the allocation function that produces a finite set will do,
-but the choice of abstraction will determine the precision of the resulting
-analysis.  A simple choice is to allocate variables using the variable's name
-as its address.  This gives a monomorphic, or 0CFA-like, abstraction.
+@emph{Any} abstraction of the allocation function that produces a
+finite set will do (there's no way to make an unsound choice), but the
+choice of abstraction will determine the precision of the resulting
+analysis.  A simple choice is to allocate variables using the
+variable's name as its address.  This gives a monovariant, or
+0CFA-like, abstraction.
 
 @figure["f:0cfa-abs" "Abstracting Allocation: 0CFA"]{
 @filebox[@racket[alloc^@]]{
