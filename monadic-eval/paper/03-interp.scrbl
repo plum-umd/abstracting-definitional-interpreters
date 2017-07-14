@@ -209,22 +209,23 @@ main entry-point for the interpreter, which are straightforward to define:
 
 By taking advantage of Racket's languages-as-libraries features
 @~cite{dvanhorn:TobinHochstadt2011Languages}, we construct REPLs for
-interacting with this interpreter.  Here are a few evaluation examples
-in a succinct concrete syntax:
-
+interacting with this interpreter.  The following few evaluation
+examples demonstrate the interpreter working using a succinct concrete
+syntax.  Here is a closure over the empty environment paired with the
+empty store and another over a non-empty environment, paired with a
+non-empty store:
 @interaction[#:eval the-pure-eval
-@code:comment{Closure over the empty environment paired with the empty store.}
 (λ (x) x)
-
-@code:comment{Closure over a non-empty environment and store.}
-((λ (x) (λ (y) x)) 4)
-
-@code:comment{Primitive operations work as expected.}
-(* (+ 3 4) 9)
-
-@code:comment{Divide-by-zero errors result in failures.}
-(/ 5 (- 3 3))   
 ]
+Here is a closure over a non-empty environment and store:
+@interaction[#:eval the-pure-eval
+((λ (x) (λ (y) x)) 4)]
+Primitive operations work as expected:
+@interaction[#:eval the-pure-eval
+(* (+ 3 4) 9)]
+Divide-by-zero errors result in failures:
+@interaction[#:eval the-pure-eval
+(/ 5 (- 3 3))]
 Because our monad stack places @racket[FailT] above @racket[StateT],
 the answer includes the (empty) store at the point of the error. Had
 we changed @racket[monad@] to use @racket[(ReaderT (StateT (FailT

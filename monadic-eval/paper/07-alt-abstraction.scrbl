@@ -33,14 +33,16 @@ therefore not guaranteed.
 The @racket[store-crush@] operations are designed to work with
 @racket[precise-δ@] by performing @emph{widening} when joining
 multiple concrete values into the store. This abstraction offers a
-high-level of precision; for example:
+high-level of precision; for example, constant arithmetic expressions
+are computed with full precision:
 @interaction[#:eval the-alt-eval
-@code:comment{Constant arithmetic expressions are computed with full precision.}
-(* (+ 3 4) 9)
-@code:comment{Even linear binding and arithmetic preserves precision.}
-((λ (x) (* x x)) 5)
-@code:comment{Only when the approximation of binding structure comes in to}
-@code:comment{contact with base values that we see a loss in precision.}
+(* (+ 3 4) 9)]
+Even linear binding and arithmetic preserves precision:
+@interaction[#:eval the-alt-eval
+((λ (x) (* x x)) 5)]
+Only when the approximation of binding structure comes in to
+contact with base values that we see a loss in precision:
+@interaction[#:eval the-alt-eval
 (let f (λ (x) x)
   (* (f 5) (f 5)))
 ]

@@ -120,7 +120,7 @@ verification engine.
 There is one wrinkle, which is that operations on symbolic values
 introduce a new source of unboundness in the state-space, because the
 space of symbolic values is not finite. A simple strategy to ensure
-termination is to widen a symbolic value to the abstract number ⸨'N⸩
+termination is to widen a symbolic value to the abstract number @racket['N]
 when it shares an address with a different number, similarly to the
 precision-preserving abstraction from
 @secref{s:alt-abstraction}. @Figure-ref{f:symbolic-widen} shows

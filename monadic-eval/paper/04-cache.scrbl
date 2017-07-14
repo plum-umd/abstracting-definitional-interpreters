@@ -67,19 +67,19 @@ with individual caches.
   (do ρ ← ask-env
       σ ← get-store
       ς ≔ (list e ρ σ)
-      $⸢out⸣ ← get-cache-out
-      (if (∈ ς $⸢out⸣)
-          (for/monad+ ([v×σ ($⸢out⸣ ς)])
+      $out ← get-cache-out
+      (if (∈ ς $out)
+          (for/monad+ ([v×σ ($out ς)])
             (do (put-store (cdr v×σ))
                 (return (car v×σ))))
-          (do $⸢in⸣ ← ask-cache-in
-              v×σ₀  ≔ (if (∈ ς $⸢in⸣) ($⸢in⸣ ς) ∅)
-              (put-cache-out ($⸢out⸣ ς v×σ₀))
+          (do $in ← ask-cache-in
+              v×σ₀  ≔ (if (∈ ς $in) ($in ς) ∅)
+              (put-cache-out ($out ς v×σ₀))
               v ← ((ev₀ ev) e)
               σ′ ← get-store
               v×σ′ ≔ (cons v σ′)
               (update-cache-out 
-               (λ ($⸢out⸣) ($⸢out⸣ ς (set-add ($⸢out⸣ ς) v×σ′))))
+               (λ ($out) ($out ς (set-add ($out ς) v×σ′))))
               (return v)))))]}}
 
 In the algorithm, when a configuration @racket[ς] is first
@@ -155,7 +155,6 @@ In this pearl, we have focused on the code and its intuitions rather
 than rigorously establishing the usual formal properties of our
 abstract interpreter, but this is just a matter of presentation: the
 interpreter is indeed proven sound and computable.  We have formalized
-@;{HACK: the appendix is not in scribble, so this is hard-coded.}
 this co-inductive caching algorithm in Appendix A,
 where we prove both that it always terminates, and that it computes a
 sound over-approximation of concrete evaluation. Here, we give a short

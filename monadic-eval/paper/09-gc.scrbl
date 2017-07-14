@@ -35,7 +35,8 @@ collection has proved rather involved and required new techniques
 @figure["f:gc-monad" "Monad Instance with Root Address Set"]{
 @filebox[@racket[monad-pdcfa-gc@]]{
 @racketblock[
-(define-monad (ReaderT (ReaderT (FailT (StateT (NondetT (ReaderT (StateT+ ID))))))))
+(define-monad
+  (ReaderT (ReaderT (FailT (StateT (NondetT (ReaderT (StateT+ ID))))))))
 ]}
 @filebox[@racket[mrun-pdcfa-gc@]]{
 @racketblock[

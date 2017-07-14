@@ -41,4 +41,5 @@ interpreter?
   Abstracted Interpreter to Understand Abstract Interpretation}, an
   (unknown to us) precursor to the current work that anticipated our
   use of interpreters written using open recursion to explain abstract
-  intepretation.}
+  intepretation. This work was supported in part by NSF grants
+  #1618756 and #1518765.}
