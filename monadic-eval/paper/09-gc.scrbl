@@ -51,20 +51,18 @@ abstract models that are pushdown automata, is that the usual approach
 to garbage collection is to crawl the call stack to compute the root
 set of reachable addresses @~cite{dvanhorn:Morrisett1995Abstract}.
 Traversing the stack, however, is not something that can be expressed
-by a pushdown automata.
-@;{}
-This difficulty is somewhat exacerbated by the definitional
-interpreter approach in combination with a metalanguage (Racket) that doesn't reify a stack to traverse!
+by a pushdown automata.  This difficulty is somewhat exacerbated by
+the definitional interpreter approach in combination with a
+metalanguage (Racket) that doesn't reify a stack to traverse!
 Nevertheless, as we demonstrate, this challenge can be overcome to
-obtain a pushdown, garbage-collecting abstract interpreter.
-@;{}
-Doing so shows that the definitional abstract interpreter approach
-also scales to handle so-called @emph{introspective} pushdown analysis
-that require some level of introspection on the stack
+obtain a pushdown, garbage-collecting abstract interpreter.  Doing so
+shows that the definitional abstract interpreter approach also scales
+to handle so-called @emph{introspective} pushdown analysis that
+require some level of introspection on the stack
 @~cite{dvanhorn:Earl2012Introspective dvanhorn:Johnson2014Pushdown}.
 
 Solving the abstract garbage collection problem for a definitional
-abstract interpreter boils down to answer the following question: how
+abstract interpreter boils down to answering the following question: how
 can we track root addresses that are live on the call stack when the
 call stack is implicitly defined by the metalanguage?  The answer is
 fairly simple: we extend the monad with a set of root addresses.  When
@@ -75,18 +73,17 @@ metalanguage to implicitly take care of the rest as before.
 
 @Figure-ref{f:gc-monad} defines the appropriate monad instance.  All
 that has changed is there is an added reader component, which will be
-used to model the context's current root set.
-@;{}
-The use of this added component necessitates a change to the caching
-and fixed-point calculation, namely we must include the root sets as
-part of the configuration.  Compared with the @racket[ev-cache@]
-component of @secref{s:cache}, we make a simple adjustment to the
-first few lines to cache the root set along with the rest of the
+used to model the context's current root set.  The use of this added
+component necessitates a change to the caching and fixed-point
+calculation, namely we must include the root sets as part of the
+configuration.  Compared with the @racket[ev-cache@] component of
+@secref{s:cache}, we make a simple adjustment to the first few lines
+to cache the root set along with the rest of the
 configuration:
 @racketblock[
 (define (((ev-cache ev₀) ev) e)
-  (do ρ   ← ask-env  σ ← get-store  ψ ← ask-roots
-      ς   ≔ (list e ρ σ ψ)
+  (do ρ ← ask-env  σ ← get-store  ψ ← ask-roots
+      ς ≔ (list e ρ σ ψ)
       ...))]
 Similarly, for @racket[fix-cache@]:
 @racketblock[
