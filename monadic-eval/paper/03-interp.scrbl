@@ -344,7 +344,7 @@ results:
 
 If we link @racket[δ^@] with the @emph{tracing} monad stack plus
 non-determinism:
-@interaction[#:eval the-abs-trace-delta-eval
+@interaction[#:eval the-abs-trace-expr-delta-eval
 (if0 (+ 1 0) 3 4)]
 
 @figure["f:abs-delta" "Abstracting Primitive Operations"]{
