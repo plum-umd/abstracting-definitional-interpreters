@@ -114,7 +114,6 @@ All that remains is to define a component that propagates root sets
 appropriately from compound expressions to their constituents.
 @Figure-ref{f:gc-collect-roots} gives the @racket[ev-roots@] component, which
 does exactly this.
-@;{}
 Finally, the pieces are stitched together with the following to obtain
 a pushdown, garbage-collecting definitional abstract interpreter:
 @racketblock[
@@ -150,7 +149,9 @@ To observe the added precision due to GC, consider the following
 example, run using the (non-garbage-collecting) pushdown abstract
 interpreter of @secref{s:reynolds}:
 @interaction[#:eval the-pdcfa-eval
-((λ (f) ((λ (_) (f 2)) (f 1))) (λ (x) x))
+(let ((f (λ (x) x)))
+  (f 1)
+  (f 2))
 ]
 This example binds @racket[f] to an identity function and applies
 @racket[f] to two arguments, @racket[1] and @racket[2].  Since the
@@ -168,5 +169,7 @@ applied again, @racket[x] gets bound in a fresh location to
 @emph{just} @racket[2] and the overall result reflects this more
 precise fact:
 @interaction[#:eval the-pdcfa-gc-eval
-((λ (f) ((λ (_) (f 2)) (f 1))) (λ (x) x))
+(let ((f (λ (x) x)))
+  (f 1)
+  (f 2))
 ]

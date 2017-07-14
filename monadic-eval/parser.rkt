@@ -8,9 +8,7 @@
     [(? number? n) (num n)]
     [(? symbol? s) (vbl s)]
     [(list 'λ (list x) e)
-     (lam x (parse e))]
-    [(list 'let x e0 e1)
-     (app (lam x (parse e1)) (parse e0))]
+     (lam x (parse e))]    
     [(list 'if0 e0 e1 e2)
      (ifz (parse e0)
           (parse e1)
@@ -39,5 +37,9 @@
      (sym s)]
     [(list 'rec f e)
      (lrc f (parse e))]
+    [(list 'let (list (list x e)) e0)     
+     (app (lam x (parse e0)) (parse e))]
+    [(list-rest 'let (list (list x e)) e0 es)    
+     (parse `(let ((,x ,e)) (let ((_ ,e0)) ,@es)))]
     [(list e0 e1)
      (app (parse e0) (parse e1))]))

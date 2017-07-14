@@ -54,3 +54,7 @@
 (define the-symbolic-eval
    (make-monadic-eval '(monad-symbolic@ δ-symbolic@ alloc@ state@ ev-symbolic@ ev@)
                       '(fix (ev-symbolic ev))))
+
+(define the-pdcfa-gc-eval
+  (make-monadic-eval '(monad-pdcfa-gc@ state-nd@ alloc-0cfa@ δ-abs@ ev@ ev-roots@ ev-collect@ ev-cache@ eval-coind@)
+                     '(eval-coind (fix (ev-collect (ev-cache (ev-roots ev)))))))
