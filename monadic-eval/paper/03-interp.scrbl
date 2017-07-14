@@ -367,12 +367,14 @@ non-determinism:
 ]}}
 
 It is clear that the interpreter will only ever see a finite set of
-numbers (including @racket['N]), but it's definitely not true that the
-interpreter halts on all inputs.  First, it's still possible to
-generate an infinite number of closures.  Second, there's no way for
-the interpreter to detect when it sees a loop.  To make a terminating
-abstract interpreter requires tackling both.  We look next at
-abstracting closures.
+numbers (including @racket['N]) since the arguments to @racket[δ] will
+only ever include numbers that appear in the program text or results
+of previous uses of @racket[δ], which is just @racket['N].  However,
+it's definitely not true that the interpreter halts on all inputs.
+First, it's still possible to generate an infinite number of closures.
+Second, there's no way for the interpreter to detect when it sees a
+loop.  To make a terminating abstract interpreter requires tackling
+both.  We look next at abstracting closures.
 
 @section[#:tag "s:abstracting-closures"]{Abstracting Closures}
 
