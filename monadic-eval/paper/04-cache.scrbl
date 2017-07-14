@@ -155,10 +155,11 @@ In this pearl, we have focused on the code and its intuitions rather
 than rigorously establishing the usual formal properties of our
 abstract interpreter, but this is just a matter of presentation: the
 interpreter is indeed proven sound and computable.  We have formalized
-this co-inductive caching algorithm in Appendix A,
-where we prove both that it always terminates, and that it computes a
-sound over-approximation of concrete evaluation. Here, we give a short
-summary of our metatheory approach.
+this co-inductive caching algorithm in the supplemental material
+accompanying this paper, where we prove both that it always
+terminates, and that it computes a sound over-approximation of
+concrete evaluation. Here, we give a short summary of our metatheory
+approach.
 
 In formalising the soundness of this caching algorithm, we extend a
 standard big-step evaluation semantics into a @emph{big-step
