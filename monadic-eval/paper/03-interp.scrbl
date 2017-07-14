@@ -259,8 +259,7 @@ top-level evaluation function is then:
 @figure["f:dead" "Dead Code Collecting Semantics"]{
 @filebox[@racket[dead-monad@]]{
 @racketblock[
-(define-monad
-  (ReaderT (StateT (StateT (FailT ID)))))]}
+(define-monad (ReaderT (StateT (StateT (FailT ID)))))]}
 @filebox[@racket[ev-dead@]]{
 @racketblock[
 (define (((ev-dead ev₀) ev) e)
