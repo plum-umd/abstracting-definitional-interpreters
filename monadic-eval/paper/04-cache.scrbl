@@ -34,7 +34,7 @@ sets of value-and-store pairs (@racket[v×σ]). When a configuration is
 reached for the second time, rather than re-evaluating the expression
 and entering an infinite loop, the result is looked up from
 @racket[$in], which acts as an oracle. It is important that the cache
-is used co-inductively: it is only safe to use @racket[in] as an
+is used in a @emph{productive} way: it is only safe to use @racket[in] as an
 oracle so long as some progress has been made first.
 
 The results of evaluation are then stored in an output cache
