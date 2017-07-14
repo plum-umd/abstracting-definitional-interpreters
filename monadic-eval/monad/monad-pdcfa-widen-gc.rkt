@@ -51,9 +51,9 @@
 
 (define ask-roots (bind ask (compose1 return cadr)))
 
-(define (local-roots α m)
-  (do `(,ρ . (,_ . ,Σ⊥)) ← ask
-    (local `(,ρ . (,α . ,Σ⊥)) m)))
+(define (extra-roots rs m)
+  (do `(,ρ . (,ψ . ,Σ⊥)) ← ask
+    (local `(,ρ . (,(set-union ψ rs) . ,Σ⊥)) m)))
 
 ;; mcache^ impl:
 

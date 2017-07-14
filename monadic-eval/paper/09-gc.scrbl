@@ -130,21 +130,18 @@ a pushdown, garbage-collecting definitional abstract interpreter:
 @racketblock[
 (define (((ev-roots ev₀) ev) e)
   (match e
-    [(if0 e₀ e₁ e₂) (do ψ  ← ask-roots
-                        ρ  ← ask-env
-                        ψ′ ≔ (set-union ψ (roots e₁ ρ) (roots e₂ ρ))
-                        v  ← (local-roots ψ′ (ev e₀))
+    [(if0 e₀ e₁ e₂) (do ρ  ← ask-env
+                        ψ′ ≔ (set-union (roots e₁ ρ) (roots e₂ ρ))
+                        v  ← (extra-roots ψ′ (ev e₀))
                         b  ← (truish? v)
                         (ev (if b e₁ e₂)))]
-    [(op2 o e₀ e₁)  (do ψ  ← ask-roots
-                        ρ  ← ask-env
-                        v₀ ← (local-roots (set-union ψ (roots e₁ ρ)) (ev e₀))
-                        v₁ ← (local-roots (set-union ψ (roots-v v₀)) (ev e₁))
+    [(op2 o e₀ e₁)  (do ρ  ← ask-env
+                        v₀ ← (extra-roots (roots e₁ ρ) (ev e₀))
+                        v₁ ← (extra-roots (roots-v v₀) (ev e₁))
                         (δ o v₀ v₁))]
     [(app e₀ e₁)    (do ρ  ← ask-env
-                        ψ  ← ask-roots
-                        v₀ ← (local-roots (set-union ψ (roots e₁ ρ)) (ev e₀))
-                        v₁ ← (local-roots (set-union ψ (roots-v v₀)) (ev e₁))
+                        v₀ ← (extra-roots (roots e₁ ρ) (ev e₀))
+                        v₁ ← (extra-roots (roots-v v₀) (ev e₁))
                         (cons (lam x e₂) ρ′) ≔ v₀
                         a  ← (alloc x)
                         (ext a v₁)

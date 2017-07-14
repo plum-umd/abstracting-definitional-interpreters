@@ -58,7 +58,7 @@
   [mcycle^    : ask-cycle local-cycle]
   [msymbolic^ : refine get-path-cond]
   [mhistory^  : ask-call-history local-call]
-  [gc^        : ask-roots local-roots])
+  [gc^        : ask-roots extra-roots])
 
 ;; metafunctions
 (define-signatures

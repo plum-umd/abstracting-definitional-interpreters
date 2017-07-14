@@ -22,9 +22,9 @@
 (define ask-roots
   (bind ask (compose1 return car)))
 
-(define (local-roots ψ m)
-    (do (cons _ ρ) ← ask
-      (local (cons ψ ρ) m)))
+(define (extra-roots rs m)
+  (do (cons ψ ρ) ← ask
+    (local (cons (set-union ψ rs) ρ) m)))
 
 ;; env^ impl:
 (define ask-env

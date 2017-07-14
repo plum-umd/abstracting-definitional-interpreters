@@ -16,32 +16,24 @@
 (define (((ev-roots ev_0) ev) e)
   (match e
     [(ifz e₀ e₁ e₂)
-     (do ψ ← ask-roots
-         ρ ← ask-env
-         v ← (local-roots
-              (set-union ψ
-                         (roots e₁ ρ)
-                         (roots e₂ ρ))
-              (ev e₀))
+     (do ρ ← ask-env
+         v ← (extra-roots (set-union (roots e₁ ρ) (roots e₂ ρ))
+               (ev e₀))
          b ← (truish? v)
          (ev (if b e₁ e₂)))]
 
     [(op2 o e₀ e₁)
-     (do ψ ← ask-roots
-         ρ ← ask-env
-         v₀ ← (local-roots
-               (set-union ψ (roots e₁ ρ))
+     (do ρ ← ask-env
+         v₀ ← (extra-roots (roots e₁ ρ)
                (ev e₀))
-         v₁ ← (local-roots
-               (set-union ψ (roots-v v₀))
+         v₁ ← (extra-roots (roots-v v₀)
                (ev e₁))
          (δ o v₀ v₁))]
 
     [(app e₀ e₁)
-     (do ψ ← ask-roots
-         ρ ← ask-env
-         v₀ ← (local-roots (set-union ψ (roots e₁ ρ)) (ev e₀))
-         v₁ ← (local-roots (set-union ψ (roots-v v₀)) (ev e₁))
+     (do ρ ← ask-env
+         v₀ ← (extra-roots (roots e₁ ρ) (ev e₀))
+         v₁ ← (extra-roots (roots-v v₀) (ev e₁))
          (cons (lam x e₂) ρ′) ≔ v₀
          a  ← (alloc x)
          (ext a v₁)
