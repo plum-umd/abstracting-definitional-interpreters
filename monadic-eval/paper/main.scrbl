@@ -21,17 +21,40 @@
 @umd-author["pcn"]{Phúc C. Nguyễn}
 @umd-author["dvanhorn"]{David Van Horn}
 
-@setcopyright{none}
+@setcopyright{rightsretained}
 @acmJournal{PACMPL}
 @acmYear{2017}
 @acmVolume{1}
-@acmNumber{1}
+@acmNumber{ICFP}
 @acmArticle{12}
 @acmMonth{9}
 @acmDOI{10.1145/3110256}
+@acmPrice{}
+
+@keywords{interpreters, abstract interpreters}
+
+@CCSXML{
+
+<ccs2012>
+ <concept>
+ <concept_id>10011007.10010940.10010992.10010998.10011000</concept_id>
+ <concept_desc>Software and its engineering~Automated static analysis</concept_desc>
+ <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+ <concept_id>10011007.10011006.10011008.10011009.10011012</concept_id>
+ <concept_desc>Software and its engineering~Functional languages</concept_desc>
+ <concept_significance>500</concept_significance>
+ </concept>
+</ccs2012>
+
+}
+
+@ccsdesc[#:number 500]{Software and its engineering~Automated static analysis}
+@ccsdesc[#:number 500]{Software and its engineering~Functional languages}
 
 @;acmBadgeL["artifact_available.png"]
-@acmBadgeR["artifact_evaluated-reusable.png"]
+@;acmBadgeR["artifact_evaluated-reusable.png"]
 
 @abstract{In this functional pearl, we examine the use of
  definitional interpreters as a basis for abstract
