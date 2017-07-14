@@ -1,5 +1,4 @@
-\documentclass[acmlarge,review,anonymous]{acmart}\settopmatter{printfolios=true}
-
+\documentclass{article}
 \usepackage{microtype}
 \usepackage{textcomp}
 \usepackage[scaled=0.8]{DejaVuSansMono}
@@ -153,138 +152,15 @@
 \newcommand{\mathgobble}{-0.25em}
 \newcommand{\monadgobble}{-0.5em}
 
-\makeatletter\if@ACM@journal\makeatother
-%% Journal information (used by PACMPL format)
-%% Supplied to authors by publisher for camera-ready submission
-\acmJournal{PACMPL}
-\acmVolume{1}
-\acmNumber{1}
-\acmArticle{1}
-\acmYear{2017}
-\acmMonth{1}
-\acmDOI{10.1145/nnnnnnn.nnnnnnn}
-\startPage{1}
-\else\makeatother
-%% Conference information (used by SIGPLAN proceedings format)
-%% Supplied to authors by publisher for camera-ready submission
-\acmConference[PL'17]{ACM SIGPLAN Conference on Programming Languages}{January 01--03, 2017}{New York, NY, USA}
-\acmYear{2017}
-\acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-\acmDOI{10.1145/nnnnnnn.nnnnnnn}
-\startPage{1}
-\fi
+\newcommand\lamif{$\lambda$IF}
+\newtheorem{theorem}{Theorem}
 
 
-%% Copyright information
-%% Supplied to authors (based on authors' rights management selection;
-%% see authors.acm.org) by publisher for camera-ready submission
-\setcopyright{none}             %% For review submission
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-%\setcopyright{rightsretained}
-%\copyrightyear{2017}           %% If different from \acmYear
 
-
-%% Bibliography style
-\bibliographystyle{ACM-Reference-Format}
-%% Citation style
-%% Note: author/year citations are required for papers published as an
-%% issue of PACMPL.
-\citestyle{acmauthoryear}  %% For author/year citations
-%\citestyle{acmnumeric}     %% For numeric citations
-%\setcitestyle{nosort}      %% With 'acmnumeric', to disable automatic
-                            %% sorting of references within a single citation;
-                            %% e.g., \cite{Smith99,Carpenter05,Baker12}
-                            %% rendered as [14,5,2] rather than [2,5,14].
-%\setcitesyle{nocompress}   %% With 'acmnumeric', to disable automatic
-                            %% compression of sequential references within a
-                            %% single citation;
-                            %% e.g., \cite{Baker12,Baker14,Baker16}
-                            %% rendered as [2,3,4] rather than [2-4].
+\title{Appendix}
 
 \begin{document}
-
-\title{Definitional Abstract Interpreters for Higher-Order Programming Languages}
-%\title{Abstracting Definitional Interpreters} % for Higher-Order Programming Languages}
-\subtitle{Functional Pearl}
-
-\author{David Darais}
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
-\affiliation{
-  %\position{Position1}
-  %\department{Department1}              %% \department is recommended
-  \institution{University of Maryland}            %% \institution is required
-  %\streetaddress{Street1 Address1}
-  \city{College Park}
-  \state{Maryland}
-  %\postcode{Post-Code1}
-  %\country{Country1}
-}
-\email{darais@cs.umd.edu}          %% \email is recommended
-
-\author{Nicholas Labich}
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
-\affiliation{
-  %\position{Position1}
-  %\department{Department1}              %% \department is recommended
-  \institution{University of Maryland}            %% \institution is required
-  %\streetaddress{Street1 Address1}
-  \city{College Park}
-  \state{Maryland}
-  %\postcode{Post-Code1}
-  %\country{Country1}
-}
-\email{labichn@cs.umd.edu}          %% \email is recommended
-
-\author{Phúc C. Nguyễn}
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
-\affiliation{
-  %\position{Position1}
-  %\department{Department1}              %% \department is recommended
-  \institution{University of Maryland}            %% \institution is required
-  %\streetaddress{Street1 Address1}
-  \city{College Park}
-  \state{Maryland}
-  %\postcode{Post-Code1}
-  %\country{Country1}
-}
-\email{pcn@cs.umd.edu}          %% \email is recommended
-
-
-\author{David {Van Horn}}
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
-\affiliation{
-  %\position{Position1}
-  %\department{Department1}              %% \department is recommended
-  \institution{University of Maryland}            %% \institution is required
-  %\streetaddress{Street1 Address1}
-  \city{College Park}
-  \state{Maryland}
-  %\postcode{Post-Code1}
-  %\country{Country1}
-}
-\email{dvanhorn@cs.umd.edu}          %% \email is recommended
-
-%% \authorinfo{Phúc C. Nguyễn}
-%%            {University of Maryland}
-%%            {pcn@cs.umd.edu}
-
-
 \maketitle
-
-%\category{CR-number}{subcategory}{third-level}
-%\terms term1, term2
-%\keywords keyword1, keyword2
-
-\begin{acks}
-  We thank Sam Tobin-Hochstadt and Dionna Glaze for several fruitful
-  conversations while developing the ideas in this work.  We thank
-  Ilya Sergey for comments and in particular, bringing Jones and
-  Nielsen's two-level metalanguage for abstract interpretation to our
-  attention~\cite{local:jones-ai1995}.
-\end{acks}
-
-\bibliography{davdar,dvanhorn,local}
 
 \appendix
 \input{10-formalism.tex}

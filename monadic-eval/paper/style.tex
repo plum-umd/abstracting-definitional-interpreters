@@ -1,5 +1,140 @@
 \usepackage{fontspec}
 \usepackage{libertine}
-\setmonofont{DejaVu Sans Mono}
+\setmonofont[Scale=0.9]{DejaVu Sans Mono}
 \renewcommand{\Scribtexttt}[1]{{\small\texttt{#1}}}
 \renewcommand{\Stttextbar}{|}
+
+% for appendix
+\usepackage{microtype}
+\usepackage{textcomp}
+%\usepackage[scaled=0.8]{DejaVuSansMono}
+\usepackage{setspace}
+\usepackage{stackengine}
+\usepackage{wrapfig}
+\renewcommand\stacktype{L}
+%\linespread{0.95}
+
+\usepackage{balance}
+\usepackage{moresize}
+\usepackage{csquotes}
+%\usepackage{upgreek}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{stmaryrd}
+
+\usepackage{mathpartir}
+\usepackage{galois}
+
+\usepackage{mdframed}
+
+\usepackage{listings}
+\lstset%
+  {language=Lisp
+  ,upquote=true
+  ,mathescape=true
+  ,basicstyle=\ttfamily\color{PuncColor}
+  ,alsoletter=+-*/?'\#0123456789^:
+  ,identifierstyle=\color{IdentifierColor}
+  ,keywords=
+    {define,let,match,if
+    ,do,define-monad,for/monad+
+    ,\#lang
+    ,\#:when
+    ,\#:unless
+    }
+  ,keywordstyle=\color{KeywordColor}
+  ,emph=
+    {return,bind
+    ,zero?
+    ,ask-env,local-env
+    ,ext,find,alloc
+    ,get-store,put-store,update-store
+    ,tell
+    ,get-dead,put-dead,update-dead
+    ,fail,mplus
+    ,get-,put-,update-
+    ,ask-,local-
+    ,get-path-cond,refine
+    ,ask-cache-in,local-cache-in
+    ,get-cache-out,put-cache-out,update-cache-out
+    }
+  ,emphstyle=\color{IdentifierColor}\emph
+  ,literate=
+    {<lambda>}{{{\KY{$\lambda$}}}}1
+    {<delta>}{{{\ID{$\delta$}}}}1
+    {<sigma>}{{{\ID{$\sigma$}}}}1
+    {<varsigma>}{{{\ID{$\varsigma$}}}}1
+    {<rho>}{{{\ID{$\rho$}}}}1
+    {<alpha>}{{{\ID{$\alpha$}}}}1
+    {<psi>}{{{\ID{$\psi$}}}}1
+    {<phi>}{{{\ID{$\phi$}}}}1
+    {<theta>}{{{\ID{$\theta$}}}}1
+    {<Sigma>}{{{\ssmall\ID{$\Sigma $}}}}1
+    {<Oslash>}{{{\ID{$\varnothing $}}}}1
+    {<larrow>}{{{\scriptsize$\leftarrow $}}}1
+    {<coleq>}{{{\scriptsize$\coloneqq $}}}1
+    {<sub0>}{{{\ID{$\,_{\text{0}}$}}}}1
+    {<sub1>}{{{\ID{$\,_{\text{1}}$}}}}1
+    {<sub2>}{{{\ID{$\,_{\text{2}}$}}}}1
+    {<prime>}{{{\ID{$\,^{\prime} $}}}}1
+    {<cent>}{{{\ID{\$}}}}1
+    {<in>}{{{\ID{$\in $}}}}1
+    {<times>}{{{\ssmall\ID{$\times $}}}}1
+    {<bot>}{{{\ssmall\ID{$\bot $}}}}1
+    {<not>}{{{\ssmall\ID{$\neg $}}}}1
+    {<supI>}{{{\ID{\,$^{\text{I}}$}}}}1
+    {<supO>}{{{\ID{\,$^{\text{O}}$}}}}1
+    {<supplus>}{{{\ID{\,$^{\text{+}}$}}}}1
+    {<tl>in<tr>}{{{\ID{$^{\text{in}}$}}}}1
+    {<tl>out<tr>}{{{\ID{$^{\text{out}}$}}}}2
+    {`}{{{\`{}}}}1
+    {get-<cent>}{{{\ID{\emph{get-\$}}}}}5
+    {put-<cent>}{{{\ID{\emph{put-\$}}}}}5
+    {update-<cent>}{{{\ID{\emph{update-\$}}}}}8
+    {=}{{{\ID{=}}}}1
+  ,classoffset=1
+  ,keywords=
+    {'add1,'sub1,'+,'-,'*,'/,'failure,'N
+    ,\#t,\#f,0,1,2,3,4,5,6,7,8,9
+    }
+  ,keywordstyle=\color{ValueColor}
+  }
+\lstdefinestyle{result}
+  {basicstyle=\ttfamily\color{ResultColor}
+  ,keywordstyle=\color{ResultColor}
+  ,identifierstyle=\color{ResultColor}
+  ,literate=
+    {<lambda>}{{{$\lambda$}}}1
+    {<delta>}{{{$\delta$}}}1
+    {<sigma>}{{{$\sigma$}}}1
+    {<varsigma>}{{{$\varsigma$}}}1
+    {<rho>}{{{$\rho$}}}1
+    {<phi>}{{{$\phi$}}}1
+    {<theta>}{{{$\theta$}}}1
+    {<Sigma>}{{{\ssmall$\Sigma $}}}1
+    {<Oslash>}{{{$\varnothing $}}}1
+    {<larrow>}{{{$\leftarrow $}}}1
+    {<coleq>}{{{$\coloneqq $}}}1
+    {<sub0>}{{{$\,_{\text{0}}$}}}1
+    {<sub1>}{{{$\,_{\text{1}}$}}}1
+    {<sub2>}{{{$\,_{\text{2}}$}}}1
+    {<prime>}{{{$\,^{\prime} $}}}1
+    {<cent>}{{{\$}}}1
+    {<in>}{{{$\in $}}}1
+    {<times>}{{{\ssmall$\times $}}}1
+    {<bot>}{{{\ssmall$\bot $}}}1
+    {<not>}{{{\ssmall$\neg $}}}1
+    {timeout}{{{\EO{\emph{\textbf{timeout}}}}}}7
+  }
+
+\newcommand{\rfloat}[1]{\begin{flushright}\fbox{#1}\end{flushright}\vspace{-2.1em}} % -2.1em}}
+\newcommand{\resultskip}{\vspace{-0.8em}} % -1.2em}}
+\newcommand{\figskip}{\vspace{0pt}} % -1.3em}}
+%\newcommand{\captionskip}[1]{\vspace{-0.75em}\caption{#1}\vspace{-1em}}
+\newcommand\captionskip[1]{\caption{#1}}
+\newcommand{\up}[1]{\overbrace{\vphantom{X^X}#1}}
+\newcommand{\down}[1]{\underbrace{\vphantom{X^X}#1}}
+\newcommand{\mathgobble}{-0.25em}
+\newcommand{\monadgobble}{-0.5em}
