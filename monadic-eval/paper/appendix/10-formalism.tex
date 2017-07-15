@@ -2,11 +2,11 @@
 
 In this section we formalize our approach to designing definitional abstract
 interpreters. We begin with a ``ground truth'' big-step semantics and concludes
-with the fixed-point iteration strategy described in Section~\ref{s:cache}, which
+with the fixed-point iteration strategy described in Section 4, which
 we prove sound and computable w.r.t. a synthesized abstract semantics. The
 design is systematic, and applies to arbitrary developments which use big-step
 operational semantics. We demonstrate the systematic process as applied to a
-subset of the language described in Figure~\ref{f:syntax}, which we call
+subset of the language described in Section 3, which we call
 \lamif:
 \begin{alignat*}{1}
 e ∈ exp ⩴ n ∣ x ∣ λx.e ∣ e(e) ∣ ⟬if0⟭(e)❴e❵❴e❵ ∣ b(e,e) 
@@ -523,7 +523,7 @@ The proof follows by composing Theorems~1-4.
 
 \paragraph{Computing with Definitional Interpreters}
 
-The algorithm described in Section~\ref{s:cache} is a more efficient strategy
+The algorithm described in Section 4 is a more efficient strategy
 for computing «\$⁺» using an extensible open-recursive definitional
 interpreter. This technique is general, and bridges the gap between the
 big-step abstract semantics formalized in this section and the definitional
@@ -552,7 +552,7 @@ The iteration strategy to analyze the program «e₀» is then to run «e₀» u
 reachable configurations from «e₀», and (2) is required to reach a fixed point
 of the analysis. To track this extra information we add functional state to the
 interpreter (which was done through a monad transformer in
-Section~\ref{s:cache}) of type:
+Section 4) of type:
 \[ ♯{cache} ≔ ♯{config} ↦ ℘(♯{val}×♯{store}) \]
 such that the open-recursive evaluator has type:
 \begin{alignat*}{1}
@@ -594,7 +594,7 @@ The first form of widening is to widen the store in the result set
 \end{alignat*}
 We perform this widening systematically and with no added effort through the
 use of Galois Transformers~\cite{local:darais-oopsla2015} in
-Section~\ref{s:widening}. The iteration strategy for this widened state space
+Section 6. The iteration strategy for this widened state space
 is the same as before, which computes a fixed point of the outer cache «\$ᵒ».
 
 The next form of widening is to pull the store out of the configuration space
@@ -630,7 +630,7 @@ static analyzer.
 From the fully widened static analyzer, which computes a mutual fixed-point
 between a cache and store, we can easily recover a classical 0CFA analysis. We
 do this by instantiating «♯{time}» to the singleton abstraction «❴•❵», as was
-shown in Section~\ref{s:interp}. In this setting, the lexical environment «ρ»
+shown in Section 3. In this setting, the lexical environment «ρ»
 is uniquely determined by the program expression «e», and can therefore be
 eliminated, resulting in the analysis state space:
 \begin{alignat*}{2}
