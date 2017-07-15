@@ -100,6 +100,8 @@
 @include-section{10-related-work.scrbl}
 @include-section{11-conclusions.scrbl}
 
+@;cite papers in the appendix but not otherwise cited
+@void[@~cite{dvanhorn:Neilson:1999}]
 
 @(generate-bib)
 
