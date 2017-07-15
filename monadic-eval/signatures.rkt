@@ -20,7 +20,6 @@
   ;; extensions:
   [ev-ref^      : ev-ref]
   [ev-trace^    : ev-trace]
-  [ev-trace-expr^ : ev-trace-expr]
   [ev-gc^       : ev-gc]
   [ev-lazy!^    : ev-lazy!]
   [ev-reach^    : ev-reach]

@@ -40,8 +40,8 @@
                       '(fix (ev-trace ev))))
 
 (define the-abs-trace-expr-delta-eval
-   (make-monadic-eval '(monad-trace-expr-nd@ δ-abs@ alloc@ state@ ev-trace-expr@ ev@)
-                      '(fix (ev-trace-expr ev))))
+   (make-monadic-eval '(monad-trace-expr-nd@ δ-abs@ alloc@ state@ ev-trace@ ev@)
+                      '(fix (ev-trace ev))))
 
 (define the-0cfa-eval
    (make-monadic-eval '(monad-nd@ alloc-x@ state-nd@ δ-abs@ ev@) 

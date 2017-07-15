@@ -26,7 +26,6 @@
  "evs/ev-reach.rkt"
  "evs/ev-symbolic.rkt"
  "evs/ev-trace.rkt"
- "evs/ev-trace-expr.rkt"
  "evs/ev-cache.rkt"
  "evs/ev-ap-cache.rkt"
  "evs/ev-cache-roots.rkt"

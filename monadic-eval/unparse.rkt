@@ -78,7 +78,8 @@
 
 (define (unparse-⟨⟨maybe-v⟩×σ⟩×e-seq x)
   (match x
-    [(cons l r) (cons (unparse-⟨maybe-v⟩×σ l) (for/list ([x r]) x))]))
+    [(cons l r) (cons (unparse-⟨maybe-v⟩×σ l)
+                      (map (compose unparse car) (for/list ([x r]) x)))]))
 
 (define (unparse-⟨e-ρ-σ⟩ ers)
   (match ers
