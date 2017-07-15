@@ -1,4 +1,5 @@
-\documentclass{article}
+\documentclass[acmsmall]{acmart}\settopmatter{printfolios=true}
+
 \usepackage{microtype}
 \usepackage{textcomp}
 \usepackage[scaled=0.8]{DejaVuSansMono}
@@ -22,6 +23,8 @@
 \usepackage{galois}
 
 \usepackage{mdframed}
+
+\newcommand\lamif{$\lambda$IF}
 
 \definecolor{IdentifierColor}{rgb}{0.15,0.15,0.50}
 \newcommand{\ID}[1]{{\color{IdentifierColor}#1}}
@@ -152,17 +155,138 @@
 \newcommand{\mathgobble}{-0.25em}
 \newcommand{\monadgobble}{-0.5em}
 
-\newcommand\lamif{$\lambda$IF}
-\newtheorem{theorem}{Theorem}
+\startPage{1}
 
 
-
-\title{Appendix}
+%% Bibliography style
+\bibliographystyle{ACM-Reference-Format}
+%% Citation style
+%% Note: author/year citations are required for papers published as an
+%% issue of PACMPL.
+\citestyle{acmauthoryear}  %% For author/year citations
+%\citestyle{acmnumeric}     %% For numeric citations
+%\setcitestyle{nosort}      %% With 'acmnumeric', to disable automatic
+                            %% sorting of references within a single citation;
+                            %% e.g., \cite{Smith99,Carpenter05,Baker12}
+                            %% rendered as [14,5,2] rather than [2,5,14].
+%\setcitesyle{nocompress}   %% With 'acmnumeric', to disable automatic
+                            %% compression of sequential references within a
+                            %% single citation;
+                            %% e.g., \cite{Baker12,Baker14,Baker16}
+                            %% rendered as [2,3,4] rather than [2-4].
 
 \begin{document}
+
+\title{Abstracting Definitional Interpreters (Appendix)} % for Higher-Order Programming Languages}
+\subtitle{Functional Pearl}
+
+\author{David Darais}
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  %\position{Position1}
+  %\department{Department1}              %% \department is recommended
+  \institution{University of Maryland}            %% \institution is required
+  %\streetaddress{Street1 Address1}
+  \city{College Park}
+  \state{Maryland}
+  %\postcode{Post-Code1}
+  %\country{Country1}
+}
+\email{darais@cs.umd.edu}          %% \email is recommended
+
+\author{Nicholas Labich}
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  %\position{Position1}
+  %\department{Department1}              %% \department is recommended
+  \institution{University of Maryland}            %% \institution is required
+  %\streetaddress{Street1 Address1}
+  \city{College Park}
+  \state{Maryland}
+  %\postcode{Post-Code1}
+  %\country{Country1}
+}
+\email{labichn@cs.umd.edu}          %% \email is recommended
+
+\author{Phúc C. Nguyễn}
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  %\position{Position1}
+  %\department{Department1}              %% \department is recommended
+  \institution{University of Maryland}            %% \institution is required
+  %\streetaddress{Street1 Address1}
+  \city{College Park}
+  \state{Maryland}
+  %\postcode{Post-Code1}
+  %\country{Country1}
+}
+\email{pcn@cs.umd.edu}          %% \email is recommended
+
+
+\author{David {Van Horn}}
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  %\position{Position1}
+  %\department{Department1}              %% \department is recommended
+  \institution{University of Maryland}            %% \institution is required
+  %\streetaddress{Street1 Address1}
+  \city{College Park}
+  \state{Maryland}
+  %\postcode{Post-Code1}
+  %\country{Country1}
+}
+\email{dvanhorn@cs.umd.edu}          %% \email is recommended
+
+%% \authorinfo{Phúc C. Nguyễn}
+%%            {University of Maryland}
+%%            {pcn@cs.umd.edu}
+
+
+\setcopyright{rightsretained}
+\acmJournal{PACMPL}
+\acmYear{2017}
+\acmVolume{1}
+\acmNumber{ICFP}
+\acmArticle{12}
+\acmMonth{9}
+\acmDOI{10.1145/3110256}
+\acmPrice{}
+
+\keywords{interpreters, abstract interpreters}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+ <concept_id>10011007.10010940.10010992.10010998.10011000</concept_id>
+ <concept_desc>Software and its engineering~Automated static analysis</concept_desc>
+ <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+ <concept_id>10011007.10011006.10011008.10011009.10011012</concept_id>
+ <concept_desc>Software and its engineering~Functional languages</concept_desc>
+ <concept_significance>500</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+
+\ccsdesc[500]{Software and its engineering~Automated static analysis}
+\ccsdesc[500]{Software and its engineering~Functional languages}
+
+
+\begin{abstract}
+This is the appendix to accompany \citet{local:adi}.
+\end{abstract}
+
 \maketitle
+
+%\category{CR-number}{subcategory}{third-level}
+%\terms term1, term2
+%\keywords keyword1, keyword2
 
 \appendix
 \input{10-formalism.tex}
+
+\bibliography{davdar,dvanhorn,local}
 
 \end{document}
