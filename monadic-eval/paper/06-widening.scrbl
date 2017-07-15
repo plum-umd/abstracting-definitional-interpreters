@@ -9,9 +9,8 @@
 @title[#:tag "s:widening"]{Widening the Store}
 
 In this section, we show how to recover the well-known technique of
-store-widening in our formulation of a definitional abstract
-interpreter.  This example demonstrates the ease of which we can
-construct existing abstraction choices.
+store-widening and in doing so demonstrate the ease with which we can
+construct existing abstraction design choices.
 
 The abstract interpreter we've constructed so far uses a
 store-per-program-state abstraction, which is precise but

@@ -131,8 +131,8 @@ model the store, and a reader monad to model the environment.  The
 @racket[get-store] and @racket[update-store]; their definitions are
 standard @~cite{dvanhorn:Liang1995Monad}.
 
-We also define @racket[run] for running monadic computations, starting with the empty
-environment and store @racket[∅]:
+We also define @racket[run] for monadic computations, starting in the empty
+environment and store:
 @racketblock[
 (define (mrun m)
   (run-StateT ∅ (run-ReaderT ∅ m)))
@@ -177,7 +177,7 @@ analyses later on.
 
 The @racket[δ@] component defines the interpretation of primitives,
 which is given in terms of the underlying monad.  The @racket[alloc@]
-component provides a definition of @racket[alloc], which fetches the
+component provides @racket[alloc], which fetches the
 store and uses its size to return a fresh address, assuming the
 invariant @racket[(∈ a σ)] @math{⇔} @racket[(< a (size σ))].  The
 @racket[alloc] function takes a single argument, which is the name of

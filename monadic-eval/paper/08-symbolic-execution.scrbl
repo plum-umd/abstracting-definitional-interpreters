@@ -15,8 +15,9 @@
 @filebox[@racket[ev-symbolic@]]{
 @racketblock[
 (define (((ev-symbolic ev₀) ev) e)
-  (match e [(sym x) (return x)]
-           [e       ((ev₀ ev) e)]))]}
+  (match e
+    [(sym x) (return x)]
+    [_       ((ev₀ ev) e)]))]}
 @filebox[@racket[δ-symbolic@]]{
 @racketblock[
 (define (δ o n₀ n₁)
@@ -109,13 +110,11 @@ recreating a pushdown variant of Nguyễn et
 al.@~cite["dvanhorn:TobinHochstadt2012Higherorder"
 "dvanhorn:Nguyen2014Soft dvanhorn:Nguyen2015Relatively"].
 
-Traditional symbolic executors mainly aim to find bugs and do not
-provide a termination guarantee. However, when we apply to this
-symbolic executor the finite abstractions presented in previous
-sections, namely base value widening and finite allocation
-(@secref{s:base}), and caching and fixing (@secref{s:cache}), we turn
-the symbolic execution into a sound, path-sensitive program
-verification engine.
+Traditional symbolic executors aim to find bugs and do not provide a
+termination guarantee. However, if we apply the finite abstractions
+and caching of the previous sections (@secref{s:base} and
+@secref{s:cache}) to this symbolic executor, we turn it into a sound,
+path-sensitive verification engine.
 
 There is one wrinkle, which is that operations on symbolic values
 introduce a new source of unboundness in the state-space, because the
