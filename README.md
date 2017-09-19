@@ -38,7 +38,7 @@ To install:
 
 To test:
 ```
-   raco test --package monadic-eval
+   raco test --package abstracting-definitional-interpreters
 ```
 
 This will test every module in the implementation.  If no errors
@@ -46,5 +46,5 @@ occur, the code is working as expected.
 
 To uninstall:
 ```
-   raco pkg remove monadic-eval
+   raco pkg remove abstracting-definitional-interpreters
 ```

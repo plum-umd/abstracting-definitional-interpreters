@@ -23,17 +23,17 @@
 (define (dd N)
   ;; returns 2 if N=0, 13 otherwise
   (parse
-   `(let input ,N
-      (let x (if0 input (if0 input 2 3) (if0 input 5 7))
-        (let y (if0 input 11 13)
+   `(let ([input ,N])
+      (let ([x (if0 input (if0 input 2 3) (if0 input 5 7))])
+        (let ([y (if0 input 11 13)])
           (if0 input x y))))))
 
 (define (dd* N)
   ;; returns 22 if N=0, 91 otherwise
   (parse
-   `(let input ,N
-      (let x (if0 input (if0 input 2 3) (if0 input 5 7))
-        (let y (if0 input 11 13)
+   `(let ([input ,N])
+      (let ([x (if0 input (if0 input 2 3) (if0 input 5 7))])
+        (let ([y (if0 input 11 13)])
           (* x y))))))
 
 (define (fact N)
@@ -47,12 +47,12 @@
 
 (define omega
   ;; DIVERGES
-  (parse `(let U (λ (f) (f f))
+  (parse `(let ([U (λ (f) (f f))])
             (U U))))
 
 (define omega-push
   ;; DIVERGES and continually pushes on new stack frames
-  (parse `(let Uₚ (λ (f) (f (f f)))
+  (parse `(let ([Uₚ (λ (f) (f (f f)))])
             (Uₚ Uₚ))))
 
 (define ref-sref
