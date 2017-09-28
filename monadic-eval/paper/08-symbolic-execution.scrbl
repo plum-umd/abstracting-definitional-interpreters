@@ -78,7 +78,7 @@ include symbolic numbers:
                
 
 
-@Figure-ref{f:symbolic-widen} shows the units needed to turn the
+@Figure-ref{f:symbolic} shows the units needed to turn the
 existing interpreter into a symbolic executor. Primitives such as
 @racket['/] now also take as input and return symbolic values. As
 standard, symbolic execution employs a path-condition accumulating
