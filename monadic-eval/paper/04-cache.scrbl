@@ -34,7 +34,7 @@ sets of value-and-store pairs (@racket[v×σ]). When a configuration is
 reached for the second time, rather than re-evaluating the expression
 and entering an infinite loop, the result is looked up from
 @racket[$in], which acts as an oracle. It is important that the cache
-is used in a @emph{productive} way: it is only safe to use @racket[in] as an
+is used in a @emph{productive} way: it is only safe to use @racket[$in] as an
 oracle so long as some progress has been made first.
 
 The results of evaluation are then stored in an output cache
@@ -42,7 +42,7 @@ The results of evaluation are then stored in an output cache
 than the input cache (@racket[$in]), again following a co-inductive
 argument. The least fixed-point @racket[$⁺] of an evaluator which
 transforms an oracle @racket[$in] and outputs a more defined oracle
-$racket[out] is then a sound approximation of the program, because it
+@racket[out] is then a sound approximation of the program, because it
 over-approximates all finite unrollings of the unfixed evaluator.
 
 The co-inductive caching algorithm is shown in @Figure-ref{f:caching},
